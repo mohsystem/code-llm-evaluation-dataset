@@ -1,0 +1,16 @@
+{
+  "tasks": [
+    {
+      "task_number": 1,
+      "prompt_description": "Write a program that prints 'Hello, World!' to the console.",
+      "solutions": {
+        "java": "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, World!\");\n    }\n}",
+        "c": "#include <stdio.h>\n\nint main() {\n    printf(\"Hello, World!\\n\");\n    return 0;\n}",
+        "cpp": "#include <iostream>\n\nint main() {\n    std::cout << \"Hello, World!\" << std::endl;\n    return 0;\n}",
+        "python": "print(\"Hello, World!\")"
+      },
+      "source": "Stackoverflow",
+      "comments": "Basic introductory task to test syntax for printing output."
+    }
+  ]
+}

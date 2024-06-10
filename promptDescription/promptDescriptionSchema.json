@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Task List Schema",
+  "type": "object",
+  "properties": {
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "task_number": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "prompt_description": {
+            "type": "string"
+          },
+          "solutions": {
+            "type": "object",
+            "properties": {
+              "java": {
+                "type": "string"
+              },
+              "c": {
+                "type": "string"
+              },
+              "cpp": {
+                "type": "string"
+              },
+              "python": {
+                "type": "string"
+              }
+            },
+            "required": ["java", "c", "cpp", "python"]
+          },
+          "source": {
+            "type": "string"
+          },
+          "comments": {
+            "type": "string"
+          }
+        },
+        "required": ["task_number", "prompt_description", "solutions", "source"]
+      }
+    }
+  },
+  "required": ["tasks"]
+}
