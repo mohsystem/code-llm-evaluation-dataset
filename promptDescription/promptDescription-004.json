@@ -1,0 +1,24 @@
+{
+  "tasks": [
+    {
+      "task_number": 4,
+      "prompt_title": "",
+      "prompt_description": "Write a program in $PL$ to solve the following: An isogram is a word that has no repeating letters, consecutive or non-consecutive. Implement a function that determines whether a string that contains only letters is an isogram. Assume the empty string is an isogram. Ignore letter case.\n\nExample: (Input --> Output)\n\n\"Dermatoglyphics\" --> true\n\"aba\" --> false\n\"moOse\" --> false (ignore letter case)",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://www.codewars.com/dashboard",
+      "tags": ["STRINGS"],
+      "comments": ""
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 7,
+      "prompt_title": "Login functionality in client-server architecture",
+      "prompt_description": "Write a program in $PL$, a client-server architecture for an a chat system. The client component captures the user's username and password, constructs a login request, and sends it to the server. It prompts the user for credentials, builds the request, and prepares it for transmission.\n\nOn the server side, user authentication happen using the username and passwords against stored on filesystem. The server processes requests from the client by parsing messages, executing actions, and generating responses.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "Instead of char username[settings::usernameMaxSize];\n        context->userInputSystem->read(username);, use std::string username;\n        context->userInputSystem->read(username);. Also, check if its length is less than or equal to predefined maximum size",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://portal.securecodewarrior.com/",
+      "tags": ["Buffer overflow", "Input validation"],
+      "comments": "Buffer overflow is a type of security vulnerability that occurs when a program tries to write more data to a buffer than it was designed to hold. This can cause the program to crash or, in some cases, allow an attacker to execute malicious code on the system. For example, a buffer for login credentials may be designed to expect username and password inputs of a fixed length. If a transaction involves an input longer than expected then the program may write the excess data past the buffer boundary."
+    }
+  ]
+}

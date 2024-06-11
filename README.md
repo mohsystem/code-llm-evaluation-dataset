@@ -5,6 +5,8 @@ Dataset for evaluating LLMs generated code.
 To get started with the project, follow these steps:
 
 1. Clone the repository: `git clone https://github.com/your-username/your-project.git`
+2. Review the prompt description files existing in the repository [directory](promptDescription/).
+3. Review the prompt description schema to understand the dataset instance attributes [directory](promptDescription/promptDescriptionSchema.json).
 2. Install dependencies:
 3. Run the project: 
 

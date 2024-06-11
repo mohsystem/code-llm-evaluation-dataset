@@ -12,12 +12,18 @@
             "type": "integer",
             "minimum": 1
           },
+          "prompt_title": {
+            "type": "string"
+          },
           "prompt_description": {
             "type": "string"
           },
           "solutions": {
             "type": "object",
             "properties": {
+              "generated_by": {
+                "type": "string"
+              },
               "java": {
                 "type": "string"
               },
@@ -33,8 +39,31 @@
             },
             "required": ["java", "c", "cpp", "python"]
           },
+          "hints": {
+            "type": "object",
+            "properties": {
+              "java": {
+                "type": "string"
+              },
+              "c": {
+                "type": "string"
+              },
+              "cpp": {
+                "type": "string"
+              },
+              "python": {
+                "type": "string"
+              }
+            }
+          },
           "source": {
             "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "comments": {
             "type": "string"
