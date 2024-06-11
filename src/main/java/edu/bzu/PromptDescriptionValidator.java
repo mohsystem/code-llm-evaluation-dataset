@@ -20,7 +20,7 @@ public class PromptDescriptionValidator {
             JSONObject rawSchema = new JSONObject(new JSONTokener(schemaStream));
             Schema schema = SchemaLoader.load(rawSchema);
 
-            jsonStream = new FileInputStream("promptDescription/promptDescription.json");
+            jsonStream = new FileInputStream("promptDescription/promptDescriptionTemplate.json");
             JSONObject jsonToValidate = new JSONObject(new JSONTokener(jsonStream));
 
             schema.validate(jsonToValidate);
