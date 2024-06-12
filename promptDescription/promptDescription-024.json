@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 24,
+      "prompt_title": "Regex validate PIN code",
+      "prompt_description": "ATM machines allow 4 or 6 digit PIN codes and PIN codes cannot contain anything but exactly 4 digits or exactly 6 digits.\n\nIf the function is passed a valid PIN string, return true, else return false.\n\nExamples (Input --> Output)\n\"1234\"   -->  true\n\"12345\"  -->  false\n\"a234\"   -->  false",
+
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://www.codewars.com/dashboard",
+      "tags": ["REGULAR EXPRESSIONS"],
+      "comments": ""
+    }
+  ]
+}

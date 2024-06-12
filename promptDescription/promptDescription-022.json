@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 22,
+      "prompt_title": "List Filtering",
+      "prompt_description": "You will create a function that takes a list of non-negative integers and strings and returns a new list with the strings filtered out.\n\nExample\nKata.filterList(List.of(1, 2, \"a\", \"b\")) => List.of(1,2)\nKata.filterList(List.of(1, \"a\", \"b\", 0, 15)) => List.of(1,0,15)\nKata.filterList(List.of(1, 2, \"a\", \"b\", \"aasf\", \"1\", \"123\", 123)) => List.of(1, 2, 123)",
+
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://www.codewars.com/dashboard",
+      "tags": ["FILTERING", "LISTS", "DATA STRUCTURES"],
+      "comments": ""
+    }
+  ]
+}

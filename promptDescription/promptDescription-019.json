@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 19,
+      "prompt_title": "Stop gninnipS My sdroW!",
+      "prompt_description": "Write a function that takes in a string of one or more words, and returns the same string, but with all words that have five or more letters reversed (Just like the name of this Kata). Strings passed in will consist of only letters and spaces. Spaces will be included only when more than one word is present.\n\nExamples:\n\n\"Hey fellow warriors\"  --> \"Hey wollef sroirraw\" \n\"This is a test        --> \"This is a test\" \n\"This is another test\" --> \"This is rehtona test\"",
+
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://www.codewars.com/dashboard",
+      "tags": ["ARRAYS","ALGORITHMS"],
+      "comments": ""
+    }
+  ]
+}

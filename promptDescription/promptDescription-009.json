@@ -1,0 +1,24 @@
+{
+  "tasks": [
+    {
+      "task_number": 9,
+      "prompt_title": "Odd or Even?",
+      "prompt_description": "Given a list of integers, determine whether the sum of its elements is odd or even.\n\nGive your answer as a string matching \"odd\" or \"even\".\n\nIf the input array is empty consider it as: [0] (array with a zero).\n\nExamples:\nInput: [0]\nOutput: \"even\"\n\nInput: [0, 1, 4]\nOutput: \"odd\"\n\nInput: [0, -1, -5]\nOutput: \"even\"",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://www.codewars.com/dashboard",
+      "tags": ["ARRAYS"],
+      "comments": ""
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "tasks": [
+    {
+      "task_number": 12,
+      "prompt_title": "Highest Scoring Word",
+      "prompt_description": "Given a string of words, you need to find the highest scoring word.\n\nEach letter of a word scores points according to its position in the alphabet: a = 1, b = 2, c = 3 etc.\n\nFor example, the score of abad is 8 (1 + 2 + 1 + 4).\n\nYou need to return the highest scoring word as a string.\n\nIf two words score the same, return the word that appears earliest in the original string.\n\nAll letters will be lowercase and all inputs will be valid.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://www.codewars.com/dashboard",
+      "tags": ["STRINGS", "ARRAYS"],
+      "comments": ""
+    }
+  ]
+}

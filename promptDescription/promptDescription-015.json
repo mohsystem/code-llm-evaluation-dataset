@@ -1,0 +1,24 @@
+{
+  "tasks": [
+    {
+      "task_number": 15,
+      "prompt_title": "Build Tower",
+      "prompt_description": "Build Tower\nBuild a pyramid-shaped tower, as an array/list of strings, given a positive integer number of floors. A tower block is represented with \"*\" character.\n\nFor example, a tower with 3 floors looks like this:\n\n[\n  \"  *  \",\n  \" *** \", \n  \"*****\"\n]\nAnd a tower with 6 floors looks like this:\n\n[\n  \"     *     \", \n  \"    ***    \", \n  \"   *****   \", \n  \"  *******  \", \n  \" ********* \", \n  \"***********\"\n]\n",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://www.codewars.com/dashboard",
+      "tags": ["STRINGS", "ASCII ART"],
+      "comments": ""
+    }
+  ]
+}

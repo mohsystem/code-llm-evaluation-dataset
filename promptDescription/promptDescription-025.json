@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 25,
+      "prompt_title": "Testing 1-2-3",
+      "prompt_description": "Your team is writing a fancy new text editor and you've been tasked with implementing the line numbering.\n\nWrite a function which takes a list of strings and returns each line prepended by the correct number.\n\nThe numbering starts at 1. The format is n: string. Notice the colon and space in between.\n\nExamples: (Input --> Output)\n\n[] --> []\n[\"a\", \"b\", \"c\"] --> [\"1: a\", \"2: b\", \"3: c\"]",
+
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://www.codewars.com/dashboard",
+      "tags": ["ARRAYS"],
+      "comments": ""
+    }
+  ]
+}

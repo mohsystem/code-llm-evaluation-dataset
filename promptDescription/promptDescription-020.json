@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 20,
+      "prompt_title": "Playing with digits",
+      "prompt_description": "Some numbers have funny properties. For example:\n\n89 --> 8¹ + 9² = 89 * 1\n695 --> 6² + 9³ + 5⁴= 1390 = 695 * 2\n46288 --> 4³ + 6⁴+ 2⁵ + 8⁶ + 8⁷ = 2360688 = 46288 * 51\nGiven two positive integers n and p, we want to find a positive integer k, if it exists, such that the sum of the digits of n raised to consecutive powers starting from p is equal to k * n.\n\nIn other words, writing the consecutive digits of n as a, b, c, d ..., is there an integer k such that :\n\n(\n\uD835\uDC4E\n\uD835\uDC5D\n+\n\uD835\uDC4F\n\uD835\uDC5D\n+\n1\n+\n\uD835\uDC50\n\uD835\uDC5D\n+\n2\n+\n\uD835\uDC51\n\uD835\uDC5D\n+\n3\n+\n.\n.\n.\n)\n=\n\uD835\uDC5B\n∗\n\uD835\uDC58\n(a \np\n +b \np+1\n +c \np+2\n +d \np+3\n +...)=n∗k\nIf it is the case we will return k, if not return -1.\n\nNote: n and p will always be strictly positive integers.\n\nExamples:\nn = 89; p = 1 ---> 1 since 8¹ + 9² = 89 = 89 * 1\n\nn = 92; p = 1 ---> -1 since there is no k such that 9¹ + 2² equals 92 * k\n\nn = 695; p = 2 ---> 2 since 6² + 9³ + 5⁴= 1390 = 695 * 2\n\nn = 46288; p = 3 ---> 51 since 4³ + 6⁴+ 2⁵ + 8⁶ + 8⁷ = 2360688 = 46288 * 51",
+
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://www.codewars.com/dashboard",
+      "tags": ["MATHEMATICS"],
+      "comments": ""
+    }
+  ]
+}

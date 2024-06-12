@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 32,
+      "prompt_title": "Money, Money, Money",
+      "prompt_description": "Mr. Scrooge has a sum of money 'P' that he wants to invest. Before he does, he wants to know how many years 'Y' this sum 'P' has to be kept in the bank in order for it to amount to a desired sum of money 'D'.\n\nThe sum is kept for 'Y' years in the bank where interest 'I' is paid yearly. After paying taxes 'T' for the year the new sum is re-invested.\n\nNote to Tax: not the invested principal is taxed, but only the year's accrued interest\n\nExample:\n\n  Let P be the Principal = 1000.00      \n  Let I be the Interest Rate = 0.05      \n  Let T be the Tax Rate = 0.18      \n  Let D be the Desired Sum = 1100.00\n\n\nAfter 1st Year -->\n  P = 1041.00\nAfter 2nd Year -->\n  P = 1083.86\nAfter 3rd Year -->\n  P = 1128.30\nThus Mr. Scrooge has to wait for 3 years for the initial principal to amount to the desired sum.\n\nYour task is to complete the method provided and return the number of years 'Y' as a whole in order for Mr. Scrooge to get the desired sum.\n\nAssumption: Assume that Desired Principal 'D' is always greater than the initial principal. However it is best to take into consideration that if Desired Principal 'D' is equal to Principal 'P' this should return 0 Years.",
+
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://www.codewars.com/dashboard",
+      "tags": ["ALGORITHMS","STRINGS"],
+      "comments": ""
+    }
+  ]
+}

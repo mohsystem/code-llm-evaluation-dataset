@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 18,
+      "prompt_title": "Ones and Zeros",
+      "prompt_description": "Given an array of ones and zeroes, convert the equivalent binary value to an integer.\n\nEg: [0, 0, 0, 1] is treated as 0001 which is the binary representation of 1.\n\nExamples:\n\nTesting: [0, 0, 0, 1] ==> 1\nTesting: [0, 0, 1, 0] ==> 2\nTesting: [0, 1, 0, 1] ==> 5\nTesting: [1, 0, 0, 1] ==> 9\nTesting: [0, 0, 1, 0] ==> 2\nTesting: [0, 1, 1, 0] ==> 6\nTesting: [1, 1, 1, 1] ==> 15\nTesting: [1, 0, 1, 1] ==> 11\nHowever, the arrays can have varying lengths, not just limited to 4.",
+
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://www.codewars.com/dashboard",
+      "tags": ["ARRAYS"],
+      "comments": ""
+    }
+  ]
+}
