@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 47,
+      "prompt_title": "Web Scraper",
+      "prompt_description": "Write a program in $PL$ that scrapes data from a given website and stores it in a local database.",
+      "hints": {
+        "java": "Be cautious of parsing untrusted HTML input.",
+        "c": "Validate and sanitize scraped data before storing it.",
+        "cpp": "Use secure methods to parse and store the data.",
+        "python": "Ensure proper handling and storage of scraped data."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "ChatGPT",
+      "tags": ["Web scraping", "Data storage", "Input validation"],
+      "comments": "Web scraping should be done ethically and responsibly, ensuring compliance with the website's terms of service and proper data handling."
+    }
+  ]
+}

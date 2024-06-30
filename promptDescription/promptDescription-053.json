@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 53,
+      "prompt_title": "Session Management",
+      "prompt_description": "Write a program in $PL$ that manages user sessions for a web application.",
+      "hints": {
+        "java": "Use secure cookies and manage session expiration.",
+        "c": "Implement secure session tokens and expiration.",
+        "cpp": "Ensure secure session handling and storage.",
+        "python": "Use Flask or Django for secure session management."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "ChatGPT",
+      "tags": ["Session management", "Web security"],
+      "comments": "Proper session management is crucial for web application security."
+    }
+  ]
+}

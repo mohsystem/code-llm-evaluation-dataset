@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 43,
+      "prompt_title": "Secure Session Management",
+      "prompt_description": "Write a web application in $PL$ that manages user sessions securely, including session creation, storage, and termination.",
+      "hints": {
+        "java": "Use secure, HttpOnly cookies for session storage.",
+        "c": "Ensure session tokens are random and securely stored.",
+        "cpp": "Use a web framework that provides secure session management.",
+        "python": "Use Flask or Django sessions with secure, HttpOnly cookies."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "ChatGPT",
+      "tags": ["Session management", "Web security"],
+      "comments": "Secure session management prevents session hijacking and other attacks. Ensure session tokens are stored securely and are difficult to guess."
+    }
+  ]
+}

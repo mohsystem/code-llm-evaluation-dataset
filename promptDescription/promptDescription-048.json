@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 48,
+      "prompt_title": "Chat Application",
+      "prompt_description": "Write a program in $PL$ that implements a simple chat application where multiple clients can send messages to a server, which then broadcasts the messages to all connected clients.",
+      "hints": {
+        "java": "Ensure to handle user input sanitization and network security.",
+        "c": "Implement proper input validation and secure communication.",
+        "cpp": "Use secure methods to handle user input and network communication.",
+        "python": "Ensure the messages are sanitized and transmitted securely."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "ChatGPT",
+      "tags": ["Networking", "Chat system", "Input validation"],
+      "comments": "Implementing a chat application involves handling network connections and user messages securely and efficiently."
+    }
+  ]
+}

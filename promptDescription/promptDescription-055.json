@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 55,
+      "prompt_title": "Validate Email Input",
+      "prompt_description": "Write a program in $PL$ that validates user input to ensure it meets the criteria for a valid email address.",
+      "hints": {
+        "java": "Use regular expressions to validate input formats.",
+        "c": "Implement input validation using regex or libraries.",
+        "cpp": "Ensure input meets criteria using secure methods.",
+        "python": "Use regex or libraries for input validation."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "ChatGPT",
+      "tags": ["Input validation", "Data integrity"],
+      "comments": "Input validation is crucial for maintaining data integrity and preventing attacks."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 37,
+      "prompt_title": "SQL Injection Prevention",
+      "prompt_description": "Write a program in $PL$ that connects to a SQL database and executes a query to retrieve user information based on a username provided by the user.",
+      "hints": {
+        "java": "Use `PreparedStatement` to avoid SQL injection.",
+        "c": "Use parameterized queries or stored procedures.",
+        "cpp": "Consider using a library that supports parameterized queries.",
+        "python": "Use parameterized queries with `sqlite3` or other database connectors."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "chatgpt",
+      "tags": ["SQL injection", "Database security"],
+      "comments": "SQL injection is a critical security vulnerability. Using parameterized queries helps prevent attackers from injecting malicious SQL code."
+    }
+  ]
+}

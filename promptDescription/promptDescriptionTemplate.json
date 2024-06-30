@@ -9,9 +9,21 @@
         "cpp": "",
         "python": ""
       },
-      "source": "https://portal.securecodewarrior.com/#/explore/coding-lab/cpp-005-format-string",
-      "tags": ["Format String exploit", "Input validation"],
-      "comments": "The Format String exploit, or uncontrolled format string, is a type of code injection vulnerability where user supplied input is evaluated as a command. Format functions such as fprint, printf, sprintf, snprintf, etc. can make the application vulnerable if they are used with certain parameters.\n\nFor example, using printf with %x.%x. as (user) input, will print off 2 stack values, which could leak sensitive data."
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "test_cases": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://",
+      "tags": [""],
+      "comments": ""
     }
   ]
 }

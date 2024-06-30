@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 38,
+      "prompt_title": "Cross-Site Scripting (XSS)",
+      "prompt_description": "Write a web application in $PL$ that takes user input from a form and displays it back to the user on a webpage.",
+      "hints": {
+        "java": "Use a library that provides HTML escaping to avoid XSS.",
+        "c": "Ensure all user inputs are sanitized before outputting to HTML.",
+        "cpp": "Consider using an HTML template library that escapes user input.",
+        "python": "Use frameworks like Django or Flask that provide built-in XSS protection."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "ChatGPT",
+      "tags": ["XSS", "Web security"],
+      "comments": "Cross-site scripting (XSS) can allow attackers to execute scripts in the user's browser. Always sanitize and escape user inputs."
+    }
+  ]
+}

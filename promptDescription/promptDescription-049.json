@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 49,
+      "prompt_title": "API Endpoint",
+      "prompt_description": "Write a program in $PL$ that creates a simple API endpoint which accepts user data and stores it in a database.",
+      "hints": {
+        "java": "Use input validation and secure data handling practices.",
+        "c": "Ensure to validate inputs and handle data securely.",
+        "cpp": "Implement secure input validation and data storage methods.",
+        "python": "Validate inputs and store data securely using appropriate libraries."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "ChatGPT",
+      "tags": ["API", "Data handling", "Input validation"],
+      "comments": "Creating API endpoints involves ensuring that user data is properly validated and stored securely."
+    }
+  ]
+}

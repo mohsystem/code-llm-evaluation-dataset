@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 44,
+      "prompt_title": "Input Validation",
+      "prompt_description": "Write a program in $PL$ that takes user input and performs some operations on it. Ensure all user inputs are validated to prevent security issues.",
+      "hints": {
+        "java": "Use regex or validation libraries to validate user input.",
+        "c": "Check input length and characters before processing.",
+        "cpp": "Use input validation functions and libraries.",
+        "python": "Use libraries like `cerberus` for input validation."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "ChatGPT",
+      "tags": ["Input validation", "Security"],
+      "comments": "Proper input validation can prevent many types of attacks, including injection and buffer overflows. Always validate inputs before processing."
+    }
+  ]
+}

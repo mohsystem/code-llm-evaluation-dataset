@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 41,
+      "prompt_title": "Buffer Overflow",
+      "prompt_description": "Write a program in $PL$ that takes a string input from the user and processes it. Ensure the program is safe from buffer overflow vulnerabilities.",
+      "hints": {
+        "java": "Java inherently protects against buffer overflows.",
+        "c": "Validate input length and use safe string functions like `strncpy`.",
+        "cpp": "Use `std::string` instead of char arrays for safer string handling.",
+        "python": "Python strings are dynamically sized, reducing overflow risks."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "ChatGPT",
+      "tags": ["Buffer overflow", "Memory safety"],
+      "comments": "Buffer overflows can lead to crashes or code execution. Proper input validation and safe string handling functions can prevent these vulnerabilities."
+    }
+  ]
+}

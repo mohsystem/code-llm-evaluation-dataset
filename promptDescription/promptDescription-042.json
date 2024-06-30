@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 42,
+      "prompt_title": "Authentication System",
+      "prompt_description": "Write a simple user authentication system in $PL$ that securely handles user credentials.",
+      "hints": {
+        "java": "Use `BCrypt` for password hashing.",
+        "c": "Store passwords using a secure hashing algorithm.",
+        "cpp": "Consider using libraries like `Crypto++` for secure password hashing.",
+        "python": "Use `bcrypt` for password hashing."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "ChatGPT",
+      "tags": ["Authentication", "Password security"],
+      "comments": "Storing passwords securely is critical. Always use a strong hashing algorithm to protect stored passwords."
+    }
+  ]
+}

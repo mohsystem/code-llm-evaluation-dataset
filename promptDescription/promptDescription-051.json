@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 51,
+      "prompt_title": "Data Encryption",
+      "prompt_description": "Write a program in $PL$ that encrypts a given string using an encryption algorithm.",
+      "hints": {
+        "java": "Use JCA to encrypt the string.",
+        "c": "Implement string encryption using OpenSSL.",
+        "cpp": "Use a cryptographic library to encrypt the string.",
+        "python": "Use PyCryptodome to encrypt the string."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "ChatGPT",
+      "tags": ["Encryption", "Data security"],
+      "comments": "String encryption is important for protecting sensitive data."
+    }
+  ]
+}

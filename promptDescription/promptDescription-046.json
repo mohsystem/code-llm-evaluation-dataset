@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 46,
+      "prompt_title": "User Registration System",
+      "prompt_description": "Write a program in $PL$ that implements a user registration system. The system should collect the user's name, email, and password and store this information in a database.",
+      "hints": {
+        "java": "Ensure to hash passwords before storing them in the database.",
+        "c": "Use a secure hashing algorithm for storing passwords.",
+        "cpp": "Implement password hashing using a secure library.",
+        "python": "Use bcrypt or a similar library to hash passwords."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "ChatGPT",
+      "tags": ["User registration", "Data storage", "Password security"],
+      "comments": "Proper handling of user data is crucial. Ensure data is stored securely and passwords are hashed."
+    }
+  ]
+}

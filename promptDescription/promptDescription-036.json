@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 36,
+      "prompt_title": "File Reading",
+      "prompt_description": "Write a program in $PL$ that reads a file specified by the user and prints its contents to the console.",
+      "hints": {
+        "java": "Consider using `try-with-resources` to handle file streams.",
+        "c": "Make sure to validate the file name length and check for buffer overflows.",
+        "cpp": "Use `std::ifstream` for file operations and handle exceptions.",
+        "python": "Use a `with` statement to ensure the file is properly closed."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "chatgpt",
+      "tags": ["File handling", "Resource management"],
+      "comments": "File handling can introduce vulnerabilities if not done properly. Make sure to validate file names and handle exceptions to avoid crashes or leaks."
+    }
+  ]
+}

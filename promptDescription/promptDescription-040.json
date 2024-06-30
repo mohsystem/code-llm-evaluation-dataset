@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 40,
+      "prompt_title": "Cross-Site Request Forgery (CSRF)",
+      "prompt_description": "Write a web application in $PL$ that includes a form to update user settings and ensure it is protected against CSRF attacks.",
+      "hints": {
+        "java": "Use a CSRF token in forms and validate it on the server.",
+        "c": "Ensure tokens are used to validate form submissions.",
+        "cpp": "Consider using a web framework that provides CSRF protection.",
+        "python": "Use CSRF tokens in Django or Flask-WTF for form submissions."
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "ChatGPT",
+      "tags": ["CSRF", "Web security"],
+      "comments": "CSRF attacks trick the user's browser into submitting unauthorized requests. Using tokens to validate requests can mitigate this risk."
+    }
+  ]
+}
