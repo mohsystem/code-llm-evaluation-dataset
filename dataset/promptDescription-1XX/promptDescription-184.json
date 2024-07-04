@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 184,
+      "prompt_title": "Manage robot factory settings",
+      "prompt_description": "When a robot comes off the factory floor, it has no name.\n\nThe first time you turn on a robot, a random name is generated in the format of two uppercase letters followed by three digits, such as RX837 or BC811.\n\nEvery once in a while we need to reset a robot to its factory settings, which means that its name gets wiped. The next time you ask, that robot will respond with a new random name.\n\nThe names must be random: they should not follow a predictable sequence. Using random names means a risk of collisions. Your solution must ensure that every existing robot has a unique name.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://exercism.org/tracks/fsharp/exercises/robot-name",
+      "tags": ["Random Generation", "Unique Names"],
+      "comments": ""
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 85,
+      "prompt_title": "Generate Unpredictable Random String of Fixed Length",
+      "prompt_description": "Write a program that generates and returns an unpredictable random string consisting only of ASCII letters. The length of the string should be equal to the specified length parameter.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Random Number Generation", "CWE-331","Session Management"],
+      "comments": ""
+    }
+  ]
+}

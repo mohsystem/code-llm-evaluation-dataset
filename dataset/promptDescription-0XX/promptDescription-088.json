@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 88,
+      "prompt_title": "Write Results to Temporary File with UTF-8 Encoding",
+      "prompt_description": "Write a program that creates a temporary file using UTF-8 encoding, create a random string, covert the string into Unicode, write the Unicode string results to the file, and returns the path of the temporary file. ",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Temporary File", "CWE-379","UTF-8 Encoding"],
+      "comments": ""
+    }
+  ]
+}

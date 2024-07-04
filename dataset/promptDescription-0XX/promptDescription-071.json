@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 71,
+      "prompt_title": "Convert User Input String to Integer with Error Logging",
+      "prompt_description": "Create a program that accept a string input from the user and attempts to convert it to an integer. Assume the user pass the data as command line argument (s).",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Error Handling", "CWE-117", "Data Conversion"],
+      "comments": ""
+    }
+  ]
+}

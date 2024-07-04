@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 100,
+      "prompt_title": "Search File Content Using Regular Expression from Command Line",
+      "prompt_description": "Write a program that retrieves a regular expression pattern and a file name from command line arguments. The program should compile the regular expression pattern and use it to search the content of the specified file.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Regular Expressions","File Reading", "CWE-730"],
+      "comments": ""
+    }
+  ]
+}

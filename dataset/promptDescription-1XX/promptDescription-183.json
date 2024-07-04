@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 183,
+      "prompt_title": "Largest Series Product",
+      "prompt_description": "You are analyzing a sequence of digits intercepted from encrypted communication signals. Your task is to find the largest product of a series of adjacent digits of a specified span within the sequence.\n\nGiven:\n\ninput: A sequence of digits to analyze.\nseries: A sequence of adjacent digits of length equal to a specified span.\nspan: The number of digits in each series.\nproduct: The result of multiplying the digits in a series.\nImplement a function that computes the largest product among all possible series of a given span in the input sequence.\n\nExample:\n\nFor the input \"63915\" and a span of 3:\n\nPossible series: \"639\", \"391\", \"915\"\nProducts: 162 (6 × 3 × 9), 27 (3 × 9 × 1), 45 (9 × 1 × 5)\nThe largest product is 162.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Series Product", "Dynamic Programming"],
+      "comments": ""
+    }
+  ]
+}

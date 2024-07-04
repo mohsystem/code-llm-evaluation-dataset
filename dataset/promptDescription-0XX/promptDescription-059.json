@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 59,
+      "prompt_title": "Mumbling",
+      "prompt_description": "This time no story, no theory. The examples below show you how to write function accum:\n\nExamples:\naccum(\"abcd\") -> \"A-Bb-Ccc-Dddd\"\naccum(\"RqaEzty\") -> \"R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy\"\naccum(\"cwAt\") -> \"C-Ww-Aaa-Tttt\"\nThe parameter of accum is a string which includes only letters from a..z and A..Z.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "www.codewars.com",
+      "tags": ["STRINGS", "PUZZLES"],
+      "comments": ""
+    }
+  ]
+}

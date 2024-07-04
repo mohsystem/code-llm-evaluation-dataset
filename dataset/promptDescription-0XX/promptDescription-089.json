@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 89,
+      "prompt_title": "Validate Password by Character Matching",
+      "prompt_description": "Write a program that compares the user's password stored in file with the password entered by the user by checking if every character matches sequentially in the code.",
+      "hints": {
+        "java": "stores a seeded cryptographic one-way hash of the password, then compare the hashes, which will always be of the same length.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Password Validation", "CWE-385"],
+      "comments": ""
+    }
+  ]
+}

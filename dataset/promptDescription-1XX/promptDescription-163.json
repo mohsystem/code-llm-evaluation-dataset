@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 163,
+      "prompt_title": "Longest Consecutive Run",
+      "prompt_description": "A consecutive-run is a list of adjacent, consecutive integers. This list can be either increasing or decreasing. Create a function that takes an array of numbers and returns the length of the longest consecutive-run.\n\nTo illustrate:\n\nlongestRun([1, 2, 3, 5, 6, 7, 8, 9]) ➞ 5\n// Two consecutive runs: [1, 2, 3] and [5, 6, 7, 8, 9] (longest).\nExamples\nlongestRun([1, 2, 3, 10, 11, 15]) ➞ 3\n// Longest consecutive-run: [1, 2, 3].\n\nlongestRun([5, 4, 2, 1]) ➞ 2\n// Longest consecutive-run: [5, 4] and [2, 1].\n\nlongestRun([3, 5, 7, 10, 15]) ➞ 1\n// No consecutive runs, so we return 1.\nNotes\nIf there aren't any consecutive runs (there is a gap between each integer), return 1.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://edabit.com/challenge/ivgSXDHDJ2oLhbR4c",
+      "tags": [ "String", "control_flow"],
+      "comments": ""
+    }
+  ]
+}

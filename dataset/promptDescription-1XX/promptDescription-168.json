@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 168,
+      "prompt_title": "Tweaking Letters",
+      "prompt_description": "Create a function that tweaks letters by one forward (+1) or backwards (-1) according to an array.\n\nExamples\ntweakLetters(\"apple\", {0, 1, -1, 0, -1}) ➞ \"aqold\"\n// \"p\" + 1 => \"q\"; \"p\" - 1 => \"o\"; \"e\" - 1 => \"d\"\n\ntweakLetters(\"many\", {0, 0, 0, -1}) ➞ \"manx\"\n\ntweakLetters(\"rhino\", {1, 1, 1, 1, 1}) ➞ \"sijop\"\nNotes\nDon't worry about capital letters.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://edabit.com/challenge/868Q9JmTSAEhZBBrg",
+      "tags": [ "Array", "String"],
+      "comments": ""
+    }
+  ]
+}

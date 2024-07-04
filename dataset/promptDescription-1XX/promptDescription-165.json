@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 165,
+      "prompt_title": "Poker Flush?",
+      "prompt_description": "Create a function that takes in two arrays and determines whether there exists a flush.\n\nThe first array represents the 5 cards dealt on the table.\nThe second array represents the 2 cards in your hand.\nNotation: card number and suit (abbreviated as S = Spades, H = Hearts, D = Diamonds, C = Clubs) separated by an underscore.\n\nExamples\ncheckFlush([\"A_S\", \"J_H\", \"7_D\", \"8_D\", \"10_D\"], [\"J_D\", \"3_D\"]) ➞ true // diamond flush\n\ncheckFlush([\"10_S\", \"7_S\", \"9_H\", \"4_S\", \"3_S\"], [\"K_S\", \"Q_S\"]) ➞ true // spade flush\n\ncheckFlush([\"3_S\", \"10_H\", \"10_D\", \"10_C\", \"10_S\"], [\"3_S\", \"4_D\"]) ➞ false\nNotes\nHint: If there aren't at least 3 cards of the same suit on the table, there is zero chance of there being a flush.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://edabit.com/challenge/2P7RECZs7sQ6oPnz8",
+      "tags": [ "arrays", "control_flow", "Regex"],
+      "comments": ""
+    }
+  ]
+}

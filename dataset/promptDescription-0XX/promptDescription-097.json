@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 97,
+      "prompt_title": "Execute XPath Query on XML",
+      "prompt_description": "Write a program that performs the following steps:\n\nRetrieve the xpath value from the command line parameter.\nRetrieve the xml file name from the command line parameter and read it from the local storage.\nConstruct and parse the XML file.\nExecute the XPath query in the format /tag[@id={}] on the parsed XML.\nReturn the result of the XPath query.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["XML Parsing", "XPath", "CWE-643"],
+      "comments": ""
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 79,
+      "prompt_title": "Encrypt a Message Using Secret Key",
+      "prompt_description": "Write a program that encrypts a message using a secret key. The function should perform the following tasks:\n\nCreate a cipher for encryption.\nEncrypt the message using the secret key and the cipher.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Encryption", "CWE-327"],
+      "comments": ""
+    }
+  ]
+}

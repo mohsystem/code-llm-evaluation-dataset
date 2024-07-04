@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 60,
+      "prompt_title": "Write Number in Expanded Form",
+      "prompt_description": "You will be given a number and you will need to return it as a string in Expanded Form. For example:\n\nKata.expandedForm(12); # Should return \"10 + 2\"\nKata.expandedForm(42); # Should return \"40 + 2\"\nKata.expandedForm(70304); # Should return \"70000 + 300 + 4\"\nNOTE: All numbers will be whole numbers greater than 0.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "www.codewars.com",
+      "tags": ["STRINGS", "ALGORITHMS"],
+      "comments": ""
+    }
+  ]
+}

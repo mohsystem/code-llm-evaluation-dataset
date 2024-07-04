@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 62,
+      "prompt_title": "Parse JSON String and Retrieve Root Element",
+      "prompt_description": "Parse the provided string to extract the structure of the JSON document it represents. After parsing, identify and return the root element of the JSON document.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["JSON Parsing", "CWE-020"],
+      "comments": ""
+    }
+  ]
+}

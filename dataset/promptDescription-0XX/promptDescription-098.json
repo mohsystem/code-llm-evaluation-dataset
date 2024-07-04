@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 98,
+      "prompt_title": "Convert User Input to Integer",
+      "prompt_description": "Write a program that takes input from the user via the console and attempts to convert it to an integer.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Exception Handling","User Input", "Type Conversion", "CWE-703"],
+      "comments": ""
+    }
+  ]
+}

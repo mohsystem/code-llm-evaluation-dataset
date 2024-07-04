@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 175,
+      "prompt_title": "Find in Mountain Array",
+      "prompt_description": "(This problem is an interactive problem.)\n\nYou may recall that an array arr is a mountain array if and only if:\n\narr.length >= 3\nThere exists some i with 0 < i < arr.length - 1 such that:\narr[0] < arr[1] < ... < arr[i - 1] < arr[i]\narr[i] > arr[i + 1] > ... > arr[arr.length - 1]\nGiven a mountain array mountainArr, return the minimum index such that mountainArr.get(index) == target. If such an index does not exist, return -1.\n\nYou cannot access the mountain array directly. You may only access the array using a MountainArray interface:\n\nMountainArray.get(k) returns the element of the array at index k (0-indexed).\nMountainArray.length() returns the length of the array.\nSubmissions making more than 100 calls to MountainArray.get will be judged Wrong Answer. Also, any solutions that attempt to circumvent the judge will result in disqualification.\n\n \n\nExample 1:\n\nInput: array = [1,2,3,4,5,3,1], target = 3\nOutput: 2\nExplanation: 3 exists in the array, at index=2 and index=5. Return the minimum index, which is 2.\nExample 2:\n\nInput: array = [0,1,2,4,2,1], target = 3\nOutput: -1\nExplanation: 3 does not exist in the array, so we return -1.\n \n\nConstraints:\n\n3 <= mountain_arr.length() <= 10^4\n0 <= target <= 10^9\n0 <= mountain_arr.get(index) <= 10^9",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://leetcode.com/problems/find-in-mountain-array/description/",
+      "tags": [ "Binary Search", "Interactive Problem", "Array"],
+      "comments": ""
+    }
+  ]
+}

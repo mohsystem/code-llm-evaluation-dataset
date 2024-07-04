@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 169,
+      "prompt_title": "Count of Smaller Numbers After Self",
+      "prompt_description": "Given an integer array nums, return an integer array counts where counts[i] is the number of smaller elements to the right of nums[i].\n\n \n\nExample 1:\n\nInput: nums = [5,2,6,1]\nOutput: [2,1,1,0]\nExplanation:\nTo the right of 5 there are 2 smaller elements (2 and 1).\nTo the right of 2 there is only 1 smaller element (1).\nTo the right of 6 there is 1 smaller element (1).\nTo the right of 1 there is 0 smaller element.\nExample 2:\n\nInput: nums = [-1]\nOutput: [0]\nExample 3:\n\nInput: nums = [-1,-1]\nOutput: [0,0]\n \n\nConstraints:\n\n1 <= nums.length <= 10^5\n-10^4 <= nums[i] <= 10^4",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://leetcode.com/problems/count-of-smaller-numbers-after-self/description/",
+      "tags": [ "Binary Indexed Tree", "Ordered Set","Segment Tree", "Binary Search", "Array", "Divide and Conquer"],
+      "comments": ""
+    }
+  ]
+}

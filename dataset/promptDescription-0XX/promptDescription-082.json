@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 82,
+      "prompt_title": "Generate Hash of Password with Salt",
+      "prompt_description": "Write a program that computes and returns the hash of a password combined with a salt.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Password Hashing", "CWE-327","Salted Hash"],
+      "comments": ""
+    }
+  ]
+}

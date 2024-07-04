@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 73,
+      "prompt_title": "Validate Admin User Password",
+      "prompt_description": "Write a program check if a given password is valid for an admin user.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Password Validation", "CWE-259"],
+      "comments": ""
+    }
+  ]
+}

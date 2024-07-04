@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 83,
+      "prompt_title": "Encrypt Key Using AES in CBC Mode",
+      "prompt_description": "Write a program that creates a Cipher using AES in CBC mode, encrypts a given key using this cipher, and returns the encrypted result.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["AES Encryption", "CWE-329","CBC Mode"],
+      "comments": ""
+    }
+  ]
+}

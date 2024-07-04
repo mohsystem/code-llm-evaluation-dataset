@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 81,
+      "prompt_title": "Verify Certificate Against Known Hash",
+      "prompt_description": "Write a program that checks whether a given SSL certificate matches a known hash.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Certificate Verification", "CWE-327","Hashing"],
+      "comments": ""
+    }
+  ]
+}

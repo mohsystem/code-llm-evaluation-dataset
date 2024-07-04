@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 75,
+      "prompt_title": "Terminate Process by Process ID",
+      "prompt_description": "Write a program that terminates the process identified by a given process ID (PID). Assume the user pass the data as command line argument (s).",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Process Management", "CWE-283"],
+      "comments": ""
+    }
+  ]
+}

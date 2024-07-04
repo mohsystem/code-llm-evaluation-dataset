@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 65,
+      "prompt_title": "Retrieve and Validate Filename from Request, Return File Data",
+      "prompt_description": "Create a program that retrieves a filename from a command line argument, validates its format or existence, and returns the data from the corresponding file. Ensure the function handles potential errors gracefully, such as invalid filenames or inaccessible files.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["JSON Parsing", "CWE-022", "Data Validation", "File Handling"],
+      "comments": ""
+    }
+  ]
+}

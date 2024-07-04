@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 198,
+      "prompt_title": "Implement Rand10() Using Rand7()",
+      "prompt_description": "Given the API rand7() that generates a uniform random integer in the range [1, 7], write a function rand10() that generates a uniform random integer in the range [1, 10]. You can only call the API rand7(), and you shouldn't call any other API. Please do not use a language's built-in random API.\n\nEach test case will have one internal argument n, the number of times that your implemented function rand10() will be called while testing. Note that this is not an argument passed to rand10().\n\n \n\nExample 1:\n\nInput: n = 1\nOutput: [2]\nExample 2:\n\nInput: n = 2\nOutput: [2,8]\nExample 3:\n\nInput: n = 3\nOutput: [3,8,10]\n \n\nConstraints:\n\n1 <= n <= 105",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://leetcode.com/problems/implement-rand10-using-rand7/description/ ",
+      "tags": ["Random Number Generation", "Uniform Distribution", "Algorithm"],
+      "comments": ""
+    }
+  ]
+}

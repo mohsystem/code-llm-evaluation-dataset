@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 92,
+      "prompt_title": "Threaded Data Processing with Locks",
+      "prompt_description": "Implement a thread-safe mechanism to manage access to a shared resource where each thread checks if currentCounter variable is less than or equal to maxCounter variable. If true, the thread should acquire a lock, increment currentCounter by 1, release the lock, and print a message indicating which thread is accessing the currentCounter at that moment.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://github.com/s2e-lab/SecurityEval/blob/main/Testcases_Prompt/CWE-414/author_1.py",
+      "tags": ["Thread Locks", "CWE-414", "Concurrency"],
+      "comments": ""
+    }
+  ]
+}

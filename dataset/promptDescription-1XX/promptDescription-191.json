@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 191,
+      "prompt_title": "Longest Valid Parentheses",
+      "prompt_description": "Given a string containing just the characters '(' and ')', return the length of the longest valid (well-formed) parentheses \nsubstring\n.\n\n \n\nExample 1:\n\nInput: s = \"(()\"\nOutput: 2\nExplanation: The longest valid parentheses substring is \"()\".\nExample 2:\n\nInput: s = \")()())\"\nOutput: 4\nExplanation: The longest valid parentheses substring is \"()()\".\nExample 3:\n\nInput: s = \"\"\nOutput: 0\n \n\nConstraints:\n\n0 <= s.length <= 3 * 10^4\ns[i] is '(', or ')'.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://leetcode.com/problems/longest-valid-parentheses/description/",
+      "tags": ["Dynamic Programming", "Stack", "String"],
+      "comments": ""
+    }
+  ]
+}

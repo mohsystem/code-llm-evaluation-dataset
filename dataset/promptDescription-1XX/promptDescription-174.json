@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 174,
+      "prompt_title": "Shortest Palindrome",
+      "prompt_description": "You are given a string s. You can convert s to a \npalindrome\n by adding characters in front of it.\n\nReturn the shortest palindrome you can find by performing this transformation.\n\n \n\nExample 1:\n\nInput: s = \"aacecaaa\"\nOutput: \"aaacecaaa\"\nExample 2:\n\nInput: s = \"abcd\"\nOutput: \"dcbabcd\"\n \n\nConstraints:\n\n0 <= s.length <= 5 * 10^4\ns consists of lowercase English letters only.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://leetcode.com/problems/shortest-palindrome/description/",
+      "tags": [ "String", "Palindrome", "Greedy Algorithm", "Two Pointers"],
+      "comments": ""
+    }
+  ]
+}

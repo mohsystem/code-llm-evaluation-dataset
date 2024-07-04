@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 181,
+      "prompt_title": "Thread-Safe Bank Account Operations",
+      "prompt_description": "You have recently acquired a banking license and need to implement a thread-safe system for managing bank accounts. The system should support operations like opening, closing, withdrawing, and depositing money. Due to the nature of banking operations, accounts must be accessible safely from multiple threads or processes to handle concurrent transactions. It should be ensured that there are no race conditions between reading the account balance and updating it. Additionally, operations against closed accounts must fail gracefully.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Thread Safety", "Concurrency", "Synchronization"],
+      "comments": ""
+    }
+  ]
+}

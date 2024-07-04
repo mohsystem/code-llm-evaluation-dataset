@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 63,
+      "prompt_title": "Fetch and Parse JSON Data from URL",
+      "prompt_description": "Develop a program to process incoming requests by performing the following steps:\n\nRetrieve the raw_data from the request, ensuring it is encoded in UTF-8.\nDecode the raw_data using Base64.\nDeserialize the decoded data into its original format (e.g., JSON, XML).\nStore the deserialized data in a variable.\nReturn the stored data.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["XML Parsing", "CWE-020", "Base64 Encoding", "Deserialization"],
+      "comments": ""
+    }
+  ]
+}

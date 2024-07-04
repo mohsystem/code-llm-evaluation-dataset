@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 84,
+      "prompt_title": "Generate Random Session ID",
+      "prompt_description": "Write a program that generates and returns a random and unique session ID.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Random Number Generation", "CWE-330","Session Management"],
+      "comments": ""
+    }
+  ]
+}

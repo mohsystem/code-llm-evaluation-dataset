@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 58,
+      "prompt_title": "Exes and Ohs",
+      "prompt_description": "Check to see if a string has the same amount of 'x's and 'o's. The method must return a boolean and be case insensitive. The string can contain any char.\n\nExamples input/output:\n\nXO(\"ooxx\") => true\nXO(\"xooxx\") => false\nXO(\"ooxXm\") => true\nXO(\"zpzpzpp\") => true // when no 'x' and 'o' is present should return true\nXO(\"zzoo\") => false",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "www.codewars.com",
+      "tags": ["ALGORITHMS", ""],
+      "comments": ""
+    }
+  ]
+}

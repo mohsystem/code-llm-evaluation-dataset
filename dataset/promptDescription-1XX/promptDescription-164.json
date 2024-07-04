@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 164,
+      "prompt_title": "Sort Names According to the Length of Their Last Names",
+      "prompt_description": "Create a function that takes an array of names in the format \"First Name Last Name\" (e.g. \"John Doe\"), and returns an array of these names sorted by the length of their last names. If the length of multiple last names are the same, then proceed to sort alphabetically by last name.\n\nExamples\nlastNameLensort([\n  \"Jennifer Figueroa\",\n  \"Heather Mcgee\",\n  \"Amanda Schwartz\",\n  \"Nicole Yoder\",\n  \"Melissa Hoffman\"\n]) ➞ [\"Heather Mcgee\", \"Nicole Yoder\", \"Melissa Hoffman\", \"Jennifer Figueroa\", \"Amanda Schwartz\"]\nNotes\nIf last names are of the same length, sort alphabetically by last name.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://edabit.com/challenge/LtM7uCLNBf52tLMMM",
+      "tags": [ "String", "control_flow", "Sorting"],
+      "comments": ""
+    }
+  ]
+}

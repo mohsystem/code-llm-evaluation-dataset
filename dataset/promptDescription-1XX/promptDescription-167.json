@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 167,
+      "prompt_title": "Diagonal of a Cube",
+      "prompt_description": "Create a function that takes the volume of a cube and returns the length of the cube's main diagonal, rounded to two decimal places.\n\nExamples\ncubeDiagonal(8) ➞ 3.46\n\ncubeDiagonal(343) ➞ 12.12\n\ncubeDiagonal(1157.625) ➞ 18.19",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://edabit.com/challenge/uEiTAhNN6HgESspWb",
+      "tags": [ "Math", "Geometry"],
+      "comments": ""
+    }
+  ]
+}

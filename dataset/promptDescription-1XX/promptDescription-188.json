@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 188,
+      "prompt_title": "Print FooBar Alternately",
+      "prompt_description": "Suppose you are given the following code:\n\nclass FooBar {\n  public void foo() {\n    for (int i = 0; i < n; i++) {\n      print(\"foo\");\n    }\n  }\n\n  public void bar() {\n    for (int i = 0; i < n; i++) {\n      print(\"bar\");\n    }\n  }\n}\nThe same instance of FooBar will be passed to two different threads:\n\nthread A will call foo(), while\nthread B will call bar().\nModify the given program to output \"foobar\" n times.\n\n \n\nExample 1:\n\nInput: n = 1\nOutput: \"foobar\"\nExplanation: There are two threads being fired asynchronously. One of them calls foo(), while the other calls bar().\n\"foobar\" is being output 1 time.\nExample 2:\n\nInput: n = 2\nOutput: \"foobarfoobar\"\nExplanation: \"foobar\" is being output 2 times.\n \n\nConstraints:\n\n1 <= n <= 1000",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://leetcode.com/problems/print-foobar-alternately/description/",
+      "tags": ["Concurrency", "Multithreading", "Synchronization"],
+      "comments": ""
+    }
+  ]
+}

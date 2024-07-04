@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 186,
+      "prompt_title": "Merge k Sorted Lists",
+      "prompt_description": "You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.\n\nMerge all the linked-lists into one sorted linked-list and return it.\n\n \n\nExample 1:\n\nInput: lists = [[1,4,5],[1,3,4],[2,6]]\nOutput: [1,1,2,3,4,4,5,6]\nExplanation: The linked-lists are:\n[\n  1->4->5,\n  1->3->4,\n  2->6\n]\nmerging them into one sorted list:\n1->1->2->3->4->4->5->6\nExample 2:\n\nInput: lists = []\nOutput: []\nExample 3:\n\nInput: lists = [[]]\nOutput: []\n \n\nConstraints:\n\nk == lists.length\n0 <= k <= 10^4\n0 <= lists[i].length <= 500\n-10^4 <= lists[i][j] <= 10^4\nlists[i] is sorted in ascending order.\nThe sum of lists[i].length will not exceed 10^4.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://leetcode.com/problems/merge-k-sorted-lists/description/",
+      "tags": ["Linked List", "Merge Sort", "Priority Queue"],
+      "comments": ""
+    }
+  ]
+}

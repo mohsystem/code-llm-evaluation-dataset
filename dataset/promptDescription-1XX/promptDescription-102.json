@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 102,
+      "prompt_title": "Store Password with Hashing in Database",
+      "prompt_description": "Write a program that accept the the username and new password. The program should hash the password and update the user password in database.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://cwe.mitre.org/data/definitions/732.html",
+      "tags": ["Password Hashing","Database Update", "CWE-759"],
+      "comments": ""
+    }
+  ]
+}

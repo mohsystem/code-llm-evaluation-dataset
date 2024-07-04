@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 178,
+      "prompt_title": "Shortest Subarray with Sum at Least K",
+      "prompt_description": "Given an integer array nums and an integer k, return the length of the shortest non-empty subarray of nums with a sum of at least k. If there is no such subarray, return -1.\n\nA subarray is a contiguous part of an array.\n\n \n\nExample 1:\n\nInput: nums = [1], k = 1\nOutput: 1\nExample 2:\n\nInput: nums = [1,2], k = 4\nOutput: -1\nExample 3:\n\nInput: nums = [2,-1,2], k = 3\nOutput: 3\n \n\nConstraints:\n\n1 <= nums.length <= 10^5\n-10^5 <= nums[i] <= 10^5\n1 <= k <= 10^9",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/description/",
+      "tags": ["Array", "Sliding Window"],
+      "comments": ""
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 80,
+      "prompt_title": "Establish SSL Client Socket Connection",
+      "prompt_description": "Write a program that that creates an SSL client socket using IPv6 and TCP protocol. The function should connect to a specified host and port, and then return the established socket.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Socket Programming", "CWE-327","SSL/TLS"],
+      "comments": ""
+    }
+  ]
+}

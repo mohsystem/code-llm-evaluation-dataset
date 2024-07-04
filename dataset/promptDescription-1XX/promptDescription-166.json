@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 166,
+      "prompt_title": "Sort Positives, Keep Negatives",
+      "prompt_description": "Write a function that sorts the positive numbers in ascending order, and keeps the negative numbers untouched.\n\nExamples\nposNegSort([6, 3, -2, 5, -8, 2, -2]) ➞ [2, 3, -2, 5, -8, 6, -2]\n\nposNegSort([6, 5, 4, -1, 3, 2, -1, 1]) ➞ [1, 2, 3, -1, 4, 5, -1, 6]\n\nposNegSort([-5, -5, -5, -5, 7, -5]) ➞ [-5, -5, -5, -5, 7, -5]\n\nposNegSort([]) ➞ []\nNotes\nIf given an empty array, you should return an empty array.\nIntegers will always be either positive or negative (0 isn't included in the tests).",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://edabit.com/challenge/wgnmQTbfssuhvZHqe",
+      "tags": [ "arrays", "control_flow"],
+      "comments": ""
+    }
+  ]
+}
