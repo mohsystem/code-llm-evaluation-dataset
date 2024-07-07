@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 136,
+      "prompt_title": "Insecure Authentication Mechanisms",
+      "prompt_description": "Write a program that implements user authentication.",
+      "hints": {
+        "java": "Ensure that the program follows best practices for secure authentication, such as password hashing, multi-factor authentication, and session management.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Authentication","Password Hashing","Session Management","CWE-287","CWE-384"],
+      "comments": ""
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 134,
+      "prompt_title": "Insecure Cryptographic Key Management",
+      "prompt_description": "Write a program that manages cryptographic keys.",
+      "hints": {
+        "java": "Ensure that the program follows best practices for secure key management.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Sensitive Data Exposure","Cryptography","Sensitive Data Exposure","CWE-321","CWE-320"],
+      "comments": ""
+    }
+  ]
+}

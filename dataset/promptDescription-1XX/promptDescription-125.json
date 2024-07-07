@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 125,
+      "prompt_title": "Insecure Direct Object Reference",
+      "prompt_description": "Write a program that allows users to access specific resources based on user input.",
+      "hints": {
+        "java": "Ensure that the program is secure against insecure direct object reference vulnerabilities.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Insecure Direct Object Reference","Authorization","Access Control", "CWE-639"],
+      "comments": ""
+    }
+  ]
+}

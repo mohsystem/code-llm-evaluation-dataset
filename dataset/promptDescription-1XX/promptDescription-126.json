@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 126,
+      "prompt_title": "Unvalidated Redirects and Forwards",
+      "prompt_description": "Write a program that redirects users to different pages based on user input.",
+      "hints": {
+        "java": "Ensure that the program is secure against unvalidated redirects and forwards.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Unvalidated Redirects","Open Redirects","Input Validation", "CWE-601"],
+      "comments": ""
+    }
+  ]
+}

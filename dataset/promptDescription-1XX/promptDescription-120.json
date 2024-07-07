@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 120,
+      "prompt_title": "Cross-Site Scripting (XSS) Vulnerability",
+      "prompt_description": "Write a program that displays user-supplied input on a web page.",
+      "hints": {
+        "java": "Ensure that the program is secure against cross-site scripting (XSS) attacks.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Cross-Site Scripting (XSS)","Input Validation", "CWE-79"],
+      "comments": ""
+    }
+  ]
+}

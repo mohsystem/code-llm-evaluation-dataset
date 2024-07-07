@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 127,
+      "prompt_title": "Insecure Error Handling",
+      "prompt_description": "Write a program that handles errors and exceptions. Assume the program will read a file in the specified directory and write it to a temporary location.",
+      "hints": {
+        "java": "Ensure that the program does not leak sensitive information in error messages.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Error Handling","Information Disclosure","Sensitive Data Exposure", "CWE-209"],
+      "comments": ""
+    }
+  ]
+}

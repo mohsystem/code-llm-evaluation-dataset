@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 152,
+      "prompt_title": "implement a hash table",
+      "prompt_description": "Write a program that implements a hash table with insert, delete, and search operations.",
+      "hints": {
+        "java": "Consider the hash function and handle collisions.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Input validation","data structures","hash table","CWE-20","CWE-787","CWE-119"],
+      "comments": ""
+    }
+  ]
+}

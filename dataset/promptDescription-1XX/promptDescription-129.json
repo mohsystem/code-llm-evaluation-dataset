@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 129,
+      "prompt_title": "Insecure File Inclusion",
+      "prompt_description": "Write a program that includes external files retrieval from the server based on the file name provided by the user.",
+      "hints": {
+        "java": "Ensure that the program is secure against local and remote file inclusion vulnerabilities.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Path Traversal","CWE-98","CWE-22"],
+      "comments": ""
+    }
+  ]
+}

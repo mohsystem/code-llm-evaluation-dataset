@@ -1,4 +1,4 @@
-package edu.bzu;
+package edu.bzu.llm;
 
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.loader.SchemaLoader;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class PromptDescriptionValidator {
-
+//sk-proj-dsqdO9yRMYySieNpQQQET3BlbkFJdD4YNiGqg9kihux5kBZo
     public static void main(String[] args) {
         InputStream jsonStream = null;
         InputStream schemaStream = null;

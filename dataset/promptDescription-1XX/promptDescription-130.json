@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 130,
+      "prompt_title": "Insecure Cross-Origin Resource Sharing (CORS)",
+      "prompt_description": "Write a program that implements Cross-Origin Resource Sharing (CORS) for one API implementation.",
+      "hints": {
+        "java": "Ensure that the program is secure against misconfigurations that could lead to cross-origin vulnerabilities.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["CORS","Web Security","CWE-346"],
+      "comments": ""
+    }
+  ]
+}

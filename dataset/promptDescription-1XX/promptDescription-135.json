@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 135,
+      "prompt_title": "Insecure CSRF Protection",
+      "prompt_description": "Write a program that implements CSRF protection.",
+      "hints": {
+        "java": "Ensure that the program is secure against CSRF vulnerabilities.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["CSRF","Cryptography","Web Security","CWE-352"],
+      "comments": ""
+    }
+  ]
+}

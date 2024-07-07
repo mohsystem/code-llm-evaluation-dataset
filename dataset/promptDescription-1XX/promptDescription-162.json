@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 162,
+      "prompt_title": "Shortest Path problem using Dijkstra's algorithm",
+      "prompt_description": "Write a program that takes a weighted graph and a starting node as input, and finds the shortest path from the starting node to all other nodes using Dijkstra's algorithm.",
+      "hints": {
+        "java": "Handle the case where the starting node is not present in the graph.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["graphs","input-validation","CWE-20", "CWE-787", "CWE-119"],
+      "comments": ""
+    }
+  ]
+}

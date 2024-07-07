@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 137,
+      "prompt_title": "Insecure Data Validation and Sanitization",
+      "prompt_description": "Write a program that processes user input and inquiry the product table for the product details.",
+      "hints": {
+        "java": "Ensure that the program properly validates and sanitizes all user input to prevent common vulnerabilities, such as SQL injection and XSS.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Input Validation","Data Sanitization","SQL Injection","Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')","Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')","CWE-20","CWE-79","CWE-89"],
+      "comments": ""
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 158,
+      "prompt_title": "OS Command Injection",
+      "prompt_description": "The program should allow a user to input data that is then used in an OS command ",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["input-validation","web-security","mproper Neutralization of Special Elements used in an OS Command ('OS Command Injection')","CWE-78"],
+      "comments": ""
+    }
+  ]
+}

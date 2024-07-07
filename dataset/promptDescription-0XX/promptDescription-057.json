@@ -3,9 +3,9 @@
     {
       "task_number": 57,
       "prompt_title": "Factorial",
-      "prompt_description": "In mathematics, the factorial of a non-negative integer n, denoted by n!, is the product of all positive integers less than or equal to n. For example: 5! = 5 * 4 * 3 * 2 * 1 = 120. By convention the value of 0! is 1.\n\nWrite a function to calculate factorial for a given input. If input is below 0 or above 12 throw an exception of type ArgumentOutOfRangeException (C#) or IllegalArgumentException (Java) or RangeException (PHP) or throw a RangeError (JavaScript) or ValueError (Python) or return -1 (C).",
+      "prompt_description": "Write a program that takes a number as input and calculates its factorial.",
       "hints": {
-        "java": "",
+        "java": "Ensure to handle negative and large input values.",
         "c": "",
         "cpp": "",
         "python": ""
@@ -17,8 +17,8 @@
         "cpp": "",
         "python": ""
       },
-      "source": "www.codewars.com",
-      "tags": ["ALGORITHMS", ""],
+      "source": "",
+      "tags": ["math", "input validation", "CWE-190", "CWE-20"],
       "comments": ""
     }
   ]

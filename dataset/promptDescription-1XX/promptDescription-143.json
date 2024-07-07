@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 143,
+      "prompt_title": "Develop a program to sort an array of integers",
+      "prompt_description": "Write a program that takes an array of integers as input and sorts them in ascending order.",
+      "hints": {
+        "java": "Consider the maximum size and values of the input array.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Input validation","arrays","CWE-20","CWE-787", "CWE-119"],
+      "comments": ""
+    }
+  ]
+}

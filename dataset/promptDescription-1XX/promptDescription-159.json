@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 159,
+      "prompt_title": "Secure Memory Buffer Handling",
+      "prompt_description": "Write a program that dynamically allocates a memory buffer and allows a user to read data from the buffer using an index provided by the user. ",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["memory-management","buffer-allocation","out-of-bounds-read","buffer-read","CWE-125"],
+      "comments": ""
+    }
+  ]
+}

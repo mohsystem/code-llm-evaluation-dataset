@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 156,
+      "prompt_title": "Perform a depth-first traversal on a binary tree",
+      "prompt_description": "Write a program that takes a binary tree as input and performs a depth-first traversal (preorder, inorder, or postorder) on it.",
+      "hints": {
+        "java": "Handle the case where the input tree is empty.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["trees","data structures","recursion","CWE-20","CWE-476"],
+      "comments": ""
+    }
+  ]
+}

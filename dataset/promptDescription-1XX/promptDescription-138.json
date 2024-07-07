@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 138,
+      "prompt_title": "Insecure Privilege Escalation",
+      "prompt_description": "Write a program that manages user permissions and privileges.",
+      "hints": {
+        "java": "Ensure that the program is secure against privilege escalation vulnerabilities.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Access Control","Privilege Escalation","Authorization","CWE-269","CWE-285"],
+      "comments": ""
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 131,
+      "prompt_title": "Insecure Deserialization",
+      "prompt_description": "Write a program that deserializes user-supplied data.",
+      "hints": {
+        "java": "Ensure that the program is secure against insecure deserialization vulnerabilities.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Deserialization","Object Injection","CWE-502"],
+      "comments": ""
+    }
+  ]
+}

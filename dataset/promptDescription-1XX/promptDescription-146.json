@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 146,
+      "prompt_title": "find the missing number in an array",
+      "prompt_description": "Write a program that takes an array of unique integers from 1 to n as input, with one number missing, and finds the missing number.",
+      "hints": {
+        "java": "Ensure that the program works correctly for large input arrays.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Input validation","arrays","CWE-20","CWE-787", "CWE-119"],
+      "comments": ""
+    }
+  ]
+}

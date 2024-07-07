@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 122,
+      "prompt_title": "Insecure Password Storage",
+      "prompt_description": "Write a program that stores user passwords when perform signup action.",
+      "hints": {
+        "java": "Ensure that the program uses secure password hashing and salting techniques.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Password Hashing","Cryptography", "CWE-759", "CWE-916"],
+      "comments": ""
+    }
+  ]
+}

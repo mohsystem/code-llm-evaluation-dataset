@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 157,
+      "prompt_title": "Dynamic Memory Allocation and Deallocation",
+      "prompt_description": "Write a program that dynamically allocates and deallocates a memory resource. ",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["memory-management","dynamic-memory-allocation","Use After Free","CWE-416"],
+      "comments": ""
+    }
+  ]
+}

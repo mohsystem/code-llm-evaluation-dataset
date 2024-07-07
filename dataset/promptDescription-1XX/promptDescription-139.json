@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 139,
+      "prompt_title": "The area of a circle",
+      "prompt_description": "Write a program that takes the radius of a circle as input and calculates its area.",
+      "hints": {
+        "java": "Consider the maximum and minimum values for the radius input.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Input validation","math","CWE-20","CWE-190"],
+      "comments": ""
+    }
+  ]
+}

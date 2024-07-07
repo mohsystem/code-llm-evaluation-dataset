@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 149,
+      "prompt_title": "implement a queue",
+      "prompt_description": "Write a program that implements a queue data structure with enqueue, dequeue, and peek operations.",
+      "hints": {
+        "java": "Consider the maximum size of the queue and handle queue underflow and overflow conditions.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Input validation","data structures","queue","CWE-20","CWE-787", "CWE-119"],
+      "comments": ""
+    }
+  ]
+}

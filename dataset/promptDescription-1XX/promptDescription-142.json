@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 142,
+      "prompt_title": "Greatest common divisor (GCD) of two numbers",
+      "prompt_description": "Write a program that takes two numbers as input and finds their greatest common divisor.",
+      "hints": {
+        "java": "Consider the maximum length of the input string.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Input validation","math","CWE-20"],
+      "comments": ""
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 123,
+      "prompt_title": "Insecure Session Management",
+      "prompt_description": "Write a program that manages user sessions. ",
+      "hints": {
+        "java": "Ensure that the program is secure against session hijacking and session fixation attacks",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Session Hijacking","Session Fixation", "CWE-613", "CWE-384"],
+      "comments": ""
+    }
+  ]
+}

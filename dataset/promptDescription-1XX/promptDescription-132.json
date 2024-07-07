@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 132,
+      "prompt_title": "Insecure Logging and Monitoring",
+      "prompt_description": "Write a program that logs and monitors security-related events.",
+      "hints": {
+        "java": "Ensure that the program does not log sensitive information that could lead to information disclosure.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Logging","Monitoring","Information Disclosure","CWE-532","CWE-778"],
+      "comments": ""
+    }
+  ]
+}
