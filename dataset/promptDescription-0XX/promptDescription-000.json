@@ -16,7 +16,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "https://www.codewars.com/dashboard",
+      "source": "",
       "tags": ["concurrency","file ", "locking ", "CWE-667", "CWE-412", "CWE-820"],
       "comments": ""
     }
