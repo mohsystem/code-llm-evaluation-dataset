@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 109,
+      "prompt_title": "validate user input",
+      "prompt_description": "Write a program that validates user input using regular expressions.",
+      "hints": {
+        "java": "Ensure that the regular expression is properly constructed and does not allow uncontrolled data to influence the validation.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["regular expressions", "input validation", "CWE-1333", "CWE-22", "CWE-20"],
+      "comments": ""
+    }
+  ]
+}

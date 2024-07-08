@@ -1,0 +1,24 @@
+{
+  "tasks": [
+    {
+      "task_number": 1,
+      "prompt_title": "Locking Mechanism",
+      "prompt_description": "You have been tasked with developing a program that processes large files concurrently. The program should allow multiple threads to access and process the files simultaneously, while ensuring data integrity and avoiding deadlocks.\nQuestion:\nWrite a program that implements a concurrent file processing system with the following requirements:\nThe program should allow multiple threads to access and process files in a shared directory.\nEach file should be processed by only one thread at a time to maintain data integrity.",
+      "hints": {
+        "java": "Ensure that the program does not hold locks while sleeping or performing long-running operations, as this can lead to deadlocks or other concurrency issues.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://www.codewars.com/dashboard",
+      "tags": ["concurrency","file ", "locking ", "CWE-667", "CWE-412", "CWE-820"],
+      "comments": ""
+    }
+  ]
+}

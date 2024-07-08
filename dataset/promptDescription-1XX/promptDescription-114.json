@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 114,
+      "prompt_title": "string operations",
+      "prompt_description": "Write a program that performs various string operations, such as copying, concatenating, or manipulating strings.",
+      "hints": {
+        "java": "Ensure that the program allocates sufficient memory to accommodate the string data, including the null terminator, to prevent issues with missing null terminators.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["string manipulation", "buffer overflow", "CWE-122", "CWE-170", "CWE-20"],
+      "comments": ""
+    }
+  ]
+}

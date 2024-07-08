@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 111,
+      "prompt_title": "implement an XML-RPC server",
+      "prompt_description": "Write a program that implements an XML-RPC server to handle client requests.",
+      "hints": {
+        "java": "Ensure that the program properly handles and validates the incoming XML-RPC requests to prevent denial of service attacks.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://codeql.github.com/codeql-query-help/python-cwe/",
+      "tags": ["XML-RPC", "input validation", "CWE-405", "CWE-400", "CWE-20"],
+      "comments": ""
+    }
+  ]
+}

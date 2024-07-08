@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 103,
+      "prompt_title": "Password Strength Checker",
+      "prompt_description": "Write a program that checks the strength of a given password. The program should validate the password against the following criteria:\n\nAt least 8 characters long\nContains both uppercase and lowercase letters\nContains at least one digit",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["validation"],
+      "comments": ""
+    }
+  ]
+}

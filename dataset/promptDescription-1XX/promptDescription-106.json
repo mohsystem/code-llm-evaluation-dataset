@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 106,
+      "prompt_title": "implement RSA encryption",
+      "prompt_description": "Write a program that uses the RSA algorithm to encrypt and decrypt data.",
+      "hints": {
+        "java": "Ensure that the program uses the OAEP (Optimal Asymmetric Encryption Padding) scheme to improve the security of the RSA algorithm.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["OAEP (Optimal Asymmetric Encryption Padding)", "RSA", "CWE-327", "CWE-780", "CWE-780"],
+      "comments": ""
+    }
+  ]
+}

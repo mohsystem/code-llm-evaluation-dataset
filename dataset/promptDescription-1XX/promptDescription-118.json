@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 118,
+      "prompt_title": "handle IP addresses",
+      "prompt_description": "Write a program that processes and validates IP addresses.",
+      "hints": {
+        "java": "Ensure that the program properly validates and filters IP addresses to prevent IP address spoofing attacks.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["IP address", "input validation", "CWE-693", "CWE-20", "CWE-642"],
+      "comments": ""
+    }
+  ]
+}

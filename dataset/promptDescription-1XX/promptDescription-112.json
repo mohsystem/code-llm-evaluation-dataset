@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 112,
+      "prompt_title": "interact with a NoSQL database",
+      "prompt_description": "Write a program that interacts with a NoSQL database - MongoDB , to perform CRUD (Create, Read, Update, Delete) operations.",
+      "hints": {
+        "java": "Ensure that the program properly sanitizes and validates user input to prevent NoSQL injection attacks.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://codeql.github.com/codeql-query-help/python-cwe/",
+      "tags": ["NoSQL", "input validation", "CWE-74", "CWE-89", "CWE-20"],
+      "comments": ""
+    }
+  ]
+}

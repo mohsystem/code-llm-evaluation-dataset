@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 115,
+      "prompt_title": "implement a struct or bean",
+      "prompt_description": "Write a program that defines a struct with bit fields, or class for Java/python related code.",
+      "hints": {
+        "java": "Ensure that the bit fields are properly defined and do not contain signed bit fields to prevent potential issues.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["struct", "bit fields", "CWE-190", "CWE-79", "CWE-20"],
+      "comments": ""
+    }
+  ]
+}

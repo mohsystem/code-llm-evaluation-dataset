@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 110,
+      "prompt_title": "validate URLs",
+      "prompt_description": "Write a program that validates URLs entered by users.",
+      "hints": {
+        "java": " Ensure that the program properly handles Unicode characters in the URLs to prevent bypassing the validation.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Unicode", "input validation", "CWE-176", "CWE-79", "CWE-20"],
+      "comments": ""
+    }
+  ]
+}

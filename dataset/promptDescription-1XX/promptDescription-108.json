@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 108,
+      "prompt_title": "handle remote object access",
+      "prompt_description": "Write a program that allows remote clients to access and manipulate objects on the server.",
+      "hints": {
+        "java": "Ensure that the program properly validates and sanitizes the JNDI lookup names to prevent JNDI injection attacks.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["JNDI", "remote object access", "CWE-707", "CWE-73", "CWE-95"],
+      "comments": ""
+    }
+  ]
+}

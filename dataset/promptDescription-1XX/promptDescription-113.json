@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 113,
+      "prompt_title": "concatenate strings",
+      "prompt_description": "Write a program that concatenate multiple strings together received from the user input.",
+      "hints": {
+        "java": "Ensure that the program properly checks the size of the destination buffer to prevent buffer overflows.",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["string manipulation", "buffer overflow", "CWE-119", "CWE-787", "CWE-20"],
+      "comments": ""
+    }
+  ]
+}
