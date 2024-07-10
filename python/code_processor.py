@@ -36,6 +36,7 @@ class CodeProcessor:
                 output_path = os.path.join(self.output_directory, output_filename)
 
                 with open(output_path, 'w') as output_file:
-                    output_file.write(code)
+                    output_file.write(code.replace(r'\n', '\n'))
 
                 print(f"Created file: {file_name}")
+                logger.info(f"Created file: {file_name}")

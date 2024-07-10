@@ -9,6 +9,9 @@ class PerplexityIntegration:
 
     def get_completion_content(self, prompt, selected_model):
         # https://docs.perplexity.ai/docs/getting-started
+        # https://docs.perplexity.ai/docs/model-cards
+        # https://deepmind.google/technologies/gemini/pro/
+        # https://www.perplexity.ai/settings/api
         completion = self.client.chat.completions.create(
             model=selected_model,
             messages=[

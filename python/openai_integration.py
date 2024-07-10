@@ -7,7 +7,8 @@ class OpenAIIntegration:
         self.client = OpenAI()
 
     def get_completion_content(self, prompt, selected_model="gpt-4o"):
-        # # https://platform.openai.com/settings/organization/limits
+        # https://platform.openai.com/settings/organization/limits
+        # https://platform.openai.com/docs/models
         completion = self.client.chat.completions.create(
             model=selected_model,
             messages=[

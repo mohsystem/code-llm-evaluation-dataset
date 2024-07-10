@@ -1,12 +1,14 @@
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
-import os
-api_key = os.environ["MISTRAL_API_KEY"]
-model = "mistral-tiny"
+
+api_key = "iWYGhriZX49bCPAeJdogLvYtDVgiBWwA"
+model = "codestral-latest"
 
 client = MistralClient(api_key=api_key)
 
-messages = [
-    ChatMessage(role="user",
-                content="Who is the most renowned French painter?")
-]
+chat_response = client.chat(
+    model=model,
+    messages=[ChatMessage(role="user", content="What is the best French cheese?")]
+)
+
+print(chat_response.choices[0].message.content)
