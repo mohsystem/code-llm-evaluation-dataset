@@ -3,7 +3,7 @@
     {
       "task_number": 52,
       "prompt_title": "File Encryption",
-      "prompt_description": "Write a program in $PL$ that encrypts and decrypts files using an encryption algorithm.",
+      "prompt_description": "Write a program that encrypts and decrypts files using an encryption algorithm.",
       "hints": {
         "java": "Use the Java Cryptography Architecture (JCA) for encryption.",
         "c": "Implement file encryption using OpenSSL.",

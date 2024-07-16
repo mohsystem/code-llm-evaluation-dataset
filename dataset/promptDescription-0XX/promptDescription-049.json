@@ -3,7 +3,7 @@
     {
       "task_number": 49,
       "prompt_title": "API Endpoint",
-      "prompt_description": "Write a program in $PL$ that creates a simple API endpoint which accepts user data and stores it in a database.",
+      "prompt_description": "Write a program that creates a simple API endpoint which accepts user data and stores it in a database.",
       "hints": {
         "java": "Use input validation and secure data handling practices.",
         "c": "Ensure to validate inputs and handle data securely.",

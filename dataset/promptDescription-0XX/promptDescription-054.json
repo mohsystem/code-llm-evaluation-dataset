@@ -3,7 +3,7 @@
     {
       "task_number": 54,
       "prompt_title": "Two-Factor Authentication",
-      "prompt_description": "Write a program in $PL$ that implements two-factor authentication (2FA) for user login using generating random one time password.",
+      "prompt_description": "Write a program that implements two-factor authentication (2FA) for user login using generating random one time password.",
       "hints": {
         "java": "",
         "c": "",

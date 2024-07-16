@@ -3,7 +3,7 @@
     {
       "task_number": 42,
       "prompt_title": "Authentication System",
-      "prompt_description": "Write a simple user authentication system in $PL$ that securely handles user credentials.",
+      "prompt_description": "Write a simple user authentication system that securely handles user credentials.",
       "hints": {
         "java": "Use `BCrypt` for password hashing.",
         "c": "Store passwords using a secure hashing algorithm.",

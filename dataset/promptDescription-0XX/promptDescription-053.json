@@ -3,7 +3,7 @@
     {
       "task_number": 53,
       "prompt_title": "Session Management",
-      "prompt_description": "Write a program in $PL$ that manages user sessions for a web application.",
+      "prompt_description": "Write a program that manages user sessions for a web application.",
       "hints": {
         "java": "Use secure cookies and manage session expiration.",
         "c": "Implement secure session tokens and expiration.",

@@ -3,7 +3,7 @@
     {
       "task_number": 43,
       "prompt_title": "Secure Session Management",
-      "prompt_description": "Write a web application in $PL$ that manages user sessions securely, including session creation, storage, and termination.",
+      "prompt_description": "Write a web application that manages user sessions securely, including session creation, storage, and termination.",
       "hints": {
         "java": "Use secure, HttpOnly cookies for session storage.",
         "c": "Ensure session tokens are random and securely stored.",

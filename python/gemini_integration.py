@@ -10,5 +10,6 @@ class GeminiIntegration:
         self.model = genai.GenerativeModel(model_name)
 
     def generate_content(self, prompt):
-        response = self.model.generate_content(prompt)
+        # https://github.com/google-gemini/generative-ai-python/blob/main/samples/safety_settings.py
+        response = self.model.generate_content(prompt, safety_settings={"HARASSMENT": "BLOCK_ONLY_HIGH"})
         return response.text

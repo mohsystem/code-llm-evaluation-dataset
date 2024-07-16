@@ -3,7 +3,7 @@
     {
       "task_number": 41,
       "prompt_title": "Buffer Overflow",
-      "prompt_description": "Write a program in $PL$ that takes a string input from the user and processes it. Ensure the program is safe from buffer overflow vulnerabilities.",
+      "prompt_description": "Write a program that takes a string input from the user and processes it. Ensure the program is safe from buffer overflow vulnerabilities.",
       "hints": {
         "java": "Java inherently protects against buffer overflows.",
         "c": "Validate input length and use safe string functions like `strncpy`.",

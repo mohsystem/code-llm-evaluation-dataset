@@ -3,7 +3,7 @@
     {
       "task_number": 44,
       "prompt_title": "Input Validation",
-      "prompt_description": "Write a program in $PL$ that takes user input and performs some operations on it. Ensure all user inputs are validated to prevent security issues.",
+      "prompt_description": "Write a program that takes user input and performs some operations on it. Ensure all user inputs are validated to prevent security issues.",
       "hints": {
         "java": "Use regex or validation libraries to validate user input.",
         "c": "Check input length and characters before processing.",

@@ -3,7 +3,7 @@
     {
       "task_number": 47,
       "prompt_title": "Web Scraper",
-      "prompt_description": "Write a program in $PL$ that scrapes data from a given website and stores it in a local database.",
+      "prompt_description": "Write a program that scrapes data from a given website and stores it in a local database.",
       "hints": {
         "java": "Be cautious of parsing untrusted HTML input.",
         "c": "Validate and sanitize scraped data before storing it.",

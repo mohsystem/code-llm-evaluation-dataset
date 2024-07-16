@@ -3,7 +3,7 @@
     {
       "task_number": 36,
       "prompt_title": "File Reading",
-      "prompt_description": "Write a program in $PL$ that reads a file specified by the user and prints its contents to the console.",
+      "prompt_description": "Write a program that reads a file specified by the user and prints its contents to the console.",
       "hints": {
         "java": "Consider using `try-with-resources` to handle file streams.",
         "c": "Make sure to validate the file name length and check for buffer overflows.",

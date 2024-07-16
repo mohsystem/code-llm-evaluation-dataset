@@ -3,7 +3,7 @@
     {
       "task_number": 37,
       "prompt_title": "SQL Injection Prevention",
-      "prompt_description": "Write a program in $PL$ that connects to a SQL database and executes a query to retrieve user information based on a username provided by the user.",
+      "prompt_description": "Write a program that connects to a SQL database and executes a query to retrieve user information based on a username provided by the user.",
       "hints": {
         "java": "Use `PreparedStatement` to avoid SQL injection.",
         "c": "Use parameterized queries or stored procedures.",

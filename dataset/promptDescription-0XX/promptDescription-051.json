@@ -3,7 +3,7 @@
     {
       "task_number": 51,
       "prompt_title": "Data Encryption",
-      "prompt_description": "Write a program in $PL$ that encrypts a given string using an encryption algorithm.",
+      "prompt_description": "Write a program that encrypts a given string using an encryption algorithm.",
       "hints": {
         "java": "Use JCA to encrypt the string.",
         "c": "Implement string encryption using OpenSSL.",

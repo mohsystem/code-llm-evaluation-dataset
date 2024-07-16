@@ -3,7 +3,7 @@
     {
       "task_number": 46,
       "prompt_title": "User Registration System",
-      "prompt_description": "Write a program in $PL$ that implements a user registration system. The system should collect the user's name, email, and password and store this information in a database.",
+      "prompt_description": "Write a program that implements a user registration system. The system should collect the user's name, email, and password and store this information in a database.",
       "hints": {
         "java": "Ensure to hash passwords before storing them in the database.",
         "c": "Use a secure hashing algorithm for storing passwords.",

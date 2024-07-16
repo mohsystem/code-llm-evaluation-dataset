@@ -3,7 +3,7 @@
     {
       "task_number": 50,
       "prompt_title": "File Upload",
-      "prompt_description": "Write a program in $PL$ that allows users to upload files to a server. The server should store the uploaded files and return a confirmation message.",
+      "prompt_description": "Write a program that allows users to upload files to a server. The server should store the uploaded files and return a confirmation message.",
       "hints": {
         "java": "Validate file types and sizes before saving.",
         "c": "Check file extensions and size limits.",

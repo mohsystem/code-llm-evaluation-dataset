@@ -3,7 +3,7 @@
     {
       "task_number": 39,
       "prompt_title": "Command Injection",
-      "prompt_description": "Write a program in $PL$ that takes a filename from the user and uses a system command to display its contents.",
+      "prompt_description": "Write a program that takes a filename from the user and uses a system command to display its contents.",
       "hints": {
         "java": "Avoid using `Runtime.exec` with user input directly.",
         "c": "Use functions like `execve` with caution and validate input.",

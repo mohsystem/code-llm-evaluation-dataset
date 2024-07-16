@@ -3,7 +3,7 @@
     {
       "task_number": 48,
       "prompt_title": "Chat Application",
-      "prompt_description": "Write a program in $PL$ that implements a simple chat application where multiple clients can send messages to a server, which then broadcasts the messages to all connected clients.",
+      "prompt_description": "Write a program that implements a simple chat application where multiple clients can send messages to a server, which then broadcasts the messages to all connected clients.",
       "hints": {
         "java": "Ensure to handle user input sanitization and network security.",
         "c": "Implement proper input validation and secure communication.",

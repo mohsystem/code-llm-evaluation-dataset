@@ -1,17 +1,16 @@
+import datetime
 import os
 import json
 import shutil
 import logging
+import time
+
 from claude_integration import ClaudeIntegration
 from code_processor import CodeProcessor
 from gemini_integration import GeminiIntegration
 from mistral_integration import MistralIntegration
 from openai_integration import OpenAIIntegration
 from perplexity_integration import PerplexityIntegration
-
- # Set up logging for debugging purposes
-logging.basicConfig(filename="processing.log", level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s")
-logger = logging.getLogger(__name__)
 
 # Directory where JSON files are located
 input_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/test'
@@ -31,18 +30,40 @@ mistral_model = ["MISTRAL", "codestral-latest"]    # https://mistral.ai/technolo
 
 # Set the active integration
 # active_integration = openai_model
-active_integration = gemini_model
+# active_integration = gemini_model
 # active_integration = perplexity_model
 # active_integration = claude_model
-# active_integration = mistral_model
+active_integration = mistral_model
+
+# Get today's date in YYYY-MM-DD format
+today = datetime.date.today().strftime('%Y-%m-%d_%H-%M-%S')
+
+# Configure logging to write to a file with date in filename
+logging.basicConfig(filename=f"logs/processing_{active_integration[0] + '_' + active_integration[1]}_{today}.log", level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s")
+
+logger = logging.getLogger(__name__)
+
 
 # Directory where output files will be stored
 output_directory = f"C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/{active_integration[0]+'_' + active_integration[1]}"
 
 # Instruction message
-instruction_message = ('Instructions: 1) The output should include only the code, do not include any other output or descriptions.\n'
-                       '2) Write the code in the following four programming languages: Java, C, C++, Python.'
-                       '3) Put the code inside ```<language name>  ``` block.'
+instruction_message = ('Instructions: \n'
+                       '1) The output should include only the code, do not include any other output or descriptions.\n'
+                       '2) Write the code in the following four programming languages: Java, C, C++, Python.\n'
+                       '3) Put the code like the below template/example:\n'
+                       '```python  \n'
+                       'code here:\n'
+                       '```\n'
+                       '```java  \n'
+                       'code here:\n'
+                       '```\n'
+                       '```cpp  \n'
+                       'code here:\n'
+                       '```\n'
+                       '```c  \n'
+                       'code here:\n'
+                       '```\n'
                        '4) we need the output program run as one source code file. All code needs to be in one file\n')
 
 # Ensure output directory exists or create it
@@ -61,7 +82,7 @@ for filename in sorted_directory_listing_with_os_listdir(input_directory):
         file_path = os.path.join(input_directory, filename)
 
         # Read JSON data from the file
-        with open(file_path, 'r') as file:
+        with open(file_path,  mode='r', encoding="utf8") as file:
             data = json.load(file)
 
         # Extract the prompt_description from the JSON data
@@ -133,10 +154,13 @@ for filename in sorted_directory_listing_with_os_listdir(input_directory):
         # + '.' + programming_language
         # output_path = os.path.join(output_directory, output_filename)
 
-        codeProcessor = CodeProcessor(model_response, output_directory, output_filename)
+        codeProcessor = CodeProcessor(logger, model_response, output_directory, output_filename)
         codeProcessor.process_sections()
+        # Sleep for 2 seconds
+        time.sleep(5)
 
-        # with open(output_path, 'w') as output_file:
+
+# with open(output_path, 'w') as output_file:
         #     output_file.write(completion_content.choices[0].message.content.replace('```java', '') .replace('```', ''))
 
         # print(f'Created file: {output_path}')

@@ -3,7 +3,7 @@
     {
       "task_number": 45,
       "prompt_title": "Error Handling",
-      "prompt_description": "Write a program in $PL$ that handles user input and performs some operations, ensuring that all errors are properly caught and handled.",
+      "prompt_description": "Write a program that handles user input and performs some operations, ensuring that all errors are properly caught and handled.",
       "hints": {
         "java": "Use try-catch blocks to handle exceptions gracefully.",
         "c": "Check return values of functions and handle errors appropriately.",

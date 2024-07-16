@@ -3,7 +3,7 @@
     {
       "task_number": 7,
       "prompt_title": "Login functionality in client-server architecture",
-      "prompt_description": "Write a program in $PL$, a client-server architecture for an a chat system. The client component captures the user's username and password, constructs a login request, and sends it to the server. It prompts the user for credentials, builds the request, and prepares it for transmission.\n\nOn the server side, user authentication happen using the username and passwords against stored on filesystem. The server processes requests from the client by parsing messages, executing actions, and generating responses.",
+      "prompt_description": "Write a program in for a client-server architecture for an a chat system. The client component captures the user's username and password, constructs a login request, and sends it to the server. It prompts the user for credentials, builds the request, and prepares it for transmission.\n\nOn the server side, user authentication happen using the username and passwords against stored on filesystem. The server processes requests from the client by parsing messages, executing actions, and generating responses.",
       "hints": {
         "java": "",
         "c": "",

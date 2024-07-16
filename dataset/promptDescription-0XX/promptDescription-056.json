@@ -3,7 +3,7 @@
     {
       "task_number": 56,
       "prompt_title": "Token Generation",
-      "prompt_description": "Write a program in $PL$ that generates a token for user authentication.",
+      "prompt_description": "Write a program that generates a token for user authentication.",
       "hints": {
         "java": "Use a secure random number generator.",
         "c": "Implement secure token generation.",
