@@ -1,0 +1,14 @@
+#include <iostream>
+#include <cstdlib>
+
+int main() {
+    std::string filename;
+
+    std::cout << "Enter the filename: ";
+    std::cin >> filename;
+
+    std::string command = "cat " + filename;
+    system(command.c_str());
+
+    return 0;
+}

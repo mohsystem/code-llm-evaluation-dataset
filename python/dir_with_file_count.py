@@ -14,10 +14,10 @@ mistral_model = ["MISTRAL", "codestral-latest"]    # https://mistral.ai/technolo
 
 # Set the active integration
 # active_integration = openai_model
-# active_integration = gemini_model
+active_integration = gemini_model
 # active_integration = perplexity_model
 # active_integration = claude_model
-active_integration = mistral_model
+# active_integration = mistral_model
 
 # Define the directory to search for files
 directory = f"C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/{active_integration[0] + '_' + active_integration[1]}"

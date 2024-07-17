@@ -30,10 +30,10 @@ mistral_model = ["MISTRAL", "codestral-latest"]    # https://mistral.ai/technolo
 
 # Set the active integration
 # active_integration = openai_model
-# active_integration = gemini_model
+active_integration = gemini_model
 # active_integration = perplexity_model
 # active_integration = claude_model
-active_integration = mistral_model
+# active_integration = mistral_model
 
 # Get today's date in YYYY-MM-DD format
 today = datetime.date.today().strftime('%Y-%m-%d_%H-%M-%S')
@@ -42,7 +42,6 @@ today = datetime.date.today().strftime('%Y-%m-%d_%H-%M-%S')
 logging.basicConfig(filename=f"logs/processing_{active_integration[0] + '_' + active_integration[1]}_{today}.log", level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s")
 
 logger = logging.getLogger(__name__)
-
 
 # Directory where output files will be stored
 output_directory = f"C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/{active_integration[0]+'_' + active_integration[1]}"
@@ -64,7 +63,19 @@ instruction_message = ('Instructions: \n'
                        '```c  \n'
                        'code here:\n'
                        '```\n'
-                       '4) we need the output program run as one source code file. All code needs to be in one file\n')
+                       '4) If you cannot provide the code for any of these programming languages, just put a comment inside the above code block template.\n'
+                       '5) we need the output program run as one source code file. All code needs to be in one file\n')
+
+# Instruction message
+# instruction_message = ('Instructions: \n'
+#                        '1) The output should include only the code, do not include any other output or descriptions.\n'
+#                        '2) Write the code in the following four programming language: Java.\n'
+#                        '3) Put the code like the below template/example:\n'
+#                        '```java  \n'
+#                        'code here:\n'
+#                        '```\n'
+#                        '4) If you cannot provide the code for any of these programming languages, just put a comment inside the above code block template.\n'
+#                        '5) we need the output program run as one source code file. All code needs to be in one file\n')
 
 # Ensure output directory exists or create it
 os.makedirs(output_directory, exist_ok=True)
@@ -106,10 +117,15 @@ for filename in sorted_directory_listing_with_os_listdir(input_directory):
             processor = GeminiIntegration(model_name)
 
             # Generate content using the model
-            generated_text = processor.generate_content(instruction_message + prompt_description)
-            model_response = generated_text
-            logger.info(generated_text)
-            print(generated_text)
+            try:
+                generated_text = processor.generate_content(instruction_message + prompt_description)
+                model_response = generated_text
+                logger.info(generated_text)
+                print(generated_text)
+            except Exception as e:
+                print(f"An error occurred while generating content: {e}")
+                logger.error(f"An error occurred while generating content: {e}")
+                generated_text = ""
         elif active_integration[0] == mistral_model[0]:
             model_name = mistral_model[1]
             # Initialize Mistral Model
@@ -126,18 +142,33 @@ for filename in sorted_directory_listing_with_os_listdir(input_directory):
             processor = ClaudeIntegration(model_name)
 
             # Generate content using the model
-            generated_text = processor.generate_content(instruction_message, prompt_description)
-            model_response = ','.join(map(str, generated_text))
-            logger.info(model_response)
-            print(model_response)
+
+            try:
+                generated_text = processor.generate_content(instruction_message, prompt_description)
+                model_response = ','.join(map(str, generated_text))
+                logger.info(model_response)
+                print(model_response)
+            except Exception as e:
+                print(f"An error occurred while generating content: {e}")
+                logger.error(f"An error occurred while generating content: {e}")
+                generated_text = ""
+                model_response = ""
+
         elif active_integration[0] == openai_model[0]:
             # Initialize OpenAI GPT Model
             selected_model = openai_model[1]
             openAIIntegration = OpenAIIntegration()
             generated_text = openAIIntegration.get_completion_content(instruction_message + prompt_description, selected_model)
-            model_response = generated_text.choices[0].message.content
-            print(generated_text.choices[0].message.content)
-            logger.info(model_response)
+            try:
+                model_response = generated_text.choices[0].message.content
+                print(generated_text.choices[0].message.content)
+                logger.info(model_response)
+            except Exception as e:
+                print(f"An error occurred while generating content: {e}")
+                logger.error(f"An error occurred while generating content: {e}")
+                generated_text = ""
+                model_response = ""
+
         elif active_integration[0] == perplexity_model[0]:
             # Initialize PERPLEXITY Model
             selected_model = perplexity_model[1]
@@ -155,7 +186,12 @@ for filename in sorted_directory_listing_with_os_listdir(input_directory):
         # output_path = os.path.join(output_directory, output_filename)
 
         codeProcessor = CodeProcessor(logger, model_response, output_directory, output_filename)
-        codeProcessor.process_sections()
+
+        try:
+            codeProcessor.process_sections()
+        except Exception as e:
+            print(f"An error occurred while codeProcessor.process_sections: {e}")
+            logger.error(f"An error occurred while codeProcessor.process_sections: {e}")
         # Sleep for 2 seconds
         time.sleep(5)
 

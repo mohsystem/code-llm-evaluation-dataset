@@ -15,10 +15,10 @@ mistral_model = ["MISTRAL", "codestral-latest"]    # https://mistral.ai/technolo
 
 # Set the active integration
 # active_integration = openai_model
-# active_integration = gemini_model
+active_integration = gemini_model
 # active_integration = perplexity_model
 # active_integration = claude_model
-active_integration = mistral_model
+# active_integration = mistral_model
 
 
 # Function to extract task numbers from filenames

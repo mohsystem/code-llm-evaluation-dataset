@@ -43,7 +43,7 @@ class CodeProcessor:
                 output_filename = f"{file_name}.{language}"
                 output_path = os.path.join(self.output_directory, output_filename)
 
-                with open(output_path, 'w') as output_file:
+                with open(output_path, 'w', encoding="utf-8") as output_file:
                     output_file.write(code.replace(r'\n', '\n'))
 
                 print(f"Created file: {file_name}")
