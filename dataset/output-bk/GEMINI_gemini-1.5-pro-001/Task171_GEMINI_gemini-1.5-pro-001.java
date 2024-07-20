@@ -1,51 +1,41 @@
 class Solution {
     public int reversePairs(int[] nums) {
-        return mergeSort(nums, 0, nums.length - 1);
-    }
-
-    private int mergeSort(int[] nums, int left, int right) {
-        if (left >= right) {
+        int n = nums.length;
+        if (n <= 1) {
             return 0;
         }
-
-        int mid = left + (right - left) / 2;
-        int count = mergeSort(nums, left, mid) + mergeSort(nums, mid + 1, right);
-
-        // Count reverse pairs across the two sorted halves
-        int j = mid + 1;
-        for (int i = left; i <= mid; i++) {
-            while (j <= right && (long) nums[i] > 2 * (long) nums[j]) {
-                j++;
-            }
-            count += (j - (mid + 1));
-        }
-
-        // Merge the two sorted halves
-        merge(nums, left, mid, right);
-
-        return count;
+        int mid = n / 2;
+        int[] left = Arrays.copyOfRange(nums, 0, mid);
+        int[] right = Arrays.copyOfRange(nums, mid, n);
+        return reversePairs(left) + reversePairs(right) + mergeAndCount(left, right);
     }
 
-    private void merge(int[] nums, int left, int mid, int right) {
-        int[] temp = new int[right - left + 1];
-        int i = left, j = mid + 1, k = 0;
-
-        while (i <= mid && j <= right) {
-            if (nums[i] <= nums[j]) {
-                temp[k++] = nums[i++];
+    private int mergeAndCount(int[] left, int[] right) {
+        int n1 = left.length;
+        int n2 = right.length;
+        int[] merged = new int[n1 + n2];
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        int count = 0;
+        while (i < n1 && j < n2) {
+            if (left[i] > 2 * right[j]) {
+                count += n1 - i;
+                j++;
             } else {
-                temp[k++] = nums[j++];
+                i++;
             }
         }
-
-        while (i <= mid) {
-            temp[k++] = nums[i++];
+        while (i < n1) {
+            merged[k] = left[i];
+            i++;
+            k++;
         }
-
-        while (j <= right) {
-            temp[k++] = nums[j++];
+        while (j < n2) {
+            merged[k] = right[j];
+            j++;
+            k++;
         }
-
-        System.arraycopy(temp, 0, nums, left, temp.length);
+        return count;
     }
 }

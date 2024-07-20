@@ -26,6 +26,12 @@ def update_class_name_in_file(file_path, new_class_name):
         old_class_name = match.group(1)
         # Replace old class name with new class name
         updated_content = content.replace(f'public class {old_class_name}', f'public class {new_class_name}')
+        updated_content = updated_content.replace(f'public {old_class_name}', f'public {new_class_name}')
+        updated_content = updated_content.replace(f' {old_class_name} ', f' {new_class_name} ')
+        updated_content = updated_content.replace(f' {old_class_name}(', f' {new_class_name}(')
+        updated_content = updated_content.replace(f' {old_class_name}.', f' {new_class_name}.')
+        updated_content = updated_content.replace(f'({old_class_name}.', f'({new_class_name}.')
+        updated_content = updated_content.replace(f'({old_class_name})', f'({new_class_name})')
 
         with open(file_path, 'w') as file:
             file.write(updated_content)
@@ -42,13 +48,18 @@ def rename_file(directory, old_file_name, new_file_name):
     return new_file_path
 
 # Directory containing the Java files
-directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/test2"  # Update this path
+directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/CLAUDE_claude-3-5-sonnet-20240620"  # Update this path
+# directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/test"  # Update this path
+# directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/GEMINI_gemini-1.5-pro-001"  # Update this path
+# directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/MISTRAL_codestral-latest"  # Update this path
+# directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/OPENAI_gpt-4o"  # Update this path
+# directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/PERPLEXITY_llama-3-sonar-large-32k-chat"  # Update this path
 
 # Process each Java file in the directory
 for file_name in os.listdir(directory):
     if file_name.endswith('.java'):
         file_path = os.path.join(directory, file_name)
-
+        print(file_name)
         # Generate the new class name
         new_class_name = clean_class_name(file_name)
 
@@ -59,6 +70,12 @@ for file_name in os.listdir(directory):
             # Rename the Java file
             new_file_name = f"{updated_class_name}.java"
             new_file_path = rename_file(directory, file_name, updated_class_name)
-
             print(f"Renamed class '{old_class_name}' to '{updated_class_name}' and file '{file_name}' to '{new_file_name}'")
+            # if updated_class_name is None,
+        else:
+            new_file_name = file_name
+        # move file to subdirectory and name the subdirectory with the same updated_class_name
 
+        new_directory = os.path.join(directory, file_name.split("_")[0].lower())
+        os.makedirs(new_directory, exist_ok=True)
+        os.rename(os.path.join(directory, new_file_name), os.path.join(new_directory, new_file_name))

@@ -8,50 +8,45 @@ import java.util.Random;
 public class BinarySearchTimer {
 
     public static void main(String[] args) {
-        // Generate a sorted array of random integers
+        // Generate a sorted array of 1 million random integers
         int[] array = generateSortedArray(1000000);
 
-        // Value to search for
-        int searchValue = 50000;
+        // Choose a random target value from the array
+        Random random = new Random();
+        int target = array[random.nextInt(array.length)];
 
-        // Measure execution time
+        // Start the timer
         long startTime = System.nanoTime();
-        int index = binarySearch(array, searchValue);
+
+        // Perform binary search
+        int index = binarySearch(array, target);
+
+        // Stop the timer
         long endTime = System.nanoTime();
 
         // Calculate execution time in milliseconds
-        double executionTimeMs = (endTime - startTime) / 1_000_000.0;
+        double executionTime = (endTime - startTime) / 1000000.0;
 
-        // Write execution time to temporary file
+        // Store execution time in a temporary file
         try {
-            String tempFileContent = "Binary search execution time: " + executionTimeMs + " ms
-";
-            Path tempFile = Files.createTempFile("binary-search-timer-", ".txt");
-            Files.writeString(tempFile, tempFileContent, StandardOpenOption.CREATE);
-            System.out.println("Execution time written to: " + tempFile.toAbsolutePath());
+            String output = "Binary search execution time: " + executionTime + " ms";
+            Files.writeString(Path.of("temp.txt"), output, StandardOpenOption.CREATE);
         } catch (IOException e) {
-            System.err.println("Error writing to temporary file: " + e.getMessage());
-        }
-
-        // Print result (optional)
-        if (index != -1) {
-            System.out.println("Element found at index: " + index);
-        } else {
-            System.out.println("Element not found in the array.");
+            System.err.println("Error writing to file: " + e.getMessage());
         }
     }
 
-    // Binary search implementation
-    private static int binarySearch(int[] array, int value) {
+    // Performs binary search on a sorted array
+    public static int binarySearch(int[] array, int target) {
         int left = 0;
         int right = array.length - 1;
 
         while (left <= right) {
             int mid = left + (right - left) / 2;
 
-            if (array[mid] == value) {
+            if (array[mid] == target) {
                 return mid;
-            } else if (array[mid] < value) {
+            } else if (array[mid] < target) {
                 left = mid + 1;
             } else {
                 right = mid - 1;
@@ -61,13 +56,15 @@ public class BinarySearchTimer {
         return -1;
     }
 
-    // Helper function to generate a sorted array of random integers
-    private static int[] generateSortedArray(int size) {
+    // Generates a sorted array of random integers
+    public static int[] generateSortedArray(int size) {
         Random random = new Random();
         int[] array = new int[size];
+
         for (int i = 0; i < size; i++) {
-            array[i] = random.nextInt(size * 10); // Adjust range as needed
+            array[i] = random.nextInt();
         }
+
         Arrays.sort(array);
         return array;
     }

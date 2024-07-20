@@ -1,6 +1,3 @@
-// This code requires compiling and running in a terminal, 
-// and a separate file needs to be provided as input. 
-// It's recommended to use Python for a simpler file upload simulation.
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -9,26 +6,24 @@ using namespace std;
 
 int main() {
     string filename;
-    cout << "Enter the filename (including extension): ";
+    string content;
+
+    cout << "Enter the file name to create: ";
     cin >> filename;
 
-    ifstream inputFile(filename, ios::binary);
-    ofstream outputFile("uploads/" + filename, ios::binary);
+    cout << "Enter the content to write to the file:
+";
+    getline(cin >> ws, content); // Read the entire line, including spaces
 
-    if (!inputFile.is_open() || !outputFile.is_open()) {
-        cerr << "Error opening file!" << endl;
-        return 1;
+    ofstream MyFile(filename);
+
+    if (MyFile.is_open()) {
+        MyFile << content;
+        MyFile.close();
+        cout << "File created and content written successfully!";
+    } else {
+        cout << "Unable to open file";
     }
-
-    char buffer[1024];
-    while (inputFile.read(buffer, sizeof(buffer))) {
-        outputFile.write(buffer, inputFile.gcount());
-    }
-
-    inputFile.close();
-    outputFile.close();
-
-    cout << "File uploaded successfully!" << endl;
 
     return 0;
 }

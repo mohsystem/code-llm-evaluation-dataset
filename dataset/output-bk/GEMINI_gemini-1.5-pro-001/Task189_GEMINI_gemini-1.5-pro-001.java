@@ -1,17 +1,13 @@
 import java.util.concurrent.Semaphore;
-import java.util.function.IntConsumer;
 
 class ZeroEvenOdd {
     private int n;
-    private Semaphore zeroSemaphore;
-    private Semaphore evenSemaphore;
-    private Semaphore oddSemaphore;
+    private Semaphore zeroSemaphore = new Semaphore(1);
+    private Semaphore evenSemaphore = new Semaphore(0);
+    private Semaphore oddSemaphore = new Semaphore(0);
 
     public ZeroEvenOdd(int n) {
         this.n = n;
-        this.zeroSemaphore = new Semaphore(1);
-        this.evenSemaphore = new Semaphore(0);
-        this.oddSemaphore = new Semaphore(0);
     }
 
     // printNumber.accept(x) outputs "x", where x is an integer.
@@ -41,38 +37,5 @@ class ZeroEvenOdd {
             printNumber.accept(i);
             zeroSemaphore.release();
         }
-    }
-
-    public static void main(String[] args) {
-        int n = 5; // Change this value to test with different inputs
-        ZeroEvenOdd zeroEvenOdd = new ZeroEvenOdd(n);
-
-        Thread threadA = new Thread(() -> {
-            try {
-                zeroEvenOdd.zero(System.out::print);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-
-        Thread threadB = new Thread(() -> {
-            try {
-                zeroEvenOdd.even(System.out::print);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-
-        Thread threadC = new Thread(() -> {
-            try {
-                zeroEvenOdd.odd(System.out::print);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-
-        threadA.start();
-        threadB.start();
-        threadC.start();
     }
 }

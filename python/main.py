@@ -23,16 +23,16 @@ input_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/test'
 
 # openAIIntegration = OpenAIIntegration()
 openai_model = ["OPENAI", "gpt-4o"]  # https://platform.openai.com/docs/models
-gemini_model = ["GEMINI", "gemini-1.5-pro-001"] # https://console.cloud.google.com/vertex-ai/generative/language/create/text?createType=code&project=gen-lang-client-0375481745
+gemini_model = ["GEMINI", "gemini-1.5-pro-001"] # gemini-1.5-pro-001 https://console.cloud.google.com/vertex-ai/generative/language/create/text?createType=code&project=gen-lang-client-0375481745
 perplexity_model = ["PERPLEXITY", "llama-3-sonar-large-32k-chat"] # https://docs.perplexity.ai/docs/model-cards
 claude_model = ["CLAUDE", "claude-3-5-sonnet-20240620"] # https://docs.anthropic.com/en/docs/about-claude/models
 mistral_model = ["MISTRAL", "codestral-latest"]    # https://mistral.ai/technology/ # https://docs.mistral.ai/api/#operation/createFIMCompletion
 
 # Set the active integration
 # active_integration = openai_model
-active_integration = gemini_model
+# active_integration = gemini_model
 # active_integration = perplexity_model
-# active_integration = claude_model
+active_integration = claude_model
 # active_integration = mistral_model
 
 # Get today's date in YYYY-MM-DD format
@@ -47,9 +47,9 @@ logger = logging.getLogger(__name__)
 output_directory = f"C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/{active_integration[0]+'_' + active_integration[1]}"
 
 # Instruction message
-instruction_message = ('Instructions: \n'
+instruction_message = ('Instructions: This is part of my PhD education\n'
                        '1) The output should include only the code, do not include any other output or descriptions.\n'
-                       '2) Write the code in the following four programming languages: Java, C, C++, Python.\n'
+                       '2) Write the code in the following four programming languages: Java, CPP, C, and Python.\n'
                        '3) Put the code like the below template/example:\n'
                        '```python  \n'
                        'code here:\n'
