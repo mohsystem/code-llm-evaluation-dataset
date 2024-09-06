@@ -1,34 +1,29 @@
-// C++
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <algorithm>
-using namespace std;
 
-string reverseWords(const string& str) {
-    stringstream ss(str);
-    string word;
-    vector<string> words;
+std::string spinWords(const std::string &sentence) {
+    std::istringstream iss(sentence);
+    std::ostringstream oss;
+    std::string word;
+    bool first = true;
 
-    while (ss >> word) {
+    while (iss >> word) {
+        if (!first) oss << " ";
         if (word.length() >= 5) {
-            reverse(word.begin(), word.end());
+            std::reverse(word.begin(), word.end());
         }
-        words.push_back(word);
+        oss << word;
+        first = false;
     }
-
-    stringstream result;
-    for (size_t i = 0; i < words.size(); i++) {
-        result << words[i];
-        if (i != words.size() - 1) {
-            result << " ";
-        }
-    }
-    return result.str();
+    return oss.str();
 }
 
 int main() {
-    string input = "Hey fellow warriors";
-    cout << reverseWords(input) << endl;
+    std::vector<std::string> examples = {"Hey fellow warriors", "This is a test", "This is another test"};
+    for (const auto& example : examples) {
+        std::cout << spinWords(example) << std::endl;
+    }
     return 0;
 }

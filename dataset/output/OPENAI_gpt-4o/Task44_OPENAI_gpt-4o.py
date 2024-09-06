@@ -1,9 +1,12 @@
-def perform_operation(input_value):
+while True:
+    user_input = input("Enter a number: ")
     try:
-        return int(input_value) * 2
+        number = int(user_input)
+        break
     except ValueError:
-        return "Invalid input from Python."
+        print("Invalid input. Please enter a number.")
 
-user_input = input("Enter an integer: ")
-result = perform_operation(user_input)
-print(f"The result from Python operation is: {result}")
+print("You entered:", number)
+
+squared = number * number
+print("Square of the number:", squared)

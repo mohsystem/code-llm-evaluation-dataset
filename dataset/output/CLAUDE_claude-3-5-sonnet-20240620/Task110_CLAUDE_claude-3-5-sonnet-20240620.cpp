@@ -1,20 +1,26 @@
 
 #include <iostream>
-#include <regex>
 #include <string>
+#include <regex>
+
+bool isValidURL(const std::string& url) {
+    const std::regex urlRegex(R"(^(https?|ftp)://[^\\s/$.?#].[^\\s]*$)", std::regex::icase);
+    return std::regex_match(url, urlRegex);
+}
 
 int main() {
     std::string url;
-    std::cout << "Enter a URL: ";
-    std::getline(std::cin, url);
-
-    std::regex url_regex("^(https?://)?([\\\\w.-]+)\\\\.([a-z]{2,6})(:[0-9]+)?([/\\\\w .-]*)*/?$");
-
-    if (std::regex_match(url, url_regex)) {
-        std::cout << "Valid URL" << std::endl;
-    } else {
-        std::cout << "Invalid URL" << std::endl;
+    while (true) {
+        std::cout << "Enter a URL (or 'quit' to exit): ";
+        std::getline(std::cin, url);
+        if (url == "quit") {
+            break;
+        }
+        if (isValidURL(url)) {
+            std::cout << "Valid URL" << std::endl;
+        } else {
+            std::cout << "Invalid URL" << std::endl;
+        }
     }
-
     return 0;
 }

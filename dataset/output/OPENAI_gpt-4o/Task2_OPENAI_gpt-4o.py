@@ -1,5 +1,4 @@
-def create_phone_number(numbers):
-    return "({}{}{}) {}{}{}-{}{}{}{}".format(*numbers)
+def create_phone_number(n):
+    return "({}{}{}) {}{}{}-{}{}{}{}".format(*n)
 
-numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
-print(create_phone_number(numbers))
+print(create_phone_number([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]))

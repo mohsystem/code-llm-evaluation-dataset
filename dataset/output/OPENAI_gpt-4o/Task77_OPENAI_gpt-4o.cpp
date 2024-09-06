@@ -1,50 +1,37 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <cstdlib>
-#include <libftp.h>
+#include <curl/curl.h>
 
-void downloadFile(const std::string& server, const std::string& user, const std::string& pass, const std::string& remoteFile) {
-    ftp_client client;
-
-    if (ftp_connect(&client, server.c_str(), 21) != 0) {
-        std::cerr << "Unable to connect to server." << std::endl;
-        return;
-    }
-
-    if (ftp_login(&client, user.c_str(), pass.c_str()) != 0) {
-        std::cerr << "Login failed." << std::endl;
-        return;
-    }
-
-    std::string localFile = "./" + remoteFile.substr(remoteFile.find_last_of('/') + 1);
-    std::ofstream outFile(localFile, std::ios::binary);
-    if (!outFile.is_open()) {
-        std::cerr << "Unable to open file for writing." << std::endl;
-        return;
-    }
-
-    if (ftp_retrieve(&client, remoteFile.c_str(), outFile) != 0) {
-        std::cerr << "File download failed." << std::endl;
-    } else {
-        std::cout << "File has been downloaded successfully." << std::endl;
-    }
-
-    outFile.close();
-    ftp_disconnect(&client);
+size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+    size_t written = fwrite(ptr, size, nmemb, stream);
+    return written;
 }
 
-int main(int argc, char** argv) {
-    if (argc < 5) {
-        std::cerr << "Usage: " << argv[0] << " <hostname> <username> <password> <remoteFilePath>" << std::endl;
-        return 1;
+int main(int argc, char *argv[]) {
+    const char *hostname = argv[1];
+    const char *username = argv[2];
+    const char *password = argv[3];
+    const char *filename = argv[4];
+    
+    CURL *curl;
+    CURLcode res;
+    FILE *fp;
+
+    std::string ftp_url = "ftp://" + std::string(hostname) + "/" + std::string(filename);
+
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+    if(curl) {
+        fp = fopen(filename, "wb");
+        curl_easy_setopt(curl, CURLOPT_URL, ftp_url.c_str());
+        curl_easy_setopt(curl, CURLOPT_USERPWD, (std::string(username) + ":" + std::string(password)).c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        fclose(fp);
     }
-
-    std::string host = argv[1];
-    std::string user = argv[2];
-    std::string pass = argv[3];
-    std::string remoteFile = argv[4];
-
-    downloadFile(host, user, pass, remoteFile);
+    curl_global_cleanup();
     return 0;
 }

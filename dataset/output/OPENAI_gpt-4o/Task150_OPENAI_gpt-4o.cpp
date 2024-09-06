@@ -5,10 +5,7 @@ public:
     int data;
     Node* next;
 
-    Node(int data) {
-        this->data = data;
-        this->next = nullptr;
-    }
+    Node(int data) : data(data), next(nullptr) {}
 };
 
 class SinglyLinkedList {
@@ -16,64 +13,49 @@ private:
     Node* head;
 
 public:
-    SinglyLinkedList() {
-        head = nullptr;
-    }
+    SinglyLinkedList() : head(nullptr) {}
 
     void insert(int data) {
         Node* newNode = new Node(data);
-        if (head == nullptr) {
+        if (!head) {
             head = newNode;
         } else {
             Node* current = head;
-            while (current->next != nullptr) {
+            while (current->next) {
                 current = current->next;
             }
             current->next = newNode;
         }
     }
 
-    void deleteNode(int key) {
+    bool deleteNode(int data) {
         Node* current = head;
         Node* prev = nullptr;
-
-        while (current != nullptr && current->data != key) {
+        while (current && current->data != data) {
             prev = current;
             current = current->next;
         }
-
-        if (current == nullptr) {
-            return;
+        if (!current) {
+            return false;
         }
-
-        if (prev == nullptr) {
+        if (!prev) {
             head = current->next;
         } else {
             prev->next = current->next;
         }
-
         delete current;
+        return true;
     }
 
-    bool search(int key) {
+    bool search(int data) {
         Node* current = head;
-        while (current != nullptr) {
-            if (current->data == key) {
+        while (current) {
+            if (current->data == data) {
                 return true;
             }
             current = current->next;
         }
         return false;
-    }
-
-    void display() {
-        Node* current = head;
-        std::cout << "LinkedList: ";
-        while (current != nullptr) {
-            std::cout << current->data << " ";
-            current = current->next;
-        }
-        std::cout << std::endl;
     }
 };
 
@@ -82,10 +64,8 @@ int main() {
     sll.insert(1);
     sll.insert(2);
     sll.insert(3);
-    sll.display();
+    std::cout << sll.search(2) << std::endl;  // 1 (true)
     sll.deleteNode(2);
-    sll.display();
-    std::cout << std::boolalpha << sll.search(3) << std::endl;
-    std::cout << sll.search(2) << std::endl;
+    std::cout << sll.search(2) << std::endl;  // 0 (false)
     return 0;
 }

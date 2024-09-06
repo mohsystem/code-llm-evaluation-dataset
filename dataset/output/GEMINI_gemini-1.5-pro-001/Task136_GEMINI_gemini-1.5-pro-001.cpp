@@ -1,26 +1,31 @@
 #include <iostream>
 #include <string>
+#include <unordered_map>
 
 using namespace std;
 
-bool authenticate(const string& username, const string& password) {
-    // Check if the provided username and password match a predefined set
-    string validUsername = "user";
-    string validPassword = "password";
-    return username == validUsername && password == validPassword;
+bool authenticate(const string& username, const string& password, 
+                 const unordered_map<string, string>& database) {
+    if (database.count(username) && database.at(username) == password) {
+        return true;
+    }
+    return false;
 }
 
 int main() {
-    // Get user credentials
+    unordered_map<string, string> userDatabase = {
+        {"user1", "password123"},
+        {"john_doe", "securepassword"}
+    };
+
     string username, password;
     cout << "Username: ";
     cin >> username;
     cout << "Password: ";
     cin >> password;
 
-    // Authenticate user
-    if (authenticate(username, password)) {
-        cout << "Authentication successful. Welcome!" << endl;
+    if (authenticate(username, password, userDatabase)) {
+        cout << "Authentication successful. Welcome, " << username << "!" << endl;
     } else {
         cout << "Authentication failed. Invalid username or password." << endl;
     }

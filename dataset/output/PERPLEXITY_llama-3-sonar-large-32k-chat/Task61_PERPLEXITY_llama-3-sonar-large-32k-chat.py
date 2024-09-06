@@ -1,9 +1,8 @@
 import xml.etree.ElementTree as ET
 
-def main():
-    xml_string = "<root><person><name>John</name><age>30</age></person></root>"
+def get_root_element(xml_string):
     root = ET.fromstring(xml_string)
-    print("Root Element:", root.tag)
+    return root.tag
 
-if __name__ == "__main__":
-    main()
+xml_string = "<root><person><name>John</name><age>30</age></person></root>"
+print(get_root_element(xml_string))

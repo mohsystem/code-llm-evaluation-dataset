@@ -4,21 +4,18 @@ def deserialize(data):
   """Deserializes the given data.
 
   Args:
-    data: A string containing the data to deserialize.
+    data: A string representing the data to deserialize.
 
   Returns:
     The deserialized data.
   """
+  return json.loads(data)
 
-  try:
-    return json.loads(data)
-  except json.JSONDecodeError:
-    print("Error: Invalid JSON data.")
-    return None
+# Get the data to deserialize from the user.
+data = input("Enter the data to deserialize: ")
 
-if __name__ == "__main__":
-  user_data = input("Enter the data to deserialize: ")
-  deserialized_data = deserialize(user_data)
+# Deserialize the data.
+deserialized_data = deserialize(data)
 
-  if deserialized_data is not None:
-    print("Deserialized data:", deserialized_data)
+# Print the deserialized data.
+print(deserialized_data)

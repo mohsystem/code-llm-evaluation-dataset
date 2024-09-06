@@ -11,10 +11,10 @@ class SinglyLinkedList:
         if not self.head:
             self.head = Node(data)
         else:
-            cur = self.head
-            while cur.next:
-                cur = cur.next
-            cur.next = Node(data)
+            current = self.head
+            while current.next:
+                current = current.next
+            current.next = Node(data)
 
     def delete(self, data):
         if self.head is None:
@@ -22,17 +22,17 @@ class SinglyLinkedList:
         if self.head.data == data:
             self.head = self.head.next
             return
-        cur = self.head
-        while cur.next:
-            if cur.next.data == data:
-                cur.next = cur.next.next
+        current = self.head
+        while current.next:
+            if current.next.data == data:
+                current.next = current.next.next
                 return
-            cur = cur.next
+            current = current.next
 
     def search(self, data):
-        cur = self.head
-        while cur:
-            if cur.data == data:
+        current = self.head
+        while current:
+            if current.data == data:
                 return True
-            cur = cur.next
+            current = current.next
         return False

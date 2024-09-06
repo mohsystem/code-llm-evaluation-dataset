@@ -4,7 +4,7 @@ import ctypes
 # Allocate memory
 ptr = ctypes.create_string_buffer(10)
 
-# Use the allocated memory
+# Use the memory
 ptr.value = b"Hello"
 print(ptr.value)
 

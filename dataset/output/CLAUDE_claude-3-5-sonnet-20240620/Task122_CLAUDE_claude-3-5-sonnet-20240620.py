@@ -1,21 +1,22 @@
 
 import hashlib
-import json
+import os
 
-passwords = {}
+def hash_password(password):
+    salt = os.urandom(32)
+    key = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
+    return salt + key
 
 def signup():
     username = input("Enter username: ")
     password = input("Enter password: ")
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    passwords[username] = hashed_password
-    with open(\'passwords.json\', \'w\') as f:
-        json.dump(passwords, f)
+    
+    hashed_password = hash_password(password)
+    
+    with open("passwords.txt", "ab") as file:
+        file.write(username.encode('utf-8') + b":" + hashed_password + b"\\n")
+    
     print("Signup successful!")
 
-while True:
+if __name__ == "__main__":
     signup()
-    if input("Do you want to add another user? (y/n): ").lower() != \'y\':
-        break
-
-print("Final password dictionary:", passwords)

@@ -1,31 +1,18 @@
-import mysql.connector
+import sqlite3
 import sys
 
-def main(username):
-    conn = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="password",
-        database="yourdb"
-    )
+def get_customer_info(username):
+    conn = sqlite3.connect('your_database.db')
     cursor = conn.cursor()
-    query = "SELECT * FROM customer WHERE username = %s"
-    cursor.execute(query, (username,))
-    result = cursor.fetchone()
-
-    if result:
-        print(f"ID: {result[0]}")
-        print(f"Username: {result[1]}")
-        print(f"Name: {result[2]}")
-        print(f"Email: {result[3]}")
-    else:
-        print("No customer found with that username.")
-
-    cursor.close()
+    cursor.execute("SELECT * FROM customer WHERE username = ?", (username,))
+    customer = cursor.fetchone()
     conn.close()
+    return customer
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python script.py <customerusername>")
-    else:
-        main(sys.argv[1])
+        sys.exit(1)
+    customer_username = sys.argv[1]
+    customer_info = get_customer_info(customer_username)
+    print(customer_info)

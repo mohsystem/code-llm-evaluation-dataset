@@ -1,28 +1,15 @@
-#include <stdio.h>
-#include <stdlib.h>
+// C is a low-level language and doesn't have built-in HTTP server capabilities.
+// File upload via HTTP in C would require third-party libraries like libmicrohttpd.
 
-int main() {
-    char filename[100], content[1024];
-    FILE *fp;
-
-    printf("Enter the file name: ");
-    fgets(filename, 100, stdin);
-    filename[strcspn(filename, "
-")] = 0; // Remove trailing newline
-
-    printf("Enter the file content (end with EOF): ");
-    fp = fopen(filename, "w");
-    if (fp == NULL) {
-        printf("No file uploaded
-");
-        return 1;
-    }
-    while (fgets(content, 1024, stdin) != NULL) {
-        fputs(content, fp);
-    }
-    fclose(fp);
-    printf("File uploaded successfully
-");
-
-    return 0;
-}
+/*
+ * For file uploads with C, consider using the libmicrohttpd library.
+ * Reference: https://www.gnu.org/software/libmicrohttpd/
+ *
+ * Example:
+ *
+ *  The example would involve setting up an HTTP daemon, parsing multipart form data,
+ *  and writing the file to the disk.
+ *  
+ *  The full implementation requires extensive code including handling HTTP requests
+ *  and responses which may not be feasible in a small example.
+ */

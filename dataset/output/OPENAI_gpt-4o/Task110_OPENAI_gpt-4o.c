@@ -1,43 +1,27 @@
 #include <stdio.h>
-#include <string.h>
+#include <stdbool.h>
 #include <regex.h>
 
-int isValidURL(const char *url) {
+bool validateURL(const char *url) {
     regex_t regex;
-    int reti;
-    char msgbuf[100];
+    const char *pattern = "^(http|https|ftp)://([^\\s/$.?#].[^\\s]*)$";
+    if (regcomp(&regex, pattern, REG_EXTENDED | REG_ICASE) != 0)
+        return false;
 
-    reti = regcomp(&regex, "^(http|https|ftp)://[^\\s/$.?#].[^\\s]*$", REG_EXTENDED);
-    if (reti) {
-        fprintf(stderr, "Could not compile regex\n");
-        return 0;
-    }
-
-    reti = regexec(&regex, url, 0, NULL, 0);
-    if (!reti) {
-        regfree(&regex);
-        return 1;
-    } else if (reti == REG_NOMATCH) {
-        regfree(&regex);
-        return 0;
-    } else {
-        regerror(reti, &regex, msgbuf, sizeof(msgbuf));
-        fprintf(stderr, "Regex match failed: %s\n", msgbuf);
-        regfree(&regex);
-        return 0;
-    }
+    int reti = regexec(&regex, url, 0, NULL, 0);
+    regfree(&regex);
+    return reti == 0;
 }
 
 int main() {
-    const char *urls[] = {
-        "http://example.com",
-        "https://example.com",
-        "ftp://example.com",
-        "invalidurl.com"
-    };
+    char userURL[256];
+    printf("Enter URL: ");
+    scanf("%s", userURL);
 
-    for (int i = 0; i < 4; i++) {
-        printf("%s is %s\n", urls[i], isValidURL(urls[i]) ? "valid" : "invalid");
+    if (validateURL(userURL)) {
+        printf("Valid URL\n");
+    } else {
+        printf("Invalid URL\n");
     }
 
     return 0;

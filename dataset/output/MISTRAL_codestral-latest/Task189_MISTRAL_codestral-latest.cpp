@@ -4,43 +4,43 @@
 class ZeroEvenOdd {
 private:
     int n;
-    sem_t zeroSem;
-    sem_t evenSem;
-    sem_t oddSem;
+    sem_t zeroSemaphore;
+    sem_t evenSemaphore;
+    sem_t oddSemaphore;
 
 public:
     ZeroEvenOdd(int n) {
         this->n = n;
-        sem_init(&zeroSem, 0, 1);
-        sem_init(&evenSem, 0, 0);
-        sem_init(&oddSem, 0, 0);
+        sem_init(&zeroSemaphore, 0, 1);
+        sem_init(&evenSemaphore, 0, 0);
+        sem_init(&oddSemaphore, 0, 0);
     }
 
-    void zero(function<void(int)> printNumber) {
+    void zero(std::function<void(int)> printNumber) {
         for (int i = 0; i < n; i++) {
-            sem_wait(&zeroSem);
+            sem_wait(&zeroSemaphore);
             printNumber(0);
             if (i % 2 == 0) {
-                sem_post(&oddSem);
+                sem_post(&oddSemaphore);
             } else {
-                sem_post(&evenSem);
+                sem_post(&evenSemaphore);
             }
         }
     }
 
-    void even(function<void(int)> printNumber) {
+    void even(std::function<void(int)> printNumber) {
         for (int i = 2; i <= n; i += 2) {
-            sem_wait(&evenSem);
+            sem_wait(&evenSemaphore);
             printNumber(i);
-            sem_post(&zeroSem);
+            sem_post(&zeroSemaphore);
         }
     }
 
-    void odd(function<void(int)> printNumber) {
+    void odd(std::function<void(int)> printNumber) {
         for (int i = 1; i <= n; i += 2) {
-            sem_wait(&oddSem);
+            sem_wait(&oddSemaphore);
             printNumber(i);
-            sem_post(&zeroSem);
+            sem_post(&zeroSemaphore);
         }
     }
 };

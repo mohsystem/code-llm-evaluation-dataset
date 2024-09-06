@@ -1,16 +1,9 @@
-#include <iostream>
 #include <vector>
 
-int peopleOnBus(std::vector<std::pair<int, int>>& stops) {
-    int people = 0;
-    for (auto& stop : stops) {
-        people += stop.first - stop.second;
+int number_of_people_still_on_bus(std::vector<std::pair<int, int>> lst) {
+    int people_on_bus = 0;
+    for (auto pair : lst) {
+        people_on_bus += pair.first - pair.second;
     }
-    return people;
-}
-
-int main() {
-    std::vector<std::pair<int, int>> stops = {{10, 0}, {3, 5}, {5, 8}};
-    std::cout << peopleOnBus(stops) << std::endl;
-    return 0;
+    return people_on_bus;
 }

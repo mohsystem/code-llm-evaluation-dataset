@@ -1,37 +1,18 @@
-import sqlite3
+products = {
+    "001": {"name": "Apple", "price": 1.00, "stock": 100},
+    "002": {"name": "Banana", "price": 0.50, "stock": 50},
+    "003": {"name": "Orange", "price": 1.20, "stock": 75},
+}
 
-conn = sqlite3.connect('mydatabase.db')
-cursor = conn.cursor()
-
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS products (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL,
-        description TEXT,
-        price REAL
-    )
-''')
-
-cursor.execute("INSERT INTO products (name, description, price) VALUES (?, ?, ?)", ('Apple', 'A sweet red fruit', 1.00))
-cursor.execute("INSERT INTO products (name, description, price) VALUES (?, ?, ?)", ('Banana', 'A yellow curved fruit', 0.50))
-cursor.execute("INSERT INTO products (name, description, price) VALUES (?, ?, ?)", ('Milk', 'A white dairy drink', 2.50))
-conn.commit()
+def get_product_details(product_id):
+    product = products.get(product_id)
+    if product:
+        return f"Product Name: {product['name']}\nPrice: ${product['price']:.2f}\nStock: {product['stock']}"
+    else:
+        return "Product not found."
 
 while True:
-    product_name = input("Enter a product name (or 'quit' to exit): ")
-    if product_name == 'quit':
+    product_id = input("Enter product ID (or 'q' to quit): ")
+    if product_id == 'q':
         break
-
-    cursor.execute("SELECT * FROM products WHERE name=?", (product_name,))
-    product = cursor.fetchone()
-
-    if product:
-        print("Product details:")
-        print(f"  ID: {product[0]}")
-        print(f"  Name: {product[1]}")
-        print(f"  Description: {product[2]}")
-        print(f"  Price: {product[3]}")
-    else:
-        print(f"Product '{product_name}' not found.")
-
-conn.close()
+    print(get_product_details(product_id))

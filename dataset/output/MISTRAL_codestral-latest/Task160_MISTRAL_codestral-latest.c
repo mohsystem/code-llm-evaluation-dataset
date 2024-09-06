@@ -1,23 +1,21 @@
+/* C code to make an HTTP request to a URL */
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <curl/curl.h>
 
 size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp) {
     size_t realsize = size * nmemb;
-    fwrite(contents, size, nmemb, stdout);
+    printf("%s", (char *)contents);
     return realsize;
 }
 
 int main() {
-    char url[256];
-    printf("Enter a URL: ");
-    fgets(url, sizeof(url), stdin);
-    url[strcspn(url, "
-")] = 0;
-
     CURL *curl;
     CURLcode res;
+    char url[100];
+
+    printf("Enter a URL: ");
+    fgets(url, 100, stdin);
+    url[strcspn(url, "\n")] = 0; // remove trailing newline
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
     curl = curl_easy_init();
@@ -28,12 +26,12 @@ int main() {
         res = curl_easy_perform(curl);
 
         if(res != CURLE_OK)
-            fprintf(stderr, "curl_easy_perform() failed: %s
-", curl_easy_strerror(res));
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
 
         curl_easy_cleanup(curl);
     }
 
     curl_global_cleanup();
+
     return 0;
 }

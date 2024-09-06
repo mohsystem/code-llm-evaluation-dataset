@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 90,
+      "prompt_title": "Chat Server Program",
+      "prompt_description": "Write a program that runs as a server-side program for a chat application that allows multiple clients to connect to it on a specified port and send messages.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Chat Application", "CWE-770", "Server Programming"],
+      "comments": ""
+    }
+  ]
+}

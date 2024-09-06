@@ -1,71 +1,35 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include <curl/curl.h>
 
-#define BUFFER_SIZE 1024
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp) {
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
 
 int main(int argc, char *argv[]) {
-    std::string hostname = argv[1];
-    std::string username = argv[2];
-    std::string password = argv[3];
-    std::string filename = argv[4];
+    CURL *curl;
+    CURLcode res;
+    std::string readBuffer;
 
-    int sockfd, connfd;
-    struct sockaddr_in servaddr;
-
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) {
-        std::cerr << "socket creation failed" << std::endl;
-        exit(1);
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+    if(curl) {
+        std::string url = "ftp://" + std::string(argv[1]) + ":" + std::string(argv[2]) + "@" + std::string(argv[3]) + "/" + std::string(argv[4]);
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK) {
+            std::cerr << "cURL error: " << curl_easy_strerror(res) << std::endl;
+        } else {
+            std::ofstream file(argv[4]);
+            file << readBuffer;
+            file.close();
+        }
+        curl_easy_cleanup(curl);
     }
-
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(21);
-    inet_pton(AF_INET, hostname.c_str(), &(servaddr.sin_addr));
-
-    if (connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
-        std::cerr << "connection failed" << std::endl;
-        exit(1);
-    }
-
-    char buffer[BUFFER_SIZE];
-    recv(sockfd, buffer, BUFFER_SIZE, 0);
-    std::cout << buffer << std::endl;
-
-    std::string cmd;
-    cmd = "USER " + username + "\r
-";
-    send(sockfd, cmd.c_str(), cmd.length(), 0);
-    recv(sockfd, buffer, BUFFER_SIZE, 0);
-    std::cout << buffer << std::endl;
-
-    cmd = "PASS " + password + "\r
-";
-    send(sockfd, cmd.c_str(), cmd.length(), 0);
-    recv(sockfd, buffer, BUFFER_SIZE, 0);
-    std::cout << buffer << std::endl;
-
-    cmd = "RETR " + filename + "\r
-";
-    send(sockfd, cmd.c_str(), cmd.length(), 0);
-    recv(sockfd, buffer, BUFFER_SIZE, 0);
-    std::cout << buffer << std::endl;
-
-    std::ofstream fp(filename, std::ios::binary);
-    if (!fp) {
-        std::cerr << "file open failed" << std::endl;
-        exit(1);
-    }
-
-    while (recv(sockfd, buffer, BUFFER_SIZE, 0) > 0) {
-        fp.write(buffer, strlen(buffer));
-    }
-
-    fp.close();
-    close(sockfd);
-
+    curl_global_cleanup();
     return 0;
 }

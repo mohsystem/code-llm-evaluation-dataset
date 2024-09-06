@@ -3,6 +3,9 @@ class Queue:
     def __init__(self):
         self.items = []
 
+    def is_empty(self):
+        return len(self.items) == 0
+
     def enqueue(self, item):
         self.items.append(item)
 
@@ -16,18 +19,16 @@ class Queue:
             return self.items[0]
         return None
 
-    def is_empty(self):
-        return len(self.items) == 0
-
-    def size(self):
-        return len(self.items)
-
 # Example usage
 if __name__ == "__main__":
-    q = Queue()
-    q.enqueue(1)
-    q.enqueue(2)
-    q.enqueue(3)
-    print(q.peek())  # Output: 1
-    print(q.dequeue())  # Output: 1
-    print(q.size())  # Output: 2
+    queue = Queue()
+    queue.enqueue(1)
+    queue.enqueue(2)
+    queue.enqueue(3)
+    
+    print(queue.peek())  # Output: 1
+    print(queue.dequeue())  # Output: 1
+    print(queue.dequeue())  # Output: 2
+    print(queue.is_empty())  # Output: False
+    print(queue.dequeue())  # Output: 3
+    print(queue.is_empty())  # Output: True

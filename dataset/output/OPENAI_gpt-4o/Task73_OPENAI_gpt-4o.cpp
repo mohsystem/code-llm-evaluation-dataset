@@ -1,10 +1,23 @@
 #include <iostream>
-#include <cstring>
+#include <string>
 
-void runCPPPasswordCheck(const char* password) {
-    if (strcmp(password, "admin123") == 0) {
-        std::cout << "C++: Password is valid." << std::endl;
+using namespace std;
+
+string checkPassword(string password) {
+    string adminPassword = "admin123";
+    if (password == adminPassword) {
+        return "Password is valid";
     } else {
-        std::cout << "C++: Password is invalid." << std::endl;
+        return "Password is invalid";
     }
+}
+
+int main() {
+    string inputPassword;
+    cout << "Enter the admin password: ";
+    getline(cin, inputPassword);
+
+    cout << checkPassword(inputPassword) << endl;
+
+    return 0;
 }

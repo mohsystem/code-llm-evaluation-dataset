@@ -1,42 +1,40 @@
-# Python
 import socket
 import threading
 
-clients = []
-lock = threading.Lock()
-
 def handle_client(client_socket):
-    try:
-        while True:
-            message = client_socket.recv(1024).decode("utf-8")
-            if not message:
-                break
-            
-            with lock:
-                for client in clients:
-                    if client != client_socket:
-                        client.sendall(message.encode("utf-8"))
-    finally:
-        with lock:
-            clients.remove(client_socket)
-        client_socket.close()
+    while True:
+        try:
+            message = client_socket.recv(1024).decode('utf-8')
+            if message:
+                broadcast(message, client_socket)
+            else:
+                remove(client_socket)
+        except:
+            continue
 
-def main():
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(("0.0.0.0", 12345))
-    server_socket.listen(5)
-    print("Chat server started...")
+def broadcast(message, connection):
+    for client in clients:
+        if client != connection:
+            try:
+                client.send(message.encode('utf-8'))
+            except:
+                remove(client)
 
-    try:
-        while True:
-            client_socket, addr = server_socket.accept()
-            
-            with lock:
-                clients.append(client_socket)
-            
-            threading.Thread(target=handle_client, args=(client_socket,)).start()
-    finally:
-        server_socket.close()
+def remove(connection):
+    if connection in clients:
+        clients.remove(connection)
 
-if __name__ == "__main__":
-    main()
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(('0.0.0.0', 5555))
+server.listen(100)
+
+clients = []
+
+print("Server started...")
+
+while True:
+    client_socket, addr = server.accept()
+    clients.append(client_socket)
+    print(f"Connection established with {addr}")
+    client_handler = threading.Thread(target=handle_client, args=(client_socket,))
+    client_handler.start()

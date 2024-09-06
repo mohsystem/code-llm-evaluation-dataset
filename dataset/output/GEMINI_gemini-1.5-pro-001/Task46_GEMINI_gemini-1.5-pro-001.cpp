@@ -1,38 +1,53 @@
 #include <iostream>
-#include <string>
-#include <mysql_connection.h>
-#include <cppconn/driver.h>
-#include <cppconn/exception.h>
-#include <cppconn/prepared_statement.h>
+#include <sqlite3.h>
 
 using namespace std;
 
 int main() {
-    try {
-        sql::Driver *driver = get_driver_instance();
-        std::unique_ptr<sql::Connection> conn(driver->connect("tcp://127.0.0.1:3306", "username", "password"));
-        conn->setSchema("user_db");
-
-        string name, email, password;
-        cout << "Enter your name: ";
-        getline(cin, name);
-        cout << "Enter your email: ";
-        getline(cin, email);
-        cout << "Enter your password: ";
-        getline(cin, password);
-
-        std::unique_ptr<sql::PreparedStatement> stmt(conn->prepareStatement("INSERT INTO users (name, email, password) VALUES (?, ?, ?)"));
-        stmt->setString(1, name);
-        stmt->setString(2, email);
-        stmt->setString(3, password);
-        stmt->executeUpdate();
-
-        cout << "Registration successful!" << endl;
-
-    } catch (sql::SQLException &e) {
-        cerr << "Error: " << e.what() << endl;
+    sqlite3* db;
+    int rc = sqlite3_open("users.db", &db);
+    if (rc) {
+        cerr << "Error opening database: " << sqlite3_errmsg(db) << endl;
         return 1;
     }
 
+    char* errmsg = nullptr;
+    rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS users ("
+                          "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                          "name TEXT NOT NULL,"
+                          "email TEXT NOT NULL UNIQUE,"
+                          "password TEXT NOT NULL"
+                          ")", nullptr, nullptr, &errmsg);
+    if (rc != SQLITE_OK) {
+        cerr << "Error creating table: " << errmsg << endl;
+        sqlite3_free(errmsg);
+        sqlite3_close(db);
+        return 1;
+    }
+
+    string name, email, password;
+    cout << "Enter your name: ";
+    getline(cin, name);
+    cout << "Enter your email: ";
+    getline(cin, email);
+    cout << "Enter your password: ";
+    getline(cin, password);
+
+    string sql = "INSERT INTO users (name, email, password) VALUES ('" + name + "', '" + email + "', '" + password + "')";
+    rc = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errmsg);
+    if (rc != SQLITE_OK) {
+        if (strstr(errmsg, "UNIQUE constraint failed") != nullptr) {
+            cerr << "Error: Email already exists." << endl;
+        } else {
+            cerr << "Error inserting data: " << errmsg << endl;
+        }
+        sqlite3_free(errmsg);
+        sqlite3_close(db);
+        return 1;
+    }
+
+    cout << "Registration successful!" << endl;
+
+    sqlite3_close(db);
     return 0;
 }

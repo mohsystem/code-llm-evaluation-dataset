@@ -3,7 +3,7 @@
 
 struct Node {
     int key;
-    struct Node* left, *right;
+    struct Node *left, *right;
 };
 
 struct Node* newNode(int item) {
@@ -15,12 +15,10 @@ struct Node* newNode(int item) {
 
 struct Node* insert(struct Node* node, int key) {
     if (node == NULL) return newNode(key);
-
     if (key < node->key)
         node->left = insert(node->left, key);
     else if (key > node->key)
         node->right = insert(node->right, key);
-
     return node;
 }
 
@@ -28,13 +26,11 @@ struct Node* minValueNode(struct Node* node) {
     struct Node* current = node;
     while (current && current->left != NULL)
         current = current->left;
-
     return current;
 }
 
 struct Node* deleteNode(struct Node* root, int key) {
     if (root == NULL) return root;
-
     if (key < root->key)
         root->left = deleteNode(root->left, key);
     else if (key > root->key)
@@ -44,12 +40,12 @@ struct Node* deleteNode(struct Node* root, int key) {
             struct Node* temp = root->right;
             free(root);
             return temp;
-        } else if (root->right == NULL) {
+        }
+        else if (root->right == NULL) {
             struct Node* temp = root->left;
             free(root);
             return temp;
         }
-
         struct Node* temp = minValueNode(root->right);
         root->key = temp->key;
         root->right = deleteNode(root->right, temp->key);
@@ -60,10 +56,8 @@ struct Node* deleteNode(struct Node* root, int key) {
 struct Node* search(struct Node* root, int key) {
     if (root == NULL || root->key == key)
         return root;
-
     if (root->key < key)
         return search(root->right, key);
-
     return search(root->left, key);
 }
 
@@ -76,14 +70,5 @@ int main() {
     insert(root, 70);
     insert(root, 60);
     insert(root, 80);
-
-    struct Node* found = search(root, 40);
-    if (found) printf("%d
-", found->key);
-
-    root = deleteNode(root, 20);
-    printf("%s
-", (search(root, 20) != NULL ? "Found!" : "Not Found!"));
-
     return 0;
 }

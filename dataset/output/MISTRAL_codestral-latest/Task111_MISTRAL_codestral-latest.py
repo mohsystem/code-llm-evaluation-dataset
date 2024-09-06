@@ -1,9 +1,8 @@
-# Python
 from xmlrpc.server import SimpleXMLRPCServer
 
-def sample(param):
-    return f"Received: {param}"
+def add(x, y):
+    return x + y
 
-server = SimpleXMLRPCServer(("localhost", 8080))
-server.register_function(sample, "sample")
+server = SimpleXMLRPCServer(("localhost", 8000))
+server.register_function(add, "add")
 server.serve_forever()

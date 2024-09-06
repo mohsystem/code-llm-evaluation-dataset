@@ -1,12 +1,15 @@
 
+#include <vector>
+#include <iostream>
+
 class Solution {
 public:
-    int reversePairs(vector<int>& nums) {
+    int reversePairs(std::vector<int>& nums) {
         return mergeSort(nums, 0, nums.size() - 1);
     }
     
 private:
-    int mergeSort(vector<int>& nums, int left, int right) {
+    int mergeSort(std::vector<int>& nums, int left, int right) {
         if (left >= right) {
             return 0;
         }
@@ -26,8 +29,8 @@ private:
         return count;
     }
     
-    void merge(vector<int>& nums, int left, int mid, int right) {
-        vector<int> temp(right - left + 1);
+    void merge(std::vector<int>& nums, int left, int mid, int right) {
+        std::vector<int> temp(right - left + 1);
         int i = left, j = mid + 1, k = 0;
         
         while (i <= mid && j <= right) {
@@ -46,6 +49,17 @@ private:
             temp[k++] = nums[j++];
         }
         
-        copy(temp.begin(), temp.end(), nums.begin() + left);
+        for (int p = 0; p < temp.size(); p++) {
+            nums[left + p] = temp[p];
+        }
     }
 };
+
+int main() {
+    Solution solution;
+    std::vector<int> nums1 = {1, 3, 2, 3, 1};
+    std::vector<int> nums2 = {2, 4, 3, 5, 1};
+    std::cout << solution.reversePairs(nums1) << std::endl;  // Output: 2
+    std::cout << solution.reversePairs(nums2) << std::endl;  // Output: 3
+    return 0;
+}

@@ -11,7 +11,11 @@ int sumBetween(int a, int b) {
 }
 
 int main() {
-    printf("%d
-", sumBetween(-1, 2));
+    printf("%d\n", sumBetween(1, 0));
+    printf("%d\n", sumBetween(1, 2));
+    printf("%d\n", sumBetween(0, 1));
+    printf("%d\n", sumBetween(1, 1));
+    printf("%d\n", sumBetween(-1, 0));
+    printf("%d\n", sumBetween(-1, 2));
     return 0;
 }

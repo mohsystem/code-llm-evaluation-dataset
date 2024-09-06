@@ -2,7 +2,7 @@
 import heapq
 
 def dijkstra(graph, start):
-    distances = {node: float(\'infinity\') for node in graph}
+    distances = {node: float('infinity') for node in graph}
     distances[start] = 0
     pq = [(0, start)]
     
@@ -22,16 +22,13 @@ def dijkstra(graph, start):
 
 # Example usage
 graph = {
-    \'A\': {\'B\': 4, \'C\': 2},
-    \'B\': {\'D\': 3, \'E\': 1},
-    \'C\': {\'B\': 1, \'D\': 5},
-    \'D\': {\'E\': 2},
-    \'E\': {}
+    'A': {'B': 4, 'C': 2},
+    'B': {'D': 3, 'E': 1},
+    'C': {'B': 1, 'D': 5},
+    'D': {'E': 2},
+    'E': {}
 }
 
-start_node = \'A\'
+start_node = 'A'
 shortest_paths = dijkstra(graph, start_node)
-
-print("Shortest paths from", start_node)
-for node, distance in shortest_paths.items():
-    print(f"To {node}: {distance}")
+print(shortest_paths)

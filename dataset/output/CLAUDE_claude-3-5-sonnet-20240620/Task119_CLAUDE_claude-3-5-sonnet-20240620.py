@@ -1,11 +1,15 @@
 
 import csv
 
-def process_csv(filename):
-    with open(filename, \'r\') as file:
+def process_csv(file_path):
+    with open(file_path, 'r') as file:
         csv_reader = csv.reader(file)
+        header = next(csv_reader)
+        print(f"CSV Header: {header}")
+        
         for row in csv_reader:
-            print(\'\\t\'.join(row))
+            print(f"Row: {row}")
 
 if __name__ == "__main__":
-    process_csv("data.csv")
+    file_path = "example.csv"
+    process_csv(file_path)

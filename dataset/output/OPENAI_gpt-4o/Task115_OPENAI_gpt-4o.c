@@ -1,18 +1,17 @@
 #include <stdio.h>
 
 struct BitFields {
-    unsigned int field1 : 1;
-    unsigned int field2 : 2;
-    unsigned int field3 : 3;
+    unsigned int a : 1;
+    unsigned int b : 2;
+    unsigned int c : 3;
 };
 
+void display(struct BitFields bf) {
+    printf("a: %d, b: %d, c: %d\n", bf.a, bf.b, bf.c);
+}
+
 int main() {
-    struct BitFields bf = {1, 2, 5};
-    printf("Field1: %u
-", bf.field1);
-    printf("Field2: %u
-", bf.field2);
-    printf("Field3: %u
-", bf.field3);
+    struct BitFields bitFields = {1, 2, 5};
+    display(bitFields);
     return 0;
 }

@@ -2,81 +2,52 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
-#include <openssl/sha.h>
 #include <vector>
+#include <openssl/sha.h>
+#include <openssl/rand.h>
 
-class UserAuthentication {
-private:
-    std::unordered_map<std::string, std::vector<unsigned char>> users;
+std::unordered_map<std::string, std::vector<unsigned char>> users;
 
-    std::vector<unsigned char> hashPassword(const std::string& password) {
-        unsigned char hash[SHA256_DIGEST_LENGTH];
-        SHA256_CTX sha256;
-        SHA256_Init(&sha256);
-        SHA256_Update(&sha256, password.c_str(), password.length());
-        SHA256_Final(hash, &sha256);
-        return std::vector<unsigned char>(hash, hash + SHA256_DIGEST_LENGTH);
+std::vector<unsigned char> hash_password(const std::string& password, const std::vector<unsigned char>& salt) {
+    std::vector<unsigned char> result(salt.size() + SHA256_DIGEST_LENGTH);
+    std::copy(salt.begin(), salt.end(), result.begin());
+
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, salt.data(), salt.size());
+    SHA256_Update(&sha256, password.c_str(), password.length());
+    SHA256_Final(result.data() + salt.size(), &sha256);
+
+    return result;
+}
+
+bool verify_password(const std::vector<unsigned char>& stored_password, const std::string& provided_password) {
+    std::vector<unsigned char> salt(stored_password.begin(), stored_password.begin() + 32);
+    std::vector<unsigned char> hashed = hash_password(provided_password, salt);
+    return hashed == stored_password;
+}
+
+bool register_user(const std::string& username, const std::string& password) {
+    if (users.find(username) != users.end()) {
+        return false;
     }
+    std::vector<unsigned char> salt(32);
+    RAND_bytes(salt.data(), salt.size());
+    users[username] = hash_password(password, salt);
+    return true;
+}
 
-public:
-    void registerUser() {
-        std::string username, password;
-        std::cout << "Enter username: ";
-        std::cin >> username;
-
-        if (users.find(username) != users.end()) {
-            std::cout << "Username already exists. Please choose another." << std::endl;
-            return;
-        }
-
-        std::cout << "Enter password: ";
-        std::cin >> password;
-
-        users[username] = hashPassword(password);
-        std::cout << "Registration successful." << std::endl;
+bool login(const std::string& username, const std::string& password) {
+    auto it = users.find(username);
+    if (it == users.end()) {
+        return false;
     }
-
-    void login() {
-        std::string username, password;
-        std::cout << "Enter username: ";
-        std::cin >> username;
-        std::cout << "Enter password: ";
-        std::cin >> password;
-
-        auto it = users.find(username);
-        if (it != users.end() && it->second == hashPassword(password)) {
-            std::cout << "Login successful." << std::endl;
-        } else {
-            std::cout << "Invalid username or password." << std::endl;
-        }
-    }
-};
+    return verify_password(it->second, password);
+}
 
 int main() {
-    UserAuthentication auth;
-    int choice;
-
-    while (true) {
-        std::cout << "1. Register" << std::endl;
-        std::cout << "2. Login" << std::endl;
-        std::cout << "3. Exit" << std::endl;
-        std::cout << "Choose an option: ";
-        std::cin >> choice;
-
-        switch (choice) {
-            case 1:
-                auth.registerUser();
-                break;
-            case 2:
-                auth.login();
-                break;
-            case 3:
-                std::cout << "Goodbye!" << std::endl;
-                return 0;
-            default:
-                std::cout << "Invalid option. Please try again." << std::endl;
-        }
-    }
-
+    register_user("alice", "password123");
+    std::cout << login("alice", "password123") << std::endl; // 1 (true)
+    std::cout << login("alice", "wrongpassword") << std::endl; // 0 (false)
     return 0;
 }

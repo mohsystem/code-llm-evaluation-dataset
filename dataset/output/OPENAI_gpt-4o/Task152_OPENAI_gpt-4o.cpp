@@ -1,57 +1,42 @@
 #include <iostream>
-#include <list>
-using namespace std;
+#include <vector>
 
 class HashTable {
 private:
-    int size;
-    list<pair<int, string>>* table;
+    const int SIZE = 10;
+    std::vector<std::string> table;
 
     int hashFunction(int key) {
-        return key % size;
+        return key % SIZE;
     }
 
 public:
-    HashTable(int size) {
-        this->size = size;
-        table = new list<pair<int, string>>[size];
-    }
+    HashTable() : table(SIZE, "") {}
 
-    void insert(int key, string value) {
+    void insert(int key, const std::string& value) {
         int hashKey = hashFunction(key);
-        for (auto& pair : table[hashKey]) {
-            if (pair.first == key) {
-                pair.second = value;
-                return;
-            }
-        }
-        table[hashKey].emplace_back(key, value);
+        table[hashKey] = value;
     }
 
     void deleteKey(int key) {
         int hashKey = hashFunction(key);
-        table[hashKey].remove_if([key](pair<int, string>& pair) {
-            return pair.first == key;
-        });
+        table[hashKey] = "";
     }
 
-    string search(int key) {
+    std::string search(int key) {
         int hashKey = hashFunction(key);
-        for (auto& pair : table[hashKey]) {
-            if (pair.first == key) {
-                return pair.second;
-            }
-        }
-        return "None";
+        return table[hashKey];
     }
 };
 
 int main() {
-    HashTable ht(10);
+    HashTable ht;
     ht.insert(1, "one");
     ht.insert(2, "two");
-    cout << ht.search(1) << endl; // should print "one"
+    ht.insert(11, "eleven");
+    std::cout << "Search key 1: " << ht.search(1) << std::endl;
+    std::cout << "Search key 2: " << ht.search(2) << std::endl;
     ht.deleteKey(1);
-    cout << ht.search(1) << endl; // should print "None"
+    std::cout << "Search key 1 after deletion: " << ht.search(1) << std::endl;
     return 0;
 }

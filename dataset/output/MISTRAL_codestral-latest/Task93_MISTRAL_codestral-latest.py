@@ -1,11 +1,11 @@
-with open('file.txt', 'r') as file:
-    lines = file.readlines()
+# Python
 
-records = {}
-for line in lines:
-    key, value = line.strip().split('=')
-    records[key] = value
+def read_and_sort_file(file_path):
+    with open(file_path, 'r') as file:
+        records = [line.strip().split('=') for line in file]
+        records.sort()
+        return records
 
-sorted_records = sorted(records.items())
-for key, value in sorted_records:
-    print(f'{key}={value}')
+# Usage
+sorted_records = read_and_sort_file('path_to_your_file.txt')
+print(sorted_records)

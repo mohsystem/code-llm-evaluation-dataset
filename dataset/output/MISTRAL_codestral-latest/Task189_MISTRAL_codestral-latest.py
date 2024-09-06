@@ -3,27 +3,29 @@ import threading
 class ZeroEvenOdd:
     def __init__(self, n):
         self.n = n
-        self.zero_sem = threading.Semaphore(1)
-        self.even_sem = threading.Semaphore(0)
-        self.odd_sem = threading.Semaphore(0)
+        self.zero_lock = threading.Lock()
+        self.even_lock = threading.Lock()
+        self.odd_lock = threading.Lock()
+        self.even_lock.acquire()
+        self.odd_lock.acquire()
 
-    def zero(self, printNumber):
+    def zero(self, printNumber: 'Callable[[int], None]') -> None:
         for i in range(self.n):
-            self.zero_sem.acquire()
+            self.zero_lock.acquire()
             printNumber(0)
             if i % 2 == 0:
-                self.odd_sem.release()
+                self.odd_lock.release()
             else:
-                self.even_sem.release()
+                self.even_lock.release()
 
-    def even(self, printNumber):
+    def even(self, printNumber: 'Callable[[int], None]') -> None:
         for i in range(2, self.n + 1, 2):
-            self.even_sem.acquire()
+            self.even_lock.acquire()
             printNumber(i)
-            self.zero_sem.release()
+            self.zero_lock.release()
 
-    def odd(self, printNumber):
+    def odd(self, printNumber: 'Callable[[int], None]') -> None:
         for i in range(1, self.n + 1, 2):
-            self.odd_sem.acquire()
+            self.odd_lock.acquire()
             printNumber(i)
-            self.zero_sem.release()
+            self.zero_lock.release()

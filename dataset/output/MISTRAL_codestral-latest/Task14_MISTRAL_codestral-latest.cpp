@@ -1,18 +1,16 @@
-#include <iostream>
 #include <vector>
 
-int find_even_index(std::vector<int> arr) {
-    int left_sum, right_sum;
+int find_even_index(const std::vector<int>& arr) {
     for (int i = 0; i < arr.size(); i++) {
-        left_sum = 0;
-        right_sum = 0;
+        int leftSum = 0;
+        int rightSum = 0;
         for (int j = 0; j < i; j++) {
-            left_sum += arr[j];
+            leftSum += arr[j];
         }
         for (int j = i + 1; j < arr.size(); j++) {
-            right_sum += arr[j];
+            rightSum += arr[j];
         }
-        if (left_sum == right_sum) {
+        if (leftSum == rightSum) {
             return i;
         }
     }

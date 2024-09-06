@@ -1,25 +1,29 @@
 #include <iostream>
-#include <string>
-#include <json/json.h>
+#include <fstream>
+#include <vector>
+
+class UserData {
+public:
+    std::string data;
+    friend std::ifstream& operator>>(std::ifstream& ifs, UserData& obj) {
+        ifs >> obj.data;
+        return ifs;
+    }
+    friend std::ostream& operator<<(std::ostream& os, const UserData& obj) {
+        os << obj.data;
+        return os;
+    }
+};
 
 int main() {
-    std::string jsonString = "{\"name\": \"John\", \"age\": 30}";
-    Json::CharReaderBuilder readerBuilder;
-    Json::CharReader* reader = readerBuilder.newCharReader();
-    Json::Value root;
-    std::string errors;
-
-    bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.length(), &root, &errors);
-    delete reader;
-
-    if (parsingSuccessful) {
-        std::string name = root["name"].asString();
-        int age = root["age"].asInt();
-        std::cout << "Name: " << name << std::endl;
-        std::cout << "Age: " << age << std::endl;
-    } else {
-        std::cout << "Error parsing JSON: " << errors << std::endl;
+    std::ifstream ifs("userData.dat");
+    if (!ifs) {
+        std::cerr << "Error opening file for reading\n";
+        return 1;
     }
-
+    UserData userData;
+    ifs >> userData;
+    ifs.close();
+    std::cout << userData << std::endl;
     return 0;
 }

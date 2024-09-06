@@ -1,13 +1,9 @@
 def count_smaller(nums):
     result = []
     for i in range(len(nums)):
-        count = 0
-        for j in range(i+1, len(nums)):
-            if nums[j] < nums[i]:
-                count += 1
+        count = sum(1 for j in nums[i+1:] if j < nums[i])
         result.append(count)
     return result
 
-# Example usage:
-nums = [5, 2, 6, 1]
+nums = [int(x) for x in input().split()]
 print(count_smaller(nums))

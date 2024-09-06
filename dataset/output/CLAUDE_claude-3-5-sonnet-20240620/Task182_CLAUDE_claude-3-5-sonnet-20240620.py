@@ -1,30 +1,18 @@
 
-import re
-
 def clean_phone_number(phone):
-    # Remove all non-digit characters
-    cleaned = re.sub(r\'\\D\', \'\', phone)
-    
-    # Remove country code if present
-    if len(cleaned) == 11 and cleaned.startswith(\'1\'):
-        cleaned = cleaned[1:]
-    
-    # Check if the number is valid
-    if len(cleaned) != 10 or not cleaned.startswith((\'2\', \'3\', \'4\', \'5\', \'6\', \'7\', \'8\', \'9\')):
+    digits = ''.join(filter(str.isdigit, phone))
+    if len(digits) == 11 and digits.startswith('1'):
+        return digits[1:]
+    elif len(digits) == 10:
+        return digits
+    else:
         raise ValueError("Invalid phone number")
-    
-    return cleaned
 
-# Test the function
-test_numbers = [
-    "+1 (613)-995-0253",
-    "613-995-0253",
-    "1 613 995 0253",
-    "613.995.0253"
-]
-
-for number in test_numbers:
-    try:
-        print(clean_phone_number(number))
-    except ValueError as e:
-        print(f"Error: {e}")
+# Example usage
+try:
+    print(clean_phone_number("+1 (613)-995-0253"))
+    print(clean_phone_number("613-995-0253"))
+    print(clean_phone_number("1 613 995 0253"))
+    print(clean_phone_number("613.995.0253"))
+except ValueError as e:
+    print(f"Error: {e}")

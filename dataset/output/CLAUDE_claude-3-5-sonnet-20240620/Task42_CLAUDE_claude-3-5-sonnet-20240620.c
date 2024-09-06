@@ -1,115 +1,66 @@
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include <openssl/sha.h>
+#include <openssl/rand.h>
 
 #define MAX_USERS 100
-#define MAX_USERNAME_LENGTH 50
-#define MAX_PASSWORD_LENGTH 50
+#define SALT_LENGTH 32
+#define HASH_LENGTH (SALT_LENGTH + SHA256_DIGEST_LENGTH)
 
 struct User {
-    char username[MAX_USERNAME_LENGTH];
-    unsigned char password_hash[SHA256_DIGEST_LENGTH];
+    char username[50];
+    unsigned char password_hash[HASH_LENGTH];
 };
 
 struct User users[MAX_USERS];
 int user_count = 0;
 
-void hash_password(const char* password, unsigned char* hash) {
+void hash_password(const char* password, const unsigned char* salt, unsigned char* result) {
+    memcpy(result, salt, SALT_LENGTH);
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
+    SHA256_Update(&sha256, salt, SALT_LENGTH);
     SHA256_Update(&sha256, password, strlen(password));
-    SHA256_Final(hash, &sha256);
+    SHA256_Final(result + SALT_LENGTH, &sha256);
 }
 
-void register_user() {
+int verify_password(const unsigned char* stored_hash, const char* provided_password) {
+    unsigned char computed_hash[HASH_LENGTH];
+    hash_password(provided_password, stored_hash, computed_hash);
+    return memcmp(stored_hash, computed_hash, HASH_LENGTH) == 0;
+}
+
+int register_user(const char* username, const char* password) {
     if (user_count >= MAX_USERS) {
-        printf("Maximum number of users reached.\
-");
-        return;
+        return 0;
     }
-
-    char username[MAX_USERNAME_LENGTH];
-    char password[MAX_PASSWORD_LENGTH];
-
-    printf("Enter username: ");
-    scanf("%s", username);
-
     for (int i = 0; i < user_count; i++) {
         if (strcmp(users[i].username, username) == 0) {
-            printf("Username already exists. Please choose another.\
-");
-            return;
+            return 0;
         }
     }
-
-    printf("Enter password: ");
-    scanf("%s", password);
-
     strcpy(users[user_count].username, username);
-    hash_password(password, users[user_count].password_hash);
+    unsigned char salt[SALT_LENGTH];
+    RAND_bytes(salt, SALT_LENGTH);
+    hash_password(password, salt, users[user_count].password_hash);
     user_count++;
-
-    printf("Registration successful.\
-");
+    return 1;
 }
 
-void login() {
-    char username[MAX_USERNAME_LENGTH];
-    char password[MAX_PASSWORD_LENGTH];
-
-    printf("Enter username: ");
-    scanf("%s", username);
-    printf("Enter password: ");
-    scanf("%s", password);
-
+int login(const char* username, const char* password) {
     for (int i = 0; i < user_count; i++) {
         if (strcmp(users[i].username, username) == 0) {
-            unsigned char hash[SHA256_DIGEST_LENGTH];
-            hash_password(password, hash);
-
-            if (memcmp(hash, users[i].password_hash, SHA256_DIGEST_LENGTH) == 0) {
-                printf("Login successful.\
-");
-                return;
-            }
+            return verify_password(users[i].password_hash, password);
         }
     }
-
-    printf("Invalid username or password.\
-");
+    return 0;
 }
 
 int main() {
-    int choice;
-
-    while (1) {
-        printf("1. Register\
-");
-        printf("2. Login\
-");
-        printf("3. Exit\
-");
-        printf("Choose an option: ");
-        scanf("%d", &choice);
-
-        switch (choice) {
-            case 1:
-                register_user();
-                break;
-            case 2:
-                login();
-                break;
-            case 3:
-                printf("Goodbye!\
-");
-                exit(0);
-            default:
-                printf("Invalid option. Please try again.\
-");
-        }
-    }
-
+    register_user("alice", "password123");
+    printf("%d\\n", login("alice", "password123")); // 1 (true)
+    printf("%d\\n", login("alice", "wrongpassword")); // 0 (false)
     return 0;
 }

@@ -1,54 +1,106 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <algorithm>
+#include <unordered_map>
 
-class Permission {
-public:
-    std::string name;
-
-    Permission(const std::string& name) : name(name) {}
-};
+using namespace std;
 
 class User {
 public:
-    std::string username;
-    std::vector<Permission> permissions;
+    string username;
+    vector<string> permissions;
 
-    User(const std::string& username) : username(username) {}
+    User(string username) : username(username) {}
 
-    void addPermission(const Permission& permission) {
-        if (std::find(permissions.begin(), permissions.end(), permission) == permissions.end()) {
+    void addPermission(const string& permission) {
+        if (find(permissions.begin(), permissions.end(), permission) == permissions.end()) {
             permissions.push_back(permission);
         }
     }
 
-    void removePermission(const Permission& permission) {
-        permissions.erase(std::remove(permissions.begin(), permissions.end(), permission), permissions.end());
+    void removePermission(const string& permission) {
+        permissions.erase(remove(permissions.begin(), permissions.end(), permission), permissions.end());
     }
 
-    bool hasPermission(const std::string& permissionName) const {
-        return std::any_of(permissions.begin(), permissions.end(),
-                           [&permissionName](const Permission& p) { return p.name == permissionName; });
+    bool hasPermission(const string& permission) const {
+        return find(permissions.begin(), permissions.end(), permission) != permissions.end();
     }
 };
 
 int main() {
-    Permission readPermission("read");
-    Permission writePermission("write");
+    unordered_map<string, User> users;
 
-    User user1("john_doe");
-    user1.addPermission(readPermission);
+    while (true) {
+        cout << "Enter action (create user, add permission, remove permission, check permission, list users, exit): ";
+        string action;
+        getline(cin, action);
 
-    User user2("jane_doe");
-    user2.addPermission(readPermission);
-    user2.addPermission(writePermission);
-
-    std::cout << user1.username << " has read permission: " << user1.hasPermission("read") << std::endl;
-    std::cout << user1.username << " has write permission: " << user1.hasPermission("write") << std::endl;
-
-    std::cout << user2.username << " has read permission: " << user2.hasPermission("read") << std::endl;
-    std::cout << user2.username << " has write permission: " << user2.hasPermission("write") << std::endl;
+        if (action == "create user") {
+            cout << "Enter username: ";
+            string username;
+            getline(cin, username);
+            if (users.find(username) != users.end()) {
+                cout << "User already exists." << endl;
+            } else {
+                users[username] = User(username);
+                cout << "User created successfully." << endl;
+            }
+        } else if (action == "add permission") {
+            cout << "Enter username: ";
+            string username;
+            getline(cin, username);
+            if (users.find(username) != users.end()) {
+                cout << "Enter permission to add: ";
+                string permission;
+                getline(cin, permission);
+                users[username].addPermission(permission);
+                cout << "Permission added successfully." << endl;
+            } else {
+                cout << "User not found." << endl;
+            }
+        } else if (action == "remove permission") {
+            cout << "Enter username: ";
+            string username;
+            getline(cin, username);
+            if (users.find(username) != users.end()) {
+                cout << "Enter permission to remove: ";
+                string permission;
+                getline(cin, permission);
+                users[username].removePermission(permission);
+                cout << "Permission removed successfully." << endl;
+            } else {
+                cout << "User not found." << endl;
+            }
+        } else if (action == "check permission") {
+            cout << "Enter username: ";
+            string username;
+            getline(cin, username);
+            if (users.find(username) != users.end()) {
+                cout << "Enter permission to check: ";
+                string permission;
+                getline(cin, permission);
+                if (users[username].hasPermission(permission)) {
+                    cout << "User has permission." << endl;
+                } else {
+                    cout << "User does not have permission." << endl;
+                }
+            } else {
+                cout << "User not found." << endl;
+            }
+        } else if (action == "list users") {
+            if (users.empty()) {
+                cout << "No users found." << endl;
+            } else {
+                for (const auto& pair : users) {
+                    cout << pair.first << endl;
+                }
+            }
+        } else if (action == "exit") {
+            break;
+        } else {
+            cout << "Invalid action." << endl;
+        }
+    }
 
     return 0;
 }

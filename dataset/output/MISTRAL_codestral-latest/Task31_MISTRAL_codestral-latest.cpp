@@ -1,22 +1,11 @@
-#include <iostream>
 #include <string>
+#include <unordered_map>
 
-std::string makeComplement(std::string dna) {
-    for (int i = 0; i < dna.length(); i++) {
-        switch (dna[i]) {
-            case 'A':
-                dna[i] = 'T';
-                break;
-            case 'T':
-                dna[i] = 'A';
-                break;
-            case 'C':
-                dna[i] = 'G';
-                break;
-            case 'G':
-                dna[i] = 'C';
-                break;
-        }
+std::string DNAStrand(const std::string& dna) {
+    std::unordered_map<char, char> complement = {{'A', 'T'}, {'T', 'A'}, {'C', 'G'}, {'G', 'C'}};
+    std::string result;
+    for (char base : dna) {
+        result += complement[base];
     }
-    return dna;
+    return result;
 }

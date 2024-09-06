@@ -1,9 +1,7 @@
 
 #include <iostream>
-#include <string>
 #include <cstdlib>
-#include <array>
-#include <memory>
+#include <string>
 
 int main() {
     std::string filename;
@@ -11,18 +9,12 @@ int main() {
     std::getline(std::cin, filename);
 
     std::string command = "cat " + filename;
+    int result = system(command.c_str());
 
-    std::array<char, 128> buffer;
-    std::string result;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"), pclose);
-    if (!pipe) {
-        std::cerr << "popen() failed!" << std::endl;
+    if (result != 0) {
+        std::cerr << "Error executing command" << std::endl;
         return 1;
     }
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-        result += buffer.data();
-    }
-    std::cout << result;
 
     return 0;
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <string>
 #include <unordered_map>
 
 using namespace std;
@@ -16,8 +17,8 @@ bool checkFlush(vector<string> table, vector<string> hand) {
   for (string card : hand) {
     suits[card.back()]++;
   }
-  for (auto it : suits) {
-    if (it.second >= 5) {
+  for (auto it = suits.begin(); it != suits.end(); it++) {
+    if (it->second >= 5) {
       return true;
     }
   }

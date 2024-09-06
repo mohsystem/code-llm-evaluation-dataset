@@ -1,86 +1,36 @@
 
 #include <iostream>
 #include <string>
-#include <cstring>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 
-class SSLSocket {
-public:
-    SSLSocket(const std::string& host, int port) : host_(host), port_(port) {}
+using boost::asio::ip::tcp;
+namespace ssl = boost::asio::ssl;
 
-    bool connect() {
-        // Initialize OpenSSL
-        SSL_library_init();
-        OpenSSL_add_all_algorithms();
-        SSL_load_error_strings();
+ssl::stream<tcp::socket> create_ssl_ipv6_socket(const std::string& host, const std::string& port) {
+    boost::asio::io_context io_context;
+    ssl::context ctx(ssl::context::sslv23);
+    ctx.set_default_verify_paths();
 
-        // Create SSL context
-        ctx_ = SSL_CTX_new(TLS_client_method());
-        if (!ctx_) {
-            ERR_print_errors_fp(stderr);
-            return false;
-        }
+    tcp::resolver resolver(io_context);
+    tcp::resolver::query query(tcp::v6(), host, port);
+    tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
-        // Create socket
-        sock_ = socket(AF_INET6, SOCK_STREAM, 0);
-        if (sock_ < 0) {
-            std::cerr << "Socket creation failed" << std::endl;
-            return false;
-        }
+    ssl::stream<tcp::socket> socket(io_context, ctx);
+    boost::asio::connect(socket.lowest_layer(), endpoint_iterator);
+    socket.handshake(ssl::stream_base::client);
 
-        // Set up server address
-        struct sockaddr_in6 addr;
-        std::memset(&addr, 0, sizeof(addr));
-        addr.sin6_family = AF_INET6;
-        addr.sin6_port = htons(port_);
-        if (inet_pton(AF_INET6, host_.c_str(), &addr.sin6_addr) <= 0) {
-            std::cerr << "Invalid address" << std::endl;
-            return false;
-        }
-
-        // Connect to server
-        if (::connect(sock_, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
-            std::cerr << "Connection failed" << std::endl;
-            return false;
-        }
-
-        // Create SSL connection
-        ssl_ = SSL_new(ctx_);
-        SSL_set_fd(ssl_, sock_);
-        if (SSL_connect(ssl_) <= 0) {
-            ERR_print_errors_fp(stderr);
-            return false;
-        }
-
-        std::cout << "SSL connection established" << std::endl;
-        return true;
-    }
-
-    ~SSLSocket() {
-        if (ssl_) SSL_free(ssl_);
-        if (sock_ >= 0) close(sock_);
-        if (ctx_) SSL_CTX_free(ctx_);
-    }
-
-private:
-    std::string host_;
-    int port_;
-    int sock_ = -1;
-    SSL_CTX* ctx_ = nullptr;
-    SSL* ssl_ = nullptr;
-};
+    return socket;
+}
 
 int main() {
-    SSLSocket socket("2001:db8::1", 443);
-    if (socket.connect()) {
-        std::cout << "Connected successfully" << std::endl;
-    } else {
-        std::cerr << "Connection failed" << std::endl;
+    try {
+        std::string host = "example.com";
+        std::string port = "443";
+        auto socket = create_ssl_ipv6_socket(host, port);
+        // Use the socket here
+    } catch (std::exception& e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
     }
     return 0;
 }

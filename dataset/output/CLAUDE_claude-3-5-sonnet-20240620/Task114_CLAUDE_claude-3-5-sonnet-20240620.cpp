@@ -3,31 +3,44 @@
 #include <string>
 #include <algorithm>
 
-int main() {
-    std::string str1 = "Hello";
-    std::string str2 = "World";
+void string_operations() {
+    // String copy
+    std::string original = "Hello, World!";
+    std::string copied = original;
+    std::cout << "Original: " << original << std::endl;
+    std::cout << "Copied: " << copied << std::endl;
 
-    // Copy
-    std::string copy = str1;
+    // String concatenation
+    std::string str1 = "C++ ";
+    std::string str2 = "is awesome!";
+    std::string concatenated = str1 + str2;
+    std::cout << "Concatenated: " << concatenated << std::endl;
 
-    // Concatenate
-    std::string concat = str1 + " " + str2;
-
-    // Manipulate
-    std::string upper = concat;
+    // String manipulation
+    std::string text = "   C++ Programming   ";
+    std::string stripped = text;
+    stripped.erase(0, stripped.find_first_not_of(" "));
+    stripped.erase(stripped.find_last_not_of(" ") + 1);
+    
+    std::string upper = text;
     std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
+    
+    std::string lower = text;
+    std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+    
+    std::string replaced = text;
+    size_t pos = replaced.find("C++");
+    if (pos != std::string::npos) {
+        replaced.replace(pos, 3, "Java");
+    }
 
-    std::string sub = concat.substr(0, 5);
-
-    std::string replace = concat;
-    std::replace(replace.begin(), replace.end(), \'o\', \'0\');
-
-    std::cout << "Original: " << str1 << ", " << str2 << std::endl;
-    std::cout << "Copy: " << copy << std::endl;
-    std::cout << "Concatenated: " << concat << std::endl;
+    std::cout << "Stripped: '" << stripped << "'" << std::endl;
     std::cout << "Uppercase: " << upper << std::endl;
-    std::cout << "Substring: " << sub << std::endl;
-    std::cout << "Replaced: " << replace << std::endl;
+    std::cout << "Lowercase: " << lower << std::endl;
+    std::cout << "Replaced: " << replaced << std::endl;
+}
 
+int main() {
+    string_operations();
     return 0;
 }

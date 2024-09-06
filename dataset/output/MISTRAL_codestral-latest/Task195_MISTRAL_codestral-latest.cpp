@@ -1,22 +1,19 @@
 #include <queue>
 
 class MedianFinder {
-private:
-    std::priority_queue<int> small;
-    std::priority_queue<int, std::vector<int>, std::greater<int>> large;
-
 public:
+    /** initialize your data structure here. */
     MedianFinder() {}
 
     void addNum(int num) {
         if (small.size() == large.size()) {
-            small.push(num);
-            large.push(small.top());
-            small.pop();
-        } else {
             large.push(num);
             small.push(large.top());
             large.pop();
+        } else {
+            small.push(num);
+            large.push(small.top());
+            small.pop();
         }
     }
 
@@ -27,4 +24,8 @@ public:
             return small.top();
         }
     }
+
+private:
+    priority_queue<int> small;
+    priority_queue<int, vector<int>, greater<int>> large;
 };

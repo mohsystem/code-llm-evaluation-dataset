@@ -1,27 +1,14 @@
 def authenticate(username, password):
-    """
-    Checks if the provided username and password match a predefined set.
-
-    Args:
-        username: The username to check.
-        password: The password to check.
-
-    Returns:
-        True if the username and password match, False otherwise.
-    """
-    valid_username = "user"
-    valid_password = "password"
-    if username == valid_username and password == valid_password:
-        return True
+    user_data = {
+        "user1": "password123",
+        "john_doe": "securepassword",
+    }
+    if username in user_data and user_data[username] == password:
+        print("Authentication successful. Welcome, {}!".format(username))
     else:
-        return False
+        print("Authentication failed. Invalid username or password.")
 
-# Get user credentials
-username = input("Username: ")
-password = input("Password: ")
-
-# Authenticate user
-if authenticate(username, password):
-    print("Authentication successful. Welcome!")
-else:
-    print("Authentication failed. Invalid username or password.")
+if __name__ == "__main__":
+    username = input("Username: ")
+    password = input("Password: ")
+    authenticate(username, password)

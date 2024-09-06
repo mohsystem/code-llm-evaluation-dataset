@@ -1,29 +1,41 @@
+code here:
 #include <iostream>
 #include <string>
 
+using namespace std;
+
 int main() {
-    std::string str1 = "Hello";
-    std::string str2 = "World";
-    
+    string s1 = "Hello";
+    string s2 = "World";
+    cout << "Original Strings:" << endl;
+    cout << "s1: " << s1 << endl;
+    cout << "s2: " << s2 << endl;
+
     // Copying a string
-    std::string str3 = str1;
-    std::cout << "Copied string: " << str3 << std::endl;
-    
+    string s3 = s1;
+    cout << "\nCopied String:" << endl;
+    cout << "s3: " << s3 << endl;
+
     // Concatenating strings
-    std::string str4 = str1 + " " + str2;
-    std::cout << "Concatenated string: " << str4 << std::endl;
-    
+    string s4 = s1 + " " + s2;
+    cout << "\nConcatenated String:" << endl;
+    cout << "s4: " << s4 << endl;
+
     // Manipulating strings (upper case)
-    for(char &c : str1) {
-        c = toupper(c);
+    string s5 = s1;
+    for(int i = 0; i < s5.length(); i++) {
+        s5[i] = toupper(s5[i]);
     }
-    std::cout << "Upper case string: " << str1 << std::endl;
-    
+    cout << "\nUpper Case String:" << endl;
+    cout << "s5: " << s5 << endl;
+
     // Manipulating strings (lower case)
-    for(char &c : str2) {
-        c = tolower(c);
+    string s6 = s2;
+    for(int i = 0; i < s6.length(); i++) {
+        s6[i] = tolower(s6[i]);
     }
-    std::cout << "Lower case string: " << str2 << std::endl;
-    
+    cout << "\nLower Case String:" << endl;
+    cout << "s6: " << s6 << endl;
+
     return 0;
 }

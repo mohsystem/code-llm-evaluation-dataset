@@ -1,20 +1,26 @@
-class Solution {
-public:
-    int persistence(long long n) {
-        if (n < 10) {
-            return 0;
-        }
-        int count = 0;
-        long long temp = 1;
-        while (n >= 10) {
-            while (n > 0) {
-                temp *= n % 10;
-                n /= 10;
-            }
-            n = temp;
-            temp = 1;
-            count++;
-        }
-        return count;
+#include <iostream>
+using namespace std;
+
+int persistence(long long num) {
+    if (num < 10) {
+        return 0;
     }
-};
+    int count = 0;
+    while (num >= 10) {
+        long long prod = 1;
+        while (num > 0) {
+            prod *= (num % 10);
+            num /= 10;
+        }
+        num = prod;
+        count++;
+    }
+    return count;
+}
+
+int main() {
+    cout << persistence(39) << endl;
+    cout << persistence(999) << endl;
+    cout << persistence(4) << endl;
+    return 0;
+}

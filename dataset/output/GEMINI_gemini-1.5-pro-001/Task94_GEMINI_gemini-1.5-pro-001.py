@@ -1,32 +1,27 @@
 import sys
 
-def main():
-    if len(sys.argv) < 2:
-        print("Usage: python sort_key_value.py <filename>")
-        sys.exit(1)
+def read_file_and_sort(file_path):
+    """Reads a file containing key-value pairs and sorts them.
 
-    filename = sys.argv[1]
-    keyValueMap = {}
+    Args:
+        file_path (str): The path to the input file.
 
-    try:
-        with open(filename, 'r') as file:
-            for line in file:
-                # Assuming key and value are separated by a space " "
-                parts = line.strip().split(" ", 1)
-                if len(parts) == 2:
-                    key, value = parts
-                    keyValueMap[key] = value
-                else:
-                    print(f"Invalid format on line: {line.strip()}")
-
-        # Sort and print key-value pairs
-        for key in sorted(keyValueMap.keys()):
-            print(f"{key} {keyValueMap[key]}")
-
-    except FileNotFoundError:
-        print(f"Error: File not found: {filename}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    Returns:
+        list: A list of sorted key-value pairs.
+    """
+    key_value_pairs = []
+    with open(file_path, 'r') as file:
+        for line in file:
+            key, value = line.strip().split(' ', 1)
+            key_value_pairs.append((key, value))
+    return sorted(key_value_pairs)
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 2:
+        print("Usage: python your_script.py <file_path>")
+        sys.exit(1)
+
+    file_path = sys.argv[1]
+    sorted_pairs = read_file_and_sort(file_path)
+    for key, value in sorted_pairs:
+        print(f"{key} {value}")

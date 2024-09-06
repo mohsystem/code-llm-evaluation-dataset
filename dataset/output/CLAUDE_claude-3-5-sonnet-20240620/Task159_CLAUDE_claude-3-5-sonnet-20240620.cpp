@@ -5,12 +5,12 @@
 int main() {
     const int bufferSize = 100;
     char* buffer = new char[bufferSize];
-    
-    // Fill buffer with some data
+
+    // Initialize buffer with some data
     for (int i = 0; i < bufferSize; i++) {
-        buffer[i] = \'A\' + (i % 26);
+        buffer[i] = 'A' + (i % 26);
     }
-    
+
     while (true) {
         int index;
         std::cout << "Enter an index to read (0-99), or -1 to exit: ";
@@ -28,14 +28,12 @@ int main() {
                 std::cout << "Invalid index. Please enter a number between 0 and 99." << std::endl;
             }
         } catch (const std::exception& e) {
-            std::cout << "Error: " << e.what() << ". Please enter a number." << std::endl;
+            std::cout << "Error: " << e.what() << ". Please enter a valid integer." << std::endl;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), \'\
-\');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\\n');
         }
     }
-    
-    std::cout << "Program terminated." << std::endl;
-    delete[] buffer;
+
+    delete[] buffer; // Free the allocated memory
     return 0;
 }

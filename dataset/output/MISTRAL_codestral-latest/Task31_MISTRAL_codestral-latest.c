@@ -1,21 +1,25 @@
-#include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
-void makeComplement(char *dna) {
-    for (int i = 0; i < strlen(dna); i++) {
+char* DNAStrand(const char* dna) {
+    int length = strlen(dna);
+    char* complement = malloc(length + 1);
+    for (int i = 0; i < length; i++) {
         switch (dna[i]) {
             case 'A':
-                dna[i] = 'T';
+                complement[i] = 'T';
                 break;
             case 'T':
-                dna[i] = 'A';
+                complement[i] = 'A';
                 break;
             case 'C':
-                dna[i] = 'G';
+                complement[i] = 'G';
                 break;
             case 'G':
-                dna[i] = 'C';
+                complement[i] = 'C';
                 break;
         }
     }
+    complement[length] = '\0';
+    return complement;
 }

@@ -1,13 +1,15 @@
-#include <iostream>
-using namespace std;
+#include <stdio.h>
+#include <stdlib.h>
 
 int main() {
-    int number;
-    cout << "Enter an integer: ";
-    if (!(cin >> number)) {
-        cout << "Invalid input. Please enter an integer." << endl;
-        return 1;
+    int cNum;
+    printf("Enter a number for C: ");
+    if (scanf("%d", &cNum) != 1) {
+        printf("Invalid input in C\n");
+        while((cNum = getchar()) != EOF && cNum != '\n');
+    } else {
+        printf("C read the number: %d\n", cNum);
     }
-    cout << "The entered integer is: " << number << endl;
+    
     return 0;
 }

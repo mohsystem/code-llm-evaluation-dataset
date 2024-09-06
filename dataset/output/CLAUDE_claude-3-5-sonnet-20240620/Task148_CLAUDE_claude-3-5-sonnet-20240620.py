@@ -31,4 +31,3 @@ if __name__ == "__main__":
     print("Top element:", stack.peek())
     print("Popped:", stack.pop())
     print("Size:", stack.size())
-    print("Is empty:", stack.is_empty())

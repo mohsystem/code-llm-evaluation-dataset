@@ -1,17 +1,22 @@
 #include <iostream>
 #include <regex>
+using namespace std;
 
-bool isValidEmail(const std::string& email) {
-    std::regex regex("^[A-Za-z0-9+_.-]+@(.+)$");
-    return std::regex_match(email, regex);
+bool isValidEmail(string email) {
+  const regex regexPattern(R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)");
+  return regex_match(email, regexPattern);
 }
 
 int main() {
-    std::string email = "user@example.com";
-    if (isValidEmail(email)) {
-        std::cout << "Valid Email" << std::endl;
-    } else {
-        std::cout << "Invalid Email" << std::endl;
-    }
-    return 0;
+  string email;
+  cout << "Enter an email address: ";
+  cin >> email;
+
+  if (isValidEmail(email)) {
+    cout << "Valid email address" << endl;
+  } else {
+    cout << "Invalid email address" << endl;
+  }
+
+  return 0;
 }

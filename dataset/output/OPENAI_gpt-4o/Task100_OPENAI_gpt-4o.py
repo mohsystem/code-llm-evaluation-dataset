@@ -1,18 +1,17 @@
-import re
 import sys
+import re
 
-def main():
-    if len(sys.argv) < 3:
-        print("Usage: <pattern> <filename>")
-        return
-    pattern = sys.argv[1]
-    filename = sys.argv[2]
+if len(sys.argv) != 3:
+    print(f"Usage: {sys.argv[0]} <pattern> <filename>")
+    sys.exit(1)
 
-    with open(filename, 'r') as file:
-        content = file.read()
-        matches = re.findall(pattern, content)
-        for match in matches:
-            print(match)
+pattern = sys.argv[1]
+filename = sys.argv[2]
 
-if __name__ == "__main__":
-    main()
+with open(filename, 'r') as file:
+    content = file.read()
+
+matches = re.findall(pattern, content)
+
+for match in matches:
+    print(match)

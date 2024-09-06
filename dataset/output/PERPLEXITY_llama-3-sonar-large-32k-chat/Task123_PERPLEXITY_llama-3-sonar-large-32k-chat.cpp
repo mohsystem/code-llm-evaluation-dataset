@@ -2,64 +2,35 @@
 #include <map>
 #include <string>
 
-class UserSession {
+class SessionManager {
 private:
-    std::string username;
-    bool loggedIn;
+    std::map<int, std::string> sessions;
 
 public:
-    UserSession(const std::string& username) : username(username), loggedIn(false) {}
-
-    void login() {
-        loggedIn = true;
-        std::cout << username << " has logged in." << std::endl;
+    void createSession(int userId, const std::string& username) {
+        this->sessions[userId] = username;
+        std::cout << "Session created for user " << username << " with ID " << userId << std::endl;
     }
 
-    void logout() {
-        loggedIn = false;
-        std::cout << username << " has logged out." << std::endl;
+    std::string getUsername(int userId) {
+        return this->sessions[userId];
+    }
+
+    void deleteSession(int userId) {
+        if (this->sessions.find(userId) != this->sessions.end()) {
+            this->sessions.erase(userId);
+            std::cout << "Session deleted for user ID " << userId << std::endl;
+        } else {
+            std::cout << "No session found for user ID " << userId << std::endl;
+        }
     }
 };
 
 int main() {
-    std::map<std::string, UserSession> sessions;
-    while (true) {
-        std::cout << "1. Create session" << std::endl;
-        std::cout << "2. Login" << std::endl;
-        std::cout << "3. Logout" << std::endl;
-        std::cout << "4. Exit" << std::endl;
-        int choice;
-        std::cout << "Choose an option: ";
-        std::cin >> choice;
-        if (choice == 1) {
-            std::string username;
-            std::cout << "Enter username: ";
-            std::cin >> username;
-            sessions[username] = UserSession(username);
-            std::cout << "Session created for " << username << "." << std::endl;
-        } else if (choice == 2) {
-            std::string username;
-            std::cout << "Enter username: ";
-            std::cin >> username;
-            if (sessions.find(username) != sessions.end()) {
-                sessions[username].login();
-            } else {
-                std::cout << "Session not found." << std::endl;
-            }
-        } else if (choice == 3) {
-            std::string username;
-            std::cout << "Enter username: ";
-            std::cin >> username;
-            if (sessions.find(username) != sessions.end()) {
-                sessions[username].logout();
-            } else {
-                std::cout << "Session not found." << std::endl;
-            }
-        } else if (choice == 4) {
-            break;
-        } else {
-            std::cout << "Invalid option. Please try again." << std::endl;
-        }
-    }
+    SessionManager manager;
+    manager.createSession(1, "John");
+    manager.createSession(2, "Alice");
+    std::cout << manager.getUsername(1) << std::endl;  // Output: John
+    manager.deleteSession(2);
     return 0;
 }

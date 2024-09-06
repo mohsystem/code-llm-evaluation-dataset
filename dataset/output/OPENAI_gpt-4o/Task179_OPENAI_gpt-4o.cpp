@@ -1,42 +1,49 @@
 #include <iostream>
-#include <vector>
 #include <deque>
+#include <vector>
 
-std::vector<int> maxSlidingWindow(std::vector<int>& nums, int k) {
-    std::deque<int> dq;
-    std::vector<int> res;
+using namespace std;
+
+vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+    if (nums.empty()) return {};
+    
+    deque<int> deq;
+    vector<int> result;
 
     for (int i = 0; i < nums.size(); ++i) {
-        while (!dq.empty() && nums[dq.back()] <= nums[i]) {
-            dq.pop_back();
+        if (!deq.empty() && deq.front() == i - k) {
+            deq.pop_front();
         }
-        dq.push_back(i);
-        if (dq.front() == i - k) {
-            dq.pop_front();
+        while (!deq.empty() && nums[deq.back()] < nums[i]) {
+            deq.pop_back();
         }
+        deq.push_back(i);
+        
         if (i >= k - 1) {
-            res.push_back(nums[dq.front()]);
+            result.push_back(nums[deq.front()]);
         }
     }
-    return res;
+    return result;
 }
 
 int main() {
-    std::vector<int> nums1 = {1, 3, -1, -3, 5, 3, 6, 7};
+    vector<int> nums1 = {1, 3, -1, -3, 5, 3, 6, 7};
     int k1 = 3;
-    std::vector<int> res1 = maxSlidingWindow(nums1, k1);
-    for (int num : res1) {
-        std::cout << num << " ";
+    vector<int> result1 = maxSlidingWindow(nums1, k1);
+   
+    for (int n : result1) {
+        cout << n << " ";  // [3,3,5,5,6,7]
     }
-    std::cout << std::endl;
+    cout << endl;
 
-    std::vector<int> nums2 = {1};
+    vector<int> nums2 = {1};
     int k2 = 1;
-    std::vector<int> res2 = maxSlidingWindow(nums2, k2);
-    for (int num : res2) {
-        std::cout << num << " ";
+    vector<int> result2 = maxSlidingWindow(nums2, k2);
+
+    for (int n : result2) {
+        cout << n << " ";  // [1]
     }
-    std::cout << std::endl;
+    cout << endl;
 
     return 0;
 }

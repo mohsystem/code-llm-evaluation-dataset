@@ -2,75 +2,56 @@
 #include <string>
 #include <openssl/aes.h>
 #include <openssl/rand.h>
+#include <openssl/evp.h>
+#include <openssl/sha.h>
+#include <openssl/hmac.h>
 
 using namespace std;
 
-int main() {
-    // Generate a random encryption key
-    unsigned char key[AES_BLOCK_SIZE];
-    RAND_bytes(key, AES_BLOCK_SIZE);
+int main()
+{
+  // Input key
+  unsigned char key[32];
+  const char* key_str = "This is a secret key";
+  int key_len = strlen(key_str);
+  memcpy(key, key_str, key_len);
 
-    // Generate a random initialization vector (IV)
-    unsigned char iv[AES_BLOCK_SIZE];
-    RAND_bytes(iv, AES_BLOCK_SIZE);
+  // Input data to encrypt
+  unsigned char plaintext[1024] = "This is a secret message";
+  int plaintext_len = strlen((char*)plaintext);
 
-    // Create a cipher context
-    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    if (!ctx) {
-        cerr << "Error creating cipher context" << endl;
-        return 1;
-    }
+  // Generate a random salt
+  unsigned char salt[16];
+  RAND_bytes(salt, sizeof(salt));
 
-    // Initialize the cipher context for encryption
-    if (EVP_EncryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key, iv) != 1) {
-        cerr << "Error initializing cipher context" << endl;
-        EVP_CIPHER_CTX_free(ctx);
-        return 1;
-    }
+  // Derive a 256-bit key from the input key and salt
+  const EVP_MD* kdf = EVP_sha256();
+  unsigned char derived_key[32];
+  PKCS5_PBKDF2_HMAC(key_str, key_len, salt, sizeof(salt), 390000, kdf, sizeof(derived_key), derived_key);
 
-    // Encrypt the key
-    int ciphertext_len = 0;
-    int len;
-    unsigned char ciphertext[AES_BLOCK_SIZE * 2];
-    if (EVP_EncryptUpdate(ctx, ciphertext, &len, key, AES_BLOCK_SIZE) != 1) {
-        cerr << "Error encrypting data" << endl;
-        EVP_CIPHER_CTX_free(ctx);
-        return 1;
-    }
-    ciphertext_len += len;
+  // Generate a random initialization vector (IV)
+  unsigned char iv[AES_BLOCK_SIZE];
+  RAND_bytes(iv, AES_BLOCK_SIZE);
 
-    // Finalize the encryption
-    if (EVP_EncryptFinal_ex(ctx, ciphertext + ciphertext_len, &len) != 1) {
-        cerr << "Error finalizing encryption" << endl;
-        EVP_CIPHER_CTX_free(ctx);
-        return 1;
-    }
-    ciphertext_len += len;
+  // Encrypt the plaintext using AES-CBC
+  EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+  EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, derived_key, iv);
 
-    // Convert the encrypted key and IV to Base64
-    BIO *bio = BIO_new(BIO_s_mem());
-    BIO *b64 = BIO_new(BIO_f_base64());
-    bio = BIO_push(b64, bio);
+  int len;
+  int ciphertext_len = 0;
+  unsigned char ciphertext[1024];
+  EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, plaintext_len);
+  ciphertext_len = len;
+  EVP_EncryptFinal_ex(ctx, ciphertext + len, &len);
+  ciphertext_len += len;
 
-    BIO_write(bio, ciphertext, ciphertext_len);
-    BIO_write(bio, "
-", 1);
-    BIO_write(bio, iv, AES_BLOCK_SIZE);
-    BIO_flush(bio);
+  // Print the encrypted data in hexadecimal format
+  for (int i = 0; i < ciphertext_len; i++) {
+    printf("%02x", ciphertext[i]);
+  }
+  printf("\n");
 
-    char *base64_data;
-    long base64_len = BIO_get_mem_data(bio, &base64_data);
-    string encoded_key(base64_data, base64_len - 1); // Exclude the newline
+  EVP_CIPHER_CTX_free(ctx);
 
-    // Print the encoded key and IV
-    cout << "Encrypted Key (Base64): " << encoded_key.substr(0, encoded_key.find("
-")) << endl;
-    cout << "IV (Base64): " << encoded_key.substr(encoded_key.find("
-") + 1) << endl;
-
-    // Clean up
-    BIO_free_all(bio);
-    EVP_CIPHER_CTX_free(ctx);
-
-    return 0;
+  return 0;
 }

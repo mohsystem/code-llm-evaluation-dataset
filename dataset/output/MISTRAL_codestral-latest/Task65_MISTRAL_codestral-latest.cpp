@@ -1,27 +1,24 @@
-// C++
 #include <iostream>
 #include <fstream>
 #include <string>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 2) {
-        std::cout << "Please provide a filename as a command line argument.
-";
+        std::cout << "Usage: ./FileReader <filename>" << std::endl;
         return 1;
     }
 
-    std::ifstream file(argv[1]);
-    if (!file.is_open()) {
-        std::perror("Error opening file");
-        return 1;
+    std::string filename = argv[1];
+    std::ifstream file(filename);
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            std::cout << line << std::endl;
+        }
+        file.close();
+    } else {
+        std::cout << "Error: Unable to open the file." << std::endl;
     }
 
-    std::string line;
-    while (std::getline(file, line)) {
-        std::cout << line << '
-';
-    }
-
-    file.close();
     return 0;
 }

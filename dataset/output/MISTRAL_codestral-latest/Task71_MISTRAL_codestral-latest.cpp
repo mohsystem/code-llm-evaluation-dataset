@@ -1,16 +1,19 @@
 #include <iostream>
 #include <cstdlib>
 
-int main(int argc, char *argv[]) {
-    char *end;
-    long num = strtol(argv[1], &end, 10);
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        std::cout << "Invalid input. Please enter an integer." << std::endl;
+        return 1;
+    }
 
-    if (*end != '\0' || num < INT_MIN || num > INT_MAX) {
-        std::cout << "Invalid input. Please enter an integer.
-";
+    char* end;
+    long num = std::strtol(argv[1], &end, 10);
+
+    if (*end != '\0') {
+        std::cout << "Invalid input. Please enter an integer." << std::endl;
     } else {
-        std::cout << "The integer is: " << num << "
-";
+        std::cout << num << std::endl;
     }
 
     return 0;

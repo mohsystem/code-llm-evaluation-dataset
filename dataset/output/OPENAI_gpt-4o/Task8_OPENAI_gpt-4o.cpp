@@ -1,21 +1,16 @@
 #include <iostream>
-#include <vector>
 
-char findMissingLetter(std::vector<char> array) {
-    for (size_t i = 0; i < array.size() - 1; i++) {
-        if (array[i + 1] != array[i] + 1) {
+char findMissingLetter(char array[], int size) {
+    for (int i = 0; i < size - 1; i++) {
+        if (array[i + 1] - array[i] != 1) {
             return array[i] + 1;
         }
     }
-    throw std::invalid_argument("No missing letter detected.");
+    throw std::invalid_argument("No missing letter found");
 }
 
 int main() {
-    std::vector<char> array1 = {'a', 'b', 'c', 'd', 'f'};
-    std::vector<char> array2 = {'O', 'Q', 'R', 'S'};
-    
-    std::cout << findMissingLetter(array1) << std::endl; // Output: e
-    std::cout << findMissingLetter(array2) << std::endl; // Output: P
-    
+    std::cout << findMissingLetter(new char[]{ 'a', 'b', 'c', 'd', 'f' }, 5) << std::endl; // e
+    std::cout << findMissingLetter(new char[]{ 'O', 'Q', 'R', 'S' }, 4) << std::endl; // P
     return 0;
 }

@@ -24,7 +24,7 @@ class Graph:
                     queue.append(neighbor)
                     visited[neighbor] = True
 
-# Example usage
+# Example usage:
 g = Graph(5)
 g.add_edge(0, 1)
 g.add_edge(0, 2)

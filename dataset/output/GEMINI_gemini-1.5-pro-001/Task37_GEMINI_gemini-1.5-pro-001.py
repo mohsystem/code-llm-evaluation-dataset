@@ -1,29 +1,16 @@
-import mysql.connector
+import sqlite3
 
-try:
-    connection = mysql.connector.connect(
-        host="localhost",
-        user="your_username",
-        password="your_password",
-        database="your_database_name"
-    )
-    cursor = connection.cursor()
+conn = sqlite3.connect('your_database.db')
+cursor = conn.cursor()
 
-    username = input("Enter username: ")
+username = input("Enter username: ")
 
-    query = "SELECT * FROM users WHERE username = %s"
-    cursor.execute(query, (username,))
+cursor.execute("SELECT * FROM users WHERE username=?", (username,))
+user = cursor.fetchone()
 
-    result = cursor.fetchall()
-    for row in result:
-        print("Username:", row[0])
-        print("Email:", row[1])
-        # Retrieve other user information as needed
+if user:
+    print(user)
+else:
+    print("User not found.")
 
-except mysql.connector.Error as error:
-    print("Error connecting to database or executing query:", error)
-
-finally:
-    if connection.is_connected():
-        cursor.close()
-        connection.close()
+conn.close()

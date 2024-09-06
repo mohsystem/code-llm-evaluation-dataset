@@ -1,55 +1,58 @@
+// C does not have built-in support for threading, so a more complex solution is required.
+// This example uses POSIX threads (pthreads) and mutexes.
+
 #include <pthread.h>
-#include <stdatomic.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef struct {
     double balance;
-    atomic_bool isOpen;
-    pthread_mutex_t mtx;
+    bool isOpen;
+    pthread_mutex_t lock;
 } BankAccount;
 
-BankAccount* createAccount(double initialBalance) {
-    BankAccount* account = malloc(sizeof(BankAccount));
+void BankAccount_init(BankAccount *account, double initialBalance) {
     account->balance = initialBalance;
-    atomic_store(&account->isOpen, true);
-    pthread_mutex_init(&account->mtx, NULL);
-    return account;
+    account->isOpen = true;
+    pthread_mutex_init(&account->lock, NULL);
 }
 
-bool deposit(BankAccount* account, double amount) {
-    pthread_mutex_lock(&account->mtx);
-    if (!atomic_load(&account->isOpen)) {
-        pthread_mutex_unlock(&account->mtx);
-        return false;
+void BankAccount_deposit(BankAccount *account, double amount) {
+    pthread_mutex_lock(&account->lock);
+    if (!account->isOpen) {
+        fprintf(stderr, "Account is closed\n");
+        exit(EXIT_FAILURE);
+    }
+    if (amount < 0) {
+        fprintf(stderr, "Deposit amount must be positive\n");
+        exit(EXIT_FAILURE);
     }
     account->balance += amount;
-    pthread_mutex_unlock(&account->mtx);
-    return true;
+    pthread_mutex_unlock(&account->lock);
 }
 
-bool withdraw(BankAccount* account, double amount) {
-    pthread_mutex_lock(&account->mtx);
-    if (!atomic_load(&account->isOpen) || account->balance < amount) {
-        pthread_mutex_unlock(&account->mtx);
+bool BankAccount_withdraw(BankAccount *account, double amount) {
+    pthread_mutex_lock(&account->lock);
+    if (!account->isOpen) {
+        fprintf(stderr, "Account is closed\n");
+        exit(EXIT_FAILURE);
+    }
+    if (amount < 0) {
+        fprintf(stderr, "Withdraw amount must be positive\n");
+        exit(EXIT_FAILURE);
+    }
+    if (account->balance < amount) {
+        pthread_mutex_unlock(&account->lock);
         return false;
     }
     account->balance -= amount;
-    pthread_mutex_unlock(&account->mtx);
+    pthread_mutex_unlock(&account->lock);
     return true;
 }
 
-bool closeAccount(BankAccount* account) {
-    pthread_mutex_lock(&account->mtx);
-    if (!atomic_load(&account->isOpen)) {
-        pthread_mutex_unlock(&account->mtx);
-        return false;
-    }
-    atomic_store(&account->isOpen, false);
-    pthread_mutex_unlock(&account->mtx);
-    return true;
-}
-
-void destroyAccount(BankAccount* account) {
-    pthread_mutex_destroy(&account->mtx);
-    free(account);
+void BankAccount_close(BankAccount *account) {
+    pthread_mutex_lock(&account->lock);
+    account->isOpen = false;
+    pthread_mutex_unlock(&account->lock);
 }

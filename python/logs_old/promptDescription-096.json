@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 96,
+      "prompt_title": "Implement an Echo Server with Sockets",
+      "prompt_description": "Write a program that creates a socket server listening on a specified port. The server should echo back any message it receives from a client.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "https://github.com/s2e-lab/SecurityEval/blob/main/Testcases_Prompt/CWE-605/author_1.py",
+      "tags": ["Socket Programming", "Echo Server", "CWE-4605"],
+      "comments": ""
+    }
+  ]
+}

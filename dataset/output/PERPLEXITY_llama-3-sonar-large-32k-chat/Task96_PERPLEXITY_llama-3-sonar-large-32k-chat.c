@@ -5,17 +5,22 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define PORT 8000
-#define BUFFER_SIZE 1024
+#define PORT 12345
 
 int main() {
-    int server_fd, new_socket;
+    int server_fd, new_socket, valread;
     struct sockaddr_in address;
+    int opt = 1;
     int addrlen = sizeof(address);
-    char buffer[BUFFER_SIZE] = {0};
+    char buffer[1024] = {0};
 
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("socket failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0) {
+        perror("setsockopt");
         exit(EXIT_FAILURE);
     }
 
@@ -29,25 +34,17 @@ int main() {
     }
 
     if (listen(server_fd, 3) < 0) {
-        perror("listen failed");
+        perror("listen");
         exit(EXIT_FAILURE);
     }
 
-    printf("Server is running...
-");
     if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
-        perror("accept failed");
+        perror("accept");
         exit(EXIT_FAILURE);
     }
 
-    printf("Client connected...
-");
-
-    while (1) {
-        read(new_socket, buffer, BUFFER_SIZE);
-        printf("Server: %s
-", buffer);
-        send(new_socket, buffer, strlen(buffer), 0);
+    while ((valread = read(new_socket, buffer, 1024)) > 0) {
+        send(new_socket, buffer, valread, 0);
     }
 
     return 0;

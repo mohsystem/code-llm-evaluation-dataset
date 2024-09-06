@@ -10,125 +10,133 @@
 #define MAX_CLIENTS 10
 #define BUFFER_SIZE 1024
 
-// Structure to hold client information
-typedef struct {
+struct client_info {
     int sockfd;
     char username[BUFFER_SIZE];
-} Client;
+};
 
-Client clients[MAX_CLIENTS];
-int num_clients = 0;
+struct client_info clients[MAX_CLIENTS];
+int client_count = 0;
 pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-// Function to handle client communication
 void *handle_client(void *arg) {
-    Client *client = (Client *)arg;
+    struct client_info *client = (struct client_info *)arg;
     char buffer[BUFFER_SIZE];
+    int bytes_received;
 
-    // Receive and send messages
-    while (1) {
-        int bytes_received = recv(client->sockfd, buffer, BUFFER_SIZE, 0);
-        if (bytes_received <= 0) {
-            // Connection closed
-            break;
-        }
+    // Receive and broadcast messages from the client
+    while ((bytes_received = recv(client->sockfd, buffer, BUFFER_SIZE, 0)) > 0) {
         buffer[bytes_received] = '\0';
+        printf("Received from %s: %s\n", client->username, buffer);
 
-        // Broadcast message to other clients
+        // Broadcast the message to all other clients
         pthread_mutex_lock(&clients_mutex);
-        for (int i = 0; i < num_clients; i++) {
+        for (int i = 0; i < client_count; i++) {
             if (clients[i].sockfd != client->sockfd) {
-                send(clients[i].sockfd, buffer, strlen(buffer), 0);
+                send(clients[i].sockfd, buffer, bytes_received, 0);
             }
         }
         pthread_mutex_unlock(&clients_mutex);
     }
 
-    // Remove client from list
+    // Handle client disconnection
+    printf("Client %s disconnected.\n", client->username);
     pthread_mutex_lock(&clients_mutex);
-    for (int i = 0; i < num_clients; i++) {
+    for (int i = 0; i < client_count; i++) {
         if (clients[i].sockfd == client->sockfd) {
-            for (int j = i; j < num_clients - 1; j++) {
+            for (int j = i; j < client_count - 1; j++) {
                 clients[j] = clients[j + 1];
             }
-            num_clients--;
+            client_count--;
             break;
         }
     }
     pthread_mutex_unlock(&clients_mutex);
-
-    // Close client socket
     close(client->sockfd);
     free(client);
 
-    pthread_exit(NULL);
+    return NULL;
 }
 
 int main() {
     int server_socket, client_socket;
     struct sockaddr_in server_address, client_address;
     socklen_t client_address_size;
+    pthread_t thread_id;
 
-    // Create server socket
+    // Create a socket
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket == -1) {
-        perror("Failed to create server socket");
-        exit(1);
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
     }
 
-    // Set server address
+    // Set address information
     memset(&server_address, 0, sizeof(server_address));
     server_address.sin_family = AF_INET;
     server_address.sin_addr.s_addr = INADDR_ANY;
     server_address.sin_port = htons(PORT);
 
-    // Bind socket to address
+    // Bind the socket to the address
     if (bind(server_socket, (struct sockaddr *)&server_address, sizeof(server_address)) == -1) {
-        perror("Failed to bind server socket");
+        perror("Socket binding failed");
         close(server_socket);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     // Listen for incoming connections
     if (listen(server_socket, MAX_CLIENTS) == -1) {
-        perror("Failed to listen on server socket");
+        perror("Listening on socket failed");
         close(server_socket);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
-    printf("Server started on port %d
-", PORT);
+    printf("Server started on port %d\n", PORT);
 
-    // Accept and handle client connections
     while (1) {
         client_address_size = sizeof(client_address);
+
+        // Accept a client connection
         client_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_address_size);
         if (client_socket == -1) {
-            perror("Failed to accept client connection");
+            perror("Accepting client connection failed");
             continue;
         }
 
-        // Create new client
-        Client *new_client = (Client *)malloc(sizeof(Client));
-        new_client->sockfd = client_socket;
+        // Create a new client info structure
+        struct client_info *client = (struct client_info *)malloc(sizeof(struct client_info));
+        if (client == NULL) {
+            perror("Memory allocation failed");
+            close(client_socket);
+            continue;
+        }
+        client->sockfd = client_socket;
 
-        // Receive username from client
-        recv(client_socket, new_client->username, BUFFER_SIZE, 0);
+        // Receive the client's username
+        recv(client->sockfd, client->username, BUFFER_SIZE, 0);
+        client->username[strcspn(client->username, "\r\n")] = 0;
 
-        // Add client to list
+        // Add the client to the list of clients
         pthread_mutex_lock(&clients_mutex);
-        clients[num_clients++] = *new_client;
+        clients[client_count] = *client;
+        client_count++;
         pthread_mutex_unlock(&clients_mutex);
 
-        // Create client thread
-        pthread_t thread_id;
-        pthread_create(&thread_id, NULL, handle_client, (void *)new_client);
+        // Create a new thread to handle the client
+        if (pthread_create(&thread_id, NULL, handle_client, (void *)client) != 0) {
+            perror("Thread creation failed");
+            close(client_socket);
+            free(client);
+            continue;
+        }
 
-        printf("Client connected: %s
-", new_client->username);
+        // Detach the thread
+        pthread_detach(thread_id);
+
+        printf("Client %s connected.\n", client->username);
     }
 
-    // Close server socket
+    // Close the server socket
     close(server_socket);
 
     return 0;

@@ -1,27 +1,20 @@
-#include <iostream>
 #include <string>
-#include <cmath>
 
-using namespace std;
-
-string expandedForm(int num) {
-    string str = "";
-    int len = to_string(num).length();
-    for (int i = 0; i < len; i++) {
-        int digit = (int)(num / pow(10, len - i - 1)) % 10;
-        if (digit != 0) {
-            str += to_string((int)(digit * pow(10, len - i - 1)));
-            if (i != len - 1) {
-                str += " + ";
+std::string expandedForm(int num) {
+    std::string numStr = std::to_string(num);
+    int length = numStr.length();
+    std::string result = "";
+    for (int i = 0; i < length; i++) {
+        char digit = numStr[i];
+        if (digit != '0') {
+            if (!result.empty()) {
+                result += " + ";
+            }
+            result += digit;
+            for (int j = i + 1; j < length; j++) {
+                result += '0';
             }
         }
     }
-    return str;
-}
-
-int main() {
-    cout << expandedForm(12) << endl;
-    cout << expandedForm(42) << endl;
-    cout << expandedForm(70304) << endl;
-    return 0;
+    return result;
 }

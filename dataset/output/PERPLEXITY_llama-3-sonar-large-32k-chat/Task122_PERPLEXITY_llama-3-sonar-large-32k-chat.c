@@ -15,16 +15,13 @@ void signup() {
     printf("Enter password: ");
     scanf("%s", users[userCount].password);
     userCount++;
-    printf("Signup successful!
-");
+    printf("Signup successful!\n");
 }
 
 int main() {
     while (true) {
-        printf("1. Signup
-");
-        printf("2. Exit
-");
+        printf("1. Signup\n");
+        printf("2. Exit\n");
         int choice;
         printf("Enter your choice: ");
         scanf("%d", &choice);
@@ -33,8 +30,7 @@ int main() {
         } else if (choice == 2) {
             break;
         } else {
-            printf("Invalid choice. Please try again.
-");
+            printf("Invalid choice. Please try again.\n");
         }
     }
     return 0;

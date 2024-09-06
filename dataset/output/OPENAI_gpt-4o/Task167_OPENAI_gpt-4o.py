@@ -1,10 +1,11 @@
 import math
 
-def cube_diagonal(volume):
-    side_length = volume**(1/3)
-    diagonal = side_length * math.sqrt(3)
-    return round(diagonal, 2)
+def cubeDiagonal(volume):
+    side_length = volume ** (1/3)
+    diagonal_length = side_length * math.sqrt(3)
+    return round(diagonal_length, 2)
 
-print(cube_diagonal(8))         # ➞ 3.46
-print(cube_diagonal(343))       # ➞ 12.12
-print(cube_diagonal(1157.625))  # ➞ 18.19
+if __name__ == "__main__":
+    print(cubeDiagonal(8))
+    print(cubeDiagonal(343))
+    print(cubeDiagonal(1157.625))

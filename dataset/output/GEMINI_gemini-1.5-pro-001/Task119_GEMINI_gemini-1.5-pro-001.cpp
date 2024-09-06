@@ -6,28 +6,32 @@
 
 using namespace std;
 
+vector<string> split(const string& str, char delimiter) {
+    vector<string> tokens;
+    string token;
+    istringstream tokenStream(str);
+    while (getline(tokenStream, token, delimiter)) {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
 int main() {
     ifstream file("data.csv");
     string line;
-    vector<vector<string>> data;
 
-    while (getline(file, line)) {
-        vector<string> row;
-        stringstream ss(line);
-        string cell;
-
-        while (getline(ss, cell, ',')) {
-            row.push_back(cell);
+    if (file.is_open()) {
+        while (getline(file, line)) {
+            vector<string> data = split(line, ',');
+            for (const auto& value : data) {
+                cout << value << " ";
+            }
+            cout << endl;
         }
-
-        data.push_back(row);
-    }
-
-    for (const auto &row : data) {
-        for (const auto &cell : row) {
-            cout << cell << " ";
-        }
-        cout << endl;
+        file.close();
+    } else {
+        cerr << "Unable to open file." << endl;
+        return 1;
     }
 
     return 0;

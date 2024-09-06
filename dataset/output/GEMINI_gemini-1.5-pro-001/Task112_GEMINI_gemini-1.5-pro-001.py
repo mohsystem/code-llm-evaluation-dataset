@@ -1,28 +1,22 @@
-from pymongo import MongoClient
+import pymongo
 
-# Replace with your MongoDB connection string
-client = MongoClient('mongodb://localhost:27017/')
-
-db = client['myDatabase']
-collection = db['myCollection']
+myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+mydb = myclient["mydatabase"]
+mycol = mydb["customers"]
 
 # Create
-new_document = {
-    "name": "John Doe",
-    "age": 30,
-    "city": "New York"
-}
-collection.insert_one(new_document)
-print("Document inserted successfully.")
+mydict = {"name": "John", "address": "Highway 37"}
+x = mycol.insert_one(mydict)
 
 # Read
-for doc in collection.find():
-    print(doc)
+for x in mycol.find():
+    print(x)
 
 # Update
-collection.update_one({"name": "John Doe"}, {"$set": {"age": 35}})
-print("Document updated successfully.")
+myquery = {"address": "Valley 345"}
+newvalues = {"$set": {"address": "Canyon 123"}}
+mycol.update_one(myquery, newvalues)
 
 # Delete
-collection.delete_one({"name": "John Doe"})
-print("Document deleted successfully.")
+myquery = {"name": "John"}
+mycol.delete_one(myquery)

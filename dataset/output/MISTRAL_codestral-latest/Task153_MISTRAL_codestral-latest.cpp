@@ -1,38 +1,37 @@
 #include <iostream>
-#include <unordered_map>
-#include <unordered_set>
+#include <list>
+#include <set>
 #include <queue>
-#include <vector>
 
-void bfs(const std::unordered_map<char, std::vector<char>>& graph, char start) {
-    std::unordered_set<char> visited;
+void bfs(std::map<char, std::list<char>> graph, char start) {
+    std::set<char> visited;
     std::queue<char> queue;
+
+    visited.insert(start);
     queue.push(start);
 
     while (!queue.empty()) {
         char node = queue.front();
+        std::cout << node << " ";
         queue.pop();
-        if (visited.find(node) == visited.end()) {
-            std::cout << node << std::endl;
-            visited.insert(node);
-            for (char neighbor : graph.at(node)) {
-                if (visited.find(neighbor) == visited.end()) {
-                    queue.push(neighbor);
-                }
+
+        for (char neighbor : graph[node]) {
+            if (visited.find(neighbor) == visited.end()) {
+                visited.insert(neighbor);
+                queue.push(neighbor);
             }
         }
     }
 }
 
 int main() {
-    std::unordered_map<char, std::vector<char>> graph = {
-        {'A', {'B', 'C'}},
-        {'B', {'A', 'D', 'E'}},
-        {'C', {'A', 'F'}},
-        {'D', {'B'}},
-        {'E', {'B', 'F'}},
-        {'F', {'C', 'E'}}
-    };
+    std::map<char, std::list<char>> graph;
+    graph['A'] = {'B', 'C'};
+    graph['B'] = {'A', 'D', 'E'};
+    graph['C'] = {'A', 'F'};
+    graph['D'] = {'B'};
+    graph['E'] = {'B', 'F'};
+    graph['F'] = {'C', 'E'};
 
     bfs(graph, 'A');
 

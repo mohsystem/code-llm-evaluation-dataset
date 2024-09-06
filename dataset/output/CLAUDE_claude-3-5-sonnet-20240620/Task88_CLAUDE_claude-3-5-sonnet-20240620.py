@@ -3,25 +3,21 @@ import tempfile
 import random
 import string
 
-def generate_random_string(length):
-    return \'\'.join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
-
-def convert_to_unicode(input_string):
-    return \'\'.join(f\'\\\\u{ord(c):04x}\' for c in input_string)
-
-# Create a temporary file
-with tempfile.NamedTemporaryFile(prefix=\'unicode_\', suffix=\'.txt\', delete=False, mode=\'w\', encoding=\'utf-8\') as temp_file:
+def create_temp_file_with_unicode():
+    # Create a temporary file
+    temp_file = tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', delete=False)
+    
     # Generate a random string
-    random_string = generate_random_string(10)
+    random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
     
     # Convert the string to Unicode
-    unicode_string = convert_to_unicode(random_string)
+    unicode_string = random_string.encode('unicode_escape').decode('utf-8')
     
     # Write the Unicode string to the file
     temp_file.write(unicode_string)
+    temp_file.close()
+    
+    return temp_file.name
 
-    # Get the path of the temporary file
-    temp_file_path = temp_file.name
-
-# Print the path of the temporary file
-print(f"Temporary file path: {temp_file_path}")
+# Call the function and print the path
+print(create_temp_file_with_unicode())

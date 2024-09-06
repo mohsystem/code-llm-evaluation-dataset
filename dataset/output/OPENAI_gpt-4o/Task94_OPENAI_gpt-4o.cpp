@@ -1,31 +1,50 @@
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
-int main() {
-    std::vector<std::string> lines;
-    std::string line;
-    std::ifstream file("records.txt");
-    
-    if (!file.is_open()) {
-        std::cerr << "Could not open file" << std::endl;
+using namespace std;
+
+struct Record {
+    string key;
+    string value;
+};
+
+bool compareRecords(const Record& a, const Record& b) {
+    return a.key < b.key;
+}
+
+vector<Record> readFile(const string &filename) {
+    vector<Record> records;
+    ifstream file(filename);
+    string line;
+
+    while (getline(file, line)) {
+        stringstream ss(line);
+        Record record;
+        getline(ss, record.key, '=');
+        getline(ss, record.value);
+        records.push_back(record);
+    }
+
+    file.close();
+    return records;
+}
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        cout << "Usage: " << argv[0] << " <filename>" << endl;
         return 1;
     }
-    
-    while (std::getline(file, line)) {
-        lines.push_back(line);
+
+    string filename = argv[1];
+    vector<Record> records = readFile(filename);
+    sort(records.begin(), records.end(), compareRecords);
+
+    for (const auto &record : records) {
+        cout << record.key << " = " << record.value << endl;
     }
-    file.close();
-    
-    std::sort(lines.begin(), lines.end(), [](const std::string &a, const std::string &b) {
-        return a < b;
-    });
-    
-    for (const auto &l : lines) {
-        std::cout << l << std::endl;
-    }
-    
+
     return 0;
 }

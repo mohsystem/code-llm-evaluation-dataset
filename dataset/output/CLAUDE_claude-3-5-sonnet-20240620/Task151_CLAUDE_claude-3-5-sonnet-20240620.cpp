@@ -5,6 +5,7 @@ class Node {
 public:
     int key;
     Node *left, *right;
+
     Node(int item) {
         key = item;
         left = right = nullptr;
@@ -15,21 +16,21 @@ class BinarySearchTree {
 private:
     Node* root;
 
-    Node* insertRec(Node* root, int key) {
+    Node* insertRecursive(Node* root, int key) {
         if (root == nullptr) return new Node(key);
         if (key < root->key)
-            root->left = insertRec(root->left, key);
+            root->left = insertRecursive(root->left, key);
         else if (key > root->key)
-            root->right = insertRec(root->right, key);
+            root->right = insertRecursive(root->right, key);
         return root;
     }
 
-    Node* deleteRec(Node* root, int key) {
+    Node* deleteRecursive(Node* root, int key) {
         if (root == nullptr) return root;
         if (key < root->key)
-            root->left = deleteRec(root->left, key);
+            root->left = deleteRecursive(root->left, key);
         else if (key > root->key)
-            root->right = deleteRec(root->right, key);
+            root->right = deleteRecursive(root->right, key);
         else {
             if (root->left == nullptr) {
                 Node* temp = root->right;
@@ -42,7 +43,7 @@ private:
             }
             Node* temp = minValueNode(root->right);
             root->key = temp->key;
-            root->right = deleteRec(root->right, temp->key);
+            root->right = deleteRecursive(root->right, temp->key);
         }
         return root;
     }
@@ -54,27 +55,27 @@ private:
         return current;
     }
 
-    Node* searchRec(Node* root, int key) {
+    bool searchRecursive(Node* root, int key) {
         if (root == nullptr || root->key == key)
-            return root;
-        if (root->key < key)
-            return searchRec(root->right, key);
-        return searchRec(root->left, key);
+            return root != nullptr;
+        if (key < root->key)
+            return searchRecursive(root->left, key);
+        return searchRecursive(root->right, key);
     }
 
 public:
     BinarySearchTree() : root(nullptr) {}
 
     void insert(int key) {
-        root = insertRec(root, key);
+        root = insertRecursive(root, key);
     }
 
-    void deleteKey(int key) {
-        root = deleteRec(root, key);
+    void remove(int key) {
+        root = deleteRecursive(root, key);
     }
 
-    Node* search(int key) {
-        return searchRec(root, key);
+    bool search(int key) {
+        return searchRecursive(root, key);
     }
 };
 
@@ -91,7 +92,7 @@ int main() {
     std::cout << "Search for 40: " << (bst.search(40) ? "Found" : "Not Found") << std::endl;
     std::cout << "Search for 90: " << (bst.search(90) ? "Found" : "Not Found") << std::endl;
 
-    bst.deleteKey(40);
+    bst.remove(40);
     std::cout << "Search for 40 after deletion: " << (bst.search(40) ? "Found" : "Not Found") << std::endl;
 
     return 0;

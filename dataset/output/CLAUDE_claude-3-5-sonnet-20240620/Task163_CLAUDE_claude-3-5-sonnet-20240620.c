@@ -1,10 +1,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
 int longestRun(int* arr, int size) {
-    if (size == 0) {
+    if (arr == NULL || size == 0) {
         return 0;
     }
     
@@ -29,14 +28,10 @@ int main() {
     int arr3[] = {5, 4, 2, 1};
     int arr4[] = {3, 5, 7, 10, 15};
 
-    printf("%d\
-", longestRun(arr1, sizeof(arr1)/sizeof(arr1[0])));  // 5
-    printf("%d\
-", longestRun(arr2, sizeof(arr2)/sizeof(arr2[0])));  // 3
-    printf("%d\
-", longestRun(arr3, sizeof(arr3)/sizeof(arr3[0])));  // 2
-    printf("%d\
-", longestRun(arr4, sizeof(arr4)/sizeof(arr4[0])));  // 1
+    printf("%d\\n", longestRun(arr1, sizeof(arr1)/sizeof(arr1[0])));  // Output: 5
+    printf("%d\\n", longestRun(arr2, sizeof(arr2)/sizeof(arr2[0])));  // Output: 3
+    printf("%d\\n", longestRun(arr3, sizeof(arr3)/sizeof(arr3[0])));  // Output: 2
+    printf("%d\\n", longestRun(arr4, sizeof(arr4)/sizeof(arr4[0])));  // Output: 1
 
     return 0;
 }

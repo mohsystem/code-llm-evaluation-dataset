@@ -3,29 +3,40 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_STRINGS 100
 #define MAX_LENGTH 1000
 
 int main() {
-    char result[MAX_LENGTH] = "";
-    char input[MAX_LENGTH];
-    
-    printf("Enter strings to concatenate (type \'done\' to finish):\
-");
-    
+    char strings[MAX_STRINGS][MAX_LENGTH];
+    char result[MAX_STRINGS * MAX_LENGTH] = "";
+    int count = 0;
+
     while (1) {
-        fgets(input, MAX_LENGTH, stdin);
-        input[strcspn(input, "\
-")] = 0;  // Remove newline
+        printf("Enter a string (or press Enter to finish): ");
+        fgets(strings[count], MAX_LENGTH, stdin);
         
-        if (strcmp(input, "done") == 0) {
+        // Remove newline character
+        strings[count][strcspn(strings[count], "\\n")] = 0;
+
+        if (strings[count][0] == '\\0') {
             break;
         }
-        
-        strcat(result, input);
+
+        count++;
+        if (count >= MAX_STRINGS) {
+            printf("Maximum number of strings reached.\\n");
+            break;
+        }
     }
-    
-    printf("Concatenated string: %s\
-", result);
-    
+
+    for (int i = 0; i < count; i++) {
+        if (i > 0) {
+            strcat(result, " ");
+        }
+        strcat(result, strings[i]);
+    }
+
+    printf("Concatenated string: %s\\n", result);
+
     return 0;
 }

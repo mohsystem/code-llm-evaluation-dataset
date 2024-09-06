@@ -1,5 +1,7 @@
 def two_sum(numbers, target):
-    for i in range(len(numbers)):
-        for j in range(i + 1, len(numbers)):
-            if numbers[i] + numbers[j] == target:
-                return [i, j]
+    nums = {}
+    for index, num in enumerate(numbers):
+        complement = target - num
+        if complement in nums:
+            return [nums[complement], index]
+        nums[num] = index

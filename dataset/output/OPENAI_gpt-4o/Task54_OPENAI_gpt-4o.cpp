@@ -1,34 +1,38 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-using namespace std;
+
+int generateOTP() {
+    return 100000 + std::rand() % 900000;
+}
+
+bool verifyOTP(int userOTP, int actualOTP) {
+    return userOTP == actualOTP;
+}
 
 int main() {
-    string username = "user";
-    string password = "password";
-    string inputUsername, inputPassword;
-    int otp, inputOTP;
+    std::srand(std::time(nullptr));
+    
+    std::string username, password;
+    std::cout << "Enter username: ";
+    std::cin >> username;
+    std::cout << "Enter password: ";
+    std::cin >> password;
 
-    cout << "Enter username:" << endl;
-    cin >> inputUsername;
-    cout << "Enter password:" << endl;
-    cin >> inputPassword;
-
-    if (inputUsername == username && inputPassword == password) {
-        // Generate OTP
-        srand(time(0));
-        otp = rand() % 1000000;
-        cout << "Generated OTP: " << setfill('0') << setw(6) << otp << endl;
-        cout << "Enter OTP:" << endl;
-        cin >> inputOTP;
-
-        if (inputOTP == otp) {
-            cout << "Login Successful" << endl;
+    // Simulate verifying username and password
+    if (username == "user" && password == "pass") {
+        int otp = generateOTP();
+        std::cout << "Your OTP is: " << otp << std::endl;
+        int userOTP;
+        std::cout << "Enter the OTP you received: ";
+        std::cin >> userOTP;
+        if (verifyOTP(userOTP, otp)) {
+            std::cout << "Login successful!" << std::endl;
         } else {
-            cout << "Invalid OTP" << endl;
+            std::cout << "Invalid OTP!" << std::endl;
         }
     } else {
-        cout << "Invalid username or password" << endl;
+        std::cout << "Invalid username or password!" << std::endl;
     }
 
     return 0;

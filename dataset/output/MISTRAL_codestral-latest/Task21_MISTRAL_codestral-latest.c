@@ -1,25 +1,35 @@
-#include <stdio.h>
 #include <stdlib.h>
 
-int* remove_smallest(int* numbers, int size, int* new_size) {
-    if (size == 0) {
-        *new_size = 0;
+int* remove_smallest(int* numbers, size_t length, size_t* new_length) {
+    if (length == 0) {
+        *new_length = 0;
         return NULL;
     }
-    int smallest = numbers[0];
-    int smallest_index = 0;
-    for (int i = 1; i < size; i++) {
-        if (numbers[i] < smallest) {
-            smallest = numbers[i];
-            smallest_index = i;
+
+    int min_val = numbers[0];
+    size_t min_idx = 0;
+
+    for (size_t i = 1; i < length; i++) {
+        if (numbers[i] < min_val) {
+            min_val = numbers[i];
+            min_idx = i;
         }
     }
-    int* result = (int*)malloc((size - 1) * sizeof(int));
-    for (int i = 0, j = 0; i < size; i++) {
-        if (i != smallest_index) {
-            result[j++] = numbers[i];
-        }
+
+    int* new_numbers = malloc(sizeof(int) * (length - 1));
+    if (new_numbers == NULL) {
+        *new_length = 0;
+        return NULL;
     }
-    *new_size = size - 1;
-    return result;
+
+    for (size_t i = 0; i < min_idx; i++) {
+        new_numbers[i] = numbers[i];
+    }
+
+    for (size_t i = min_idx + 1; i < length; i++) {
+        new_numbers[i - 1] = numbers[i];
+    }
+
+    *new_length = length - 1;
+    return new_numbers;
 }

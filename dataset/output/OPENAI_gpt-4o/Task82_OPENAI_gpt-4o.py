@@ -1,9 +1,9 @@
 import hashlib
 
-def sha256(str):
-    return hashlib.sha256(str.encode()).hexdigest()
+def compute_hash(password, salt):
+    combined = password + salt
+    return hashlib.sha256(combined.encode()).hexdigest()
 
-password = "password"
-salt = "12345"
-combined = password + salt
-print(sha256(combined))
+password = "example_password"
+salt = "random_salt"
+print(f"Python Hash: {compute_hash(password, salt)}")

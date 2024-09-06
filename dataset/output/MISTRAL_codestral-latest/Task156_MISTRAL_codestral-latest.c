@@ -3,13 +3,15 @@
 
 struct Node {
     int data;
-    struct Node* left, *right;
+    struct Node* left;
+    struct Node* right;
 };
 
 struct Node* newNode(int data) {
     struct Node* node = (struct Node*)malloc(sizeof(struct Node));
     node->data = data;
-    node->left = node->right = NULL;
+    node->left = NULL;
+    node->right = NULL;
     return(node);
 }
 
@@ -38,28 +40,4 @@ void printPostorder(struct Node* node) {
     printPostorder(node->left);
     printPostorder(node->right);
     printf("%d ", node->data);
-}
-
-int main() {
-    struct Node* root = newNode(1);
-    root->left = newNode(2);
-    root->right = newNode(3);
-    root->left->left = newNode(4);
-    root->left->right = newNode(5);
-
-    printf("Preorder traversal of binary tree is 
-");
-    printPreorder(root);
-
-    printf("
-Inorder traversal of binary tree is 
-");
-    printInorder(root);
-
-    printf("
-Postorder traversal of binary tree is 
-");
-    printPostorder(root);
-
-    return 0;
 }

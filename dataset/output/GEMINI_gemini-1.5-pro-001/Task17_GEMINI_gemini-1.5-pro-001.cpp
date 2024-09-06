@@ -1,18 +1,21 @@
 #include <string>
+#include <sstream>
 
-std::string toJadenCase(std::string str)
-{
-  if (str.empty())
-    return "";
-
-  str[0] = std::toupper(str[0]);
-
-  for (unsigned int i = 1; i < str.size(); i++) {
-    if (str[i - 1] == ' ')
-      str[i] = std::toupper(str[i]);
-    else
-      str[i] = std::tolower(str[i]);
+std::string to_jaden_case(const std::string &jadenCase) {
+  std::string result;
+  std::istringstream iss(jadenCase);
+  std::string word;
+  while (iss >> word) {
+    if (!word.empty()) {
+      word[0] = std::toupper(word[0]);
+    }
+    for (size_t i = 1; i < word.length(); ++i) {
+      word[i] = std::tolower(word[i]);
+    }
+    result += word + " ";
   }
-
-  return str;
+  if (!result.empty()) {
+    result.pop_back(); 
+  }
+  return result;
 }

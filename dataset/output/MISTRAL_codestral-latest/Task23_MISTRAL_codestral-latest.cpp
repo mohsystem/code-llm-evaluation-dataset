@@ -1,10 +1,10 @@
-#include <iostream>
+#include <cmath>
 
-long findNb(long m) {
-    long n = 1;
-    while (n * n * n < m) {
-        m -= n * n * n;
+long long findNb(long long m) {
+    long long n = 1;
+    while (std::pow(n, 3) < m) {
+        m -= std::pow(n, 3);
         n++;
     }
-    return (m == n * n * n) ? n : -1;
+    return (m == std::pow(n, 3)) ? n : -1;
 }

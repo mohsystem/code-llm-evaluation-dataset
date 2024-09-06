@@ -1,15 +1,17 @@
 #include <iostream>
 #include <string>
+#include <sstream>
+
 int main() {
-    std::string input;
-    int number;
+    std::string userInput;
     std::cout << "Enter a number: ";
-    std::getline(std::cin, input);
-    try {
-        number = std::stoi(input);
-        std::cout << "You entered: " << number << std::endl;
-    } catch (std::invalid_argument const &e) {
-        std::cout << "Invalid input. Not an integer." << std::endl;
+    std::getline(std::cin, userInput);
+    int result;
+    std::istringstream iss(userInput);
+    if (iss >> result) {
+        std::cout << "Converted Integer: " << result << std::endl;
+    } else {
+        std::cout << "Error: Not a valid integer" << std::endl;
     }
     return 0;
 }

@@ -1,61 +1,51 @@
 #include <stdio.h>
-#include <string.h>
+#include <sqlite3.h>
 
-#define MAX_USERS 100
-#define MAX_EMAIL_LENGTH 100
-#define MAX_NAME_LENGTH 100
-#define MAX_PASSWORD_LENGTH 100
+static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
+    for (int i = 0; i < argc; i++) {
+        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+    }
+    printf("\n");
+    return 0;
+}
 
-typedef struct {
-    char email[MAX_EMAIL_LENGTH];
-    char name[MAX_NAME_LENGTH];
-    char password[MAX_PASSWORD_LENGTH];
-} User;
+void createTable(sqlite3 *db) {
+    char *zErrMsg = 0;
+    int rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS users (name TEXT, email TEXT PRIMARY KEY, password TEXT)", callback, 0, &zErrMsg);
+    if (rc != SQLITE_OK) {
+        fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    }
+}
 
-User database[MAX_USERS];
-int userCount = 0;
-
-void registerUser(char* name, char* email, char* password) {
-    strcpy(database[userCount].email, email);
-    strcpy(database[userCount].name, name);
-    strcpy(database[userCount].password, password);
-    userCount++;
+void registerUser(sqlite3 *db, const char *name, const char *email, const char *password) {
+    char *zErrMsg = 0;
+    char sql[200];
+    sprintf(sql, "INSERT INTO users VALUES ('%s', '%s', '%s')", name, email, password);
+    int rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+    if (rc != SQLITE_OK) {
+        fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    }
 }
 
 int main() {
-    char name[MAX_NAME_LENGTH];
-    char email[MAX_EMAIL_LENGTH];
-    char password[MAX_PASSWORD_LENGTH];
-
-    printf("Welcome to the User Registration System!
-");
+    sqlite3 *db;
+    int rc = sqlite3_open("users.db", &db);
+    if (rc) {
+        fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+        return 0;
+    }
+    createTable(db);
+    char name[100], email[100], password[100];
     printf("Enter your name: ");
-    fgets(name, MAX_NAME_LENGTH, stdin);
-    name[strcspn(name, "
-")] = 0; // remove newline character
-
+    fgets(name, 100, stdin);
     printf("Enter your email: ");
-    fgets(email, MAX_EMAIL_LENGTH, stdin);
-    email[strcspn(email, "
-")] = 0; // remove newline character
-
+    fgets(email, 100, stdin);
     printf("Enter your password: ");
-    fgets(password, MAX_PASSWORD_LENGTH, stdin);
-    password[strcspn(password, "
-")] = 0; // remove newline character
-
-    registerUser(name, email, password);
-
-    printf("User registered successfully!
-");
-    printf("User information stored in database:
-");
-    printf("Email: %s
-", email);
-    printf("Name: %s
-", name);
-    printf("Password: %s
-", password);
-
+    fgets(password, 100, stdin);
+    registerUser(db, name, email, password);
+    printf("User registered successfully!\n");
+    sqlite3_close(db);
     return 0;
 }

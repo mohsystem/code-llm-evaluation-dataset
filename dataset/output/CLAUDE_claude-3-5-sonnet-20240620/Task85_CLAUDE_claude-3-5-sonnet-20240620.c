@@ -4,27 +4,24 @@
 #include <time.h>
 #include <string.h>
 
-#define ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-
-char* generateRandomString(int length) {
+char* generate_random_string(int length) {
+    const char characters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     char* result = malloc((length + 1) * sizeof(char));
-    int alphabetLength = strlen(ALPHABET);
-
+    
     srand(time(NULL));
+    
     for (int i = 0; i < length; i++) {
-        int index = rand() % alphabetLength;
-        result[i] = ALPHABET[index];
+        int random_index = rand() % (sizeof(characters) - 1);
+        result[i] = characters[random_index];
     }
-    result[length] = \'\\0\';
-
+    
+    result[length] = '\\0';
     return result;
 }
 
 int main() {
-    int length = 10;
-    char* randomString = generateRandomString(length);
-    printf("Random string: %s\
-", randomString);
-    free(randomString);
+    char* random_string = generate_random_string(10);
+    printf("%s\\n", random_string);
+    free(random_string);
     return 0;
 }

@@ -1,16 +1,12 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include <string>
+#include <algorithm>
 
-bool checkPangram(string str) {
-    vector<bool> mark(26, false);
-    for (int i = 0; i < str.length(); i++) {
-        if ('A' <= str[i] && str[i] <= 'Z')
-            mark[str[i] - 'A'] = true;
-        if ('a' <= str[i] && str[i] <= 'z')
-            mark[str[i] - 'a'] = true;
+bool isPangram(std::string str) {
+    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+    for (char ch = 'a'; ch <= 'z'; ch++) {
+        if (str.find(ch) == std::string::npos) {
+            return false;
+        }
     }
-    for (int i = 0; i <= 25; i++)
-        if (mark[i] == false)
-            return (false);
-    return (true);
+    return true;
 }

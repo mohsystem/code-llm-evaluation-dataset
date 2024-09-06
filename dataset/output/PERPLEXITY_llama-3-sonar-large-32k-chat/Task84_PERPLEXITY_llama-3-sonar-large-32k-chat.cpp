@@ -1,10 +1,10 @@
 #include <iostream>
-#include <ctime>
-#include <cstdlib>
-
+#include <uuid/uuid.h>
 int main() {
-    srand(static_cast<unsigned int>(time(0)));
-    int sessionId = rand();
-    std::cout << "Session ID: " << sessionId << std::endl;
+    uuid_t uuid;
+    uuid_generate_random(uuid);
+    char uuid_str[37];
+    uuid_unparse(uuid, uuid_str);
+    std::cout << uuid_str << std::endl;
     return 0;
 }

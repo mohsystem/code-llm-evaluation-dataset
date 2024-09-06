@@ -1,24 +1,19 @@
 import threading
-from collections import deque
 
 class H2O:
     def __init__(self):
-        self.hydrogen_queue = deque()
-        self.oxygen_queue = deque()
-        self.barrier = threading.Semaphore(2)
+        self.h_sem = threading.Semaphore(2)
+        self.o_sem = threading.Semaphore(0)
 
     def hydrogen(self, releaseHydrogen):
-        with self.barrier:
-            self.hydrogen_queue.append(releaseHydrogen)
-            self.check_molecule()
+        with self.h_sem:
+            releaseHydrogen()
+            self.o_sem.release()
 
     def oxygen(self, releaseOxygen):
-        with self.barrier:
-            self.oxygen_queue.append(releaseOxygen)
-            self.check_molecule()
-
-    def check_molecule(self):
-        if len(self.hydrogen_queue) >= 2 and len(self.oxygen_queue) >= 1:
-            self.hydrogen_queue.popleft()()
-            self.hydrogen_queue.popleft()()
-            self.oxygen_queue.popleft()()
+        with self.o_sem:
+            self.h_sem.acquire()
+            self.h_sem.acquire()
+            releaseOxygen()
+            self.h_sem.release()
+            self.h_sem.release()

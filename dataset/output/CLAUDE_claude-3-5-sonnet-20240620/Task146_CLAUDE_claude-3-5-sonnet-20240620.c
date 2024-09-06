@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 
-int findMissing(int arr[], int size) {
+int findMissingNumber(int arr[], int size) {
     int n = size + 1;
     int expectedSum = n * (n + 1) / 2;
     int actualSum = 0;
@@ -12,9 +12,9 @@ int findMissing(int arr[], int size) {
 }
 
 int main() {
-    int arr[] = {1, 2, 4, 6, 3, 7, 8};
-    int size = sizeof(arr) / sizeof(arr[0]);
-    printf("%d\
-", findMissing(arr, size));
+    int inputArray[] = {1, 2, 4, 6, 3, 7, 8};
+    int size = sizeof(inputArray) / sizeof(inputArray[0]);
+    int missingNumber = findMissingNumber(inputArray, size);
+    printf("The missing number is: %d\\n", missingNumber);
     return 0;
 }

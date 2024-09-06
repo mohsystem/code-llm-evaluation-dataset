@@ -1,3 +1,4 @@
+// C code
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,19 +11,26 @@ typedef struct SinglyLinkedList {
     Node* head;
 } SinglyLinkedList;
 
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (!newNode) {
+        printf("Memory error\n");
+        exit(1);
+    }
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+
 void insert(SinglyLinkedList* list, int data) {
     if (list->head == NULL) {
-        list->head = (Node*)malloc(sizeof(Node));
-        list->head->data = data;
-        list->head->next = NULL;
+        list->head = createNode(data);
     } else {
-        Node* cur = list->head;
-        while (cur->next != NULL) {
-            cur = cur->next;
+        Node* current = list->head;
+        while (current->next != NULL) {
+            current = current->next;
         }
-        cur->next = (Node*)malloc(sizeof(Node));
-        cur->next->data = data;
-        cur->next->next = NULL;
+        current->next = createNode(data);
     }
 }
 
@@ -36,25 +44,25 @@ void deleteNode(SinglyLinkedList* list, int data) {
         free(temp);
         return;
     }
-    Node* cur = list->head;
-    while (cur->next != NULL) {
-        if (cur->next->data == data) {
-            Node* temp = cur->next;
-            cur->next = cur->next->next;
+    Node* current = list->head;
+    while (current->next != NULL) {
+        if (current->next->data == data) {
+            Node* temp = current->next;
+            current->next = current->next->next;
             free(temp);
             return;
         }
-        cur = cur->next;
+        current = current->next;
     }
 }
 
 int search(SinglyLinkedList* list, int data) {
-    Node* cur = list->head;
-    while (cur != NULL) {
-        if (cur->data == data) {
+    Node* current = list->head;
+    while (current != NULL) {
+        if (current->data == data) {
             return 1;
         }
-        cur = cur->next;
+        current = current->next;
     }
     return 0;
 }

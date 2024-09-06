@@ -1,34 +1,18 @@
-#include <stdio.h>
-#include <stdlib.h>
+// C does not have built-in support for regular expressions, so we'll use POSIX regex
 #include <regex.h>
+#include <stdio.h>
 
 int main() {
-    FILE *fp;
-    regex_t regex;
+    FILE *file = fopen("input.txt", "r");
     char line[1024];
-    int reti;
-
-    fp = fopen("input.txt", "r");
-    if (!fp) {
-        perror("Error opening file");
-        return(-1);
-    }
-
-    reti = regcomp(&regex, "^[0-9]+.*\\.$", 0);
-    if (reti) {
-        fprintf(stderr, "Could not compile regex
-");
-        exit(1);
-    }
-
-    while (fgets(line, sizeof(line), fp)) {
-        reti = regexec(&regex, line, 0, NULL, 0);
-        if (!reti) {
+    regex_t regex;
+    regcomp(&regex, "^\\d+.*\\.$", 0);
+    while (fgets(line, 1024, file)) {
+        if (!regexec(&regex, line, 0, NULL, 0)) {
             printf("%s", line);
         }
     }
-
-    fclose(fp);
     regfree(&regex);
+    fclose(file);
     return 0;
 }

@@ -1,58 +1,23 @@
-// C++
+// CPP
 #include <iostream>
 #include <map>
 #include <string>
 
-std::map<std::string, std::string> users;
+std::map<std::string, std::string> users = {{"user1", "password1"}, {"user2", "password2"}};
 
-void registerUser() {
+int main() {
     std::string username, password;
-    std::cout << "Enter username: ";
-    std::cin >> username;
-    std::cout << "Enter password: ";
-    std::cin >> password;
-    users[username] = password;
-}
 
-void login() {
-    std::string username, password;
-    std::cout << "Enter username: ";
+    std::cout << "Enter your username: ";
     std::cin >> username;
-    std::cout << "Enter password: ";
+
+    std::cout << "Enter your password: ";
     std::cin >> password;
 
     if (users.find(username) != users.end() && users[username] == password) {
-        std::cout << "Login successful
-";
+        std::cout << "Authentication successful." << std::endl;
     } else {
-        std::cout << "Invalid username or password
-";
-    }
-}
-
-int main() {
-    int choice;
-
-    while (true) {
-        std::cout << "1. Register
-2. Login
-3. Exit
-";
-        std::cin >> choice;
-
-        switch (choice) {
-            case 1:
-                registerUser();
-                break;
-            case 2:
-                login();
-                break;
-            case 3:
-                exit(0);
-            default:
-                std::cout << "Invalid choice
-";
-        }
+        std::cout << "Invalid username or password." << std::endl;
     }
 
     return 0;

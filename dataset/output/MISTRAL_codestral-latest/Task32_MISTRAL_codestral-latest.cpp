@@ -1,4 +1,3 @@
-// C++
 #include <iostream>
 
 int calculateYears(double principal, double interest, double tax, double desired) {
@@ -13,6 +12,6 @@ int calculateYears(double principal, double interest, double tax, double desired
 }
 
 int main() {
-    std::cout << calculateYears(1000.0, 0.05, 0.18, 1100.0);
+    // Test the function here
     return 0;
 }

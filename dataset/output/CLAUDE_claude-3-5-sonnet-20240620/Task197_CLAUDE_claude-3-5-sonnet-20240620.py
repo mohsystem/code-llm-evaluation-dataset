@@ -14,3 +14,7 @@ class Solution:
         x = self.x_center + r * math.cos(angle)
         y = self.y_center + r * math.sin(angle)
         return [x, y]
+
+# Your Solution object will be instantiated and called as such:
+# obj = Solution(radius, x_center, y_center)
+# param_1 = obj.randPoint()

@@ -1,8 +1,8 @@
 #include <stddef.h>
 
-int count_passengers(int stops[][2], size_t n) {
+int countPassengers(int stops[][2], size_t len) {
     int total = 0;
-    for (size_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < len; i++) {
         total += stops[i][0] - stops[i][1];
     }
     return total;

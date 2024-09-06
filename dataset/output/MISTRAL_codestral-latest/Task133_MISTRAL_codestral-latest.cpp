@@ -1,24 +1,22 @@
-// C++
+// C++ code for password reset functionality
+
 #include <iostream>
 #include <string>
 
-int main() {
-    std::string currentPassword, newPassword, confirmPassword;
-
-    std::cout << "Enter your current password: ";
-    std::getline(std::cin, currentPassword);
-
-    std::cout << "Enter your new password: ";
-    std::getline(std::cin, newPassword);
-
-    std::cout << "Confirm your new password: ";
-    std::getline(std::cin, confirmPassword);
-
-    if (newPassword == confirmPassword) {
-        std::cout << "Password reset successful." << std::endl;
+std::string resetPassword(std::string currentPassword, std::string newPassword, std::string confirmPassword) {
+    // For simplicity, let's assume the current password is "oldpassword"
+    if (currentPassword != "oldpassword") {
+        return "Current password is incorrect.";
+    } else if (newPassword != confirmPassword) {
+        return "New password and confirm password do not match.";
     } else {
-        std::cout << "Passwords do not match. Password reset failed." << std::endl;
+        // In a real-world application, you would update the password here
+        return "Password reset successful.";
     }
+}
 
+int main() {
+    // Test the function
+    std::cout << resetPassword("oldpassword", "newpassword", "newpassword") << std::endl;
     return 0;
 }

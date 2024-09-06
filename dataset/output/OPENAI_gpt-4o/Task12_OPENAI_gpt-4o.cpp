@@ -2,23 +2,19 @@
 #include <sstream>
 #include <string>
 
-int wordScore(const std::string& word) {
-    int score = 0;
-    for (char ch : word) {
-        score += ch - 'a' + 1;
-    }
-    return score;
-}
-
-std::string highestScoringWord(const std::string& str) {
-    std::istringstream stream(str);
+std::string high(const std::string& inputString) {
+    std::istringstream iss(inputString);
     std::string word, bestWord;
-    int highestScore = 0;
+    int maxScore = 0;
 
-    while (stream >> word) {
-        int score = wordScore(word);
-        if (score > highestScore) {
-            highestScore = score;
+    while (iss >> word) {
+        int score = 0;
+        for (char c : word) {
+            score += c - 'a' + 1;
+        }
+
+        if (score > maxScore) {
+            maxScore = score;
             bestWord = word;
         }
     }
@@ -27,7 +23,7 @@ std::string highestScoringWord(const std::string& str) {
 }
 
 int main() {
-    std::string input = "example input sentence";
-    std::cout << highestScoringWord(input) << std::endl;
+    std::string inputString = "abad test example";
+    std::cout << high(inputString) << std::endl;
     return 0;
 }

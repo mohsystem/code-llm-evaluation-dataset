@@ -4,19 +4,17 @@
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        printf("Usage: %s <file_path>\
-", argv[0]);
+        printf("Usage: %s <file_path>\\n", argv[0]);
         return 1;
     }
 
     const char *filePath = argv[1];
 
     if (remove(filePath) == 0) {
-        printf("File deleted successfully: %s\
-", filePath);
+        printf("File '%s' has been deleted successfully.\\n", filePath);
     } else {
-        printf("Failed to delete the file: %s\
-", filePath);
+        perror("Error");
+        printf("Unable to delete '%s'.\\n", filePath);
     }
 
     return 0;

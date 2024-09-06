@@ -1,52 +1,52 @@
+# Python code for server
 import socket
 import threading
 
-class Server:
-    def __init__(self):
-        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.bind(("localhost", 8000))
-        self.server_socket.listen(5)
-        self.clients = []
+HOST = '127.0.0.1'
+PORT = 9090
 
-    def broadcast(self, message):
-        for client in self.clients:
-            client.send(message.encode())
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind((HOST, PORT))
 
-    def handle_client(self, client_socket):
-        while True:
-            message = client_socket.recv(1024).decode()
-            print("Received from client:", message)
-            self.broadcast(message)
+server.listen()
 
-    def run(self):
-        print("Server started. Waiting for clients...")
-        while True:
-            client_socket, address = self.server_socket.accept()
-            print("Client connected")
-            self.clients.append(client_socket)
-            threading.Thread(target=self.handle_client, args=(client_socket,)).start()
+clients = []
+nicknames = []
 
-class Client:
-    def __init__(self):
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_socket.connect(("localhost", 8000))
+def broadcast(message):
+    for client in clients:
+        client.send(message)
 
-    def receive(self):
-        while True:
-            message = self.client_socket.recv(1024).decode()
-            print("Received from server:", message)
+def handle(client):
+    while True:
+        try:
+            message = client.recv(1024)
+            broadcast(message)
+        except:
+            index = clients.index(client)
+            clients.remove(client)
+            client.close()
+            nickname = nicknames[index]
+            broadcast(f'{nickname} left the chat'.encode('ascii'))
+            nicknames.remove(nickname)
+            break
 
-    def send(self):
-        while True:
-            message = input()
-            self.client_socket.send(message.encode())
+def receive():
+    while True:
+        client, address = server.accept()
+        print(f"Connected with {str(address)}")
 
-    def run(self):
-        threading.Thread(target=self.receive).start()
-        self.send()
+        client.send('NICK'.encode('ascii'))
+        nickname = client.recv(1024).decode('ascii')
+        nicknames.append(nickname)
+        clients.append(client)
 
-if __name__ == "__main__":
-    server = Server()
-    server.run()
-    # client = Client()
-    # client.run()
+        print(f'Nickname of the client is {nickname}!')
+        broadcast(f'{nickname} joined the chat'.encode('ascii'))
+        client.send('Connected to the server.'.encode('ascii'))
+
+        thread = threading.Thread(target=handle, args=(client,))
+        thread.start()
+
+print("Server Started!")
+receive()

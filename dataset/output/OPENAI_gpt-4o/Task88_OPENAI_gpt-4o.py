@@ -1,19 +1,18 @@
-import os
 import tempfile
+import os
 import random
 import string
 
-# Generate random string
-random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=7))
+# Generate a random string
+random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
 
-# Convert to Unicode (In Python3, str are Unicode by default)
-unicode_string = random_string
+# Convert string into Unicode
+unicode_string = random_string.encode('utf-8')
 
-# Create temporary file
-temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.txt')
-temp_file.write(unicode_string.encode('utf-8'))
-temp_file_path = temp_file.name
+# Create a temporary file and write the Unicode string to it
+temp_file = tempfile.NamedTemporaryFile(delete=False)
+temp_file.write(unicode_string)
 temp_file.close()
 
-# Return the path
-print(f"File path: {temp_file_path}")
+# Output the path of the temporary file
+print(temp_file.name)

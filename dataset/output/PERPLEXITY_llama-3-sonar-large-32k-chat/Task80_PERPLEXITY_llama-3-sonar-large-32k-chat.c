@@ -2,26 +2,18 @@
 #include <openssl/err.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
 
-SSL *createSSLSocket(const char *host, int port) {
-    SSL_CTX *ctx = SSL_CTX_new(TLS_client_method());
-    SSL *ssl = SSL_new(ctx);
-    BIO *bio = BIO_new_connect(host);
-    SSL_set_bio(ssl, bio, bio);
+SSL* createSSLClientSocket(const char* host, int port) {
+    SSL_library_init();
+    SSL_CTX* ctx = SSL_CTX_new(TLS_client_method());
+    SSL* ssl = SSL_new(ctx);
+    int sockfd = socket(AF_INET6, SOCK_STREAM, 0);
+    struct sockaddr_in6 addr;
+    inet_pton(AF_INET6, host, &addr.sin6_addr);
+    addr.sin6_family = AF_INET6;
+    addr.sin6_port = htons(port);
+    connect(sockfd, (struct sockaddr*)&addr, sizeof(addr));
+    SSL_set_fd(ssl, sockfd);
     SSL_connect(ssl);
     return ssl;
-}
-
-int main() {
-    SSL *ssl = createSSLSocket("::1", 443);
-    if (ssl) {
-        printf("Connected to ::1:443
-");
-        SSL_free(ssl);
-    } else {
-        ERR_print_errors_fp(stderr);
-    }
-    return 0;
 }

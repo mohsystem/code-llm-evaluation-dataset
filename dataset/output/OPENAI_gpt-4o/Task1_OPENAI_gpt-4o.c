@@ -1,17 +1,16 @@
 #include <stdio.h>
 
-int peopleOnTheBus(int stops[][2], int size) {
+int numberOfPeopleOnBus(int busStops[][2], int size) {
     int peopleOnBus = 0;
-    for(int i = 0; i < size; i++) {
-        peopleOnBus += stops[i][0] - stops[i][1];
+    for (int i = 0; i < size; ++i) {
+        peopleOnBus += busStops[i][0] - busStops[i][1];
     }
     return peopleOnBus;
 }
 
 int main() {
-    int stops[3][2] = {{10, 0}, {3, 5}, {2, 5}};
-    int size = sizeof(stops) / sizeof(stops[0]);
-    printf("%d
-", peopleOnTheBus(stops, size)); // Output should be 5
+    int busStops[][2] = { {3, 0}, {2, 1}, {5, 2}, {1, 4} };
+    int size = sizeof(busStops) / sizeof(busStops[0]);
+    printf("%d\n", numberOfPeopleOnBus(busStops, size));
     return 0;
 }

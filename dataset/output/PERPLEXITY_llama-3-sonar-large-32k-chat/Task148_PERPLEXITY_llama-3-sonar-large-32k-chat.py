@@ -24,6 +24,5 @@ stack = Stack()
 stack.push(1)
 stack.push(2)
 stack.push(3)
-print(stack.pop())  # 3
-print(stack.peek())  # 2
-print(stack.is_empty())  # False
+print(stack.pop())  # Output: 3
+print(stack.peek())  # Output: 2

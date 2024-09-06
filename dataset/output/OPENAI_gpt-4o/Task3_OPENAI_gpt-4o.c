@@ -1,18 +1,16 @@
-// C
-#include <stdbool.h>
 #include <stdio.h>
 #include <ctype.h>
-#include <string.h>
+#include <stdbool.h>
 
-bool isPangram(const char *sentence) {
-    bool letters[26] = { false };
-    for (int i = 0; sentence[i] != '\0'; i++) {
-        if (isalpha(sentence[i])) {
-            letters[tolower(sentence[i]) - 'a'] = true;
+bool isPangram(const char* s) {
+    bool alphabet[26] = { false };
+    for (int i = 0; s[i] != '\0'; i++) {
+        if (isalpha(s[i])) {
+            alphabet[tolower(s[i]) - 'a'] = true;
         }
     }
     for (int i = 0; i < 26; i++) {
-        if (!letters[i]) {
+        if (!alphabet[i]) {
             return false;
         }
     }
@@ -20,8 +18,7 @@ bool isPangram(const char *sentence) {
 }
 
 int main() {
-    const char* sentence = "The quick brown fox jumps over the lazy dog";
-    printf("%s
-", isPangram(sentence) ? "True" : "False");
+    char s[] = "The quick brown fox jumps over the lazy dog";
+    printf("%s\n", isPangram(s) ? "true" : "false");  // Output: true
     return 0;
 }

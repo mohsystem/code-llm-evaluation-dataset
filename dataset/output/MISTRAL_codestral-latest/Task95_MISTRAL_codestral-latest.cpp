@@ -1,11 +1,11 @@
-// C++
-#include <chrono>
 #include <iostream>
+#include <ctime>
 
 int main() {
-    auto start = std::chrono::high_resolution_clock::now();
-    auto end = std::chrono::high_resolution_clock::now();
-    double time_spent = std::chrono::duration<double>(end - start).count();
-    std::cout << "Current processor time: " << time_spent << " seconds" << std::endl;
+    clock_t start = clock();
+    // Your code here
+    clock_t end = clock();
+    double duration = (double)(end - start) / CLOCKS_PER_SEC;
+    std::cout << "Processor time: " << duration << " seconds" << std::endl;
     return 0;
 }

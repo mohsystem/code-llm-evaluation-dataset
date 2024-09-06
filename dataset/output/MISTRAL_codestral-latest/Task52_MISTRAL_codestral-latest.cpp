@@ -1,35 +1,48 @@
 // C++
+// This is a simple example using AES encryption algorithm.
+// Please note that you need to add OpenSSL library to your project.
+#include <openssl/aes.h>
+#include <openssl/rand.h>
 #include <iostream>
 #include <fstream>
-#include <cctype>
 
-void caesarCipher(int shift, std::string inputFile, std::string outputFile) {
-    std::ifstream input(inputFile);
-    std::ofstream output(outputFile);
-    char character;
-    while (input.get(character)) {
-        if (isalpha(character)) {
-            if (islower(character)) {
-                character = (character - 'a' + shift) % 26 + 'a';
-            } else {
-                character = (character - 'A' + shift) % 26 + 'A';
-            }
-        }
-        output << character;
+void encryptFile(const unsigned char* key, const std::string& inputFile, const std::string& outputFile) {
+    AES_KEY enc_key;
+    AES_set_encrypt_key(key, 128, &enc_key);
+
+    std::ifstream in(inputFile, std::ios::binary);
+    std::ofstream out(outputFile, std::ios::binary);
+
+    unsigned char iv[AES_BLOCK_SIZE];
+    RAND_bytes(iv, AES_BLOCK_SIZE);
+    out.write(reinterpret_cast<char*>(iv), AES_BLOCK_SIZE);
+
+    unsigned char in_buf[AES_BLOCK_SIZE], out_buf[AES_BLOCK_SIZE];
+    while (in.read(reinterpret_cast<char*>(in_buf), AES_BLOCK_SIZE)) {
+        AES_encrypt(in_buf, out_buf, &enc_key);
+        out.write(reinterpret_cast<char*>(out_buf), AES_BLOCK_SIZE);
     }
-    input.close();
-    output.close();
+
+    if (in.gcount() != 0) {
+        memset(in_buf + in.gcount(), 0, AES_BLOCK_SIZE - in.gcount());
+        AES_encrypt(in_buf, out_buf, &enc_key);
+        out.write(reinterpret_cast<char*>(out_buf), AES_BLOCK_SIZE);
+    }
 }
 
-int main() {
-    int shift;
-    std::string inputFile, outputFile;
-    std::cout << "Enter the shift value: ";
-    std::cin >> shift;
-    std::cout << "Enter the input file path: ";
-    std::cin >> inputFile;
-    std::cout << "Enter the output file path: ";
-    std::cin >> outputFile;
-    caesarCipher(shift, inputFile, outputFile);
-    return 0;
+void decryptFile(const unsigned char* key, const std::string& inputFile, const std::string& outputFile) {
+    AES_KEY dec_key;
+    AES_set_decrypt_key(key, 128, &dec_key);
+
+    std::ifstream in(inputFile, std::ios::binary);
+    std::ofstream out(outputFile, std::ios::binary);
+
+    unsigned char iv[AES_BLOCK_SIZE];
+    in.read(reinterpret_cast<char*>(iv), AES_BLOCK_SIZE);
+
+    unsigned char in_buf[AES_BLOCK_SIZE], out_buf[AES_BLOCK_SIZE];
+    while (in.read(reinterpret_cast<char*>(in_buf), AES_BLOCK_SIZE)) {
+        AES_decrypt(in_buf, out_buf, &dec_key);
+        out.write(reinterpret_cast<char*>(out_buf), AES_BLOCK_SIZE);
+    }
 }

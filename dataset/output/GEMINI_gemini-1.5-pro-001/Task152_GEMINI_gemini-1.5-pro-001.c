@@ -1,82 +1,116 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define TABLE_SIZE 10
 
-struct Entry {
-    int key;
-    int value;
-    struct Entry* next;
-};
+typedef struct Entry {
+    char *key;
+    char *value;
+    struct Entry *next;
+} Entry;
 
-struct HashTable {
-    struct Entry** table;
-};
+typedef struct HashTable {
+    Entry **table;
+    int size;
+} HashTable;
 
-struct HashTable* createHashTable() {
-    struct HashTable* ht = (struct HashTable*)malloc(sizeof(struct HashTable));
-    ht->table = (struct Entry**)malloc(sizeof(struct Entry*) * TABLE_SIZE);
-    for (int i = 0; i < TABLE_SIZE; i++) {
-        ht->table[i] = NULL;
+HashTable *createHashTable(int size) {
+    HashTable *ht = (HashTable *)malloc(sizeof(HashTable));
+    if (ht == NULL) {
+        return NULL;
+    }
+    ht->size = size;
+    ht->table = (Entry **)calloc(size, sizeof(Entry *));
+    if (ht->table == NULL) {
+        free(ht);
+        return NULL;
     }
     return ht;
 }
 
-int hash(int key) {
-    return key % TABLE_SIZE;
+unsigned int hash(const char *key) {
+    unsigned int hashVal = 0;
+    while (*key != '\0') {
+        hashVal = (hashVal << 5) + *key++;
+    }
+    return hashVal;
 }
 
-void insert(struct HashTable* ht, int key, int value) {
-    int index = hash(key);
-    struct Entry* newEntry = (struct Entry*)malloc(sizeof(struct Entry));
-    newEntry->key = key;
-    newEntry->value = value;
+void insert(HashTable *ht, const char *key, const char *value) {
+    unsigned int index = hash(key) % ht->size;
+    Entry *newEntry = (Entry *)malloc(sizeof(Entry));
+    if (newEntry == NULL) {
+        return;
+    }
+    newEntry->key = strdup(key);
+    newEntry->value = strdup(value);
     newEntry->next = ht->table[index];
     ht->table[index] = newEntry;
 }
 
-void deleteKey(struct HashTable* ht, int key) {
-    int index = hash(key);
-    struct Entry* current = ht->table[index];
-    struct Entry* previous = NULL;
+char *search(HashTable *ht, const char *key) {
+    unsigned int index = hash(key) % ht->size;
+    Entry *entry = ht->table[index];
+    while (entry != NULL) {
+        if (strcmp(entry->key, key) == 0) {
+            return entry->value;
+        }
+        entry = entry->next;
+    }
+    return NULL;
+}
 
-    while (current != NULL) {
-        if (current->key == key) {
-            if (previous == NULL) {
-                ht->table[index] = current->next;
+void deleteItem(HashTable *ht, const char *key) {
+    unsigned int index = hash(key) % ht->size;
+    Entry *prev = NULL;
+    Entry *entry = ht->table[index];
+    while (entry != NULL) {
+        if (strcmp(entry->key, key) == 0) {
+            if (prev == NULL) {
+                ht->table[index] = entry->next;
             } else {
-                previous->next = current->next;
+                prev->next = entry->next;
             }
-            free(current);
+            free(entry->key);
+            free(entry->value);
+            free(entry);
             return;
         }
-        previous = current;
-        current = current->next;
+        prev = entry;
+        entry = entry->next;
     }
 }
 
-int search(struct HashTable* ht, int key) {
-    int index = hash(key);
-    struct Entry* current = ht->table[index];
-
-    while (current != NULL) {
-        if (current->key == key) {
-            return current->value;
-        }
-        current = current->next;
-    }
-    return -1; // Not found
-}
-
-void freeHashTable(struct HashTable* ht) {
-    for (int i = 0; i < TABLE_SIZE; i++) {
-        struct Entry* current = ht->table[i];
-        while (current != NULL) {
-            struct Entry* next = current->next;
-            free(current);
-            current = next;
+void freeHashTable(HashTable *ht) {
+    for (int i = 0; i < ht->size; i++) {
+        Entry *entry = ht->table[i];
+        while (entry != NULL) {
+            Entry *temp = entry;
+            entry = entry->next;
+            free(temp->key);
+            free(temp->value);
+            free(temp);
         }
     }
     free(ht->table);
     free(ht);
+}
+
+// Example usage:
+int main() {
+    HashTable *ht = createHashTable(TABLE_SIZE);
+
+    insert(ht, "apple", "red");
+    insert(ht, "banana", "yellow");
+    insert(ht, "grape", "purple");
+
+    printf("Search for 'banana': %s\n", search(ht, "banana"));
+
+    deleteItem(ht, "banana");
+
+    printf("Search for 'banana' after deletion: %s\n", search(ht, "banana"));
+
+    freeHashTable(ht);
+    return 0;
 }

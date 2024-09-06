@@ -1,25 +1,27 @@
 
 #include <ctype.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 
 char* to_jaden_case(char* string) {
-    if (string == NULL || *string == \'\\0\') {
-        return NULL;
-    }
+    if (string == NULL || *string == '\\0') return string;
     
-    char* result = strdup(string);
-    int len = strlen(result);
-    int capitalize_next = 1;
+    char* result = malloc(strlen(string) + 1);
+    char* p = result;
+    int new_word = 1;
     
-    for (int i = 0; i < len; i++) {
-        if (isspace(result[i])) {
-            capitalize_next = 1;
-        } else if (capitalize_next) {
-            result[i] = toupper(result[i]);
-            capitalize_next = 0;
+    while (*string) {
+        if (isspace(*string)) {
+            new_word = 1;
+            *p++ = *string++;
+        } else if (new_word) {
+            *p++ = toupper(*string++);
+            new_word = 0;
+        } else {
+            *p++ = *string++;
         }
     }
+    *p = '\\0';
     
     return result;
 }

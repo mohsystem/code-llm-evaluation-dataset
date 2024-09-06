@@ -1,72 +1,34 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include <curl/curl.h>
 
-#define BUFFER_SIZE 1024
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp) {
+    FILE *fp = (FILE *)userp;
+    fwrite(contents, size, nmemb, fp);
+    return size * nmemb;
+}
 
 int main(int argc, char *argv[]) {
-    char hostname[256], username[256], password[256], filename[256];
-    strcpy(hostname, argv[1]);
-    strcpy(username, argv[2]);
-    strcpy(password, argv[3]);
-    strcpy(filename, argv[4]);
+    CURL *curl;
+    CURLcode res;
+    FILE *fp;
 
-    int sockfd, connfd;
-    struct sockaddr_in servaddr;
-
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) {
-        perror("socket creation failed");
-        exit(1);
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+    if(curl) {
+        char url[256];
+        sprintf(url, "ftp://%s:%s@%s/%s", argv[1], argv[2], argv[3], argv[4]);
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+        fp = fopen(argv[4], "wb");
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK) {
+            fprintf(stderr, "cURL error: %s\n", curl_easy_strerror(res));
+        }
+        fclose(fp);
+        curl_easy_cleanup(curl);
     }
-
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(21);
-    inet_pton(AF_INET, hostname, &(servaddr.sin_addr));
-
-    if (connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
-        perror("connection failed");
-        exit(1);
-    }
-
-    char buffer[BUFFER_SIZE];
-    recv(sockfd, buffer, BUFFER_SIZE, 0);
-    printf("%s", buffer);
-
-    char cmd[256];
-    sprintf(cmd, "USER %s\r
-", username);
-    send(sockfd, cmd, strlen(cmd), 0);
-    recv(sockfd, buffer, BUFFER_SIZE, 0);
-    printf("%s", buffer);
-
-    sprintf(cmd, "PASS %s\r
-", password);
-    send(sockfd, cmd, strlen(cmd), 0);
-    recv(sockfd, buffer, BUFFER_SIZE, 0);
-    printf("%s", buffer);
-
-    sprintf(cmd, "RETR %s\r
-", filename);
-    send(sockfd, cmd, strlen(cmd), 0);
-    recv(sockfd, buffer, BUFFER_SIZE, 0);
-    printf("%s", buffer);
-
-    FILE *fp = fopen(filename, "wb");
-    if (fp == NULL) {
-        perror("file open failed");
-        exit(1);
-    }
-
-    while (recv(sockfd, buffer, BUFFER_SIZE, 0) > 0) {
-        fwrite(buffer, 1, strlen(buffer), fp);
-    }
-
-    fclose(fp);
-    close(sockfd);
-
+    curl_global_cleanup();
     return 0;
 }

@@ -1,39 +1,38 @@
+code here:
 #include <iostream>
 #include <string>
-#include <map>
+#include <vector>
 
-using namespace std;
-
-class AuthenticationSystem {
+class User {
 private:
-    map<string, string> users;
+    std::string username;
+    std::string password;
 
 public:
-    AuthenticationSystem() {
-        users["admin"] = "password123";
-        users["user"] = "password456";
-    }
+    User(std::string username, std::string password) : username(username), password(password) {}
 
-    bool authenticate(string username, string password) {
-        return users.count(username) && users[username] == password;
+    bool authenticate(std::string username, std::string password) {
+        if (this->username == username && this->password == password) {
+            return true;
+        } else {
+            return false;
+        }
     }
 };
 
 int main() {
-    AuthenticationSystem auth;
-    string username, password;
-
-    cout << "Enter username: ";
-    getline(cin, username);
-
-    cout << "Enter password: ";
-    getline(cin, password);
-
-    if (auth.authenticate(username, password)) {
-        cout << "Authentication successful!" << endl;
-    } else {
-        cout << "Invalid credentials!" << endl;
+    std::vector<User> users = {{User("user1", "password1"), User("user2", "password2")}};
+    std::string username, password;
+    std::cout << "Enter username: ";
+    std::cin >> username;
+    std::cout << "Enter password: ";
+    std::cin >> password;
+    for (const auto& user : users) {
+        if (user.authenticate(username, password)) {
+            std::cout << "Authentication successful!" << std::endl;
+            return 0;
+        }
     }
-
+    std::cout << "Invalid credentials!" << std::endl;
     return 0;
 }

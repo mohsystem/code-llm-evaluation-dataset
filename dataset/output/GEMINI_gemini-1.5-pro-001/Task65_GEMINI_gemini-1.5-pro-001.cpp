@@ -3,25 +3,35 @@
 
 using namespace std;
 
-int main(int argc, char *argv[]) {
+string readFile(const string& filename) {
+    ifstream file(filename);
+    string content;
+    string line;
+
+    if (file.is_open()) {
+        while (getline(file, line)) {
+            content += line + "\n";
+        }
+        file.close();
+        return content;
+    } else {
+        cerr << "Error: Could not open file '" << filename << "'" << endl;
+        return "";
+    }
+}
+
+int main(int argc, char* argv[]) {
     if (argc < 2) {
-        cerr << "Error: Filename is required as a command-line argument." << endl;
+        cerr << "Usage: " << argv[0] << " <filename>" << endl;
         return 1;
     }
 
     string filename = argv[1];
-    ifstream file(filename);
+    string fileContent = readFile(filename);
 
-    if (!file.is_open()) {
-        cerr << "Error opening file: " << filename << endl;
-        return 1;
+    if (!fileContent.empty()) {
+        cout << fileContent;
     }
 
-    string line;
-    while (getline(file, line)) {
-        cout << line << endl;
-    }
-
-    file.close();
     return 0;
 }

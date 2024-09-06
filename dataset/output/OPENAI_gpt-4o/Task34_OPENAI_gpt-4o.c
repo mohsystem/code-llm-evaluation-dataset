@@ -1,31 +1,23 @@
-// C Code
 #include <stdio.h>
 #include <math.h>
-
-int countDigits(int number) {
-    int count = 0;
-    while (number != 0) {
-        number /= 10;
-        count++;
-    }
-    return count;
-}
+#include <string.h>
 
 int isNarcissistic(int number) {
-    int originalNumber = number;
+    char numStr[12];
+    sprintf(numStr, "%d", number);
+    int power = strlen(numStr);
     int sum = 0;
-    int numberOfDigits = countDigits(number);
-    while (number > 0) {
-        int digit = number % 10;
-        sum += pow(digit, numberOfDigits);
-        number /= 10;
+    
+    for (int i = 0; i < power; i++) {
+        int digit = numStr[i] - '0';
+        sum += pow(digit, power);
     }
-    return sum == originalNumber;
+    
+    return sum == number;
 }
 
 int main() {
-    int num = 153; // example number
-    printf("%d
-", isNarcissistic(num));
+    printf("%d\n", isNarcissistic(153));  // 1 (true)
+    printf("%d\n", isNarcissistic(1652));  // 0 (false)
     return 0;
 }

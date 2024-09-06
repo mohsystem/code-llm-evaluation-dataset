@@ -1,15 +1,10 @@
 def xorGame(nums):
-    xorSum = 0
+    xor_value = 0
     for num in nums:
-        xorSum ^= num
-        
-    if xorSum == 0 or len(nums) % 2 == 0:
-        return True
-    return False
+        xor_value ^= num
+    return xor_value == 0 or len(nums) % 2 == 0
 
-# Testing example 1
-print(xorGame([1, 1, 2]))  # False
-# Testing example 2
-print(xorGame([0, 1]))  # True
-# Testing example 3
-print(xorGame([1, 2, 3]))  # True
+# Example usage
+print(xorGame([1,1,2]))  # Output: False
+print(xorGame([0,1]))    # Output: True
+print(xorGame([1,2,3]))  # Output: True

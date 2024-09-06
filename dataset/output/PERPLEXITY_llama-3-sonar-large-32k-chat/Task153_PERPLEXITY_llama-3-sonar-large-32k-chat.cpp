@@ -8,29 +8,33 @@ class Graph {
 public:
     int numNodes;
     vector<vector<int>> adjList;
+    vector<bool> visited;
 
-    Graph(int numNodes) : numNodes(numNodes), adjList(numNodes) {}
+    Graph(int numNodes) {
+        this->numNodes = numNodes;
+        this->adjList.resize(numNodes);
+        this->visited.resize(numNodes, false);
+    }
 
     void addEdge(int u, int v) {
-        adjList[u].push_back(v);
+        this->adjList[u].push_back(v);
     }
 
     void bfs(int startNode) {
-        vector<bool> visited(numNodes, false);
         queue<int> q;
 
         q.push(startNode);
-        visited[startNode] = true;
+        this->visited[startNode] = true;
 
         while (!q.empty()) {
             int node = q.front();
             q.pop();
             cout << node << " ";
 
-            for (int neighbor : adjList[node]) {
-                if (!visited[neighbor]) {
+            for (int neighbor : this->adjList[node]) {
+                if (!this->visited[neighbor]) {
                     q.push(neighbor);
-                    visited[neighbor] = true;
+                    this->visited[neighbor] = true;
                 }
             }
         }

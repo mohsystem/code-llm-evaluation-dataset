@@ -7,8 +7,7 @@ class Session:
     def end_session(self):
         self.is_active = False
 
-# Usage
+# Example usage:
 user_session = Session(123)
-print(user_session.is_active)  # True
+# ... user interacts with the system ...
 user_session.end_session()
-print(user_session.is_active)  # False

@@ -1,18 +1,23 @@
 #include <stdio.h>
-#include <jni.h>
+#include <stdlib.h>
 
-JNIEXPORT void JNICALL Java_MultiLangFileReader_readFileInC(JNIEnv *env, jobject obj, jstring fileName) {
-    const char *nativeString = (*env)->GetStringUTFChars(env, fileName, 0);
-    FILE *file = fopen(nativeString, "r");
-    if (file == NULL) {
-        printf("Error opening file
-");
-        return;
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("Usage: %s <file_name>\n", argv[0]);
+        return 1;
     }
+
+    FILE *file = fopen(argv[1], "r");
+    if (file == NULL) {
+        printf("Cannot open file: %s\n", argv[1]);
+        return 1;
+    }
+
     char line[256];
     while (fgets(line, sizeof(line), file)) {
         printf("%s", line);
     }
+
     fclose(file);
-    (*env)->ReleaseStringUTFChars(env, fileName, nativeString);
+    return 0;
 }

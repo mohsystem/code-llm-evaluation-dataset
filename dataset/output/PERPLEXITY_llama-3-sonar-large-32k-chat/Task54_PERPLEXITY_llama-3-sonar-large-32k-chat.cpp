@@ -1,33 +1,28 @@
 #include <iostream>
-#include <cstdlib>
 #include <ctime>
+#include <cstdlib>
+
+std::string generateOTP() {
+    srand(static_cast<unsigned int>(time(0)));
+    return std::to_string(rand() % 900000 + 100000);
+}
+
+std::string authenticate(std::string username, std::string password, std::string otp) {
+    if (username == "admin" && password == "password" && otp == generateOTP()) {
+        return "Authentication successful";
+    } else {
+        return "Authentication failed";
+    }
+}
 
 int main() {
-    srand(static_cast<unsigned int>(time(0)));
-    int otp = rand() % 900000 + 100000;
-
-    std::string username;
-    std::string password;
-
+    std::string username, password, otp;
     std::cout << "Enter username: ";
     std::cin >> username;
     std::cout << "Enter password: ";
     std::cin >> password;
-
-    if (username == "admin" && password == "password") {
-        std::cout << "One Time Password (OTP) is: " << otp << std::endl;
-        int userOtp;
-        std::cout << "Enter OTP: ";
-        std::cin >> userOtp;
-
-        if (userOtp == otp) {
-            std::cout << "Login successful!" << std::endl;
-        } else {
-            std::cout << "Invalid OTP. Login failed." << std::endl;
-        }
-    } else {
-        std::cout << "Invalid username or password. Login failed." << std::endl;
-    }
-
+    std::cout << "Enter OTP: ";
+    std::cin >> otp;
+    std::cout << authenticate(username, password, otp) << std::endl;
     return 0;
 }

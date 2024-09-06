@@ -1,23 +1,21 @@
 
 #include <stdio.h>
 
-char findMissingLetter(char* array, int size) {
+char findMissingLetter(char* chars, int size) {
     for (int i = 0; i < size - 1; i++) {
-        if (array[i + 1] - array[i] > 1) {
-            return array[i] + 1;
+        if (chars[i + 1] - chars[i] > 1) {
+            return chars[i] + 1;
         }
     }
-    return \' \';
+    return ' ';
 }
 
 int main() {
-    char arr1[] = {\'a\', \'b\', \'c\', \'d\', \'f\'};
-    char arr2[] = {\'O\', \'Q\', \'R\', \'S\'};
+    char arr1[] = {'a','b','c','d','f'};
+    char arr2[] = {'O','Q','R','S'};
     
-    printf("%c\
-", findMissingLetter(arr1, sizeof(arr1)/sizeof(arr1[0])));
-    printf("%c\
-", findMissingLetter(arr2, sizeof(arr2)/sizeof(arr2[0])));
+    printf("%c\\n", findMissingLetter(arr1, sizeof(arr1)/sizeof(arr1[0])));  // Output: e
+    printf("%c\\n", findMissingLetter(arr2, sizeof(arr2)/sizeof(arr2[0])));  // Output: P
     
     return 0;
 }

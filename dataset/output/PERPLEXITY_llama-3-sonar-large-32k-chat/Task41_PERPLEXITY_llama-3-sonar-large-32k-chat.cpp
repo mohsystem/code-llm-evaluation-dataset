@@ -1,10 +1,11 @@
+code here:
 #include <iostream>
 #include <string>
 
 int main() {
-    std::string input;
+    std::string userInput;
     std::cout << "Enter a string: ";
-    std::getline(std::cin, input);
-    std::cout << "You entered: " << input << std::endl;
+    std::getline(std::cin, userInput);
+    std::cout << "You entered: " << userInput << std::endl;
     return 0;
 }

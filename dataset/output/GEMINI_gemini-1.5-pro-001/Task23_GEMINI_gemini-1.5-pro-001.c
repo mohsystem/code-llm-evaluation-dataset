@@ -1,11 +1,14 @@
 #include <math.h>
 
-long long findNb(long long m) {
-    long long n = 0;
-    long long sum = 0;
-    while (sum < m) {
+long long find_nb(long long m) {
+    long long n = 1;
+    long long total = 0;
+    while (total < m) {
+        total += pow(n, 3);
+        if (total == m) {
+            return n;
+        }
         n++;
-        sum += n * n * n;
     }
-    return sum == m ? n : -1;
+    return -1;
 }

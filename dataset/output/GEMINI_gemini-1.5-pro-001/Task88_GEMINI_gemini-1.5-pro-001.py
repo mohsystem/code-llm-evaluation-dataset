@@ -1,21 +1,33 @@
-import os
-import random
-import string
 import tempfile
+import os
+import uuid
 
-def generate_random_string(length):
-    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
+def create_temp_file_with_unicode():
+  """Creates a temporary file with Unicode content.
 
-def convert_to_unicode(text):
-    return ''.join(f'\\u{ord(c):04x}' for c in text)
+  Returns:
+    str: The path to the created temporary file.
+  """
+  try:
+    # Create a temporary file
+    temp_file = tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8', delete=False)
+    
+    # Generate a random string
+    random_string = str(uuid.uuid4())
+    
+    # Convert the string to Unicode
+    unicode_string = random_string
 
-def main():
-    with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', delete=False) as f:
-        random_string = generate_random_string(10)
-        unicode_string = convert_to_unicode(random_string)
-        f.write(unicode_string)
-        temp_file_path = f.name
-    print(temp_file_path)
+    # Write the Unicode string to the file
+    temp_file.write(unicode_string)
+    temp_file.close()
 
-if __name__ == "__main__":
-    main()
+    return temp_file.name
+  except Exception as e:
+    print(f"An error occurred: {e}")
+    return None
+
+# Example usage:
+temp_file_path = create_temp_file_with_unicode()
+if temp_file_path:
+  print(f"Temporary file created at: {temp_file_path}")

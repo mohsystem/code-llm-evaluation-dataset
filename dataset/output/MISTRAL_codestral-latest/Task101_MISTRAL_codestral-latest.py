@@ -1,9 +1,8 @@
-import os
+# Python does not have built-in support for creating executable files.
+# However, you can create a shell script and use os.system() to make it executable.
 
-try:
-    with open("script.sh", "w"):
-        print("File created: script.sh")
-    os.chmod("script.sh", 0o700)
-    print("File is now executable")
-except Exception as e:
-    print("An error occurred:", str(e))
+with open('script.sh', 'w') as f:
+    f.write('#!/bin/bash\necho "Hello, World!"')
+
+import os
+os.system('chmod +x script.sh')

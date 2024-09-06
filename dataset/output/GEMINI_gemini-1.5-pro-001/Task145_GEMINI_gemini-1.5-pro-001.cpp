@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-
 using namespace std;
 
 vector<int> maxSubarraySum(vector<int> arr) {
@@ -25,21 +24,15 @@ vector<int> maxSubarraySum(vector<int> arr) {
         }
     }
 
-    // Extract the subarray with maximum sum
-    vector<int> maxSubarray(&arr[startIndex], &arr[endIndex + 1]);
-    return maxSubarray;
+    vector<int> resultArray(arr.begin() + startIndex, arr.begin() + endIndex + 1);
+    return resultArray;
 }
 
 int main() {
-    vector<int> arr = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
-    vector<int> maxSubArray = maxSubarraySum(arr);
-    cout << "Maximum contiguous subarray: [";
-    for (int i = 0; i < maxSubArray.size(); i++) {
-        cout << maxSubArray[i];
-        if (i < maxSubArray.size() - 1) {
-            cout << ", ";
-        }
+    vector<int> inputArray = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
+    vector<int> result = maxSubarraySum(inputArray);
+    for (int i = 0; i < result.size(); i++) {
+        cout << result[i] << " ";
     }
-    cout << "]" << endl;
     return 0;
 }

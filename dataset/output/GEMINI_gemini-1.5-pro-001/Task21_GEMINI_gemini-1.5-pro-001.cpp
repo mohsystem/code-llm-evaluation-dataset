@@ -2,34 +2,39 @@
 #include <vector>
 #include <algorithm>
 
-std::vector<int> removeSmallest(const std::vector<int>& numbers) {
-    if (numbers.empty()) {
-        return {}; // Return an empty vector if the input is empty
-    }
+using namespace std;
 
-    // Find the index of the smallest element
-    int minIndex = std::distance(numbers.begin(), std::min_element(numbers.begin(), numbers.end()));
-
-    // Create a new vector without the smallest element
-    std::vector<int> result = numbers; // Copy the original vector
-    result.erase(result.begin() + minIndex);
-
-    return result;
+vector<int> remove_smallest(vector<int> numbers) {
+  if (numbers.empty()) {
+    return numbers;
+  } else {
+    int min_index = distance(numbers.begin(), min_element(numbers.begin(), numbers.end()));
+    numbers.erase(numbers.begin() + min_index);
+    return numbers;
+  }
 }
 
 int main() {
-    std::vector<int> input = {2, 2, 1, 2, 1};
-    std::vector<int> output = removeSmallest(input);
-
-    // Print the output vector
-    std::cout << "[";
-    for (size_t i = 0; i < output.size(); ++i) {
-        std::cout << output[i];
-        if (i != output.size() - 1) {
-            std::cout << ", ";
-        }
+    vector<int> numbers1 = {1, 2, 3, 4, 5};
+    vector<int> result1 = remove_smallest(numbers1);
+    for (int i : result1) {
+        cout << i << " ";
     }
-    std::cout << "]" << std::endl;
+    cout << endl;
+
+    vector<int> numbers2 = {5, 3, 2, 1, 4};
+    vector<int> result2 = remove_smallest(numbers2);
+    for (int i : result2) {
+        cout << i << " ";
+    }
+    cout << endl;
+
+    vector<int> numbers3 = {2, 2, 1, 2, 1};
+    vector<int> result3 = remove_smallest(numbers3);
+    for (int i : result3) {
+        cout << i << " ";
+    }
+    cout << endl;
 
     return 0;
 }

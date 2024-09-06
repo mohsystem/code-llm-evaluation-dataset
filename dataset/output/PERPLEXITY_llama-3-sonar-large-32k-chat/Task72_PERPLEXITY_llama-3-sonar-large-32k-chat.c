@@ -1,29 +1,29 @@
-#include <openssl/aes.h>
-#include <openssl/err.h>
 #include <stdio.h>
 #include <string.h>
-
-#define KEY_SIZE 16
-#define BLOCK_SIZE 16
+#include <openssl/aes.h>
+#include <openssl/err.h>
 
 int main() {
-    unsigned char key[KEY_SIZE] = "Bar1234567890123456";
-    unsigned char iv[BLOCK_SIZE] = {0};
-    RAND_bytes(iv, BLOCK_SIZE);
-    AES_KEY aes_key;
-    AES_set_encrypt_key(key, KEY_SIZE * 8, &aes_key);
-    unsigned char data[] = "Hello, World!";
-    int data_len = strlen(data);
-    int padded_len = ((data_len + BLOCK_SIZE - 1) / BLOCK_SIZE) * BLOCK_SIZE;
-    unsigned char padded_data[padded_len];
-    memset(padded_data, 0, padded_len);
-    memcpy(padded_data, data, data_len);
-    unsigned char encrypted_data[padded_len];
-    AES_cbc_encrypt(padded_data, encrypted_data, padded_len, &aes_key, iv, AES_ENCRYPT);
-    for (int i = 0; i < padded_len; i++) {
-        printf("%02x", encrypted_data[i]);
+    const char *plainText = "Hello, World!";
+    unsigned char iv[AES_BLOCK_SIZE];  // static IV
+    for (int i = 0; i < AES_BLOCK_SIZE; i++) {
+        iv[i] = 0;
     }
-    printf("
-");
+    unsigned char key[] = "your_secret_key_here";
+    AES_KEY aes_key;
+    AES_set_encrypt_key(key, 128, &aes_key);
+    int len = strlen(plainText), written = 0;
+    int blockSize = AES_BLOCK_SIZE;
+    int padding = blockSize - (len % blockSize);
+    len += padding;
+    unsigned char *encryptedData = malloc(len);
+    for (int i = 0; i < padding; i++) {
+        encryptedData[written++] = (unsigned char)padding;
+    }
+    AES_cbc_encrypt((unsigned char*)plainText, encryptedData, len, &aes_key, iv, AES_ENCRYPT);
+    for (int i = 0; i < len; i++) {
+        printf("%02x", encryptedData[i]);
+    }
+    free(encryptedData);
     return 0;
 }

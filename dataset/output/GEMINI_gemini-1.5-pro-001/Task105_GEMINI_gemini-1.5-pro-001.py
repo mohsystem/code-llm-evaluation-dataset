@@ -1,20 +1,14 @@
 import socket
 import ssl
 
-def main():
-    if len(sys.argv) != 3:
-        print("Usage: python secure_connection.py <hostname> <port>")
-        sys.exit(1)
+hostname = 'www.google.com'
+port = 443
 
-    hostname = sys.argv[1]
-    port = int(sys.argv[2])
+# Create a context with default settings
+context = ssl.create_default_context()
 
-    context = ssl.create_default_context()
-
-    with socket.create_connection((hostname, port)) as sock:
-        with context.wrap_socket(sock, server_hostname=hostname) as ssock:
-            print("Secure connection established:")
-            print(f"Socket: {ssock}")
-
-if __name__ == "__main__":
-    main()
+with socket.create_connection((hostname, port)) as sock:
+    with context.wrap_socket(sock, server_hostname=hostname) as ssock:
+        print(f"Connected to {hostname} on port {port}")
+        print(f"SSL/TLS version: {ssock.version()}")
+        print(f"Cipher suite: {ssock.cipher()}")

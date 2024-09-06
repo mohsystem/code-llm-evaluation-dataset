@@ -1,24 +1,28 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 
-int main(int argc, char *argv[]) {
-    if (argc > 1) {
-        std::ifstream file(argv[1]);
-        if (file.is_open()) {
-            std::string line;
-            while (std::getline(file, line)) {
-                std::cout << line << '
-';
-            }
-            file.close();
-        } else {
-            std::cout << "Unable to open the file.
-";
-        }
-    } else {
-        std::cout << "Please provide a file path as an argument.
-";
+std::string readFile(const std::string& filePath) {
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        return "File not found.";
     }
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
+
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cout << "Usage: ./program <file_path>" << std::endl;
+        return 1;
+    }
+
+    std::string filePath = argv[1];
+    std::string content = readFile(filePath);
+    std::cout << content << std::endl;
+
     return 0;
 }

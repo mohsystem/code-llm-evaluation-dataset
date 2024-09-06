@@ -1,17 +1,17 @@
-x = float(input("Enter first number: "))
-y = float(input("Enter second number: "))
-op = input("Enter operator (+, -, *, /): ")
-
-if op == '+':
-    print(f"Result: {x + y}")
-elif op == '-':
-    print(f"Result: {x - y}")
-elif op == '*':
-    print(f"Result: {x * y}")
-elif op == '/':
-    if y != 0:
-        print(f"Result: {x / y}")
+def calculate(a, b, operator):
+    if operator == '+':
+        return a + b
+    elif operator == '-':
+        return a - b
+    elif operator == '*':
+        return a * b
+    elif operator == '/':
+        return a / b
     else:
-        print("Cannot divide by zero")
-else:
-    print("Invalid operator")
+        return "Invalid operator"
+
+a = float(input("Enter first number: "))
+b = float(input("Enter second number: "))
+operator = input("Enter operator (+, -, *, /): ")
+
+print("Result:", calculate(a, b, operator))

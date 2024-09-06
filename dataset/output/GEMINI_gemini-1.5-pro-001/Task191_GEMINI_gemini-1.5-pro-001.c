@@ -1,21 +1,21 @@
 int longestValidParentheses(char * s){
-    int n = strlen(s);
-    int dp[n + 1];
-    memset(dp, 0, sizeof(dp));
-    int *stack = (int *)malloc(sizeof(int) * (n + 1));
+    int maxLen = 0;
+    int *stack = (int*)malloc(sizeof(int) * (strlen(s) + 1));
     int top = -1;
-    int maxLength = 0;
-    for (int i = 0; i < n; i++) {
-        if (s[i] == '(') {
+    stack[++top] = -1; // Initialize with a sentinel
+    for (int i = 0; s[i] != '\0'; i++) {
+        char c = s[i];
+        if (c == '(') {
             stack[++top] = i;
         } else {
-            if (top != -1) {
-                int j = stack[top--];
-                dp[i + 1] = dp[j] + i - j + 1;
-                maxLength = fmax(maxLength, dp[i + 1]);
+            --top;
+            if (top == -1) {
+                stack[++top] = i;
+            } else {
+                maxLen = (maxLen > i - stack[top]) ? maxLen : (i - stack[top]);
             }
         }
     }
     free(stack);
-    return maxLength;
+    return maxLen;
 }

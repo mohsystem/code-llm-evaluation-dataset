@@ -17,12 +17,10 @@ def max_subarray_sum(arr):
             current_max = 0
             j = i + 1
 
-    # Extract the subarray with maximum sum
-    max_subarray = arr[start_index : end_index+1]
-    return max_subarray
+    result_array = arr[start_index : end_index+1]
+    return result_array
 
 
-if __name__ == "__main__":
-    arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
-    max_sub_array = max_subarray_sum(arr)
-    print(f"Maximum contiguous subarray: {max_sub_array}")
+input_array = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+result = max_subarray_sum(input_array)
+print(result)

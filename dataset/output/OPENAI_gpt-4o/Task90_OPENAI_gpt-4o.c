@@ -1,4 +1,3 @@
-// C code
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,80 +5,63 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 
-#define PORT 12345
-#define MAX_CLIENTS 10
-#define BUFFER_SIZE 2048
+int clients[100];
+int n = 0;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-int client_sockets[MAX_CLIENTS];
-pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-void add_client(int client_socket) {
-    pthread_mutex_lock(&clients_mutex);
-    for (int i = 0; i < MAX_CLIENTS; ++i) {
-        if (client_sockets[i] == 0) {
-            client_sockets[i] = client_socket;
-            break;
+void *handle_client(void *client_socket) {
+    int sock = *(int *)client_socket;
+    char message[1024];
+    
+    while (1) {
+        int len = recv(sock, message, sizeof(message), 0);
+        if (len <= 0) {
+            pthread_mutex_lock(&mutex);
+            for (int i = 0; i < n; i++) {
+                if (clients[i] == sock) {
+                    for (int j = i; j < n - 1; j++) {
+                        clients[j] = clients[j + 1];
+                    }
+                    break;
+                }
+            }
+            n--;
+            pthread_mutex_unlock(&mutex);
+            close(sock);
+            pthread_exit(0);
         }
-    }
-    pthread_mutex_unlock(&clients_mutex);
-}
-
-void remove_client(int client_socket) {
-    pthread_mutex_lock(&clients_mutex);
-    for (int i = 0; i < MAX_CLIENTS; ++i) {
-        if (client_sockets[i] == client_socket) {
-            client_sockets[i] = 0;
-            break;
-        }
-    }
-    pthread_mutex_unlock(&clients_mutex);
-}
-
-void *handle_client(void *arg) {
-    char buffer[BUFFER_SIZE];
-    int client_socket = *(int *)arg;
-    int nbytes;
-
-    add_client(client_socket);
-
-    while ((nbytes = recv(client_socket, buffer, sizeof(buffer), 0)) > 0) {
-        buffer[nbytes] = '\0'; 
-
-        pthread_mutex_lock(&clients_mutex);
-        for (int i = 0; i < MAX_CLIENTS; ++i) {
-            if (client_sockets[i] != 0 && client_sockets[i] != client_socket) {
-                send(client_sockets[i], buffer, nbytes, 0);
+        message[len] = '\0';
+        printf("Received: %s\n", message);
+        
+        pthread_mutex_lock(&mutex);
+        for (int i = 0; i < n; i++) {
+            if (clients[i] != sock) {
+                send(clients[i], message, len, 0);
             }
         }
-        pthread_mutex_unlock(&clients_mutex);
+        pthread_mutex_unlock(&mutex);
     }
-    
-    close(client_socket);
-    remove_client(client_socket);
-    return NULL;
 }
 
 int main() {
-    int server_socket, client_socket;
-    struct sockaddr_in server_addr, client_addr;
-    socklen_t addr_len = sizeof(client_addr);
-    pthread_t tid;
-
-    server_socket = socket(AF_INET, SOCK_STREAM, 0);
-    memset(&server_addr, 0, sizeof(server_addr));
+    int server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(5555);
     server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
 
     bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr));
-    listen(server_socket, MAX_CLIENTS);
-
-    printf("Chat server started on port %d
-", PORT);
+    listen(server_socket, 10);
+    printf("Server started, waiting for clients...\n");
 
     while (1) {
-        client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &addr_len);
-        pthread_create(&tid, NULL, handle_client, (void *)&client_socket);
+        int client_socket = accept(server_socket, NULL, NULL);
+        pthread_mutex_lock(&mutex);
+        clients[n++] = client_socket;
+        pthread_mutex_unlock(&mutex);
+
+        pthread_t thread;
+        pthread_create(&thread, NULL, handle_client, &client_socket);
     }
 
     return 0;

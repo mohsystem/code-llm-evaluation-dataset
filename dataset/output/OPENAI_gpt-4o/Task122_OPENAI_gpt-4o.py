@@ -1,11 +1,14 @@
-import getpass
+class User:
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
 
-passwords = {}
+database = []
 
-def signup(username):
-    password = getpass.getpass(prompt='Enter Password: ')
-    passwords[username] = password
-    print("Signup successful!")
+def signup(username, password):
+    database.append(User(username, password))
+    print("User signed up successfully")
 
-username = input("Enter Username: ")
-signup(username)
+username = input("Enter username: ")
+password = input("Enter password: ")
+signup(username, password)

@@ -1,55 +1,51 @@
 #include <iostream>
 #include <string>
 #include <openssl/sha.h>
-#include <mysql/mysql.h>
+#include <sqlite3.h>
 
 using namespace std;
 
-string hashPassword(const string& password) {
+string hash_password(const string& password) {
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
     SHA256_Update(&sha256, password.c_str(), password.size());
     SHA256_Final(hash, &sha256);
-    string hashedPassword;
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        hashedPassword += to_string(static_cast<int>(hash[i]));
+    stringstream ss;
+    for (unsigned char i : hash) {
+        ss << hex << setw(2) << setfill('0') << (int)i;
     }
-    return hashedPassword;
+    return ss.str();
+}
+
+int update_password(const string& username, const string& new_password) {
+    string hashed_password = hash_password(new_password);
+    sqlite3* db;
+    char* err_msg = 0;
+    int rc = sqlite3_open("users.db", &db);
+    if (rc != SQLITE_OK) {
+        cerr << "Cannot open database: " << sqlite3_errmsg(db) << endl;
+        return 1;
+    }
+    string sql = "UPDATE user SET password = '" + hashed_password + "' WHERE username = '" + username + "';";
+    rc = sqlite3_exec(db, sql.c_str(), 0, 0, &err_msg);
+    if (rc != SQLITE_OK) {
+        cerr << "SQL error: " << err_msg << endl;
+        sqlite3_free(err_msg);
+        sqlite3_close(db);
+        return 1;
+    }
+    sqlite3_close(db);
+    cout << "Password updated successfully!" << endl;
+    return 0;
 }
 
 int main() {
-    string username, newPassword;
-
+    string username, new_password;
     cout << "Enter username: ";
     cin >> username;
     cout << "Enter new password: ";
-    cin >> newPassword;
-
-    string hashedPassword = hashPassword(newPassword);
-
-    MYSQL *con = mysql_init(NULL);
-    if (con == NULL) {
-        cerr << mysql_error(con) << endl;
-        return 1;
-    }
-
-    if (mysql_real_connect(con, "localhost", "your_database_user", "your_database_password", "your_database_name", 0, NULL, 0) == NULL) {
-        cerr << mysql_error(con) << endl;
-        mysql_close(con);
-        return 1;
-    }
-
-    string query = "UPDATE users SET password = '" + hashedPassword + "' WHERE username = '" + username + "'";
-
-    if (mysql_query(con, query.c_str())) {
-        cerr << mysql_error(con) << endl;
-        mysql_close(con);
-        return 1;
-    }
-
-    cout << "Password updated successfully." << endl;
-
-    mysql_close(con);
+    cin >> new_password;
+    update_password(username, new_password);
     return 0;
 }

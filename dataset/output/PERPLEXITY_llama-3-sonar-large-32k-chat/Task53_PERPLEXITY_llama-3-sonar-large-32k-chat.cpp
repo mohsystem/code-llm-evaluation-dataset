@@ -1,41 +1,52 @@
 #include <iostream>
 #include <string>
-#include <vector>
+#include <map>
+#include <uuid/uuid.h>
 
 class SessionManager {
 private:
-    std::vector<std::pair<std::string, std::string>> sessions;
+    std::map<std::string, std::string> sessions;
 
 public:
-    void createUserSession(const std::string& userId, const std::string& sessionId) {
-        sessions.push_back({userId, sessionId});
+    SessionManager() {}
+
+    std::string createSession(const std::string& userId) {
+        std::string sessionId = generateSessionId();
+        sessions[sessionId] = userId;
+        return sessionId;
     }
 
-    void deleteUserSession(const std::string& userId) {
-        for (auto it = sessions.begin(); it != sessions.end(); ++it) {
-            if (it->first == userId) {
-                sessions.erase(it);
-                break;
-            }
-        }
+    std::string generateSessionId() {
+        uuid_t uuid;
+        uuid_generate(uuid);
+        char uuid_str[37];
+        uuid_unparse(uuid, uuid_str);
+        return std::string(uuid_str);
     }
 
-    std::string getUserSessionId(const std::string& userId) {
-        for (const auto& session : sessions) {
-            if (session.first == userId) {
-                return session.second;
-            }
-        }
-        return "";
+    std::string getUserId(const std::string& sessionId) {
+        return sessions[sessionId];
+    }
+
+    void invalidateSession(const std::string& sessionId) {
+        sessions.erase(sessionId);
     }
 };
 
 int main() {
     SessionManager sessionManager;
-    sessionManager.createUserSession("user1", "session1");
-    sessionManager.createUserSession("user2", "session2");
-    std::cout << sessionManager.getUserSessionId("user1") << std::endl; // prints "session1"
-    sessionManager.deleteUserSession("user1");
-    std::cout << sessionManager.getUserSessionId("user1") << std::endl; // prints empty string
+
+    // create a session
+    std::string sessionId = sessionManager.createSession("user1");
+    std::cout << "Session ID: " << sessionId << std::endl;
+
+    // get user id from session id
+    std::string userId = sessionManager.getUserId(sessionId);
+    std::cout << "User ID: " << userId << std::endl;
+
+    // invalidate session
+    sessionManager.invalidateSession(sessionId);
+    std::cout << "Session invalidated" << std::endl;
+
     return 0;
 }

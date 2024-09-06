@@ -21,7 +21,7 @@ std::string resetPassword(const std::string& username) {
     std::string newPassword = generatePassword();
     std::cout << "Password for " << username << " has been reset." << std::endl;
     std::cout << "New password: " << newPassword << std::endl;
-    // In a real system, you would hash and save this password
+    // In a real system, you would hash and save this password securely
     return newPassword;
 }
 

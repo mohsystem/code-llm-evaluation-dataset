@@ -5,8 +5,8 @@
 #include <unordered_map>
 #include <algorithm>
 
-bool checkFlush(const std::vector<std::string>& table, const std::vector<std::string>& hand) {
-    std::unordered_map<char, int> suits = {{\'S\', 0}, {\'H\', 0}, {\'D\', 0}, {\'C\', 0}};
+bool checkFlush(std::vector<std::string> table, std::vector<std::string> hand) {
+    std::unordered_map<char, int> suits = {{'S', 0}, {'H', 0}, {'D', 0}, {'C', 0}};
     
     for (const auto& card : table) {
         suits[card.back()]++;
@@ -15,7 +15,7 @@ bool checkFlush(const std::vector<std::string>& table, const std::vector<std::st
         suits[card.back()]++;
     }
     
-    return std::any_of(suits.begin(), suits.end(), [](const auto& pair) { return pair.second >= 5; });
+    return std::max({suits['S'], suits['H'], suits['D'], suits['C']}) >= 5;
 }
 
 int main() {

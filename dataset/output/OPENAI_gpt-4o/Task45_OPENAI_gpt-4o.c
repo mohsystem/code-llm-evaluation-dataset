@@ -1,14 +1,5 @@
-#include <stdio.h>
-
-int main() {
-    int number;
-    printf("Enter an integer: ");
-    if (scanf("%d", &number) != 1) {
-        printf("Invalid input. Please enter an integer.
-");
-        return 1;
-    }
-    printf("The entered integer is: %d
-", number);
-    return 0;
-}
+try:
+    num = int(input("Enter a number for Python: "))
+    print(f"Python read the number: {num}")
+except ValueError as e:
+    print(f"Invalid input in Python: {e}")

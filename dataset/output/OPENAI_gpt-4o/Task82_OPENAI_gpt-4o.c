@@ -2,27 +2,23 @@
 #include <string.h>
 #include <openssl/sha.h>
 
-void sha256(const char *str, char outputBuffer[65]) {
+void compute_hash(const char* password, const char* salt, char* outputBuffer) {
+    char combined[512];
+    snprintf(combined, sizeof(combined), "%s%s", password, salt);
+
     unsigned char hash[SHA256_DIGEST_LENGTH];
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-    SHA256_Update(&sha256, str, strlen(str));
-    SHA256_Final(hash, &sha256);
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+    SHA256((unsigned char*)combined, strlen(combined), hash);
+
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
         sprintf(outputBuffer + (i * 2), "%02x", hash[i]);
     }
-    outputBuffer[64] = 0;
 }
 
 int main() {
-    char password[] = "password";
-    char salt[] = "12345";
-    char combined[100];
-    strcpy(combined, password);
-    strcat(combined, salt);
-    char hash[65];
-    sha256(combined, hash);
-    printf("%s
-", hash);
+    const char* password = "example_password";
+    const char* salt = "random_salt";
+    char outputBuffer[65];
+    compute_hash(password, salt, outputBuffer);
+    printf("C Hash: %s\n", outputBuffer);
     return 0;
 }

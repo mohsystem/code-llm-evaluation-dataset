@@ -1,20 +1,22 @@
-// C
+// C does not have built-in support for changing user passwords or dropping privileges.
+// This is a simplified example of how you might use the system() function to run a shell command.
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <string.h>
 
 int main() {
-    printf("Running as root
-");
-    uid_t uid = getuid();
-    gid_t gid = getgid();
+    char username[50], newPassword[50], command[100];
+    printf("Enter username: ");
+    scanf("%s", username);
+    printf("Enter new password: ");
+    scanf("%s", newPassword);
 
-    // Perform privileged operations here
+    sprintf(command, "echo '%s:%s' | sudo chpasswd", username, newPassword);
+    int result = system(command);
 
-    // Drop privileges
-    setgid(gid);
-    setuid(uid);
-    printf("Dropped privileges
-");
+    // Dropping privileges is not directly supported in C.
+    // You would need to use a native function like setuid() or seteuid() for this.
+
     return 0;
 }

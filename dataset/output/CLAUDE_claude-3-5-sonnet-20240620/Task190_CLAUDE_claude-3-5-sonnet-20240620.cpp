@@ -4,27 +4,29 @@
 #include <vector>
 #include <sstream>
 
-int main() {
-    std::ifstream file("file.txt");
-    std::vector<std::vector<std::string>> data;
-    std::string line;
+using namespace std;
 
-    while (std::getline(file, line)) {
-        std::vector<std::string> row;
-        std::istringstream iss(line);
-        std::string word;
+int main() {
+    ifstream file("file.txt");
+    vector<vector<string>> content;
+    string line;
+
+    while (getline(file, line)) {
+        istringstream iss(line);
+        vector<string> row;
+        string word;
         while (iss >> word) {
             row.push_back(word);
         }
-        data.push_back(row);
+        content.push_back(row);
     }
 
-    for (size_t j = 0; j < data[0].size(); ++j) {
-        for (size_t i = 0; i < data.size(); ++i) {
-            std::cout << data[i][j];
-            if (i < data.size() - 1) std::cout << " ";
+    for (size_t j = 0; j < content[0].size(); ++j) {
+        for (size_t i = 0; i < content.size(); ++i) {
+            cout << content[i][j];
+            if (i < content.size() - 1) cout << " ";
         }
-        std::cout << std::endl;
+        cout << endl;
     }
 
     return 0;

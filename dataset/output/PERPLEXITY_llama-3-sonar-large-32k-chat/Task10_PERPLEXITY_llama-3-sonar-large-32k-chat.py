@@ -1,6 +1,2 @@
-def sumBetween(a, b):
-    min_val = min(a, b)
-    max_val = max(a, b)
-    return sum(range(min_val, max_val + 1))
-
-print(sumBetween(-1, 2))
+def sum_between(a, b):
+    return sum(range(min(a, b), max(a, b) + 1))

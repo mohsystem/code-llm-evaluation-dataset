@@ -3,18 +3,18 @@
 using namespace std;
 
 int longestValidParentheses(string s) {
-    stack<int> stack;
-    stack.push(-1);
+    stack<int> stk;
+    stk.push(-1);
     int maxLength = 0;
     for (int i = 0; i < s.length(); i++) {
         if (s[i] == '(') {
-            stack.push(i);
+            stk.push(i);
         } else {
-            stack.pop();
-            if (!stack.empty()) {
-                maxLength = max(maxLength, i - stack.top());
+            stk.pop();
+            if (!stk.empty()) {
+                maxLength = max(maxLength, i - stk.top());
             } else {
-                stack.push(i);
+                stk.push(i);
             }
         }
     }

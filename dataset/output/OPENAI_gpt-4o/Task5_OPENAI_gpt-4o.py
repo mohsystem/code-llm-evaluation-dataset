@@ -1,17 +1,18 @@
 def persistence(num):
+    def multiply_digits(n):
+        result = 1
+        while n:
+            result *= n % 10
+            n //= 10
+        return result
+
     count = 0
     while num >= 10:
         num = multiply_digits(num)
         count += 1
     return count
 
-def multiply_digits(num):
-    product = 1
-    while num > 0:
-        product *= num % 10
-        num //= 10
-    return product
-
-print(persistence(39))  # should return 3
-print(persistence(999))  # should return 4
-print(persistence(4))  # should return 0
+if __name__ == "__main__":
+    print(persistence(39))  # 3
+    print(persistence(999)) # 4
+    print(persistence(4))   # 0

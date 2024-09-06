@@ -1,21 +1,29 @@
 import re
 import sys
 
-if len(sys.argv) != 3:
-    print("Usage: python3 regex_file_search.py <regex> <filename>")
-    sys.exit(1)
+def main():
+    if len(sys.argv) < 3:
+        print("Usage: python script.py <regex_pattern> <file_name>")
+        sys.exit(1)
 
-regex = sys.argv[1]
-filename = sys.argv[2]
+    pattern = sys.argv[1]
+    file_name = sys.argv[2]
 
-try:
-    with open(filename, 'r') as file:
-        content = file.read()
-        matches = re.findall(regex, content)
-        for match in matches:
-            print(match)
+    try:
+        regex = re.compile(pattern)
+    except re.error as e:
+        print(f"Invalid regex pattern: {e}")
+        sys.exit(1)
 
-except FileNotFoundError:
-    print(f"Error: File '{filename}' not found.")
-except Exception as e:
-    print(f"An error occurred: {e}")
+    try:
+        with open(file_name, 'r') as file:
+            for line in file:
+                match = regex.search(line)
+                if match:
+                    print(line, end='')
+    except FileNotFoundError:
+        print(f"File not found: {file_name}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

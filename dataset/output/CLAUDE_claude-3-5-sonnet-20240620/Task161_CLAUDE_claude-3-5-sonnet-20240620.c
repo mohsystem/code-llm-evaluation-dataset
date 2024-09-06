@@ -7,35 +7,33 @@ int max(int a, int b) {
 }
 
 int knapsack(int capacity, int* weights, int* values, int n) {
-    int i, w;
-    int** K = (int**)malloc((n + 1) * sizeof(int*));
-    for (i = 0; i <= n; i++) {
-        K[i] = (int*)malloc((capacity + 1) * sizeof(int));
+    int** dp = (int**)malloc((n + 1) * sizeof(int*));
+    for (int i = 0; i <= n; i++) {
+        dp[i] = (int*)calloc(capacity + 1, sizeof(int));
     }
     
-    for (i = 0; i <= n; i++) {
-        for (w = 0; w <= capacity; w++) {
-            if (i == 0 || w == 0)
-                K[i][w] = 0;
-            else if (weights[i-1] <= w)
-                K[i][w] = max(values[i-1] + K[i-1][w-weights[i-1]], K[i-1][w]);
-            else
-                K[i][w] = K[i-1][w];
+    for (int i = 1; i <= n; i++) {
+        for (int w = 1; w <= capacity; w++) {
+            if (weights[i-1] <= w) {
+                dp[i][w] = max(values[i-1] + dp[i-1][w-weights[i-1]], dp[i-1][w]);
+            } else {
+                dp[i][w] = dp[i-1][w];
+            }
         }
     }
     
-    int result = K[n][capacity];
+    int result = dp[n][capacity];
     
-    for (i = 0; i <= n; i++) {
-        free(K[i]);
+    for (int i = 0; i <= n; i++) {
+        free(dp[i]);
     }
-    free(K);
+    free(dp);
     
     return result;
 }
 
 int main() {
-    int capacity, n, i;
+    int capacity, n;
     
     printf("Enter knapsack capacity: ");
     scanf("%d", &capacity);
@@ -47,17 +45,16 @@ int main() {
     int* values = (int*)malloc(n * sizeof(int));
     
     printf("Enter weights of items: ");
-    for (i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         scanf("%d", &weights[i]);
     }
     
     printf("Enter values of items: ");
-    for (i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         scanf("%d", &values[i]);
     }
     
-    printf("Maximum value in Knapsack = %d\
-", knapsack(capacity, weights, values, n));
+    printf("Maximum value: %d\\n", knapsack(capacity, weights, values, n));
     
     free(weights);
     free(values);

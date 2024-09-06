@@ -1,11 +1,11 @@
-def max_subarray_sum(nums):
-    max_sum = current_sum = nums[0]
-    for num in nums[1:]:
-        current_sum = max(num, current_sum + num)
-        max_sum = max(max_sum, current_sum)
-    return max_sum
+def max_subarray_sum(arr):
+    max_current = max_global = arr[0]
+    for num in arr[1:]:
+        max_current = max(num, max_current + num)
+        if max_current > max_global:
+            max_global = max_current
+    return max_global
 
-if __name__ == "__main__":
-    import sys
-    input_list = list(map(int, sys.argv[1:]))
-    print("Python:", max_subarray_sum(input_list))
+# Example array
+arr = [1, -3, 2, 1, -1]
+print(f'Max contiguous subarray sum is: {max_subarray_sum(arr)}')

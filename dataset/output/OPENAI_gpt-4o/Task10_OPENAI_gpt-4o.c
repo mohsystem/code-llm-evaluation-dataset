@@ -1,30 +1,21 @@
 #include <stdio.h>
 
-int sum_integers(int a, int b) {
-    int min = (a < b) ? a : b;
-    int max = (a > b) ? a : b;
+int getSum(int a, int b) {
+    if (a == b) return a;
+    if (a > b) {
+        int temp = a;
+        a = b;
+        b = temp;
+    }
     int sum = 0;
-
-    for (int i = min; i <= max; i++) {
+    for (int i = a; i <= b; i++) {
         sum += i;
     }
-
     return sum;
 }
 
 int main() {
-    printf("%d
-", sum_integers(1, 0));  // 1
-    printf("%d
-", sum_integers(1, 2));  // 3
-    printf("%d
-", sum_integers(0, 1));  // 1
-    printf("%d
-", sum_integers(1, 1));  // 1
-    printf("%d
-", sum_integers(-1, 0));  // -1
-    printf("%d
-", sum_integers(-1, 2));  // 2
-
+    int result = getSum(1, 0); // Example usage
+    printf("%d\n", result);
     return 0;
 }

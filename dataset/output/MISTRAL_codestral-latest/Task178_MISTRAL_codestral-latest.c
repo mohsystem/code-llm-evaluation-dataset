@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 int shortestSubarray(int* nums, int numsSize, int k) {
     long* prefixSum = (long*)malloc((numsSize + 1) * sizeof(long));
@@ -8,23 +9,23 @@ int shortestSubarray(int* nums, int numsSize, int k) {
         prefixSum[i + 1] = prefixSum[i] + nums[i];
     }
 
-    int ans = numsSize + 1;
-    int* deque = (int*)malloc(numsSize * sizeof(int));
+    int minLength = numsSize + 1;
+    int* monoQueue = (int*)malloc(numsSize * sizeof(int));
     int front = 0, rear = -1;
     for (int i = 0; i <= numsSize; i++) {
-        while (front <= rear && prefixSum[i] - prefixSum[deque[front]] >= k) {
-            ans = fmin(ans, i - deque[front]);
+        while (front <= rear && prefixSum[i] - prefixSum[monoQueue[front]] >= k) {
+            minLength = fmin(minLength, i - monoQueue[front]);
             front++;
         }
-        while (front <= rear && prefixSum[i] <= prefixSum[deque[rear]]) {
+        while (front <= rear && prefixSum[i] <= prefixSum[monoQueue[rear]]) {
             rear--;
         }
         rear++;
-        deque[rear] = i;
+        monoQueue[rear] = i;
     }
 
     free(prefixSum);
-    free(deque);
+    free(monoQueue);
 
-    return ans <= numsSize ? ans : -1;
+    return minLength <= numsSize ? minLength : -1;
 }

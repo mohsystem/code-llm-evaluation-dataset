@@ -4,6 +4,6 @@ def two_sum(numbers, target):
     for i, num in enumerate(numbers):
         complement = target - num
         if complement in num_dict:
-            return [num_dict[complement], i]
+            return (num_dict[complement], i)
         num_dict[num] = i
-    return []
+    return None

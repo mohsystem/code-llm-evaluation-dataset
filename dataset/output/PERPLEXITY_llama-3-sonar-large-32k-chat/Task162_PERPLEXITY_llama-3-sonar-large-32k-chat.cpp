@@ -3,53 +3,62 @@
 #include <queue>
 #include <limits>
 #include <unordered_map>
+#include <string>
 
 using namespace std;
 
-typedef pair<int, string> pii;
+struct Node {
+    string name;
+    int distance;
+};
 
-vector<pii> graph[100];
-unordered_map<string, int> distances;
+bool operator<(const Node& a, const Node& b) {
+    return a.distance > b.distance;
+}
 
-void dijkstra(string start) {
+unordered_map<string, unordered_map<string, int>> graph = {
+    {"A", {{"B", 1}, {"C", 4}}},
+    {"B", {{"A", 1}, {"C", 2}, {"D", 5}}},
+    {"C", {{"A", 4}, {"B", 2}, {"D", 1}}},
+    {"D", {{"B", 5}, {"C", 1}}}
+};
+
+unordered_map<string, int> dijkstra(unordered_map<string, unordered_map<string, int>> graph, string start) {
+    unordered_map<string, int> distances;
+    for (auto& node : graph) {
+        distances[node.first] = numeric_limits<int>::max();
+    }
     distances[start] = 0;
-    priority_queue<pii, vector<pii>, greater<pii>> pq;
-    pq.push({0, start});
-    while (!pq.empty()) {
-        int current_distance = pq.top().first;
-        string current_node = pq.top().second;
-        pq.pop();
-        for (auto neighbor : graph[current_node[0] - 'A']) {
-            if (current_distance + neighbor.first < distances[neighbor.second]) {
-                distances[neighbor.second] = current_distance + neighbor.first;
-                pq.push({distances[neighbor.second], neighbor.second});
+
+    priority_queue<Node> priorityQueue;
+    priorityQueue.push({start, 0});
+
+    while (!priorityQueue.empty()) {
+        Node currentNode = priorityQueue.top();
+        priorityQueue.pop();
+
+        if (currentNode.distance > distances[currentNode.name]) {
+            continue;
+        }
+
+        for (auto& neighbor : graph[currentNode.name]) {
+            int distance = currentNode.distance + neighbor.second;
+
+            if (distance < distances[neighbor.first]) {
+                distances[neighbor.first] = distance;
+                priorityQueue.push({neighbor.first, distance});
             }
         }
     }
+
+    return distances;
 }
 
 int main() {
-    graph['A' - 'A'].push_back({1, "B"});
-    graph['A' - 'A'].push_back({4, "C"});
-    graph['B' - 'A'].push_back({1, "A"});
-    graph['B' - 'A'].push_back({2, "C"});
-    graph['B' - 'A'].push_back({5, "D"});
-    graph['C' - 'A'].push_back({4, "A"});
-    graph['C' - 'A'].push_back({2, "B"});
-    graph['C' - 'A'].push_back({1, "D"});
-    graph['D' - 'A'].push_back({5, "B"});
-    graph['D' - 'A'].push_back({1, "C"});
-
-    for (char c = 'A'; c <= 'D'; c++) {
-        distances[string(1, c)] = numeric_limits<int>::max();
-    }
-
     string startNode = "A";
-    dijkstra(startNode);
-
-    for (auto distance : distances) {
-        cout << distance.first << ": " << distance.second << endl;
+    unordered_map<string, int> distances = dijkstra(graph, startNode);
+    for (auto& node : distances) {
+        cout << node.first << ": " << node.second << endl;
     }
-
     return 0;
 }

@@ -1,24 +1,20 @@
-import os
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import messagebox
 
-def main():
-    upload_folder = "uploads"
-    if not os.path.exists(upload_folder):
-        os.makedirs(upload_folder)
+root = tk.Tk()
+root.withdraw()
 
-    filename = input("Enter the filename (including extension): ")
-    filepath = os.path.join(upload_folder, filename)
+file_path = filedialog.askopenfilename()
 
+if file_path:
     try:
-        with open(filepath, 'wb') as f:
-            print(f"Uploading to {filepath}...")
-            while True:
-                chunk = input("Enter a chunk of data (or type 'EOF' to end): ")
-                if chunk == 'EOF':
-                    break
-                f.write(chunk.encode('utf-8'))
-        print("File uploaded successfully!")
-    except Exception as e:
-        print(f"Error uploading file: {e}")
-
-if __name__ == "__main__":
-    main()
+        with open(file_path, 'rb') as file:
+            # Process the uploaded file here
+            file_content = file.read()
+            # ...
+        messagebox.showinfo("Success", "File uploaded successfully!")
+    except FileNotFoundError:
+        messagebox.showerror("Error", f"File not found: {file_path}")
+else:
+    messagebox.showinfo("Info", "No file selected.")

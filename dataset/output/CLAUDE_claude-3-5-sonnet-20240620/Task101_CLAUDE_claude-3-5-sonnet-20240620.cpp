@@ -5,23 +5,27 @@
 #include <sys/stat.h>
 
 int main() {
-    const char* fileName = "script.sh";
-    std::ofstream file(fileName);
-    
+    const char* filename = "script.sh";
+    const char* content = "#!/bin/bash\\necho \\"Hello, World!\\"";
+
+    // Create the file
+    std::ofstream file(filename);
     if (file.is_open()) {
+        file << content;
         file.close();
-        std::cout << "File created: " << fileName << std::endl;
+        std::cout << "File created successfully." << std::endl;
     } else {
-        std::cout << "Error creating file." << std::endl;
+        std::cerr << "Unable to create file." << std::endl;
         return 1;
     }
-    
-    if (chmod(fileName, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) == 0) {
-        std::cout << "File permissions set to executable." << std::endl;
+
+    // Make it executable
+    if (chmod(filename, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) == 0) {
+        std::cout << "File made executable successfully." << std::endl;
     } else {
-        std::cout << "Error setting file permissions." << std::endl;
+        std::cerr << "Unable to change file permissions." << std::endl;
         return 1;
     }
-    
+
     return 0;
 }

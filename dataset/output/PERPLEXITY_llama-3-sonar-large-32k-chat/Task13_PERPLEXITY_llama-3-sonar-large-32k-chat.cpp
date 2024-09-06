@@ -1,20 +1,13 @@
-#include <iostream>
 #include <vector>
 #include <string>
 
 bool isValidWalk(std::vector<std::string> walk) {
-    int x = 0, y = 0;
+    int n = 0, s = 0, e = 0, w = 0;
     for (std::string dir : walk) {
-        if (dir == "n") y++;
-        if (dir == "s") y--;
-        if (dir == "e") x++;
-        if (dir == "w") x--;
+        if (dir == "n") n++;
+        if (dir == "s") s++;
+        if (dir == "e") e++;
+        if (dir == "w") w++;
     }
-    return x == 0 && y == 0 && walk.size() == 10;
-}
-
-int main() {
-    std::vector<std::string> walk = {"n", "s", "e", "w", "n", "s", "e", "w", "n", "s"};
-    std::cout << std::boolalpha << isValidWalk(walk) << std::endl;
-    return 0;
+    return walk.size() == 10 && n == s && e == w;
 }

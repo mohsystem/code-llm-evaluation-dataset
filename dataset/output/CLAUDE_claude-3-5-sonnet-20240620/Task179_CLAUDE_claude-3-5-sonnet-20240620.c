@@ -14,7 +14,7 @@ int* maxSlidingWindow(int* nums, int numsSize, int k, int* returnSize) {
     int front = 0, rear = -1;
     
     for (int i = 0; i < numsSize; i++) {
-        while (front <= rear && deque[front] <= i - k) {
+        while (front <= rear && deque[front] < i - k + 1) {
             front++;
         }
         

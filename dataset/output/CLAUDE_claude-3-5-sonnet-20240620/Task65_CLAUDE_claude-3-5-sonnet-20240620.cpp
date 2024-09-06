@@ -2,34 +2,37 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <stdexcept>
+#include <filesystem>
 
-std::string read_file(const std::string& filename) {
-    std::ifstream file(filename);
-    if (!file.is_open()) {
-        throw std::runtime_error("Unable to open file");
+void readFile(const std::string& filename) {
+    if (filename.substr(filename.length() - 4) != ".txt") {
+        std::cout << "Error: File must have a .txt extension" << std::endl;
+        return;
     }
 
-    std::string content((std::istreambuf_iterator<char>(file)),
-                        (std::istreambuf_iterator<char>()));
-    return content;
+    if (!std::filesystem::exists(filename)) {
+        std::cout << "Error: File '" << filename << "' does not exist" << std::endl;
+        return;
+    }
+
+    std::ifstream file(filename);
+    if (file.is_open()) {
+        std::string line;
+        std::cout << "File contents:" << std::endl;
+        while (getline(file, line)) {
+            std::cout << line << std::endl;
+        }
+        file.close();
+    } else {
+        std::cout << "Error: Unable to read file '" << filename << "'" << std::endl;
+    }
 }
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <filename>" << std::endl;
-        return 1;
+        std::cout << "Usage: " << argv[0] << " <filename>" << std::endl;
+    } else {
+        readFile(argv[1]);
     }
-
-    std::string filename = argv[1];
-    try {
-        std::string content = read_file(filename);
-        std::cout << "File content:" << std::endl;
-        std::cout << content << std::endl;
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-        return 1;
-    }
-
     return 0;
 }

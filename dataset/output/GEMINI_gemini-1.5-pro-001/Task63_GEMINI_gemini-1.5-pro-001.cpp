@@ -1,23 +1,29 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <base64/base64.h>
 
-std::string processRequest(const std::string& rawData) {
-    // Decode the raw_data using Base64
-    std::string decodedData = base64_decode(rawData);
+// Add base64 and json libraries if needed
 
-    // Deserialize the decoded data
-    // ... Implementation for deserialization (replace with your logic)
+std::string process_request(const std::string& request) {
+  // Encoding to UTF-8 is already handled by std::string
+  std::string raw_data = request; 
 
-    return decodedData;
+  // Base64 decode
+  // ... Implement base64 decoding logic here ...
+
+  // Deserialize the decoded data
+  // ... Implement deserialization logic here (e.g., using a JSON library) ...
+
+  // Store and return the deserialized data
+  // ...
 }
 
 int main() {
-    // Example usage:
-    std::string rawData = "eyJtZXNzYWdlIjogIkhlbGxvIHdvcmxkIn0=";
-    std::string processedData = processRequest(rawData);
-    std::cout << processedData << std::endl;
+  // Example usage:
+  std::string request = /* ... Get the request data ... */;
+  std::string data = process_request(request);
 
-    return 0;
+  // ... Use the processed data ...
+
+  return 0;
 }

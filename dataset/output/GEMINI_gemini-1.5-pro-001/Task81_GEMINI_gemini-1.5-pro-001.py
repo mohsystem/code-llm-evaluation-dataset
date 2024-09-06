@@ -1,29 +1,44 @@
 import hashlib
 
-def check_certificate_hash(certificate_path, expected_hash):
-  """Checks if the hash of a certificate matches a known hash.
+def calculate_certificate_hash(certificate_path, hash_algorithm):
+    """Calculates the hash of an SSL certificate.
 
-  Args:
-    certificate_path: Path to the SSL certificate file.
-    expected_hash: The expected hash value as a string.
+    Args:
+      certificate_path: Path to the SSL certificate file.
+      hash_algorithm: The hash algorithm to use (e.g., 'sha256').
 
-  Returns:
-    True if the hashes match, False otherwise.
-  """
-  try:
+    Returns:
+      The calculated hash as a hexadecimal string.
+    """
+    hasher = hashlib.new(hash_algorithm)
     with open(certificate_path, 'rb') as f:
-      certificate_data = f.read()
-    calculated_hash = hashlib.sha256(certificate_data).hexdigest()
+        while True:
+            chunk = f.read(4096)
+            if not chunk:
+                break
+            hasher.update(chunk)
+    return hasher.hexdigest()
+
+def verify_certificate_hash(certificate_path, expected_hash, hash_algorithm):
+    """Verifies if the hash of an SSL certificate matches a known hash.
+
+    Args:
+      certificate_path: Path to the SSL certificate file.
+      expected_hash: The expected hash value.
+      hash_algorithm: The hash algorithm used to create the expected hash.
+
+    Returns:
+      True if the hashes match, False otherwise.
+    """
+    calculated_hash = calculate_certificate_hash(certificate_path, hash_algorithm)
     return calculated_hash == expected_hash
-  except FileNotFoundError:
-    print(f"Error: Certificate file not found at '{certificate_path}'")
-    return False
 
 if __name__ == "__main__":
-  certificate_file = input("Enter the path to the SSL certificate file: ")
-  expected_hash_value = input("Enter the expected SHA-256 hash: ")
+    cert_file = input("Enter the path to the SSL certificate: ")
+    expected_hash_value = input("Enter the expected hash value: ")
+    hash_algo = input("Enter the hash algorithm used (e.g., sha256): ")
 
-  if check_certificate_hash(certificate_file, expected_hash_value):
-    print("Certificate hash matches!")
-  else:
-    print("Certificate hash does not match.")
+    if verify_certificate_hash(cert_file, expected_hash_value, hash_algo):
+        print("Certificate hash matches!")
+    else:
+        print("Certificate hash does not match.")

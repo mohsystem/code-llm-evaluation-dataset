@@ -1,43 +1,58 @@
 
+// C doesn't have built-in support for creating web servers or handling CORS.\n// Implementing CORS would typically be done at a higher level using a web framework or library.\n// This example is a basic socket server that sets CORS headers, but it's not a complete solution.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <microhttpd.h>
+#include <unistd.h>
+#include <arpa/inet.h>
 
-#define PORT 5000
+#define PORT 8080
+#define BUFFER_SIZE 1024
 
-static int answer_to_connection(void *cls, struct MHD_Connection *connection,
-                                const char *url, const char *method,
-                                const char *version, const char *upload_data,
-                                size_t *upload_data_size, void **con_cls)
-{
-    const char *page = "This is CORS-enabled data";
-    struct MHD_Response *response;
-    int ret;
+int main() {
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    char buffer[BUFFER_SIZE] = {0};
+    char *response = "HTTP/1.1 200 OK\\r\\n"
+                     "Access-Control-Allow-Origin: *\\r\\n"
+                     "Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS\\r\\n"
+                     "Access-Control-Allow-Headers: Content-Type\\r\\n"
+                     "Content-Type: application/json\\r\\n\\r\\n"
+                     "{\\"message\\": \\"This is CORS-enabled data\\"}";
 
-    response = MHD_create_response_from_buffer(strlen(page),
-                                               (void *)page, MHD_RESPMEM_PERSISTENT);
-    MHD_add_response_header(response, "Access-Control-Allow-Origin", "*");
-    MHD_add_response_header(response, "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    MHD_add_response_header(response, "Access-Control-Allow-Headers", "Content-Type");
-    
-    ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
-    MHD_destroy_response(response);
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("socket failed");
+        exit(EXIT_FAILURE);
+    }
 
-    return ret;
-}
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
 
-int main()
-{
-    struct MHD_Daemon *daemon;
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+        perror("bind failed");
+        exit(EXIT_FAILURE);
+    }
 
-    daemon = MHD_start_daemon(MHD_USE_AUTO | MHD_USE_INTERNAL_POLLING_THREAD, PORT, NULL, NULL,
-                              &answer_to_connection, NULL, MHD_OPTION_END);
-    if (NULL == daemon)
-        return 1;
+    if (listen(server_fd, 3) < 0) {
+        perror("listen");
+        exit(EXIT_FAILURE);
+    }
 
-    getchar();
+    while(1) {
+        printf("Waiting for a connection...\\n");
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
+            perror("accept");
+            exit(EXIT_FAILURE);
+        }
 
-    MHD_stop_daemon(daemon);
+        read(new_socket, buffer, BUFFER_SIZE);
+        printf("%s\\n", buffer);
+        write(new_socket, response, strlen(response));
+        close(new_socket);
+    }
+
     return 0;
 }

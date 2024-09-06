@@ -1,13 +1,24 @@
 
-BUFFER_SIZE = 20
+import sys
 
-buffer = [\'\'] * BUFFER_SIZE
+BUFFER_SIZE = 100
 
-input_string = input(f"Enter a string (max {BUFFER_SIZE} characters):\
-")
+def main():
+    buffer = ""
+    while True:
+        try:
+            user_input = input("Enter text (or 'q' to quit): ")
+            if user_input.lower() == 'q':
+                break
+            if len(buffer) + len(user_input) <= BUFFER_SIZE:
+                buffer += user_input
+                print(f"Buffer content: {buffer}")
+            else:
+                print(f"Error: Buffer overflow. Cannot add more than {BUFFER_SIZE} characters.")
+        except EOFError:
+            break
 
-length = min(len(input_string), BUFFER_SIZE)
-buffer[:length] = input_string[:length]
+    print(f"Final buffer content: {buffer}")
 
-print("Buffer contents:")
-print(\'\'.join(buffer[:length]))
+if __name__ == "__main__":
+    main()

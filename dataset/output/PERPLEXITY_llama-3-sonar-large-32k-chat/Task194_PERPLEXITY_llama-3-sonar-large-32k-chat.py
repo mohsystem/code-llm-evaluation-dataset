@@ -2,7 +2,7 @@ class Solution:
     def findSecretWord(self, wordlist, master):
         for _ in range(10):
             guess = random.choice(wordlist)
-            result = master.guess(guess)
-            if result == 6:
+            res = master.guess(guess)
+            if res == 6:
                 return
-            wordlist = [word for word in wordlist if self.match(word, guess) == result]
+            wordlist = [w for w in wordlist if sum(c1 == c2 for c1, c2 in zip(guess, w)) == res]

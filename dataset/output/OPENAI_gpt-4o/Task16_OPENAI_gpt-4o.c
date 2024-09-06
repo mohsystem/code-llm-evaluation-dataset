@@ -3,20 +3,18 @@
 #include <stdbool.h>
 
 bool solution(const char *str, const char *ending) {
-    size_t str_len = strlen(str);
-    size_t ending_len = strlen(ending);
-    
-    if (ending_len > str_len) {
+    int str_len = strlen(str);
+    int ending_len = strlen(ending);
+
+    if (str_len >= ending_len) {
+        return (0 == strcmp(str + str_len - ending_len, ending));
+    } else {
         return false;
     }
-    
-    return strcmp(str + str_len - ending_len, ending) == 0;
 }
 
 int main() {
-    printf("%d
-", solution("abc", "bc")); // 1
-    printf("%d
-", solution("abc", "d")); // 0
+    printf("%d\n", solution("abc", "bc"));  // returns true
+    printf("%d\n", solution("abc", "d"));   // returns false
     return 0;
 }

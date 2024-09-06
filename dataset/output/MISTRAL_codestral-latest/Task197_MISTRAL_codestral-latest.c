@@ -15,14 +15,14 @@ Solution* solutionCreate(double radius, double x_center, double y_center) {
     return obj;
 }
 
-double* solutionRandPoint(Solution* obj, int* retSize) {
-    double* ret = malloc(sizeof(double) * 2);
-    *retSize = 2;
+double* solutionRandPoint(Solution* obj, int* returnSize) {
+    double* result = (double*)malloc(2 * sizeof(double));
     double r = obj->radius * sqrt((double)rand() / RAND_MAX);
     double theta = (double)rand() / RAND_MAX * 2 * M_PI;
-    ret[0] = obj->x_center + r * cos(theta);
-    ret[1] = obj->y_center + r * sin(theta);
-    return ret;
+    result[0] = obj->x_center + r * cos(theta);
+    result[1] = obj->y_center + r * sin(theta);
+    *returnSize = 2;
+    return result;
 }
 
 void solutionFree(Solution* obj) {

@@ -1,23 +1,16 @@
+// C
 #include <stdio.h>
 #include <string.h>
 
 #define BUFFER_SIZE 10
 
 int main() {
-    char buffer[BUFFER_SIZE];
-    char input[BUFFER_SIZE];
-
+    char userInput[BUFFER_SIZE + 1];
     printf("Enter a string: ");
-    fgets(input, BUFFER_SIZE, stdin);
-
-    if (strlen(input) > BUFFER_SIZE) {
-        printf("Input is too long for the buffer.
-");
-    } else {
-        strcpy(buffer, input);
-        printf("Input stored in buffer: %s
-", buffer);
+    fgets(userInput, BUFFER_SIZE + 1, stdin);
+    if (strlen(userInput) > BUFFER_SIZE) {
+        userInput[BUFFER_SIZE] = '\0';
     }
-
+    printf("Truncated input: %s", userInput);
     return 0;
 }

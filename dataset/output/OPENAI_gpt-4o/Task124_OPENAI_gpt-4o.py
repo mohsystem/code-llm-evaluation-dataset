@@ -1,15 +1,15 @@
-import base64
+# Python code
+class SensitiveData:
+    def __init__(self):
+        self.data = {}
 
-class SecureData:
-    def __init__(self, data):
-        self.encoded_data = self.encode_data(data)
-    
-    def encode_data(self, data):
-        return base64.b64encode(data.encode('utf-8')).decode('utf-8')
-    
-    def decode_data(self):
-        return base64.b64decode(self.encoded_data.encode('utf-8')).decode('utf-8')
+    def store_data(self, key, value):
+        self.data[key] = value
 
-sensitive_data = SecureData("4111-1111-1111-1111")
-print(f"Encoded Data (Python): {sensitive_data.encoded_data}")
-print(f"Decoded Data (Python): {sensitive_data.decode_data()}")
+    def retrieve_data(self, key):
+        return self.data.get(key, "Data not found")
+
+# Example usage
+sensitive_data = SensitiveData()
+sensitive_data.store_data('credit_card', '1234-5678-9012-3456')
+print(sensitive_data.retrieve_data('credit_card'))

@@ -1,14 +1,16 @@
 #include <iostream>
+#include <cstdio>
 #include <cstdlib>
+using namespace std;
 
 int main() {
-    std::string filename;
-
-    std::cout << "Enter the filename: ";
-    std::cin >> filename;
-
-    std::string command = "cat " + filename;
+    string filename;
+    cout << "Enter the filename: ";
+    getline(cin, filename);
+    string command = "type " + filename;
+    if (system(nullptr)) {
+        command = ("cat " + filename);
+    }
     system(command.c_str());
-
     return 0;
 }

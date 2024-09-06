@@ -1,7 +1,3 @@
-class Permission:
-    def __init__(self, name):
-        self.name = name
-
 class User:
     def __init__(self, username):
         self.username = username
@@ -15,22 +11,64 @@ class User:
         if permission in self.permissions:
             self.permissions.remove(permission)
 
-    def has_permission(self, permission_name):
-        return any(p.name == permission_name for p in self.permissions)
+    def has_permission(self, permission):
+        return permission in self.permissions
 
-# Example usage:
-read_permission = Permission("read")
-write_permission = Permission("write")
+def main():
+    users = {}
 
-user1 = User("john_doe")
-user1.add_permission(read_permission)
+    while True:
+        action = input("Enter action (create user, add permission, remove permission, check permission, list users, exit): ")
 
-user2 = User("jane_doe")
-user2.add_permission(read_permission)
-user2.add_permission(write_permission)
+        if action == "create user":
+            username = input("Enter username: ")
+            if username in users:
+                print("User already exists.")
+            else:
+                users[username] = User(username)
+                print("User created successfully.")
 
-print(f"{user1.username} has read permission: {user1.has_permission('read')}")
-print(f"{user1.username} has write permission: {user1.has_permission('write')}")
+        elif action == "add permission":
+            username = input("Enter username: ")
+            if username in users:
+                permission = input("Enter permission to add: ")
+                users[username].add_permission(permission)
+                print("Permission added successfully.")
+            else:
+                print("User not found.")
 
-print(f"{user2.username} has read permission: {user2.has_permission('read')}")
-print(f"{user2.username} has write permission: {user2.has_permission('write')}")
+        elif action == "remove permission":
+            username = input("Enter username: ")
+            if username in users:
+                permission = input("Enter permission to remove: ")
+                users[username].remove_permission(permission)
+                print("Permission removed successfully.")
+            else:
+                print("User not found.")
+
+        elif action == "check permission":
+            username = input("Enter username: ")
+            if username in users:
+                permission = input("Enter permission to check: ")
+                if users[username].has_permission(permission):
+                    print("User has permission.")
+                else:
+                    print("User does not have permission.")
+            else:
+                print("User not found.")
+
+        elif action == "list users":
+            if users:
+                for username in users:
+                    print(username)
+            else:
+                print("No users found.")
+
+        elif action == "exit":
+            break
+
+        else:
+            print("Invalid action.")
+
+if __name__ == "__main__":
+    main()

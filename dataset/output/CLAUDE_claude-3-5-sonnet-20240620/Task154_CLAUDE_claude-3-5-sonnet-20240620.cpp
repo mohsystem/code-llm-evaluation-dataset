@@ -3,18 +3,19 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+using namespace std;
 
 class Graph {
 private:
-    std::unordered_map<int, std::vector<int>> graph;
+    unordered_map<int, vector<int>> graph;
 
-    void dfsUtil(int v, std::unordered_set<int>& visited) {
+    void dfsUtil(int v, unordered_set<int>& visited) {
         visited.insert(v);
-        std::cout << v << " ";
+        cout << v << " ";
 
-        for (int neighbor : graph[v]) {
-            if (visited.find(neighbor) == visited.end()) {
-                dfsUtil(neighbor, visited);
+        for (int neighbour : graph[v]) {
+            if (visited.find(neighbour) == visited.end()) {
+                dfsUtil(neighbour, visited);
             }
         }
     }
@@ -24,9 +25,9 @@ public:
         graph[u].push_back(v);
     }
 
-    void dfs(int start) {
-        std::unordered_set<int> visited;
-        dfsUtil(start, visited);
+    void dfs(int v) {
+        unordered_set<int> visited;
+        dfsUtil(v, visited);
     }
 };
 
@@ -39,8 +40,7 @@ int main() {
     g.addEdge(2, 3);
     g.addEdge(3, 3);
 
-    std::cout << "Depth First Traversal (starting from vertex 2):\
-";
+    cout << "Depth First Traversal (starting from vertex 2):" << endl;
     g.dfs(2);
 
     return 0;

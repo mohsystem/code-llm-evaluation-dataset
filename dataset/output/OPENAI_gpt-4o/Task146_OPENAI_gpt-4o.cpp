@@ -1,18 +1,19 @@
+// Program in C++
 #include <iostream>
 using namespace std;
 
-int findMissingNumber(int array[], int n) {
-    int expectedSum = n * (n + 1) / 2;
-    int actualSum = 0;
-    for (int i = 0; i < n - 1; ++i) {
-        actualSum += array[i];
+int findMissingNumber(int arr[], int n) {
+    int total_sum = n * (n + 1) / 2;
+    int array_sum = 0;
+    for (int i = 0; i < n-1; i++) {
+        array_sum += arr[i];
     }
-    return expectedSum - actualSum;
+    return total_sum - array_sum;
 }
 
 int main() {
-    int array[] = {1, 2, 4, 5, 6};  // Input your array here
-    int n = sizeof(array) / sizeof(array[0]) + 1;
-    cout << "Missing number is: " << findMissingNumber(array, n) << endl;
+    int arr[] = {1, 2, 4, 5, 6};
+    int n = 6;
+    cout << "Missing number is: " << findMissingNumber(arr, n) << endl;
     return 0;
 }

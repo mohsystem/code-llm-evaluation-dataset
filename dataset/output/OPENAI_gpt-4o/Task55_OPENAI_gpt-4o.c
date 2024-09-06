@@ -1,32 +1,36 @@
 #include <stdio.h>
 #include <regex.h>
 
-int is_valid_email(const char *email);
-
-int main() {
-    char email[256];
-    printf("Enter an email address:
-");
-    scanf("%s", email);
-
-    if (is_valid_email(email)) {
-        printf("Valid email address.
-");
-    } else {
-        printf("Invalid email address.
-");
-    }
-    return 0;
-}
-
-int is_valid_email(const char *email) {
+int validateEmail(const char *email) {
+    const char *pattern = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$";
     regex_t regex;
-    const char *email_regex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
     int result;
 
-    regcomp(&regex, email_regex, REG_EXTENDED);
+    result = regcomp(&regex, pattern, REG_EXTENDED);
+    if (result) {
+        return 0;
+    }
+
     result = regexec(&regex, email, 0, NULL, 0);
     regfree(&regex);
 
-    return result == 0;
+    if (!result) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int main() {
+    char email[100];
+    printf("Enter an email address: ");
+    scanf("%s", email);
+
+    if (validateEmail(email)) {
+        printf("Valid email address\n");
+    } else {
+        printf("Invalid email address\n");
+    }
+
+    return 0;
 }

@@ -1,31 +1,11 @@
-#include <iostream>
 #include <string>
+#include <unordered_map>
 
-std::string DNATranslate(std::string dna) {
-    std::string complement;
+std::string DNAStrand(const std::string& dna) {
+    std::unordered_map<char, char> complement = {{'A', 'T'}, {'T', 'A'}, {'C', 'G'}, {'G', 'C'}};
+    std::string result;
     for (char c : dna) {
-        switch (c) {
-            case 'A':
-                complement += 'T';
-                break;
-            case 'T':
-                complement += 'A';
-                break;
-            case 'C':
-                complement += 'G';
-                break;
-            case 'G':
-                complement += 'C';
-                break;
-        }
+        result += complement[c];
     }
-    return complement;
-}
-
-int main() {
-    std::string dna1 = "ATTGC";
-    std::string dna2 = "GTAT";
-    std::cout << dna1 << " --> " << DNATranslate(dna1) << std::endl; // --> "TAACG"
-    std::cout << dna2 << " --> " << DNATranslate(dna2) << std::endl; // --> "CATA"
-    return 0;
+    return result;
 }

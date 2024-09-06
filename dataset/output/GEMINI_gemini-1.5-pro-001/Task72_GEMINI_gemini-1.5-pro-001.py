@@ -1,30 +1,28 @@
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
-import base64
 
-# Key and IV (replace with your own secure values)
-key = b'YourSecretKeyHere'  
-iv = b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f'
+# Static Initialization Vector (IV) - Must be 16 bytes
+iv = b'ThisIsMyStaticIV'
 
-def encrypt_data(key, iv, data):
-    """Encrypts data using AES-128 in CBC mode.
+# Encryption Key - Must be 16, 24, or 32 bytes
+key = b'ThisIsMySecretKey'
 
-    Args:
-        key: The encryption key (16 bytes).
-        iv: The initialization vector (16 bytes).
-        data: The data to encrypt (bytes).
+def encrypt_data(data):
+  """
+  Encrypts data using AES-CBC with a static IV.
 
-    Returns:
-        The encrypted data (bytes).
-    """
-    cipher = AES.new(key, AES.MODE_CBC, iv)
-    ciphertext = cipher.encrypt(pad(data, AES.block_size))
-    return ciphertext
+  Args:
+    data: The data to be encrypted (bytes).
+
+  Returns:
+    The encrypted data (bytes).
+  """
+  cipher = AES.new(key, AES.MODE_CBC, iv)
+  padded_data = pad(data, AES.block_size)
+  encrypted_data = cipher.encrypt(padded_data)
+  return encrypted_data
 
 # Example usage
-plaintext = b'This is some data to encrypt.'
-ciphertext = encrypt_data(key, iv, plaintext)
-base64_ciphertext = base64.b64encode(ciphertext).decode('utf-8')
-
-# Output Base64 encoded ciphertext
-print(base64_ciphertext)
+data = b'This is some secret data.'
+encrypted_data = encrypt_data(data)
+print(encrypted_data)

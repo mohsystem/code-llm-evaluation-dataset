@@ -1,11 +1,14 @@
 import re
 
-input_str = input("Enter input: ")
+def validate_input(user_input):
+    pattern = re.compile('^[a-zA-Z0-9_]+$')
+    if pattern.match(user_input):
+        return True
+    else:
+        return False
 
-# Regex pattern to validate input
-regex = "^[a-zA-Z0-9]*$"
-
-if re.match(regex, input_str):
-    print("Valid input")
+user_input = input("Enter your input: ")
+if validate_input(user_input):
+    print("Input is valid")
 else:
-    print("Invalid input")
+    print("Input is invalid")

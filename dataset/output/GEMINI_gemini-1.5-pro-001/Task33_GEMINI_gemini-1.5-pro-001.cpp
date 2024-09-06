@@ -1,21 +1,31 @@
 #include <algorithm>
 #include <vector>
 
-int solveSuperMarketQueue(const std::vector<int>& customers, int n) {
-  if (customers.empty()) return 0;
-  if (customers.size() <= n) return *std::max_element(customers.begin(), customers.end());
-  
+int queueTime(std::vector<int> customers, int n) {
+  if (customers.empty()) {
+    return 0;
+  }
+
+  if (n == 1) {
+    return std::accumulate(customers.begin(), customers.end(), 0);
+  }
+
+  if (n >= customers.size()) {
+    return *std::max_element(customers.begin(), customers.end());
+  }
+
   std::vector<int> tills(n, 0);
-  size_t customerIndex = 0;
-  
-  for (int i = 0; i < n; ++i) {
-    tills[i] = customers[customerIndex++];
+
+  for (int customerTime : customers) {
+    int minIndex = 0;
+    for (int i = 1; i < n; i++) {
+      if (tills[i] < tills[minIndex]) {
+        minIndex = i;
+      }
+    }
+    tills[minIndex] += customerTime;
   }
 
-  while (customerIndex < customers.size()) {
-    auto minTill = std::min_element(tills.begin(), tills.end());
-    *minTill += customers[customerIndex++];
-  }
-
-  return *std::max_element(tills.begin(), tills.end());
+  std::sort(tills.begin(), tills.end());
+  return tills[n - 1];
 }

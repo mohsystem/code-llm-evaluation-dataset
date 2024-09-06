@@ -1,27 +1,38 @@
 
 import os
+from cryptography.fernet import Fernet
 
-KEY = 0x42
+def generate_key():
+    return Fernet.generate_key()
 
-def encrypt_decrypt(input_file, output_file):
-    with open(input_file, \'rb\') as fin, open(output_file, \'wb\') as fout:
-        while True:
-            chunk = fin.read(1024)
-            if not chunk:
-                break
-            encrypted_chunk = bytes([b ^ KEY for b in chunk])
-            fout.write(encrypted_chunk)
+def encrypt_file(file_path, key):
+    f = Fernet(key)
+    with open(file_path, 'rb') as file:
+        file_data = file.read()
+    encrypted_data = f.encrypt(file_data)
+    with open(file_path + '.encrypted', 'wb') as file:
+        file.write(encrypted_data)
+
+def decrypt_file(file_path, key):
+    f = Fernet(key)
+    with open(file_path, 'rb') as file:
+        encrypted_data = file.read()
+    decrypted_data = f.decrypt(encrypted_data)
+    with open(file_path[:-10], 'wb') as file:
+        file.write(decrypted_data)
 
 def main():
-    choice = input("Enter \'e\' to encrypt or \'d\' to decrypt: ")
-    input_file = input("Enter input file name: ")
-    output_file = input("Enter output file name: ")
+    key = generate_key()
+    print(f"Generated key: {key}")
 
-    try:
-        encrypt_decrypt(input_file, output_file)
-        print("Operation completed successfully.")
-    except IOError as e:
-        print(f"An error occurred: {e}")
+    file_path = input("Enter the file path to encrypt: ")
+    encrypt_file(file_path, key)
+    print(f"File encrypted: {file_path}.encrypted")
+
+    decrypt_choice = input("Do you want to decrypt the file? (y/n): ")
+    if decrypt_choice.lower() == 'y':
+        decrypt_file(file_path + '.encrypted', key)
+        print(f"File decrypted: {file_path}")
 
 if __name__ == "__main__":
     main()

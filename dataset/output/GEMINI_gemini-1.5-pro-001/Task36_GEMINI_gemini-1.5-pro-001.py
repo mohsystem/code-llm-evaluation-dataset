@@ -1,10 +1,7 @@
-file_path = input("Enter the file path: ")
-
+filename = input("Enter the file name: ")
 try:
-    with open(file_path, 'r') as file:
-        for line in file:
-            print(line, end='')
+    with open(filename, 'r') as file:
+        content = file.read()
+        print(content)
 except FileNotFoundError:
     print("Error: File not found.")
-except Exception as e:
-    print(f"An error occurred: {e}")

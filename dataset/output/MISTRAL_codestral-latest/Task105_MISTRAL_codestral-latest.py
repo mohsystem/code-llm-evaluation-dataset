@@ -1,9 +1,15 @@
 import ssl
 import socket
 
-context = ssl.create_default_context()
+# Define the remote server and port
+server = 'www.example.com'
+port = 443
 
-with socket.create_connection(("www.example.com", 443)) as sock:
-    with context.wrap_socket(sock, server_hostname="www.example.com") as ssock:
-        # Use ssock to communicate with the server
-        pass
+# Create a socket object
+sock = socket.create_connection((server, port))
+
+# Wrap the socket with SSL/TLS
+context = ssl.create_default_context()
+ssl_sock = context.wrap_socket(sock, server_hostname=server)
+
+# Now you can use ssl_sock to communicate with the server securely

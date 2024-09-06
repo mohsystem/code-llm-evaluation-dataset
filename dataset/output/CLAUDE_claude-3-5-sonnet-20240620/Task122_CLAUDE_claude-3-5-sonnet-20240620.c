@@ -1,71 +1,53 @@
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <openssl/sha.h>
+#include <string.h>
+#include <openssl/evp.h>
+#include <openssl/rand.h>
 
-#define MAX_USERS 100
-#define MAX_USERNAME_LENGTH 50
-#define MAX_PASSWORD_LENGTH 50
+#define SALT_SIZE 16
+#define KEY_SIZE 32
+#define ITERATIONS 100000
 
-struct User {
-    char username[MAX_USERNAME_LENGTH];
-    char password[SHA256_DIGEST_LENGTH * 2 + 1];
-};
+void hash_password(const char* password, unsigned char* result) {
+    unsigned char salt[SALT_SIZE];
+    RAND_bytes(salt, SALT_SIZE);
 
-struct User users[MAX_USERS];
-int user_count = 0;
+    unsigned char key[KEY_SIZE];
+    PKCS5_PBKDF2_HMAC(password, strlen(password), salt, SALT_SIZE,
+                      ITERATIONS, EVP_sha256(), KEY_SIZE, key);
 
-void sha256(char *string, char outputBuffer[65]) {
-    unsigned char hash[SHA256_DIGEST_LENGTH];
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-    SHA256_Update(&sha256, string, strlen(string));
-    SHA256_Final(hash, &sha256);
-    int i;
-    for(i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        sprintf(outputBuffer + (i * 2), "%02x", hash[i]);
-    }
-    outputBuffer[64] = 0;
+    memcpy(result, salt, SALT_SIZE);
+    memcpy(result + SALT_SIZE, key, KEY_SIZE);
 }
 
 void signup() {
-    if (user_count >= MAX_USERS) {
-        printf("Maximum number of users reached.\
-");
+    char username[100], password[100];
+    printf("Enter username: ");
+    scanf("%99s", username);
+    printf("Enter password: ");
+    scanf("%99s", password);
+
+    unsigned char hashed_password[SALT_SIZE + KEY_SIZE];
+    hash_password(password, hashed_password);
+
+    FILE* file = fopen("passwords.txt", "ab");
+    if (file == NULL) {
+        printf("Error opening file.\\n");
         return;
     }
 
-    char username[MAX_USERNAME_LENGTH];
-    char password[MAX_PASSWORD_LENGTH];
-    
-    printf("Enter username: ");
-    scanf("%s", username);
-    printf("Enter password: ");
-    scanf("%s", password);
+    fprintf(file, "%s:", username);
+    fwrite(hashed_password, 1, SALT_SIZE + KEY_SIZE, file);
+    fprintf(file, "\\n");
+    fclose(file);
 
-    strcpy(users[user_count].username, username);
-    sha256(password, users[user_count].password);
-
-    user_count++;
-    printf("Signup successful!\
-");
+    printf("Signup successful!\\n");
 }
 
 int main() {
-    char choice;
-    do {
-        signup();
-        printf("Do you want to add another user? (y/n): ");
-        scanf(" %c", &choice);
-    } while (choice == \'y\' || choice == \'Y\');
-
-    printf("Final password dictionary:\
-");
-    for (int i = 0; i < user_count; i++) {
-        printf("%s: %s\
-", users[i].username, users[i].password);
-    }
-
+    OpenSSL_add_all_algorithms();
+    signup();
+    EVP_cleanup();
     return 0;
 }

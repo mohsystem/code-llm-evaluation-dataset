@@ -1,17 +1,18 @@
 #include <stdio.h>
 #include <string.h>
 
+#define BUFFER_SIZE 1024
+
 int main() {
-    char buffer[100];
-    char input[100];
+    char buffer[BUFFER_SIZE];
 
-    printf("Enter input: ");
-    fgets(input, sizeof(input), stdin);
+    printf("Enter your input (max %d characters): ", BUFFER_SIZE);
+    fgets(buffer, BUFFER_SIZE, stdin);
 
-    strncpy(buffer, input, sizeof(buffer) - 1);
-    buffer[sizeof(buffer) - 1] = '\0';
+    // Remove trailing newline from fgets()
+    buffer[strcspn(buffer, "\n")] = 0;
 
-    printf("Buffer contents: %s
-", buffer);
+    printf("\nYou entered:\n%s\n", buffer);
+
     return 0;
 }

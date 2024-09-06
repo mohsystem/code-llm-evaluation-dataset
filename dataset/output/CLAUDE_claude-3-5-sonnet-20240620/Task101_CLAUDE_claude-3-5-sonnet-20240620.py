@@ -1,14 +1,9 @@
 
 import os
 
-file_name = "script.sh"
+# Create the file
+with open('script.sh', 'w') as file:
+    file.write('#!/bin/bash\\necho "Hello, World!"')
 
-try:
-    with open(file_name, \'w\') as file:
-        pass
-    print(f"File created: {file_name}")
-
-    os.chmod(file_name, 0o755)
-    print("File permissions set to executable.")
-except IOError as e:
-    print(f"An error occurred: {e}")
+# Make it executable
+os.chmod('script.sh', 0o755)

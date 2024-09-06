@@ -1,7 +1,6 @@
-def dna_complement(dna):
+def dna_strand(dna):
     complement = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
-    return ''.join([complement[base] for base in dna])
+    return ''.join(complement[base] for base in dna)
 
-inputs = ["ATTGC", "GTAT"]
-for dna in inputs:
-    print(dna_complement(dna))
+print(dna_strand("ATTGC"))  # Output: TAACG
+print(dna_strand("GTAT"))   # Output: CATA

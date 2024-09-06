@@ -7,7 +7,7 @@ using namespace std;
 int main() {
     ifstream file("input.txt");
     string line;
-    regex pattern("^\\d+.*\\.$");
+    regex pattern("^\\d+\\.$");
 
     while (getline(file, line)) {
         if (regex_match(line, pattern)) {

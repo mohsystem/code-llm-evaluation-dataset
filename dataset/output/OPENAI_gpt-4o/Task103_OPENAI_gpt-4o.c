@@ -2,31 +2,27 @@
 #include <string.h>
 #include <ctype.h>
 
-int isValidPassword(const char *password) {
-    if (strlen(password) < 8) return 0;
-    int hasUpperCase = 0, hasLowerCase = 0, hasDigit = 0;
+int main() {
+    char password[100];
+    printf("Enter your password: ");
+    scanf("%s", password);
 
-    for (int i = 0; password[i]; i++) {
-        if (isupper(password[i])) hasUpperCase = 1;
-        if (islower(password[i])) hasLowerCase = 1;
-        if (isdigit(password[i])) hasDigit = 1;
+    int hasLower = 0, hasUpper = 0, hasDigit = 0;
+    size_t length = strlen(password);
+
+    if (length >= 8) {
+        for (size_t i = 0; i < length; i++) {
+            if (islower(password[i])) hasLower = 1;
+            if (isupper(password[i])) hasUpper = 1;
+            if (isdigit(password[i])) hasDigit = 1;
+        }
     }
 
-    return hasUpperCase && hasLowerCase && hasDigit;
-}
-
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        printf("No password provided
-");
-        return 1;
-    }
-    if (isValidPassword(argv[1])) {
-        printf("Password is strong
-");
+    if (hasLower && hasUpper && hasDigit && length >= 8) {
+        printf("Password is strong.\n");
     } else {
-        printf("Password is weak
-");
+        printf("Password is weak.\n");
     }
+
     return 0;
 }

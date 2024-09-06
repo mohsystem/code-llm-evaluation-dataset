@@ -1,2 +1,4 @@
-// This is not possible in C as it's not a web programming language.
-// C is a general-purpose programming language and does not have built-in support for web development.
+// C does not have built-in support for web development. It's not possible to write a C program that displays user-supplied input on a web page in a single file.
+/*
+// No code possible
+*/

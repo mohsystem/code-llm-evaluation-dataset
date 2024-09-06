@@ -1,30 +1,26 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <sys/types.h>
-#include <pwd.h>
+#include <stdlib.h>
 
-void drop_privileges() {
-    struct passwd *pw;
-    uid_t uid;
-    gid_t gid;
-
-    // Get nobody user's uid and gid
-    pw = getpwnam("nobody");
-    if (pw) {
-        uid = pw->pw_uid;
-        gid = pw->pw_gid;
-
-        // Set gid and uid to nobody
-        if (setgid(gid) == -1) {
-            perror("setgid");
-            return;
-        }
-        if (setuid(uid) == -1) {
-            perror("setuid");
-            return;
-        }
-    } else {
-        fprintf(stderr, "Failed to get 'nobody' user details
-");
+int main() {
+    if (geteuid() != 0) {
+        fprintf(stderr, "This script must be run as root!\n");
+        return 1;
     }
+    
+    char username[256];
+    printf("Enter username to change password: ");
+    scanf("%s", username);
+
+    char command[512];
+    snprintf(command, sizeof(command), "echo \"%s:newpassword\" | chpasswd", username);
+    system(command);
+
+    // Drop privileges
+    if (setuid(geteuid()) != 0) {
+        fprintf(stderr, "Failed to drop privileges\n");
+        return 1;
+    }
+    printf("Privileges have been dropped.\n");
+    return 0;
 }

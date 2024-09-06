@@ -1,33 +1,41 @@
 #include <stdio.h>
 #include <regex.h>
 
-int main() {
-    char input[100];
-    printf("Enter input: ");
-    fgets(input, sizeof(input), stdin);
+int validateInput(const char* userInput) {
+    regex_t regex;
+    int reti;
+    char msgbuf[100];
 
-    // Regex pattern to validate input
-    const char *regex = "^[a-zA-Z0-9]*$";
-    regex_t regexCompiled;
-    int reti = regcomp(&regexCompiled, regex, 0);
-    if(reti) {
-        printf("Could not compile regex
-");
+    const char* pattern = "^[a-zA-Z0-9_]+$";
+
+    reti = regcomp(&regex, pattern, 0);
+    if (reti) {
+        fprintf(stderr, "Could not compile regex\n");
+        return 0;
+    }
+
+    reti = regexec(&regex, userInput, 0, NULL, 0);
+    if (!reti) {
         return 1;
-    }
-
-    reti = regexec(&regexCompiled, input, 0, NULL, 0);
-    if(!reti) {
-        printf("Valid input
-");
-    } else if(reti == REG_NOMATCH) {
-        printf("Invalid input
-");
+    } else if (reti == REG_NOMATCH) {
+        return 0;
     } else {
-        printf("Regex match failed
-");
+        regerror(reti, &regex, msgbuf, sizeof(msgbuf));
+        fprintf(stderr, "Regex match failed: %s\n", msgbuf);
+        return 0;
     }
 
-    regfree(&regexCompiled);
+    regfree(&regex);
+}
+
+int main() {
+    char userInput[100];
+    printf("Enter your input: ");
+    fgets(userInput, sizeof(userInput), stdin);
+    if (validateInput(userInput)) {
+        printf("Input is valid\n");
+    } else {
+        printf("Input is invalid\n");
+    }
     return 0;
 }

@@ -1,41 +1,39 @@
 import hashlib
 
-users = {}
+def hash_password(password):
+  """Hashes the password using SHA-256."""
+  return hashlib.sha256(password.encode()).hexdigest()
 
-def register_user():
-    username = input("Enter username: ")
-    if username in users:
-        print("Username already exists!")
-        return
-    password = input("Enter password: ")
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    users[username] = hashed_password
-    print("User registered successfully!")
+def create_user(username, password):
+  """Creates a new user with hashed password."""
+  hashed_password = hash_password(password)
+  with open("users.txt", "a") as f:
+    f.write(f"{username}:{hashed_password}\n")
+  print(f"User '{username}' created successfully!")
 
-def login_user():
-    username = input("Enter username: ")
-    if username not in users:
-        print("Invalid username or password!")
-        return
-    password = input("Enter password: ")
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    if hashed_password == users[username]:
-        print("Login successful!")
-    else:
-        print("Invalid username or password!")
+def authenticate_user(username, password):
+  """Authenticates user based on stored credentials."""
+  hashed_password = hash_password(password)
+  with open("users.txt", "r") as f:
+    for line in f:
+      u, h = line.strip().split(":")
+      if u == username and h == hashed_password:
+        print("Authentication successful. Welcome!")
+        return True
+  print("Authentication failed. Invalid username or password.")
+  return False
 
 while True:
-    print("1. Register")
-    print("2. Login")
-    print("3. Exit")
-    choice = input("Enter your choice: ")
-
-    if choice == '1':
-        register_user()
-    elif choice == '2':
-        login_user()
-    elif choice == '3':
-        print("Exiting...")
-        break
-    else:
-        print("Invalid choice!")
+  choice = input("1. Create user\n2. Login\n3. Exit\nChoose an option: ")
+  if choice == "1":
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+    create_user(username, password)
+  elif choice == "2":
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+    authenticate_user(username, password)
+  elif choice == "3":
+    break
+  else:
+    print("Invalid choice.")

@@ -1,22 +1,11 @@
 #include <cmath>
-#include <iostream>
+#include <string>
 
-bool isNarcissistic(int n) {
-    int sum = 0, temp = n;
-    int digits = 0;
-    for (int i = n; i != 0; i /= 10) {
-        digits++;
+bool narcissistic(int value) {
+    int sum = 0;
+    std::string strValue = std::to_string(value);
+    for (char digit : strValue) {
+        sum += pow(std::stoi(std::string(1, digit)), strValue.length());
     }
-    while (temp != 0) {
-        int digit = temp % 10;
-        sum += pow(digit, digits);
-        temp /= 10;
-    }
-    return sum == n;
-}
-
-int main() {
-    std::cout << std::boolalpha << isNarcissistic(153) << std::endl; // true
-    std::cout << std::boolalpha << isNarcissistic(1652) << std::endl; // false
-    return 0;
+    return value == sum;
 }

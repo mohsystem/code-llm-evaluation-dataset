@@ -1,22 +1,13 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 int main() {
-    int num;
-    char input[100];
-
+    double number;
     printf("Enter a number: ");
-    fgets(input, sizeof(input), stdin);
-
-    if (sscanf(input, "%d", &num) != 1) {
-        printf("Error: Invalid input. Please enter a number.
-");
-        return 1;
+    if (scanf("%lf", &number) == 1) {
+        double result = number * 2;
+        printf("The result is: %.2lf\n", result);
+    } else {
+        printf("Invalid input. Please enter a number.\n");
     }
-
-    printf("You entered: %d
-", num);
-    // Perform operations with num here
-
     return 0;
 }

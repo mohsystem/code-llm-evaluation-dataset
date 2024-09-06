@@ -3,24 +3,25 @@ def reversePairs(nums):
         if len(nums) <= 1:
             return nums, 0
         mid = len(nums) // 2
-        left, leftCount = mergeSort(nums[:mid])
-        right, rightCount = mergeSort(nums[mid:])
-        merged, mergedCount = merge(left, right)
-        return merged, leftCount + rightCount + mergedCount
+        left, left_count = mergeSort(nums[:mid])
+        right, right_count = mergeSort(nums[mid:])
+        merged, merged_count = merge(left, right)
+        return merged, left_count + right_count + merged_count
 
     def merge(left, right):
         merged = []
-        leftIndex, rightIndex, mergedCount = 0, 0, 0
-        while leftIndex < len(left) and rightIndex < len(right):
-            if left[leftIndex] <= 2 * right[rightIndex]:
-                merged.append(left[leftIndex])
-                leftIndex += 1
+        left_index, right_index = 0, 0
+        count = 0
+        while left_index < len(left) and right_index < len(right):
+            if left[left_index] <= 2 * right[right_index]:
+                merged.append(left[left_index])
+                left_index += 1
             else:
-                merged.append(right[rightIndex])
-                mergedCount += len(left) - leftIndex
-                rightIndex += 1
-        merged.extend(left[leftIndex:])
-        merged.extend(right[rightIndex:])
-        return merged, mergedCount
+                merged.append(right[right_index])
+                count += len(left) - left_index
+                right_index += 1
+        merged.extend(left[left_index:])
+        merged.extend(right[right_index:])
+        return merged, count
 
     return mergeSort(nums)[1]

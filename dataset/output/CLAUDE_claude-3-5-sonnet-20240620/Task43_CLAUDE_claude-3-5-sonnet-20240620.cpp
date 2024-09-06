@@ -1,131 +1,114 @@
 
-#include <iostream>
-#include <string>
+#include <crow.h>
 #include <unordered_map>
+#include <chrono>
 #include <ctime>
 #include <random>
-#include <algorithm>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
+#include <sstream>
+#include <iomanip>
+#include <openssl/sha.h>
 
-class Session {
-public:
-    std::string id;
+struct Session {
     std::string username;
-    time_t creation_time;
-    time_t last_access_time;
-
-    Session(const std::string& user) : username(user) {
-        id = generate_session_id();
-        creation_time = time(nullptr);
-        last_access_time = creation_time;
-    }
-
-private:
-    std::string generate_session_id() {
-        const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> dis(0, sizeof(charset) - 2);
-
-        std::string id(32, 0);
-        std::generate_n(id.begin(), 32, [&]() { return charset[dis(gen)]; });
-        return id;
-    }
+    std::chrono::system_clock::time_point login_time;
 };
 
-class SessionManager {
-private:
-    std::unordered_map<std::string, Session> sessions;
-    const int SESSION_TIMEOUT = 1800; // 30 minutes in seconds
+std::unordered_map<std::string, std::string> users;
+std::unordered_map<std::string, Session> sessions;
+const int SESSION_TIMEOUT = 1800; // 30 minutes
 
-public:
-    std::string create_session(const std::string& username) {
-        Session session(username);
-        sessions[session.id] = session;
-        return session.id;
+std::string generate_session_id() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::uniform_int_distribution<> dis(0, 15);
+    const char* v = "0123456789abcdef";
+    std::string res;
+    for (int i = 0; i < 32; ++i) {
+        res += v[dis(gen)];
     }
+    return res;
+}
 
-    bool validate_session(const std::string& session_id) {
-        auto it = sessions.find(session_id);
-        if (it != sessions.end()) {
-            time_t current_time = time(nullptr);
-            if (current_time - it->second.last_access_time <= SESSION_TIMEOUT) {
-                it->second.last_access_time = current_time;
-                return true;
-            } else {
-                terminate_session(session_id);
-            }
-        }
-        return false;
+std::string hash_password(const std::string& password) {
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, password.c_str(), password.size());
+    SHA256_Final(hash, &sha256);
+    std::stringstream ss;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(hash[i]);
     }
-
-    void terminate_session(const std::string& session_id) {
-        sessions.erase(session_id);
-    }
-};
+    return ss.str();
+}
 
 int main() {
-    SessionManager session_manager;
-    int server_fd, new_socket;
-    struct sockaddr_in address;
-    int addrlen = sizeof(address);
-    char buffer[1024] = {0};
+    crow::SimpleApp app;
 
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        std::cerr << "Socket creation error" << std::endl;
-        return -1;
-    }
-
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(8080);
-
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
-        std::cerr << "Bind failed" << std::endl;
-        return -1;
-    }
-
-    if (listen(server_fd, 3) < 0) {
-        std::cerr << "Listen failed" << std::endl;
-        return -1;
-    }
-
-    std::cout << "Server started on port 8080" << std::endl;
-
-    while (true) {
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
-            std::cerr << "Accept failed" << std::endl;
-            continue;
+    CROW_ROUTE(app, "/register").methods("POST"_method)
+    ([](const crow::request& req) {
+        auto x = crow::json::load(req.body);
+        if (!x) return crow::response(400, "Invalid JSON");
+        
+        std::string username = x["username"].s();
+        std::string password = x["password"].s();
+        
+        if (users.find(username) != users.end()) {
+            return crow::response(400, "Username already exists");
         }
+        
+        users[username] = hash_password(password);
+        return crow::response(201, "User registered successfully");
+    });
 
-        read(new_socket, buffer, 1024);
-        std::string request(buffer);
-        std::string action = request.substr(0, request.find(" "));
-        std::string arg = request.substr(request.find(" ") + 1);
-
-        if (action == "LOGIN") {
-            std::string session_id = session_manager.create_session(arg);
-            std::string response = "Session created: " + session_id + "\
-";
-            send(new_socket, response.c_str(), response.length(), 0);
-        } else if (action == "VALIDATE") {
-            bool is_valid = session_manager.validate_session(arg);
-            std::string response = "Session valid: " + std::string(is_valid ? "true" : "false") + "\
-";
-            send(new_socket, response.c_str(), response.length(), 0);
-        } else if (action == "LOGOUT") {
-            session_manager.terminate_session(arg);
-            send(new_socket, "Session terminated\
-", 19, 0);
-        } else {
-            send(new_socket, "Invalid action\
-", 15, 0);
+    CROW_ROUTE(app, "/login").methods("POST"_method)
+    ([](const crow::request& req) {
+        auto x = crow::json::load(req.body);
+        if (!x) return crow::response(400, "Invalid JSON");
+        
+        std::string username = x["username"].s();
+        std::string password = x["password"].s();
+        
+        if (users.find(username) == users.end() || users[username] != hash_password(password)) {
+            return crow::response(401, "Invalid credentials");
         }
+        
+        std::string session_id = generate_session_id();
+        sessions[session_id] = {username, std::chrono::system_clock::now()};
+        
+        crow::response res(200, "Logged in successfully");
+        res.add_header("Set-Cookie", "session_id=" + session_id + "; HttpOnly; Path=/");
+        return res;
+    });
 
-        close(new_socket);
-    }
+    CROW_ROUTE(app, "/logout").methods("POST"_method)
+    ([](const crow::request& req) {
+        auto session_id = req.get_header_value("Cookie");
+        if (!session_id.empty()) {
+            sessions.erase(session_id);
+        }
+        crow::response res(200, "Logged out successfully");
+        res.add_header("Set-Cookie", "session_id=; HttpOnly; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT");
+        return res;
+    });
 
+    CROW_ROUTE(app, "/protected").methods("GET"_method)
+    ([](const crow::request& req) {
+        auto session_id = req.get_header_value("Cookie");
+        if (session_id.empty() || sessions.find(session_id) == sessions.end()) {
+            return crow::response(401, "Unauthorized");
+        }
+        
+        auto& session = sessions[session_id];
+        auto now = std::chrono::system_clock::now();
+        if (std::chrono::duration_cast<std::chrono::seconds>(now - session.login_time).count() > SESSION_TIMEOUT) {
+            sessions.erase(session_id);
+            return crow::response(401, "Session expired");
+        }
+        
+        return crow::response(200, "Hello, " + session.username + "!");
+    });
+
+    app.port(8080).multithreaded().run();
     return 0;
 }

@@ -10,7 +10,7 @@ class Session:
         self.last_activity = self.creation_time
 
 class SessionManager:
-    def __init__(self, session_timeout=1800):  # 30 minutes default timeout
+    def __init__(self, session_timeout=1800):  # Default timeout: 30 minutes
         self.sessions = {}
         self.session_timeout = session_timeout
 
@@ -34,12 +34,10 @@ class SessionManager:
 
     def cleanup_expired_sessions(self):
         current_time = time.time()
-        expired_sessions = [
-            session_id for session_id, session in self.sessions.items()
-            if current_time - session.last_activity > self.session_timeout
-        ]
-        for session_id in expired_sessions:
-            self.destroy_session(session_id)
+        expired_sessions = [sid for sid, session in self.sessions.items()
+                            if current_time - session.last_activity > self.session_timeout]
+        for sid in expired_sessions:
+            self.destroy_session(sid)
 
 def main():
     session_manager = SessionManager()

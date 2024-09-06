@@ -1,26 +1,18 @@
-#include <stdio.h>
-#include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
 
-bool isIsogram(const char *str) {
-    bool charSet[26] = {false};
-    for (int i = 0; str[i]; i++) {
-        int index = tolower(str[i]) - 'a';
-        if (charSet[index]) {
-            return false;
-        }
-        charSet[index] = true;
-    }
-    return true;
-}
+#define MAX_CHAR 256
 
-int main() {
-    printf("%d
-", isIsogram("Dermatoglyphics")); // 1 (true)
-    printf("%d
-", isIsogram("aba")); // 0 (false)
-    printf("%d
-", isIsogram("moOse")); // 0 (false)
-    return 0;
+int isIsogram(char *str) {
+    int count[MAX_CHAR] = {0};
+    int len = strlen(str);
+
+    for (int i = 0; i < len; i++) {
+        str[i] = tolower(str[i]);
+        count[str[i]]++;
+        if (count[str[i]] > 1) {
+            return 0;
+        }
+    }
+    return 1;
 }

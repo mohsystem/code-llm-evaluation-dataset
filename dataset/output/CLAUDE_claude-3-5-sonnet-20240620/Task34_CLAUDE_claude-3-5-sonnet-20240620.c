@@ -2,34 +2,23 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
+#include <string.h>
 
-bool isNarcissistic(int number) {
-    int originalNumber = number;
-    int numDigits = 0;
+bool narcissistic(int num) {
+    char numStr[20];
+    sprintf(numStr, "%d", num);
+    int power = strlen(numStr);
     int sum = 0;
-
-    // Count the number of digits
-    while (number > 0) {
-        numDigits++;
-        number /= 10;
+    
+    for (int i = 0; i < power; i++) {
+        sum += pow(numStr[i] - '0', power);
     }
-
-    number = originalNumber;
-
-    // Calculate the sum of digits raised to the power of numDigits
-    while (number > 0) {
-        int digit = number % 10;
-        sum += pow(digit, numDigits);
-        number /= 10;
-    }
-
-    return sum == originalNumber;
+    
+    return sum == num;
 }
 
 int main() {
-    printf("%s\
-", isNarcissistic(153) ? "true" : "false");  // true
-    printf("%s\
-", isNarcissistic(1652) ? "true" : "false"); // false
+    printf("%s\\n", narcissistic(153) ? "true" : "false");  // true
+    printf("%s\\n", narcissistic(1652) ? "true" : "false");  // false
     return 0;
 }

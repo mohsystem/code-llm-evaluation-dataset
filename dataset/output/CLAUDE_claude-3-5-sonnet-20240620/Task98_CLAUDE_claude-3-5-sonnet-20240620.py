@@ -1,12 +1,7 @@
 
-def main():
-    input_str = input("Enter a number: ")
-    
-    try:
-        number = int(input_str)
-        print(f"Converted integer: {number}")
-    except ValueError:
-        print("Invalid input. Not a valid integer.")
-
-if __name__ == "__main__":
-    main()
+try:
+    user_input = input("Enter a number: ")
+    number = int(user_input)
+    print(f"Successfully converted to integer: {number}")
+except ValueError:
+    print("Invalid input. Please enter a valid integer.")

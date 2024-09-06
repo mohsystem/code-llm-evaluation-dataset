@@ -1,13 +1,16 @@
 #include <iostream>
-#include <string>
 #include <map>
+#include <string>
 
 class User {
 public:
     std::string username;
     std::string password;
 
-    User(std::string username, std::string password) : username(username), password(password) {}
+    User(std::string username, std::string password) {
+        this->username = username;
+        this->password = password;
+    }
 };
 
 std::map<std::string, User> users;
@@ -15,9 +18,9 @@ std::map<std::string, User> users;
 void signup() {
     std::string username, password;
     std::cout << "Enter username: ";
-    std::getline(std::cin, username);
+    std::cin >> username;
     std::cout << "Enter password: ";
-    std::getline(std::cin, password);
+    std::cin >> password;
     users[username] = User(username, password);
     std::cout << "Signup successful!" << std::endl;
 }

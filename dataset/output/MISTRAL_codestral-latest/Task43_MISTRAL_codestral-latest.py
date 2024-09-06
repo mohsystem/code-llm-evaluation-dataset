@@ -1,18 +1,17 @@
-# Python
-import uuid
+from flask import Flask, session
+from flask_session import Session
 
-class SessionManager:
-    def __init__(self):
-        self.sessions = {}
+app = Flask(__name__)
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SECRET_KEY'] = 'super-secret-key'
+Session(app)
 
-    def create_session(self, user_id):
-        session_id = str(uuid.uuid4())
-        self.sessions[session_id] = user_id
-        return session_id
+@app.route('/login')
+def login():
+    session['username'] = 'user'
+    return 'Logged in'
 
-    def get_user_from_session(self, session_id):
-        return self.sessions.get(session_id)
-
-    def terminate_session(self, session_id):
-        if session_id in self.sessions:
-            del self.sessions[session_id]
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return 'Logged out'

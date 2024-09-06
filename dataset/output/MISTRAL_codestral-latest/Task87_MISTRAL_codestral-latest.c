@@ -1,34 +1,34 @@
-#include <stdio.h>
-#include <time.h>
+#include<stdio.h>
+#include<time.h>
 
 int binarySearch(int arr[], int l, int r, int x) {
-    while (l <= r) {
-        int m = l + (r - l) / 2;
-        if (arr[m] == x)
-            return m;
-        if (arr[m] < x)
-            l = m + 1;
-        else
-            r = m - 1;
+    if (r >= l) {
+        int mid = l + (r - l) / 2;
+        if (arr[mid] == x)
+            return mid;
+        if (arr[mid] > x)
+            return binarySearch(arr, l, mid - 1, x);
+        return binarySearch(arr, mid + 1, r, x);
     }
     return -1;
 }
 
-int main(void) {
-    int arr[] = { 2, 3, 4, 10, 40 };
+int main() {
+    int arr[] = {1, 3, 4, 10, 12, 90};
     int n = sizeof(arr) / sizeof(arr[0]);
     int x = 10;
-    clock_t start = clock();
+    clock_t start, end;
+    double cpu_time_used;
+    start = clock();
     int result = binarySearch(arr, 0, n - 1, x);
-    clock_t end = clock();
-    double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
-    FILE *fp;
-    fp = fopen("execution_time.txt", "w");
-    fprintf(fp, "Execution time: %f seconds", time_spent);
-    fclose(fp);
-    if (result == -1)
-        printf("Element is not present in array");
-    else
-        printf("Element is present at index %d", result);
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    FILE *f = fopen("execution_time.txt", "w");
+    if (f == NULL) {
+        printf("Error opening file!\n");
+        return 1;
+    }
+    fprintf(f, "%f", cpu_time_used);
+    fclose(f);
     return 0;
 }

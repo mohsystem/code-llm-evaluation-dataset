@@ -1,22 +1,22 @@
 #include <iostream>
 #include <vector>
-#include <cstdlib>
+using namespace std;
 
-int maxSubArray(const std::vector<int>& nums) {
-    int maxSum = nums[0];
-    int currentSum = nums[0];
-    for (size_t i = 1; i < nums.size(); ++i) {
-        currentSum = std::max(nums[i], currentSum + nums[i]);
-        maxSum = std::max(maxSum, currentSum);
+int maxSubArraySum(vector<int>& arr) {
+    int maxCurrent = arr[0];
+    int maxGlobal = arr[0];
+
+    for (size_t i = 1; i < arr.size(); ++i) {
+        maxCurrent = max(arr[i], maxCurrent + arr[i]);
+        if (maxCurrent > maxGlobal) {
+            maxGlobal = maxCurrent;
+        }
     }
-    return maxSum;
+    return maxGlobal;
 }
 
-int main(int argc, char* argv[]) {
-    std::vector<int> nums;
-    for (int i = 1; i < argc; ++i) {
-        nums.push_back(std::atoi(argv[i]));
-    }
-    std::cout << "C++: " << maxSubArray(nums) << std::endl;
+int main() {
+    vector<int> arr = {1, -3, 2, 1, -1};
+    cout << "Max contiguous subarray sum is: " << maxSubArraySum(arr) << endl;
     return 0;
 }

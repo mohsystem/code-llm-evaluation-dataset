@@ -1,23 +1,21 @@
+// C
 #include <stdio.h>
 #include <stdlib.h>
 
 int main() {
-    char input[256];
+    char userInput[256];
+    int num;
     char *end;
-    long number;
 
     printf("Enter a number: ");
-    fgets(input, sizeof(input), stdin);
+    fgets(userInput, sizeof(userInput), stdin);
 
-    number = strtol(input, &end, 10);
+    num = strtol(userInput, &end, 10);
 
-    if (end == input || *end != '
-') {
-        printf("Invalid input. Please enter a valid integer.
-");
+    if (end == userInput || *end != '\n') {
+        printf("Invalid input. Please enter an integer.\n");
     } else {
-        printf("You entered: %ld
-", number);
+        printf("You entered: %d\n", num);
     }
 
     return 0;

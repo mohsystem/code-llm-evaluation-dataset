@@ -14,7 +14,6 @@ class Graph:
     def _dfs_helper(self, node, visited):
         visited[node] = True
         print(node, end=" ")
-
         for neighbor in self.adj_list[node]:
             if not visited[neighbor]:
                 self._dfs_helper(neighbor, visited)
@@ -24,7 +23,5 @@ g = Graph(5)
 g.add_edge(0, 1)
 g.add_edge(0, 2)
 g.add_edge(1, 3)
-g.add_edge(1, 4)
-
-print("Depth-first search starting from node 0:")
-g.dfs(0)
+g.add_edge(2, 4)
+g.dfs(0)  # Output: 0 1 3 2 4

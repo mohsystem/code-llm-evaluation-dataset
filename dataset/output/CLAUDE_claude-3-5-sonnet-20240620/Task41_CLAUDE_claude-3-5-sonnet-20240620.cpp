@@ -3,18 +3,21 @@
 #include <string>
 #include <algorithm>
 
-void processString(std::string &str) {
-    std::transform(str.begin(), str.end(), str.begin(),
-                   [](unsigned char c){ return std::toupper(c); });
+void processInput(const std::string& input) {
+    // Process the input (example: print it back)
+    std::cout << "Processed input: " << input << std::endl;
 }
 
 int main() {
-    std::string input;
-    std::cout << "Enter a string: ";
-    std::getline(std::cin, input);
-
-    processString(input);
-    std::cout << "Processed string: " << input << std::endl;
-
+    std::string userInput;
+    std::cout << "Enter a string (max 100 characters): ";
+    
+    // Read input
+    std::getline(std::cin, userInput);
+    
+    // Limit input to 100 characters
+    userInput = userInput.substr(0, 100);
+    
+    processInput(userInput);
     return 0;
 }

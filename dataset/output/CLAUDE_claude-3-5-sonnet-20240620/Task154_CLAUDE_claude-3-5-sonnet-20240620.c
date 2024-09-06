@@ -38,12 +38,13 @@ void DFSUtil(struct Graph* graph, int v, bool visited[]) {
     }
 }
 
-void DFS(struct Graph* graph, int start) {
-    bool* visited = (bool*)calloc(graph->V, sizeof(bool));
+void DFS(struct Graph* graph, int v) {
+    bool visited[MAX_VERTICES];
+    for (int i = 0; i < graph->V; i++) {
+        visited[i] = false;
+    }
 
-    DFSUtil(graph, start, visited);
-
-    free(visited);
+    DFSUtil(graph, v, visited);
 }
 
 int main() {
@@ -55,8 +56,7 @@ int main() {
     addEdge(graph, 2, 3);
     addEdge(graph, 3, 3);
 
-    printf("Depth First Traversal (starting from vertex 2):\
-");
+    printf("Depth First Traversal (starting from vertex 2):\\n");
     DFS(graph, 2);
 
     free(graph);

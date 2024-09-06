@@ -11,7 +11,7 @@ public:
 
     void add(int num) {
         if (num == 0) {
-            prefixProducts = std::vector<int>(1, 1);
+            prefixProducts = {1};
         } else {
             prefixProducts.push_back(prefixProducts.back() * num);
         }

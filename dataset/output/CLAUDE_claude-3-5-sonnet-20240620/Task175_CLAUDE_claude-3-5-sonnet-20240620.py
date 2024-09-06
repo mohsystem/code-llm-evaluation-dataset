@@ -1,14 +1,11 @@
 
-# """
-# This is MountainArray\'s API interface.
-# You should not implement it, or speculate about its implementation
-# """
+# """\n# This is MountainArray's API interface.\n# You should not implement it, or speculate about its implementation\n# """
 #class MountainArray:
 #    def get(self, index: int) -> int:
 #    def length(self) -> int:
 
 class Solution:
-    def findInMountainArray(self, target: int, mountain_arr: \'MountainArray\') -> int:
+    def findInMountainArray(self, target: int, mountain_arr: 'MountainArray') -> int:
         length = mountain_arr.length()
         
         # Find peak element

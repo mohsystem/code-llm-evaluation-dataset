@@ -1,37 +1,32 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
+#include <ctype.h>
 
-int wordScore(const char *word) {
-    int score = 0;
-    while (*word) {
-        score += *word - 'a' + 1;
-        word++;
-    }
-    return score;
-}
+char* high(const char* inputString) {
+    static char bestWord[100];
+    char tempWord[100];
+    int maxScore = 0, score = 0;
 
-char* highestScoringWord(const char *str) {
-    char *result = NULL, *token, *copy = strdup(str), *saveptr;
-    int highestScore = 0;
-
-    token = strtok_r(copy, " ", &saveptr);
-    while (token) {
-        int score = wordScore(token);
-        if (score > highestScore) {
-            highestScore = score;
-            result = token;
+    const char* word = strtok((char*)inputString, " ");
+    while (word != NULL) {
+        score = 0;
+        for (int i = 0; word[i] != '\0'; i++) {
+            score += tolower(word[i]) - 'a' + 1;
         }
-        token = strtok_r(NULL, " ", &saveptr);
+
+        if (score > maxScore) {
+            strcpy(bestWord, word);
+            maxScore = score;
+        }
+
+        word = strtok(NULL, " ");
     }
 
-    free(copy);
-    return result;
+    return bestWord;
 }
 
 int main() {
-    const char str[] = "example input sentence";
-    printf("%s
-", highestScoringWord(str));
+    char inputString[] = "abad test example";
+    printf("%s\n", high(inputString));
     return 0;
 }

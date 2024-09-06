@@ -1,11 +1,23 @@
 import re
 
-def is_valid_ip(ip_address):
-    ip_pattern = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
-    return re.match(ip_pattern, ip_address) is not None
+def is_valid_ip(ip):
+  """
+  Validates an IP address.
 
-ip_address = "192.168.1.1"
+  Args:
+    ip: The IP address to validate.
+
+  Returns:
+    True if the IP address is valid, False otherwise.
+  """
+  regex = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
+  return re.match(regex, ip) is not None
+
+# Get user input
+ip_address = input("Enter an IP address: ")
+
+# Validate the IP address
 if is_valid_ip(ip_address):
-    print(f"{ip_address} is a valid IP address.")
+  print("Valid IP address")
 else:
-    print(f"{ip_address} is not a valid IP address.")
+  print("Invalid IP address")

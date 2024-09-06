@@ -1,12 +1,11 @@
 #include <iostream>
 #include <set>
-#include <cctype>
+#include <string>
 
 bool isIsogram(const std::string& str) {
     std::set<char> set;
     for (char c : str) {
-        char lower = std::tolower(c);
-        if (!set.insert(lower).second) {
+        if (!set.insert(std::tolower(c)).second) {
             return false;
         }
     }
@@ -14,8 +13,8 @@ bool isIsogram(const std::string& str) {
 }
 
 int main() {
-    std::cout << std::boolalpha << isIsogram("Dermatoglyphics") << std::endl; // true
-    std::cout << std::boolalpha << isIsogram("aba") << std::endl; // false
-    std::cout << std::boolalpha << isIsogram("moOse") << std::endl; // false
+    std::cout << std::boolalpha << isIsogram("Dermatoglyphics") << std::endl;  // true
+    std::cout << std::boolalpha << isIsogram("aba") << std::endl;  // false
+    std::cout << std::boolalpha << isIsogram("moOse") << std::endl;  // false
     return 0;
 }

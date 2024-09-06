@@ -1,44 +1,68 @@
-code here:
 #include <iostream>
+#include <map>
 #include <string>
-#include <unordered_map>
-#include <openssl/sha.h>
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
 
 class KeyManager {
 private:
-    std::unordered_map<std::string, std::string> keys;
+    std::map<std::string, RSA*> keys;
 
 public:
-    std::string generateKey(const std::string& username) {
-        unsigned char hash[SHA256_DIGEST_LENGTH];
-        SHA256_CTX sha256;
-        SHA256_Init(&sha256);
-        SHA256_Update(&sha256, username.c_str(), username.size());
-        SHA256_Final(hash, &sha256);
-        std::string key;
-        for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-            char buffer[3];
-            sprintf(buffer, "%02x", hash[i]);
-            key += buffer;
+    KeyManager() {}
+
+    void generateKey(const std::string& keyName) {
+        RSA* key = RSA_new();
+        BIGNUM* exponent = BN_new();
+        BN_set_word(exponent, 65537);
+        RSA_generate_key_ex(key, 2048, exponent, nullptr);
+        this->keys[keyName] = key;
+    }
+
+    RSA* getKey(const std::string& keyName) {
+        return this->keys[keyName];
+    }
+
+    void deleteKey(const std::string& keyName) {
+        if (this->keys.find(keyName) != this->keys.end()) {
+            RSA_free(this->keys[keyName]);
+            this->keys.erase(keyName);
         }
-        this->keys[username] = key;
-        return key;
     }
 
-    std::string getKey(const std::string& username) {
-        return this->keys[username];
-    }
-
-    void deleteKey(const std::string& username) {
-        this->keys.erase(username);
+    std::string hashKey(const std::string& keyName) {
+        RSA* key = this->getKey(keyName);
+        if (key != nullptr) {
+            unsigned char buffer[256];
+            unsigned int length = i2s_PublicKey(key, buffer);
+            std::string keyString((char*)buffer, length);
+            unsigned char hash[SHA256_DIGEST_LENGTH];
+            SHA256((unsigned char*)keyString.c_str(), keyString.length(), hash);
+            std::string hashString((char*)hash, SHA256_DIGEST_LENGTH);
+            return hashString;
+        } else {
+            return "";
+        }
     }
 };
 
 int main() {
     KeyManager manager;
-    std::cout << manager.generateKey("user1") << std::endl;
-    std::cout << manager.getKey("user1") << std::endl;
-    manager.deleteKey("user1");
-    std::cout << manager.getKey("user1") << std::endl;
+    std::string keyName = "my_key";
+    manager.generateKey(keyName);
+    RSA* key = manager.getKey(keyName);
+    std::cout << "Generated key for " << keyName << ": ";
+    char buffer[256];
+    unsigned int length = i2s_PublicKey(key, buffer);
+    std::cout << std::string(buffer, length) << std::endl;
+    std::cout << "Hash of " << keyName << ": " << manager.hashKey(keyName) << std::endl;
+    manager.deleteKey(keyName);
+    std::cout << "Key " << keyName << " deleted: ";
+    if (manager.getKey(keyName) == nullptr) {
+        std::cout << "null" << std::endl;
+    } else {
+        std::cout << "not null" << std::endl;
+    }
     return 0;
 }

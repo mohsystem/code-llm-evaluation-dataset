@@ -1,8 +1,11 @@
+// This code uses the curl library, which is not a standard C++ library.
+// You need to install libcurl and link against it to compile this code.
+
+#include <curl/curl.h>
 #include <iostream>
 #include <string>
-#include <curl/curl.h>
 
-size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
+size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp) {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
@@ -10,7 +13,7 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
 int main() {
     std::string url;
     std::cout << "Enter a URL: ";
-    std::getline(std::cin, url);
+    std::cin >> url;
 
     CURL *curl;
     CURLcode res;
@@ -27,7 +30,9 @@ int main() {
         if(res != CURLE_OK) {
             std::cerr << "cURL error: " << curl_easy_strerror(res) << std::endl;
         } else {
-            std::cout << "Response Content: " << readBuffer << std::endl;
+            std::cout << "Status Code: " << curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE) << std::endl;
+            std::cout << "Headers: " << curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL) << std::endl;
+            std::cout << "Content: " << readBuffer << std::endl;
         }
 
         curl_easy_cleanup(curl);

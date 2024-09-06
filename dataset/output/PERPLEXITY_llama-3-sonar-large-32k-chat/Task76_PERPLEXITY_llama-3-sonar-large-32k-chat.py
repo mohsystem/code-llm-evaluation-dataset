@@ -1,18 +1,16 @@
 import sys
 import requests
-import re
+from bs4 import BeautifulSoup
 
-if len(sys.argv) != 2:
-    print("Usage: python3 main.py <url>")
-    exit(1)
+def get_page_title(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    title = soup.find('title').text
+    return title
 
-url = sys.argv[1]
-response = requests.get(url)
-if response.status_code == 200:
-    match = re.search(r"<title>(.*?)</title>", response.text)
-    if match:
-        print(match.group(1))
-    else:
-        print("No title found")
-else:
-    print("Failed to retrieve page")
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <url>")
+        sys.exit(1)
+    url = sys.argv[1]
+    print(get_page_title(url))

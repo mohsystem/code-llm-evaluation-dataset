@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <string>
 
 std::vector<std::string> number(const std::vector<std::string>& lines) {
     std::vector<std::string> result;
@@ -10,10 +11,18 @@ std::vector<std::string> number(const std::vector<std::string>& lines) {
 }
 
 int main() {
+    std::vector<std::string> empty;
     std::vector<std::string> lines = {"a", "b", "c"};
-    std::vector<std::string> numbered_lines = number(lines);
-    for (const auto &line : numbered_lines) {
+    
+    std::vector<std::string> result = number(empty);
+    for (const auto& line : result) {
         std::cout << line << std::endl;
     }
+    
+    result = number(lines);
+    for (const auto& line : result) {
+        std::cout << line << std::endl;
+    }
+    
     return 0;
 }

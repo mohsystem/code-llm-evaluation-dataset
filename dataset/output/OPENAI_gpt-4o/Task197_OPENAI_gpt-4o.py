@@ -8,8 +8,14 @@ class Solution:
         self.y_center = y_center
 
     def randPoint(self):
-        angle = random.uniform(0, 2 * math.pi)
-        hyp = math.sqrt(random.uniform(0, 1)) * self.radius
-        x = self.x_center + hyp * math.cos(angle)
-        y = self.y_center + hyp * math.sin(angle)
+        r = self.radius * math.sqrt(random.random())
+        theta = random.random() * 2 * math.pi
+        x = self.x_center + r * math.cos(theta)
+        y = self.y_center + r * math.sin(theta)
         return [x, y]
+
+# Example usage
+sol = Solution(1.0, 0.0, 0.0)
+print(sol.randPoint())
+print(sol.randPoint())
+print(sol.randPoint())

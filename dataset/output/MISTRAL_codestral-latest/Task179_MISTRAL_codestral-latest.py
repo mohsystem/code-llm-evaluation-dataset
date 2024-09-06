@@ -1,6 +1,6 @@
 from collections import deque
 
-def maxSlidingWindow(nums, k):
+def max_sliding_window(nums, k):
     result = []
     window = deque()
 

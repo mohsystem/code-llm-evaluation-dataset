@@ -1,32 +1,26 @@
 #include <iostream>
+#include <fstream>
 #include <thread>
 #include <mutex>
 #include <vector>
-#include <dirent.h>
+#include <filesystem>
 
 std::mutex lock;
 
-void processFile(const std::string& filename) {
-    lock.lock();
-    std::cout << "Processing file: " << filename << std::endl;
-    // Simulate file processing
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    lock.unlock();
+void processFile(const std::string& fileName) {
+    std::lock_guard<std::mutex> guard(lock);
+    std::cout << "Processing file: " << fileName << std::endl;
+    std::ifstream file(fileName);
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    std::cout << "File content: " << content << std::endl;
+    std::cout << "Finished processing file: " << fileName << std::endl;
 }
 
 int main() {
-    DIR* dir;
-    struct dirent* ent;
+    std::string directory = "./files";
     std::vector<std::thread> threads;
-
-    dir = opendir("files");
-    if (dir != NULL) {
-        while ((ent = readdir(dir)) != NULL) {
-            if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0) {
-                threads.emplace_back(processFile, std::string(ent->d_name));
-            }
-        }
-        closedir(dir);
+    for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+        threads.emplace_back(processFile, entry.path().string());
     }
 
     for (auto& thread : threads) {

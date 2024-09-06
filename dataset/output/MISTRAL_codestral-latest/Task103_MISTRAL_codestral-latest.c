@@ -1,45 +1,38 @@
 #include <stdio.h>
-#include <ctype.h>
 #include <stdbool.h>
+#include <ctype.h>
 #include <string.h>
 
-bool isValidPassword(const char* password) {
-    if (strlen(password) < 8) {
+bool checkPasswordStrength(const char* password) {
+    int length = strlen(password);
+    if (length < 8) {
         return false;
     }
-
-    bool hasUpperCase = false;
-    bool hasLowerCase = false;
+    bool hasLowercase = false;
+    bool hasUppercase = false;
     bool hasDigit = false;
-
-    for (int i = 0; i < strlen(password); i++) {
+    for (int i = 0; i < length; i++) {
         char c = password[i];
-        if (isupper(c)) {
-            hasUpperCase = true;
-        } else if (islower(c)) {
-            hasLowerCase = true;
+        if (islower(c)) {
+            hasLowercase = true;
+        } else if (isupper(c)) {
+            hasUppercase = true;
         } else if (isdigit(c)) {
             hasDigit = true;
         }
     }
-
-    return hasUpperCase && hasLowerCase && hasDigit;
+    return hasLowercase && hasUppercase && hasDigit;
 }
 
 int main() {
     char password[100];
     printf("Enter a password: ");
     fgets(password, sizeof(password), stdin);
-    password[strcspn(password, "
-")] = 0; // Remove trailing newline character
-
-    if (isValidPassword(password)) {
-        printf("Password is strong.
-");
+    password[strcspn(password, "\n")] = '\0';
+    if (checkPasswordStrength(password)) {
+        printf("Password is strong\n");
     } else {
-        printf("Password is weak. It should be at least 8 characters long, contain both uppercase and lowercase letters, and contain at least one digit.
-");
+        printf("Password is weak\n");
     }
-
     return 0;
 }

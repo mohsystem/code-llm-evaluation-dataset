@@ -5,25 +5,20 @@ class Robot:
     used_names = set()
 
     def __init__(self):
-        self.reset()
+        self.name = self._generate_name()
 
     def reset(self):
-        self.name = self._generate_unique_name()
+        self.name = self._generate_name()
 
-    def _generate_unique_name(self):
+    def _generate_name(self):
         while True:
-            name = self._generate_random_name()
-            if name not in self.used_names:
-                self.used_names.add(name)
+            name = ''.join(random.choices(string.ascii_uppercase, k=2)) + ''.join(random.choices(string.digits, k=3))
+            if name not in Robot.used_names:
+                Robot.used_names.add(name)
                 return name
 
-    def _generate_random_name(self):
-        letters = ''.join(random.choices(string.ascii_uppercase, k=2))
-        numbers = ''.join(random.choices(string.digits, k=3))
-        return letters + numbers
-
-# Example usage
-r1 = Robot()
-print(r1.name)
-r1.reset()
-print(r1.name)
+# Example of using the Robot class
+robot = Robot()
+print(robot.name)
+robot.reset()
+print(robot.name)

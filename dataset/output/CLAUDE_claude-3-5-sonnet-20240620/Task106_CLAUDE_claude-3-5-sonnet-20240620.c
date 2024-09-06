@@ -2,59 +2,95 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <gmp.h>
+#include <math.h>
+#include <time.h>
 
-void generate_keys(mpz_t n, mpz_t e, mpz_t d, int bits) {
-    mpz_t p, q, phi, gcd;
-    gmp_randstate_t state;
+#define MAX_PRIME 1000
 
-    mpz_inits(p, q, phi, gcd, NULL);
-    gmp_randinit_default(state);
-
-    mpz_urandomb(p, state, bits / 2);
-    mpz_nextprime(p, p);
-    mpz_urandomb(q, state, bits / 2);
-    mpz_nextprime(q, q);
-
-    mpz_mul(n, p, q);
-    mpz_sub_ui(p, p, 1);
-    mpz_sub_ui(q, q, 1);
-    mpz_mul(phi, p, q);
-
-    mpz_set_ui(e, 65537);
-    mpz_invert(d, e, phi);
-
-    mpz_clears(p, q, phi, gcd, NULL);
-    gmp_randclear(state);
+int is_prime(int n) {
+    if (n < 2) return 0;
+    for (int i = 2; i <= sqrt(n); i++) {
+        if (n % i == 0) return 0;
+    }
+    return 1;
 }
 
-void encrypt(mpz_t c, mpz_t m, mpz_t e, mpz_t n) {
-    mpz_powm(c, m, e, n);
+int generate_prime(int min_val, int max_val) {
+    int prime;
+    do {
+        prime = rand() % (max_val - min_val + 1) + min_val;
+    } while (!is_prime(prime));
+    return prime;
 }
 
-void decrypt(mpz_t m, mpz_t c, mpz_t d, mpz_t n) {
-    mpz_powm(m, c, d, n);
+int mod_inverse(int a, int m) {
+    for (int i = 1; i < m; i++) {
+        if ((a * i) % m == 1) return i;
+    }
+    return -1;
+}
+
+int gcd(int a, int b) {
+    if (b == 0) return a;
+    return gcd(b, a % b);
+}
+
+void generate_keypair(int p, int q, int *e, int *d, int *n) {
+    *n = p * q;
+    int phi = (p - 1) * (q - 1);
+    *e = 2;
+    while (*e < phi) {
+        if (gcd(*e, phi) == 1) break;
+        (*e)++;
+    }
+    *d = mod_inverse(*e, phi);
+}
+
+int* encrypt(int e, int n, char* plaintext) {
+    int len = strlen(plaintext);
+    int* cipher = malloc(len * sizeof(int));
+    for (int i = 0; i < len; i++) {
+        cipher[i] = (int)pow(plaintext[i], e) % n;
+    }
+    return cipher;
+}
+
+char* decrypt(int d, int n, int* ciphertext, int len) {
+    char* plain = malloc((len + 1) * sizeof(char));
+    for (int i = 0; i < len; i++) {
+        plain[i] = (char)(pow(ciphertext[i], d) % n);
+    }
+    plain[len] = '\\0';
+    return plain;
 }
 
 int main() {
-    mpz_t n, e, d, m, c;
-    mpz_inits(n, e, d, m, c, NULL);
-
-    generate_keys(n, e, d, 1024);
-
-    char message[] = "Hello, RSA!";
-    mpz_import(m, strlen(message), 1, sizeof(char), 0, 0, message);
-
-    encrypt(c, m, e, n);
-    gmp_printf("Encrypted: %Zd\
-", c);
-
-    decrypt(m, c, d, n);
-    char decrypted[100];
-    mpz_export(decrypted, NULL, 1, sizeof(char), 0, 0, m);
-    printf("Decrypted: %s\
-", decrypted);
-
-    mpz_clears(n, e, d, m, c, NULL);
+    srand(time(NULL));
+    
+    int p = generate_prime(100, MAX_PRIME);
+    int q = generate_prime(100, MAX_PRIME);
+    int e, d, n;
+    generate_keypair(p, q, &e, &d, &n);
+    
+    char message[1000];
+    printf("Enter a message to encrypt: ");
+    fgets(message, sizeof(message), stdin);
+    message[strcspn(message, "\\n")] = 0;
+    
+    int len = strlen(message);
+    int* encrypted_msg = encrypt(e, n, message);
+    
+    printf("Encrypted message: ");
+    for (int i = 0; i < len; i++) {
+        printf("%d ", encrypted_msg[i]);
+    }
+    printf("\\n");
+    
+    char* decrypted_msg = decrypt(d, n, encrypted_msg, len);
+    printf("Decrypted message: %s\\n", decrypted_msg);
+    
+    free(encrypted_msg);
+    free(decrypted_msg);
+    
     return 0;
 }

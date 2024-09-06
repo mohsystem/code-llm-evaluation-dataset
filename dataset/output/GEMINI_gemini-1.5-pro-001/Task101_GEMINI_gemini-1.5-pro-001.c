@@ -1,20 +1,21 @@
-++
-#include <iostream>
-#include <fstream>
-#include <sys/stat.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 int main() {
-  // Create the file
-  std::ofstream file("script.sh");
-  if (!file.is_open()) {
-    return 1;
-  }
-  file.close();
+    FILE *script = fopen("script.sh", "w");
+    if (script == NULL) {
+        perror("Error opening file");
+        return 1;
+    }
 
-  // Make it executable
-  if (chmod("script.sh", S_IRWXU) == -1) {
-    return 1;
-  }
+    fprintf(script, "#!/bin/bash\n");
+    fprintf(script, "echo \"Hello from script.sh!\"\n");
+    fclose(script);
 
-  return 0;
+    if (system("chmod +x script.sh") != 0) {
+        perror("Error making script executable");
+        return 1;
+    }
+
+    return 0;
 }

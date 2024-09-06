@@ -9,7 +9,7 @@ def home():
         return request.form['user_input']
     return '''
         <form method="POST">
-            <input name="user_input">
+            <input type="text" name="user_input">
             <input type="submit" value="Submit">
         </form>
     '''

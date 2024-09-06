@@ -1,8 +1,28 @@
 // C
 #include <stdio.h>
+#include <conio.h>
 
 int main() {
-    char creditCardNumber[] = "1234567890123456";
-    char personalInformation[] = "John Doe, 123 Main St, Anytown, USA";
+    char password[30];
+    int i = 0;
+    char a;
+
+    printf("Enter password: ");
+    while (1) {
+        a = _getch();
+        if (a == '\r') {
+            password[i] = '\0';
+            break;
+        } else if (a == '\b') {
+            if (i > 0) {
+                i--;
+                printf("\b \b");
+            }
+        } else {
+            password[i] = a;
+            i++;
+            printf("*");
+        }
+    }
     return 0;
 }

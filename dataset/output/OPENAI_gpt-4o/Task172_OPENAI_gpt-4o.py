@@ -1,18 +1,19 @@
-def distinct_concatenations(text):
-    seen = set()
-    length = len(text)
-    for i in range(length):
-        for j in range(i + 1, length + 1):
-            sub = text[i:j]
-            if len(sub) % 2 == 0:
-                half_len = len(sub) // 2
-                if sub[:half_len] == sub[half_len:]:
-                    seen.add(sub)
-    return len(seen)
+def distinct_aa_substrings(text):
+    distinct_substrings = set()
+    n = len(text)
+    
+    for i in range(n):
+        for j in range(i+1, n, 2):
+            a = text[i:(i+j+1)//2]
+            b = text[(i+j+1)//2:j+1]
+            if a == b:
+                distinct_substrings.add(text[i:j+1])
+    
+    return len(distinct_substrings)
 
-# Example usage
+# Example usage:
 text = "abcabcabc"
-print(distinct_concatenations(text))  # Output: 3
+print(distinct_aa_substrings(text))
 
 text = "leetcodeleetcode"
-print(distinct_concatenations(text))  # Output: 2
+print(distinct_aa_substrings(text))

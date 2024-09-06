@@ -27,5 +27,5 @@ print(clock1 == clock2)  # True
 clock1.add_minutes(30)
 print(clock1.hours, clock1.minutes)  # 11 0
 
-clock1.subtract_minutes(90)
-print(clock1.hours, clock1.minutes)  # 9 30
+clock1.subtract_minutes(60)
+print(clock1.hours, clock1.minutes)  # 10 0

@@ -1,66 +1,51 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
+#include <stdbool.h>
 
-#define MAX_ROLES 4
-#define MAX_RESOURCES 4
-#define MAX_LENGTH 20
+#define MAX_LENGTH 50
 
-const char* roles[MAX_ROLES] = {"admin", "developer", "tester", "user"};
-const char* resources[MAX_ROLES][MAX_RESOURCES] = {
-    {"server", "database", "network", ""},
-    {"database", "codebase", "", ""},
-    {"codebase", "testbed", "", ""},
-    {"application", "", "", ""}
-};
-
-int checkAccess(const char* userRole, const char* resource) {
-    int roleIndex = -1;
-    for (int i = 0; i < MAX_ROLES; i++) {
-        if (strcmp(roles[i], userRole) == 0) {
-            roleIndex = i;
-            break;
-        }
-    }
-    
-    if (roleIndex != -1) {
-        for (int i = 0; i < MAX_RESOURCES; i++) {
-            if (strcmp(resources[roleIndex][i], resource) == 0) {
-                return 1;
-            }
-        }
-    }
-    
-    return 0;
+bool authenticate() {
+    char username[MAX_LENGTH];
+    char password[MAX_LENGTH];
+    printf("Enter username: ");
+    scanf("%s", username);
+    printf("Enter password: ");
+    scanf("%s", password);
+    return (strcmp(username, "admin") == 0 && strcmp(password, "password123") == 0);
 }
 
-void toLowerCase(char* str) {
-    for (int i = 0; str[i]; i++) {
-        str[i] = tolower(str[i]);
+void access_resource(const char* resource) {
+    if (strcmp(resource, "1") == 0) {
+        printf("Accessing confidential files...\\n");
+    } else if (strcmp(resource, "2") == 0) {
+        printf("Accessing financial records...\\n");
+    } else if (strcmp(resource, "3") == 0) {
+        printf("Accessing employee database...\\n");
+    } else {
+        printf("Invalid resource selection.\\n");
     }
 }
 
 int main() {
-    char userRole[MAX_LENGTH];
-    char resource[MAX_LENGTH];
-    
-    printf("Enter your role: ");
-    scanf("%s", userRole);
-    
-    printf("Enter the resource you want to access: ");
-    scanf("%s", resource);
-    
-    toLowerCase(userRole);
-    toLowerCase(resource);
-    
-    if (checkAccess(userRole, resource)) {
-        printf("Access granted to %s\
-", resource);
+    if (authenticate()) {
+        printf("Authentication successful.\\n");
+        char choice[MAX_LENGTH];
+        while (1) {
+            printf("\\nAvailable resources:\\n");
+            printf("1. Confidential files\\n");
+            printf("2. Financial records\\n");
+            printf("3. Employee database\\n");
+            printf("4. Exit\\n");
+            printf("Enter resource number to access (or 4 to exit): ");
+            scanf("%s", choice);
+            if (strcmp(choice, "4") == 0) {
+                break;
+            }
+            access_resource(choice);
+        }
     } else {
-        printf("Access denied\
-");
+        printf("Authentication failed. Access denied.\\n");
     }
-    
     return 0;
 }

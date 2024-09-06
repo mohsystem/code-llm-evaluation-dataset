@@ -47,8 +47,7 @@ int main() {
     stack.push(1);
     stack.push(2);
     stack.push(3);
-    std::cout << stack.pop() << std::endl;  // 3
-    std::cout << stack.peek() << std::endl;  // 2
-    std::cout << std::boolalpha << stack.isEmpty() << std::endl;  // false
+    std::cout << stack.pop() << std::endl;  // Output: 3
+    std::cout << stack.peek() << std::endl;  // Output: 2
     return 0;
 }

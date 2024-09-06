@@ -1,16 +1,28 @@
 # Python
 import requests
 from bs4 import BeautifulSoup
-import mysql.connector
+import sqlite3
 
-response = requests.get("http://example.com")
+# Connect to SQLite database
+conn = sqlite3.connect('website_data.db')
+c = conn.cursor()
+
+# Create table
+c.execute('''CREATE TABLE IF NOT EXISTS data
+             (title TEXT, link TEXT)''')
+
+# Scrape data
+url = 'http://example.com'
+response = requests.get(url)
 soup = BeautifulSoup(response.text, 'html.parser')
-elements = soup.select("div.content")
-cnx = mysql.connector.connect(user='user', password='password', host='localhost', database='test')
-cursor = cnx.cursor()
-for element in elements:
-    data = element.get_text()
-    cursor.execute("INSERT INTO table (column) VALUES (%s)", (data,))
-cnx.commit()
-cursor.close()
-cnx.close()
+
+for item in soup.find_all('div', class_='item'):
+    title = item.find('h2').text
+    link = item.find('a')['href']
+
+    # Insert data into table
+    c.execute("INSERT INTO data VALUES (?, ?)", (title, link))
+
+# Commit changes and close connection
+conn.commit()
+conn.close()

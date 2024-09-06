@@ -1,8 +1,5 @@
-def people_on_the_bus(stops):
-    people_on_bus = 0
-    for stop in stops:
-        people_on_bus += stop[0] - stop[1]
-    return people_on_bus
+def number_of_people_on_bus(bus_stops):
+    return sum([stop[0] - stop[1] for stop in bus_stops])
 
-stops = [(10, 0), (3, 5), (2, 5)]
-print(people_on_the_bus(stops)) # Output should be 5
+bus_stops = [(3, 0), (2, 1), (5, 2), (1, 4)]
+print(number_of_people_on_bus(bus_stops))

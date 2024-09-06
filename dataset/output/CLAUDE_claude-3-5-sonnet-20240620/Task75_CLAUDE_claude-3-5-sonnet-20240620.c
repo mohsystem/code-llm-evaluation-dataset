@@ -2,26 +2,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <errno.h>
+#include <string.h>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 2) {
-        printf("Usage: %s <PID>\
-", argv[0]);
+        fprintf(stderr, "Usage: %s <PID>\\n", argv[0]);
         return 1;
     }
 
-    int pid = atoi(argv[1]);
-    if (pid <= 0) {
-        printf("Invalid PID. Please provide a valid positive integer.\
-");
+    char* endptr;
+    long pid = strtol(argv[1], &endptr, 10);
+
+    if (*endptr != '\\0' || pid <= 0) {
+        fprintf(stderr, "Invalid PID. Please provide a valid positive integer.\\n");
         return 1;
     }
 
-    if (kill(pid, SIGTERM) == 0) {
-        printf("Process with PID %d terminated successfully.\
-", pid);
+    if (kill((pid_t)pid, SIGKILL) == 0) {
+        printf("Process with PID %ld has been terminated.\\n", pid);
     } else {
-        perror("Failed to terminate process");
+        fprintf(stderr, "Failed to terminate process with PID %ld: %s\\n", pid, strerror(errno));
         return 1;
     }
 

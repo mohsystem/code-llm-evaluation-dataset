@@ -5,31 +5,32 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-void retrieveFile(const std::string& filename) {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    sockaddr_in server_address;
-    server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(8080);
-    inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
-    connect(sock, (struct sockaddr*)&server_address, sizeof(server_address));
-    send(sock, filename.c_str(), filename.size(), 0);
-    char data[1024];
-    int bytesRead = recv(sock, data, 1024, 0);
-    if (bytesRead > 0) {
-        std::ofstream file(filename, std::ios::binary);
-        file.write(data, bytesRead);
-        file.close();
-        std::cout << "File retrieved successfully" << std::endl;
-    } else {
+void retrieveFile(const std::string& fileName) {
+    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    sockaddr_in serverAddress;
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_port = htons(12345);
+    inet_pton(AF_INET, "127.0.0.1", &serverAddress.sin_addr);
+    connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+    send(clientSocket, fileName.c_str(), fileName.size(), 0);
+    char buffer[1024];
+    int bytesRead;
+    if ((bytesRead = recv(clientSocket, buffer, 1024, 0)) == -1) {
         std::cout << "File not found on the server" << std::endl;
+    } else {
+        std::ofstream file(fileName, std::ios::binary);
+        while ((bytesRead = recv(clientSocket, buffer, 1024, 0)) > 0) {
+            file.write(buffer, bytesRead);
+        }
+        file.close();
     }
-    close(sock);
+    close(clientSocket);
 }
 
 int main() {
-    std::cout << "Enter the filename: ";
-    std::string filename;
-    std::cin >> filename;
-    retrieveFile(filename);
+    std::cout << "Enter the file name: ";
+    std::string fileName;
+    std::cin >> fileName;
+    retrieveFile(fileName);
     return 0;
 }

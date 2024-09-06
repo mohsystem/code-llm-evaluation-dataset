@@ -1,45 +1,32 @@
 #include <iostream>
-#include <vector>
+#include <fstream>
+#include <string>
 #include <ctime>
 
-class SecurityEvent {
-public:
-    std::string eventType;
-    std::string description;
-    time_t timestamp;
-
-    SecurityEvent(std::string eventType, std::string description) {
-        this->eventType = eventType;
-        this->description = description;
-        this->timestamp = time(0);
+void logEvent(const std::string& event) {
+    std::ofstream logFile("security_log.txt", std::ios::app);
+    if (logFile.is_open()) {
+        time_t now = time(0);
+        logFile << ctime(&now) << " - " << event << std::endl;
+        logFile.close();
+    } else {
+        std::cerr << "Error writing to log file." << std::endl;
     }
+}
 
-    void logEvent() {
-        std::cout << ctime(&timestamp) << " - " << eventType << ": " << description << std::endl;
-    }
-};
-
-class SecurityMonitor {
-private:
-    std::vector<SecurityEvent> eventLog;
-
-public:
-    void logEvent(SecurityEvent event) {
-        eventLog.push_back(event);
-        event.logEvent();
-    }
-
-    void monitorEvents() {
-        for (auto& event : eventLog) {
-            std::cout << "Monitoring: " << event.eventType << " - " << event.description << std::endl;
+void monitorEvents() {
+    std::string event;
+    while (true) {
+        std::cout << "Enter an event (or 'quit' to exit): ";
+        std::getline(std::cin, event);
+        if (event == "quit") {
+            break;
         }
+        logEvent(event);
     }
-};
+}
 
 int main() {
-    SecurityMonitor monitor;
-    monitor.logEvent(SecurityEvent("Login Attempt", "User attempted to login"));
-    monitor.logEvent(SecurityEvent("File Access", "User accessed confidential file"));
-    monitor.monitorEvents();
+    monitorEvents();
     return 0;
 }

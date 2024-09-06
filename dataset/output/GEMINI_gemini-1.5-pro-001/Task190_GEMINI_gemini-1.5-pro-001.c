@@ -3,59 +3,46 @@
 #include <string.h>
 
 #define MAX_LINE_LENGTH 1024
-#define MAX_NUM_COLUMNS 1024
+#define MAX_NUM_WORDS 100
 
 int main() {
-    FILE *fp;
-    char line[MAX_LINE_LENGTH];
-    char *token;
-    char *matrix[MAX_NUM_COLUMNS][MAX_NUM_COLUMNS];
-    int num_rows = 0;
-    int num_cols = 0;
-    int i, j;
-
-    // Open the file for reading
-    fp = fopen("file.txt", "r");
+    FILE *fp = fopen("file.txt", "r");
     if (fp == NULL) {
         perror("Error opening file");
         return 1;
     }
 
-    // Read the file line by line
-    while (fgets(line, MAX_LINE_LENGTH, fp) != NULL) {
-        // Tokenize the line by space
-        token = strtok(line, " ");
-        num_cols = 0;
-        while (token != NULL) {
-            // Allocate memory for the token and copy it
-            matrix[num_rows][num_cols] = malloc(strlen(token) + 1);
-            strcpy(matrix[num_rows][num_cols], token);
+    char line[MAX_LINE_LENGTH];
+    char *words[MAX_NUM_WORDS];
+    int num_rows = 0;
+    int num_cols = 0;
 
-            // Get the next token
-            token = strtok(NULL, " ");
-            num_cols++;
+    // Read file and store words in a 2D array
+    while (fgets(line, sizeof(line), fp) != NULL) {
+        int i = 0;
+        char *token = strtok(line, " \n");
+        while (token != NULL) {
+            words[num_rows * MAX_NUM_WORDS + i] = strdup(token);
+            token = strtok(NULL, " \n");
+            i++;
         }
+        num_cols = i;
         num_rows++;
     }
 
-    // Close the file
+    // Transpose and print the 2D array
+    for (int i = 0; i < num_cols; i++) {
+        for (int j = 0; j < num_rows; j++) {
+            printf("%s ", words[j * MAX_NUM_WORDS + i]);
+        }
+        printf("\n");
+    }
+
+    // Free allocated memory
+    for (int i = 0; i < num_rows * num_cols; i++) {
+        free(words[i]);
+    }
+
     fclose(fp);
-
-    // Print the transposed matrix
-    for (j = 0; j < num_cols; j++) {
-        for (i = 0; i < num_rows; i++) {
-            printf("%s ", matrix[i][j]);
-        }
-        printf("
-");
-    }
-
-    // Free the allocated memory
-    for (i = 0; i < num_rows; i++) {
-        for (j = 0; j < num_cols; j++) {
-            free(matrix[i][j]);
-        }
-    }
-
     return 0;
 }

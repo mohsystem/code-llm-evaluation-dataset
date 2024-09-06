@@ -1,27 +1,21 @@
-import sys
 import ldap
+import sys
+import json
 
-def main():
-    domain_component = sys.argv[1]
-    username = sys.argv[2]
+def main(args):
+    domain_component = args[1]
+    username = args[2]
     
-    ldap_url = "ldap://localhost"
-    search_base = f"DC={domain_component},DC=com"
-    search_filter = f"(sAMAccountName={username})"
-    
-    conn = ldap.initialize(ldap_url)
-    conn.protocol_version = ldap.VERSION3
+    query = f"(uid={username})"
     
     try:
-        result = conn.search_s(search_base, ldap.SCOPE_SUBTREE, search_filter)
-        for dn, entry in result:
-            print(f'dn: {dn}')
-            for attr in entry:
-                print(f'{attr}: {entry[attr]}')
+        conn = ldap.initialize('ldap://localhost')
+        conn.simple_bind_s()
+        results = conn.search_s(f"dc={domain_component}", ldap.SCOPE_SUBTREE, query)
+        user_info = json.dumps(results)
+        print(user_info)
     except ldap.LDAPError as e:
-        print(e)
-    finally:
-        conn.unbind()
-    
+        print(f"LDAP error: {e}")
+
 if __name__ == "__main__":
-    main()
+    main(sys.argv)

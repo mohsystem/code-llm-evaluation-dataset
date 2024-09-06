@@ -1,46 +1,33 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
-typedef struct {
-    char eventType[50];
-    char description[100];
-    time_t timestamp;
-} SecurityEvent;
-
-void logEvent(SecurityEvent event) {
-    printf("%s - %s: %s
-", ctime(&event.timestamp), event.eventType, event.description);
+void logEvent(const char* event) {
+    FILE* logFile = fopen("security_log.txt", "a");
+    if (logFile != NULL) {
+        time_t now = time(NULL);
+        fprintf(logFile, "%s - %s\n", ctime(&now), event);
+        fclose(logFile);
+    } else {
+        fprintf(stderr, "Error writing to log file.\n");
+    }
 }
 
-typedef struct {
-    SecurityEvent* eventLog;
-    int eventCount;
-} SecurityMonitor;
-
-void logEventToMonitor(SecurityMonitor* monitor, SecurityEvent event) {
-    monitor->eventLog[monitor->eventCount] = event;
-    logEvent(event);
-    monitor->eventCount++;
-}
-
-void monitorEvents(SecurityMonitor* monitor) {
-    for (int i = 0; i < monitor->eventCount; i++) {
-        printf("Monitoring: %s - %s
-", monitor->eventLog[i].eventType, monitor->eventLog[i].description);
+void monitorEvents() {
+    char event[256];
+    while (true) {
+        printf("Enter an event (or 'quit' to exit): ");
+        fgets(event, 256, stdin);
+        event[strcspn(event, "\n")] = 0; // remove newline character
+        if (strcmp(event, "quit") == 0) {
+            break;
+        }
+        logEvent(event);
     }
 }
 
 int main() {
-    SecurityMonitor monitor;
-    monitor.eventLog = (SecurityEvent*)malloc(2 * sizeof(SecurityEvent));
-    monitor.eventCount = 0;
-
-    SecurityEvent event1 = {"Login Attempt", "User attempted to login", time(0)};
-    logEventToMonitor(&monitor, event1);
-
-    SecurityEvent event2 = {"File Access", "User accessed confidential file", time(0)};
-    logEventToMonitor(&monitor, event2);
-
-    monitorEvents(&monitor);
+    monitorEvents();
     return 0;
 }

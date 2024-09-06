@@ -1,11 +1,15 @@
 # Python
 def encrypt(message, key):
-    encrypted_message = ""
+    cipher = ''
     for char in message:
-        encrypted_message += chr(ord(char) + key)
-    return encrypted_message
+        if char.isalpha():
+            shift = 65 if char.isupper() else 97
+            cipher += chr((ord(char) - shift + key) % 26 + shift)
+        else:
+            cipher += char
+    return cipher
 
-message = input("Enter the message: ")
-key = int(input("Enter the secret key: "))
+message = "HELLO WORLD"
+key = 3
 encrypted_message = encrypt(message, key)
-print("Encrypted message: " + encrypted_message)
+print(encrypted_message)

@@ -1,40 +1,38 @@
 
 import sys
-import mysql.connector
+import sqlite3
 
-if len(sys.argv) != 2:
-    print("Please provide a customer username.")
-    sys.exit(1)
+def get_customer_info(username):
+    conn = sqlite3.connect('customer_database.db')
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT * FROM customer WHERE customerusername = ?", (username,))
+    customer = cursor.fetchone()
+    
+    conn.close()
+    
+    if customer:
+        return {
+            "id": customer[0],
+            "username": customer[1],
+            "name": customer[2],
+            "email": customer[3],
+            "phone": customer[4]
+        }
+    else:
+        return None
 
-customer_username = sys.argv[1]
-
-try:
-    conn = mysql.connector.connect(
-        host="localhost",
-        user="your_username",
-        password="your_password",
-        database="your_database"
-    )
-
-    cursor = conn.cursor(dictionary=True)
-
-    query = "SELECT * FROM customer WHERE customerusername = %s"
-    cursor.execute(query, (customer_username,))
-
-    result = cursor.fetchone()
-
-    if result:
-        print(f"Customer ID: {result[\'customerid\']}")
-        print(f"Name: {result[\'name\']}")
-        print(f"Email: {result[\'email\']}")
-        print(f"Phone: {result[\'phone\']}")
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <customerusername>")
+        sys.exit(1)
+    
+    username = sys.argv[1]
+    customer_info = get_customer_info(username)
+    
+    if customer_info:
+        print("Customer Information:")
+        for key, value in customer_info.items():
+            print(f"{key}: {value}")
     else:
         print("Customer not found.")
-
-except mysql.connector.Error as err:
-    print(f"Error: {err}")
-
-finally:
-    if \'conn\' in locals() and conn.is_connected():
-        cursor.close()
-        conn.close()

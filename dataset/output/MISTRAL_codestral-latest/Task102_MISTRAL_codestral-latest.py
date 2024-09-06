@@ -1,21 +1,23 @@
-# Python
+# Python code using sqlite3 for database operations and hashlib for password hashing
+import sqlite3
 import hashlib
-import mysql.connector
 
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
+def update_password(username, new_password):
+    # Connect to the SQLite database
+    conn = sqlite3.connect('user_database.db')
+    c = conn.cursor()
 
-def update_password_in_database(username, hashed_password):
-    conn = mysql.connector.connect(host="localhost", user="username", password="password", database="mydatabase")
-    cursor = conn.cursor()
-    cursor.execute("UPDATE users SET password = %s WHERE username = %s", (hashed_password, username))
+    # Hash the new password
+    hashed_password = hashlib.sha256(new_password.encode()).hexdigest()
+
+    # Update the password in the database
+    c.execute("UPDATE users SET password = ? WHERE username = ?", (hashed_password, username))
     conn.commit()
-    cursor.close()
     conn.close()
 
-username = input("Enter username: ")
-password = input("Enter new password: ")
+# Accept username and new password from user
+username = input("Enter your username: ")
+new_password = input("Enter your new password: ")
 
-hashed_password = hash_password(password)
-
-update_password_in_database(username, hashed_password)
+# Update the password
+update_password(username, new_password)

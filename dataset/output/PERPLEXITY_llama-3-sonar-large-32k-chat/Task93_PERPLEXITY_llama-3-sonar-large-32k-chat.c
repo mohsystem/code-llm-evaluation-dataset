@@ -1,43 +1,46 @@
+code here:
+// Note: This code assumes that the key and value are separated by a single '=' character
+// and that there are no '=' characters in the key or value.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_RECORDS 100
-#define MAX_LINE 100
-
 typedef struct {
-    char key[50];
-    char value[50];
+    char* key;
+    char* value;
 } Record;
 
-int compare(const void *a, const void *b) {
-    Record *ra = (Record *)a;
-    Record *rb = (Record *)b;
+int compare(const void* a, const void* b) {
+    Record* ra = (Record*)a;
+    Record* rb = (Record*)b;
     return strcmp(ra->key, rb->key);
 }
 
 int main() {
-    FILE *fp = fopen("input.txt", "r");
-    if (fp == NULL) {
-        perror("Error opening file");
+    FILE* file = fopen("input.txt", "r");
+    if (file == NULL) {
         return 1;
     }
-    Record records[MAX_RECORDS];
-    int i = 0;
-    char line[MAX_LINE];
-    while (fgets(line, MAX_LINE, fp) != NULL) {
-        char *token = strtok(line, "-");
-        strcpy(records[i].key, token);
-        token = strtok(NULL, "
-");
-        strcpy(records[i].value, token);
-        i++;
+    Record records[100]; // assume max 100 records
+    int count = 0;
+    char line[1024];
+    while (fgets(line, 1024, file)) {
+        char* pos = strchr(line, '=');
+        if (pos != NULL) {
+            *pos = '\0';
+            records[count].key = strdup(line);
+            records[count].value = strdup(pos + 1);
+            count++;
+        }
     }
-    qsort(records, i, sizeof(Record), compare);
-    for (int j = 0; j < i; j++) {
-        printf("%s-%s
-", records[j].key, records[j].value);
+    qsort(records, count, sizeof(Record), compare);
+    for (int i = 0; i < count; i++) {
+        printf("%s=%s\n", records[i].key, records[i].value);
     }
-    fclose(fp);
+    for (int i = 0; i < count; i++) {
+        free(records[i].key);
+        free(records[i].value);
+    }
+    fclose(file);
     return 0;
 }

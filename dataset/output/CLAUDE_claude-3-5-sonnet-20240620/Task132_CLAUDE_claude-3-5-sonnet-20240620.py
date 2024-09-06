@@ -2,27 +2,23 @@
 import logging
 from datetime import datetime
 
-def setup_logger():
-    logger = logging.getLogger(\'security_logger\')
-    logger.setLevel(logging.INFO)
-    file_handler = logging.FileHandler(\'security_events.log\')
-    formatter = logging.Formatter(\'%(asctime)s - %(levelname)s - %(message)s\')
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
-    return logger
+# Configure logging
+logging.basicConfig(filename='security_events.log', level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
-def log_event(logger, event_type, description):
-    logger.info(f"Event Type: {event_type}, Description: {description}")
+def log_event(event_type, description):
+    logging.info(f"Event Type: {event_type}, Description: {description}")
 
-def monitor_events(logger):
+def monitor_events():
     while True:
-        event_type = input("Enter event type (or \'q\' to quit): ")
-        if event_type.lower() == \'q\':
+        event_type = input("Enter event type (or 'q' to quit): ")
+        if event_type.lower() == 'q':
             break
         description = input("Enter event description: ")
-        log_event(logger, event_type, description)
+        log_event(event_type, description)
+        print("Event logged successfully.")
 
 if __name__ == "__main__":
-    logger = setup_logger()
     print("Security Event Monitoring System")
-    monitor_events(logger)
+    monitor_events()
+    print("Monitoring ended. Check 'security_events.log' for recorded events.")

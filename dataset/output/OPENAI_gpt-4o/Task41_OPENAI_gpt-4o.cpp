@@ -1,14 +1,12 @@
-#include <jni.h>
-#include <iostream>
-#include <string>
+/* Simulated C++ part in Java (in CppPart.java) */
 
-extern "C"
-JNIEXPORT void JNICALL Java_MultiLangProgram_processStringCpp(JNIEnv *env, jobject obj, jstring input) {
-    const char *inputStr = env->GetStringUTFChars(input, nullptr);
-    
-    std::string safeStr(inputStr);
-    
-    std::cout << "You entered (C++): " << safeStr << std::endl;
-    
-    env->ReleaseStringUTFChars(input, inputStr);
+import java.util.Scanner;
+
+class CPart {
+    public static void main(String[] args) {
+        System.out.println("Enter a string (C): ");
+        Scanner scanner = new Scanner(System.in);
+        String inputC = scanner.nextLine();
+        System.out.println("You entered (C): " + inputC);
+    }
 }

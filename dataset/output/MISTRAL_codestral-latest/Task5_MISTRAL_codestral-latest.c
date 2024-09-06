@@ -13,13 +13,3 @@ int persistence(int num) {
     }
     return count;
 }
-
-int main() {
-    printf("%d
-", persistence(39)); // Output: 3
-    printf("%d
-", persistence(999)); // Output: 4
-    printf("%d
-", persistence(4)); // Output: 0
-    return 0;
-}

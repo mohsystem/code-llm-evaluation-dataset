@@ -3,38 +3,35 @@ int reversePairs(int* nums, int numsSize) {
         if (start >= end) {
             return 0;
         }
-        int mid = (start + end) / 2;
+        int mid = start + (end - start) / 2;
         int count = mergeSort(nums, start, mid) + mergeSort(nums, mid + 1, end);
         int j = mid + 1;
         for (int i = start; i <= mid; i++) {
-            while (j <= end && (long) nums[i] > 2 * (long) nums[j]) {
+            while (j <= end && (long)nums[i] > 2 * (long)nums[j]) {
                 j++;
             }
             count += j - (mid + 1);
         }
         int* temp = malloc(sizeof(int) * (end - start + 1));
         memcpy(temp, nums + start, sizeof(int) * (end - start + 1));
-        merge(temp, nums + start, end - start + 1);
+        int left = start, right = mid + 1;
+        for (int i = start; i <= end; i++) {
+            if (left > mid) {
+                nums[i] = temp[right - start];
+                right++;
+            } else if (right > end) {
+                nums[i] = temp[left - start];
+                left++;
+            } else if (temp[left - start] <= temp[right - start]) {
+                nums[i] = temp[left - start];
+                left++;
+            } else {
+                nums[i] = temp[right - start];
+                right++;
+            }
+        }
         free(temp);
         return count;
     }
-
-    void merge(int* temp, int* nums, int size) {
-        int i = 0, j = size / 2, k = 0;
-        while (i < size / 2 && j < size) {
-            if (temp[i] <= temp[j]) {
-                nums[k++] = temp[i++];
-            } else {
-                nums[k++] = temp[j++];
-            }
-        }
-        while (i < size / 2) {
-            nums[k++] = temp[i++];
-        }
-        while (j < size) {
-            nums[k++] = temp[j++];
-        }
-    }
-
     return mergeSort(nums, 0, numsSize - 1);
 }

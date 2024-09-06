@@ -1,47 +1,22 @@
 #include <stdio.h>
-#include <stdlib.h>
 
-int longestRun(int* arr, int size) {
-    if (size == 0) {
+int longestRun(int* lst, int length) {
+    if (length == 0) {
         return 0;
     }
-
-    int maxLength = 1;
-    int currentLength = 1;
-
-    // Check for increasing consecutive runs
-    for (int i = 1; i < size; i++) {
-        if (arr[i] == arr[i - 1] + 1) {
-            currentLength += 1;
+    int maxRun = 1;
+    int currentRun = 1;
+    for (int i = 1; i < length; ++i) {
+        if (lst[i] == lst[i-1] + 1 || lst[i] == lst[i-1] - 1) {
+            currentRun += 1;
         } else {
-            if (currentLength > maxLength) {
-                maxLength = currentLength;
+            if (currentRun > maxRun) {
+                maxRun = currentRun;
             }
-            currentLength = 1;
+            currentRun = 1;
         }
     }
-    if (currentLength > maxLength) {
-        maxLength = currentLength;
-    }
-
-    currentLength = 1;
-
-    // Check for decreasing consecutive runs
-    for (int i = 1; i < size; i++) {
-        if (arr[i] == arr[i - 1] - 1) {
-            currentLength += 1;
-        } else {
-            if (currentLength > maxLength) {
-                maxLength = currentLength;
-            }
-            currentLength = 1;
-        }
-    }
-    if (currentLength > maxLength) {
-        maxLength = currentLength;
-    }
-
-    return maxLength;
+    return (currentRun > maxRun) ? currentRun : maxRun;
 }
 
 int main() {
@@ -50,14 +25,10 @@ int main() {
     int arr3[] = {5, 4, 2, 1};
     int arr4[] = {3, 5, 7, 10, 15};
 
-    printf("%d
-", longestRun(arr1, 8)); // ➞ 5
-    printf("%d
-", longestRun(arr2, 6)); // ➞ 3
-    printf("%d
-", longestRun(arr3, 4)); // ➞ 2
-    printf("%d
-", longestRun(arr4, 5)); // ➞ 1
+    printf("%d\n", longestRun(arr1, 8));
+    printf("%d\n", longestRun(arr2, 6));
+    printf("%d\n", longestRun(arr3, 4));
+    printf("%d\n", longestRun(arr4, 5));
 
     return 0;
 }

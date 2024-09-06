@@ -1,3 +1,4 @@
+code here:
 import threading
 
 class BankAccount:
@@ -7,31 +8,27 @@ class BankAccount:
         self.closed = False
 
     def open_account(self):
-        if self.closed:
-            raise ValueError("Account is already closed")
         self.closed = False
 
     def close_account(self):
-        if self.closed:
-            raise ValueError("Account is already closed")
         self.closed = True
 
     def deposit(self, amount):
         if self.closed:
-            raise ValueError("Account is closed")
+            return False
         with self.lock:
             self.balance += amount
+        return True
 
     def withdraw(self, amount):
         if self.closed:
-            raise ValueError("Account is closed")
+            return False
         with self.lock:
             if amount > self.balance:
-                raise ValueError("Insufficient balance")
+                return False
             self.balance -= amount
+        return True
 
     def get_balance(self):
-        if self.closed:
-            raise ValueError("Account is closed")
         with self.lock:
             return self.balance

@@ -1,21 +1,27 @@
 #include <iostream>
 #include <string>
+#include <cctype>
 
 using namespace std;
 
 int main() {
     string choice;
-    cout << "Enter your destination (A/B/C): ";
+
+    cout << "Enter your destination (A, B, or C): ";
     cin >> choice;
 
-    if (choice == "A" || choice == "a") {
-        cout << "https://www.exampleA.com" << endl;
-    } else if (choice == "B" || choice == "b") {
-        cout << "https://www.exampleB.com" << endl;
-    } else if (choice == "C" || choice == "c") {
-        cout << "https://www.exampleC.com" << endl;
+    for (char &c : choice) {
+        c = toupper(c);
+    }
+
+    if (choice == "A") {
+        cout << "Redirecting to page A..." << endl;
+    } else if (choice == "B") {
+        cout << "Redirecting to page B..." << endl;
+    } else if (choice == "C") {
+        cout << "Redirecting to page C..." << endl;
     } else {
-        cout << "Invalid choice." << endl;
+        cout << "Invalid choice. Please enter A, B, or C." << endl;
     }
 
     return 0;

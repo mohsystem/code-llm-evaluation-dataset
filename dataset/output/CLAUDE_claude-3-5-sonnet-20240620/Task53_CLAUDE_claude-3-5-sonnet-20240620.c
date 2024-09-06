@@ -3,71 +3,75 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <uuid/uuid.h>
 
-#define SESSION_TIMEOUT_SECONDS 1800 // 30 minutes
+#define MAX_SESSIONS 100
+#define SESSION_ID_LENGTH 36
+#define USER_ID_LENGTH 20
 
 typedef struct {
-    char session_id[37];
-    char user_id[50];
-    time_t creation_time;
-    time_t last_access_time;
+    char session_id[SESSION_ID_LENGTH + 1];
+    char user_id[USER_ID_LENGTH + 1];
+    time_t created_at;
+    time_t last_accessed;
 } Session;
 
 typedef struct {
-    Session* sessions;
+    Session sessions[MAX_SESSIONS];
     int count;
-    int capacity;
+    time_t session_timeout;
 } SessionManager;
 
-void init_session_manager(SessionManager* manager) {
-    manager->sessions = NULL;
-    manager->count = 0;
-    manager->capacity = 0;
+void generate_session_id(char *session_id) {
+    const char *chars = "0123456789abcdef";
+    for (int i = 0; i < SESSION_ID_LENGTH; i++) {
+        if (i == 8 || i == 13 || i == 18 || i == 23) {
+            session_id[i] = '-';
+        } else {
+            session_id[i] = chars[rand() % 16];
+        }
+    }
+    session_id[SESSION_ID_LENGTH] = '\\0';
 }
 
-char* create_session(SessionManager* manager, const char* user_id) {
-    if (manager->count == manager->capacity) {
-        int new_capacity = manager->capacity == 0 ? 1 : manager->capacity * 2;
-        Session* new_sessions = realloc(manager->sessions, new_capacity * sizeof(Session));
-        if (new_sessions == NULL) {
-            return NULL;
-        }
-        manager->sessions = new_sessions;
-        manager->capacity = new_capacity;
+void init_session_manager(SessionManager *manager, time_t timeout) {
+    manager->count = 0;
+    manager->session_timeout = timeout;
+}
+
+char* create_session(SessionManager *manager, const char *user_id) {
+    if (manager->count >= MAX_SESSIONS) {
+        return NULL;
     }
 
-    Session* session = &manager->sessions[manager->count++];
-    uuid_t uuid;
-    uuid_generate(uuid);
-    uuid_unparse(uuid, session->session_id);
-    strncpy(session->user_id, user_id, sizeof(session->user_id) - 1);
-    session->creation_time = time(NULL);
-    session->last_access_time = session->creation_time;
+    Session *session = &manager->sessions[manager->count++];
+    generate_session_id(session->session_id);
+    strncpy(session->user_id, user_id, USER_ID_LENGTH);
+    session->user_id[USER_ID_LENGTH] = '\\0';
+    session->created_at = time(NULL);
+    session->last_accessed = session->created_at;
 
     return session->session_id;
 }
 
-int validate_session(SessionManager* manager, const char* session_id) {
-    time_t current_time = time(NULL);
+Session* get_session(SessionManager *manager, const char *session_id) {
+    time_t now = time(NULL);
     for (int i = 0; i < manager->count; i++) {
         if (strcmp(manager->sessions[i].session_id, session_id) == 0) {
-            if (current_time - manager->sessions[i].last_access_time < SESSION_TIMEOUT_SECONDS) {
-                manager->sessions[i].last_access_time = current_time;
-                return 1;
-            } else {
-                // Remove expired session
+            if (now - manager->sessions[i].last_accessed > manager->session_timeout) {
+                // Session expired
                 memmove(&manager->sessions[i], &manager->sessions[i + 1], 
                         (manager->count - i - 1) * sizeof(Session));
                 manager->count--;
-                return 0;
+                return NULL;
             }
+            manager->sessions[i].last_accessed = now;
+            return &manager->sessions[i];
         }
     }
-    return 0;
+    return NULL;
 }
 
-void end_session(SessionManager* manager, const char* session_id) {
+void destroy_session(SessionManager *manager, const char *session_id) {
     for (int i = 0; i < manager->count; i++) {
         if (strcmp(manager->sessions[i].session_id, session_id) == 0) {
             memmove(&manager->sessions[i], &manager->sessions[i + 1], 
@@ -78,37 +82,47 @@ void end_session(SessionManager* manager, const char* session_id) {
     }
 }
 
-void free_session_manager(SessionManager* manager) {
-    free(manager->sessions);
-    manager->sessions = NULL;
-    manager->count = 0;
-    manager->capacity = 0;
+void cleanup_expired_sessions(SessionManager *manager) {
+    time_t now = time(NULL);
+    int i = 0;
+    while (i < manager->count) {
+        if (now - manager->sessions[i].last_accessed > manager->session_timeout) {
+            memmove(&manager->sessions[i], &manager->sessions[i + 1], 
+                    (manager->count - i - 1) * sizeof(Session));
+            manager->count--;
+        } else {
+            i++;
+        }
+    }
 }
 
 int main() {
     SessionManager manager;
-    init_session_manager(&manager);
+    init_session_manager(&manager, 1800); // 30 minutes timeout
 
-    // Example usage
-    const char* user_id = "user123";
-    char* session_id = create_session(&manager, user_id);
-    if (session_id != NULL) {
-        printf("Session created: %s\
-", session_id);
+    // Create a new session
+    const char *user_id = "user123";
+    char *session_id = create_session(&manager, user_id);
+    if (session_id) {
+        printf("New session created: %s\\n", session_id);
 
-        int is_valid = validate_session(&manager, session_id);
-        printf("Session valid: %d\
-", is_valid);
+        // Get session
+        Session *session = get_session(&manager, session_id);
+        if (session) {
+            printf("Session found for user: %s\\n", session->user_id);
+        } else {
+            printf("Session not found\\n");
+        }
 
-        end_session(&manager, session_id);
-        printf("Session ended\
-");
+        // Cleanup expired sessions
+        cleanup_expired_sessions(&manager);
 
-        is_valid = validate_session(&manager, session_id);
-        printf("Session valid after ending: %d\
-", is_valid);
+        // Destroy session
+        destroy_session(&manager, session_id);
+        printf("Session destroyed\\n");
+    } else {
+        printf("Failed to create session\\n");
     }
 
-    free_session_manager(&manager);
     return 0;
 }

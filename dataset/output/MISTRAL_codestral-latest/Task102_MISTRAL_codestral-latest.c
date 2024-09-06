@@ -1,50 +1,53 @@
-// C
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <mysql/mysql.h>
+// C code using SQLite C/C++ Library for database operations and OpenSSL for password hashing
+// Note: C does not have built-in support for string manipulation, so this code may not work as expected
+#include <sqlite3.h>
 #include <openssl/sha.h>
+#include <stdio.h>
+#include <string.h>
 
-void hashPassword(const char *password, char *hashedPassword) {
+void updatePassword(const char* username, const char* newPassword) {
+    sqlite3* DB;
+    int rc = sqlite3_open("user_database.db", &DB);
+
+    if (rc) {
+        fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(DB));
+        return;
+    }
+
+    // Hash the new password
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
-    SHA256_Update(&sha256, password, strlen(password));
+    SHA256_Update(&sha256, newPassword, strlen(newPassword));
     SHA256_Final(hash, &sha256);
 
-    int i = 0;
-    for(i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        sprintf(hashedPassword + (i * 2), "%02x", hash[i]);
+    char hashedPassword[SHA256_DIGEST_LENGTH * 2 + 1];
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        sprintf(&hashedPassword[i * 2], "%02x", hash[i]);
     }
-    hashedPassword[64] = 0;
-}
 
-void updatePasswordInDatabase(MYSQL *conn, const char *username, const char *hashedPassword) {
-    char query[256];
-    sprintf(query, "UPDATE users SET password = '%s' WHERE username = '%s'", hashedPassword, username);
-    mysql_query(conn, query);
+    // Update the password in the database
+    char sql[256];
+    sprintf(sql, "UPDATE users SET password = '%s' WHERE username = '%s';", hashedPassword, username);
+    char* errMsg = NULL;
+    rc = sqlite3_exec(DB, sql, NULL, NULL, &errMsg);
+
+    if (rc != SQLITE_OK) {
+        fprintf(stderr, "SQL error: %s\n", errMsg);
+        sqlite3_free(errMsg);
+    }
+
+    sqlite3_close(DB);
 }
 
 int main() {
-    MYSQL *conn = mysql_init(NULL);
-    if (!mysql_real_connect(conn, "localhost", "username", "password", "mydatabase", 0, NULL, 0)) {
-        fprintf(stderr, "%s
-", mysql_error(conn));
-        exit(1);
-    }
-
-    char username[256], password[256], hashedPassword[65];
-
-    printf("Enter username: ");
+    char username[256], newPassword[256];
+    printf("Enter your username: ");
     scanf("%s", username);
+    printf("Enter your new password: ");
+    scanf("%s", newPassword);
 
-    printf("Enter new password: ");
-    scanf("%s", password);
+    updatePassword(username, newPassword);
 
-    hashPassword(password, hashedPassword);
-
-    updatePasswordInDatabase(conn, username, hashedPassword);
-
-    mysql_close(conn);
     return 0;
 }

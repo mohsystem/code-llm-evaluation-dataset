@@ -1,28 +1,35 @@
 #include <iostream>
 using namespace std;
 
-struct TreeNode {
-    int val;
-    TreeNode *left, *right;
-    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+class Node {
+public:
+    int key;
+    Node* left, * right;
+
+    Node(int item) {
+        key = item;
+        left = right = nullptr;
+    }
 };
 
-void preorderTraversal(TreeNode* root) {
-    if (root) {
-        cout << root->val << " ";
-        preorderTraversal(root->left);
-        preorderTraversal(root->right);
-    }
+void inorder(Node* node) {
+    if (node == nullptr)
+        return;
+
+    inorder(node->left);
+    cout << node->key << " ";
+    inorder(node->right);
 }
 
 int main() {
-    TreeNode* root = new TreeNode(1);
-    root->left = new TreeNode(2);
-    root->right = new TreeNode(3);
-    root->left->left = new TreeNode(4);
-    root->left->right = new TreeNode(5);
+    Node* root = new Node(1);
+    root->left = new Node(2);
+    root->right = new Node(3);
+    root->left->left = new Node(4);
+    root->left->right = new Node(5);
 
-    preorderTraversal(root);  // Output: 1 2 4 5 3
+    cout << "Inorder traversal of binary tree is ";
+    inorder(root);
 
     return 0;
 }

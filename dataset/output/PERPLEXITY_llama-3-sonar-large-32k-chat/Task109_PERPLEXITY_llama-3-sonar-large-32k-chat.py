@@ -1,8 +1,11 @@
 import re
 
-email = input("Enter your email:")
-regex = r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$"
-if re.match(regex, email):
-    print("Email is valid")
-else:
-    print("Email is not valid")
+def validate_input():
+    pattern = r"^[a-zA-Z0-9_]{3,16}$"
+    user_input = input("Enter a username: ")
+    if re.match(pattern, user_input):
+        print("Valid username")
+    else:
+        print("Invalid username")
+
+validate_input()

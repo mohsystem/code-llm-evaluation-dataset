@@ -1,9 +1,15 @@
-size = int(input("Enter the size of the buffer: "))
-buffer = [0] * size
+# Python
+import mmap
 
-index = int(input("Enter the index to read from the buffer: "))
+def read_from_buffer(index):
+    with open("buffer.dat", "r+b") as f:
+        mm = mmap.mmap(f.fileno(), 0)
+        return mm[index]
 
-if index >= 0 and index < size:
-    print("Value at index", index, ":", buffer[index])
-else:
-    print("Invalid index.")
+# Allocate memory buffer
+with open("buffer.dat", "wb") as f:
+    f.write(b'\x00' * 1024)  # 1KB buffer
+
+# User input for index
+index = int(input("Enter index: "))
+print("Value at index:", read_from_buffer(index))

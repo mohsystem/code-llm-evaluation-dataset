@@ -1,23 +1,13 @@
 #include <iostream>
-#include <limits>
 
 int main() {
-    int num;
-
+    double number;
     std::cout << "Enter a number: ";
-    std::cin >> num;
-
-    if (std::cin.fail()) {
-        std::cout << "Error: Invalid input. Please enter a number.
-";
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '
-');
-        return 1;
+    if (std::cin >> number) {
+        double result = number * 2;
+        std::cout << "The result is: " << result << std::endl;
+    } else {
+        std::cout << "Invalid input. Please enter a number." << std::endl;
     }
-
-    std::cout << "You entered: " << num << std::endl;
-    // Perform operations with num here
-
     return 0;
 }

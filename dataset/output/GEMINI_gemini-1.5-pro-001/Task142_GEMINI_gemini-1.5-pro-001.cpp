@@ -1,4 +1,5 @@
 #include <iostream>
+
 using namespace std;
 
 int gcd(int a, int b) {
@@ -11,11 +12,11 @@ int gcd(int a, int b) {
 }
 
 int main() {
-  int num1, num2;
+  int a, b;
   cout << "Enter first number: ";
-  cin >> num1;
+  cin >> a;
   cout << "Enter second number: ";
-  cin >> num2;
-  cout << "GCD: " << gcd(num1, num2) << endl;
+  cin >> b;
+  cout << "GCD is: " << gcd(a, b) << endl;
   return 0;
 }

@@ -19,6 +19,8 @@ active_integration = gemini_model
 # active_integration = claude_model
 # active_integration = mistral_model
 
+destination_directory = f'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/test{active_integration[1]}'
+os.makedirs(destination_directory, exist_ok=True)
 # Define the directory to search for files
 directory = f"C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/{active_integration[0] + '_' + active_integration[1]}"
 
@@ -49,8 +51,8 @@ for file_name, count in file_counts.items():
         print(f"{file_name:<40} {count}")
         formatted_task_number = format_task_number(file_name)
         # Source and destination directories
-        source_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/promptDescription-0XX'  # Update this with the actual path
-        destination_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/test'
+        source_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/promptDescription-0XX'
+
 
         # File name to copy
         file_name = f"promptDescription-{formatted_task_number}.json"

@@ -1,42 +1,28 @@
 #include <stdio.h>
-#include <openssl/sha.h>
 #include <string.h>
 
-void getHash(const char *password, char outputBuffer[65]) {
-    unsigned char hash[SHA256_DIGEST_LENGTH];
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-    SHA256_Update(&sha256, password, strlen(password));
-    SHA256_Final(hash, &sha256);
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
-        sprintf(outputBuffer + (i * 2), "%02x", hash[i]);
-    }
-    outputBuffer[64] = 0;
-}
-
-int authenticate(const char *inputPassword, const char *storedPasswordHash) {
-    char hash[65];
-    getHash(inputPassword, hash);
-    return strcmp(hash, storedPasswordHash) == 0;
+int authenticate(const char* username, const char* password) {
+    const char* storedUsername = "user";
+    const char* storedPassword = "pass";
+    return strcmp(username, storedUsername) == 0 && strcmp(password, storedPassword) == 0;
 }
 
 int main() {
-    char storedPasswordHash[65];
-    getHash("securepassword", storedPasswordHash);
-    char inputPassword[256];
-    
-    printf("Enter your password: ");
-    fgets(inputPassword, sizeof(inputPassword), stdin);
-    inputPassword[strcspn(inputPassword, "
-")] = 0;
-    
-    if (authenticate(inputPassword, storedPasswordHash)) {
-        printf("Authentication successful.
-");
+    char username[50], password[50];
+
+    printf("Enter username: ");
+    fgets(username, sizeof(username), stdin);
+    username[strcspn(username, "\n")] = 0; // Remove newline character
+
+    printf("Enter password: ");
+    fgets(password, sizeof(password), stdin);
+    password[strcspn(password, "\n")] = 0; // Remove newline character
+
+    if (authenticate(username, password)) {
+        printf("Access granted\n");
     } else {
-        printf("Authentication failed.
-");
+        printf("Access denied\n");
     }
-    
+
     return 0;
 }

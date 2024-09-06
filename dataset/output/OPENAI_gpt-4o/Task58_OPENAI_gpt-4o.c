@@ -1,26 +1,25 @@
 #include <stdio.h>
 #include <ctype.h>
+#include <stdbool.h>
+#include <string.h>
 
-int XO(const char* str) {
-    int countX = 0, countO = 0;
-    while (*str) {
-        if (tolower(*str) == 'x') countX++;
-        if (tolower(*str) == 'o') countO++;
-        str++;
+bool XO(const char* str) {
+    int xCount = 0, oCount = 0;
+    for (int i = 0; str[i] != '\0'; i++) {
+        if (tolower(str[i]) == 'x')
+            xCount++;
+        else if (tolower(str[i]) == 'o')
+            oCount++;
     }
-    return countX == countO;
+    return xCount == oCount;
 }
 
 int main() {
-    printf("%d
-", XO("ooxx"));
-    printf("%d
-", XO("xooxx"));
-    printf("%d
-", XO("ooxXm"));
-    printf("%d
-", XO("zpzpzpp"));
-    printf("%d
-", XO("zzoo"));
+    printf("%d\n", XO("ooxx"));  // 1 (True)
+    printf("%d\n", XO("xooxx"));  // 0 (False)
+    printf("%d\n", XO("ooxXm"));  // 1 (True)
+    printf("%d\n", XO("zpzpzpp"));  // 1 (True)
+    printf("%d\n", XO("zzoo"));  // 0 (False)
+    
     return 0;
 }

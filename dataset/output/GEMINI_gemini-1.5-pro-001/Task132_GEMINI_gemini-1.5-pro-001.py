@@ -1,25 +1,25 @@
 import time
-from datetime import datetime
+import logging
 
-def log_event(event_type, description):
-  """Logs a security event with timestamp, type, and description."""
-  timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-  log_entry = f"{timestamp} - [{event_type}] - {description}"
-  with open("security_log.txt", "a") as log_file:
-    log_file.write(log_entry + "
-")
-  print(log_entry)
+logging.basicConfig(filename='security_events.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def monitor_filesystem(directory):
-  """Monitors a directory for file changes."""
-  # Placeholder - Implement file monitoring logic here
-  # This could involve checking for file modifications, additions, or deletions
-  # You can use libraries like watchdog for more advanced file monitoring.
-  while True:
-    # Simulate checking for changes every 5 seconds
-    time.sleep(5)
-    log_event("File System", f"Monitoring directory: {directory}")
+def log_event(event_type, message):
+  """Logs a security event with timestamp, type, and message."""
+  logging.info(f"{event_type}: {message}")
+
+def monitor_file_changes(file_path):
+  """Monitors a file for changes and logs any detected modifications."""
+  try:
+    last_modified_time = os.path.getmtime(file_path)
+    while True:
+      current_modified_time = os.path.getmtime(file_path)
+      if current_modified_time != last_modified_time:
+        log_event("File Change Detected", f"File '{file_path}' has been modified.")
+        last_modified_time = current_modified_time
+      time.sleep(5)  # Check for changes every 5 seconds
+  except Exception as e:
+    log_event("Error", f"An error occurred while monitoring '{file_path}': {str(e)}")
 
 if __name__ == "__main__":
-  log_event("System", "Security monitoring started.")
-  monitor_filesystem("/path/to/monitor")
+  file_to_monitor = "/path/to/your/important_file.txt"  # Replace with the actual file path
+  monitor_file_changes(file_to_monitor)

@@ -8,24 +8,24 @@ int rand7() {
 
 int rand10() {
     while (1) {
-        int x = (rand7() - 1) * 7 + rand7();
-        if (x <= 40) {
-            return 1 + (x - 1) % 10;
+        int num = (rand7() - 1) * 7 + rand7();
+        if (num <= 40) {
+            return (num - 1) % 10 + 1;
         }
     }
 }
 
 int main() {
-    srand(time(0));
-    int n = 3;
-    int result[n];
-    for (int i = 0; i < n; ++i) {
-        result[i] = rand10();
+    srand((unsigned)time(0));
+    int n;
+    scanf("%d", &n);
+    int results[n];
+    for (int i = 0; i < n; i++) {
+        results[i] = rand10();
     }
-    for (int i = 0; i < n; ++i) {
-        printf("%d ", result[i]);
+    for (int i = 0; i < n; i++) {
+        printf("%d ", results[i]);
     }
-    printf("
-");
+    printf("\n");
     return 0;
 }

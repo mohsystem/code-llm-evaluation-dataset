@@ -1,12 +1,15 @@
+// Note: C does not have a built-in JSON parsing library. You need to use a third-party library.
+// This code uses the parson library, which is a lightweight JSON library for C.
+// You need to install it before compiling the code.
+
+#include <parson.h>
 #include <stdio.h>
-#include <json-c/json.h>
 
 int main() {
-    const char *json_string = "{\"name\":\"John\", \"age\":30, \"city\":\"New York\"}";
-    struct json_object *json_obj = json_tokener_parse(json_string);
-    struct json_object *root_obj = json_object_object_object_get(json_obj, "name");
-    printf("Root element: %s
-", json_object_get_string(root_obj));
-    json_object_put(json_obj);
+    const char *jsonString = "{\"name\":\"John\", \"age\":30, \"city\":\"New York\"}";
+    JSON_Value *jsonValue = json_parse_string(jsonString);
+    JSON_Object *jsonObject = json_value_get_object(jsonValue);
+    printf("%s\n", json_type_to_string(json_value_get_type(jsonValue)));
+    json_value_free(jsonValue);
     return 0;
 }

@@ -2,12 +2,13 @@
 #include <unordered_map>
 
 std::vector<int> twoSum(std::vector<int>& numbers, int target) {
-    std::unordered_map<int, int> numMap;
+    std::unordered_map<int, int> map;
     for (int i = 0; i < numbers.size(); i++) {
-        if (numMap.find(target - numbers[i]) != numMap.end()) {
-            return {numMap[target - numbers[i]], i};
+        int complement = target - numbers[i];
+        if (map.find(complement) != map.end()) {
+            return { map[complement], i };
         }
-        numMap[numbers[i]] = i;
+        map[numbers[i]] = i;
     }
-    return {};
+    throw std::invalid_argument("No two sum solution");
 }

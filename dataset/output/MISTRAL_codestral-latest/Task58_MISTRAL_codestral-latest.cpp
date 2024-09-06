@@ -1,8 +1,10 @@
 #include <algorithm>
 #include <string>
 
-bool getXO (const std::string& str) {
-    int x = std::count(str.begin(), str.end(), 'x');
-    int o = std::count(str.begin(), str.end(), 'o');
+bool XO(const std::string& str) {
+    std::string s = str;
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+    int x = std::count(s.begin(), s.end(), 'x');
+    int o = std::count(s.begin(), s.end(), 'o');
     return x == o;
 }

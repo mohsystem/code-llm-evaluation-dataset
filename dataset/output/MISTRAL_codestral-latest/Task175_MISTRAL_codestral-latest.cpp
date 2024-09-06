@@ -1,15 +1,10 @@
 // C++
-// The code below uses binary search to find the target in the mountain array.
-// It first finds the peak of the mountain array, then performs binary search in the increasing and decreasing parts of the array.
-
 class Solution {
 public:
     int findInMountainArray(int target, MountainArray &mountainArr) {
         int peak = findPeak(mountainArr);
-        int res = binarySearch(mountainArr, target, 0, peak);
-        if (res != -1) {
-            return res;
-        }
+        int left = binarySearch(mountainArr, target, 0, peak, true);
+        if (left != -1) return left;
         return binarySearch(mountainArr, target, peak + 1, mountainArr.length() - 1, false);
     }
 
@@ -27,20 +22,19 @@ private:
         return left;
     }
 
-    int binarySearch(MountainArray &mountainArr, int target, int left, int right, bool ascending = true) {
+    int binarySearch(MountainArray &mountainArr, int target, int left, int right, bool isAscending) {
         while (left <= right) {
             int mid = left + (right - left) / 2;
-            int cur = mountainArr.get(mid);
-            if (cur == target) {
+            if (mountainArr.get(mid) == target) {
                 return mid;
-            } else if (cur < target) {
-                if (ascending) {
+            } else if (mountainArr.get(mid) < target) {
+                if (isAscending) {
                     left = mid + 1;
                 } else {
                     right = mid - 1;
                 }
             } else {
-                if (ascending) {
+                if (isAscending) {
                     right = mid - 1;
                 } else {
                     left = mid + 1;

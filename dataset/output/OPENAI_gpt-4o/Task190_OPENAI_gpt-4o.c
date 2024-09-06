@@ -1,47 +1,40 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-#define MAX_LINE_LENGTH 1024
-#define MAX_WORDS 100
+#define MAX_LINES 100
+#define MAX_LINE_LENGTH 100
 
-void transposeFile(const char *filePath) {
-    FILE *file = fopen(filePath, "r");
-    if (!file) {
-        perror("Failed to open file");
-        exit(EXIT_FAILURE);
-    }
+int main() {
+    FILE *file = fopen("file.txt", "r");
+    char lines[MAX_LINES][MAX_LINE_LENGTH];
+    int num_lines = 0;
 
-    char buffer[MAX_LINE_LENGTH];
-    char *lines[MAX_WORDS][MAX_WORDS];
-    int rowCount = 0, colCount = 0;
-
-    while (fgets(buffer, sizeof(buffer), file)) {
-        int col = 0;
-        char *word = strtok(buffer, " 
-");
-        while (word != NULL) {
-            lines[rowCount][col] = strdup(word);
-            word = strtok(NULL, " 
-");
-            col++;
+    while (fgets(lines[num_lines], MAX_LINE_LENGTH, file)) {
+        char *pos;
+        if ((pos=strchr(lines[num_lines], '\n')) != NULL) {
+            *pos = '\0';
         }
-        colCount = col; // assuming all rows have same columns
-        rowCount++;
+        num_lines++;
     }
     fclose(file);
 
-    for (int i = 0; i < colCount; i++) {
-        for (int j = 0; j < rowCount; j++) {
-            printf("%s ", lines[j][i]);
-            free(lines[j][i]);
+    char *words[MAX_LINES][MAX_LINE_LENGTH];
+    int num_words[MAX_LINES] = {0};
+    for (int i = 0; i < num_lines; i++) {
+        char *token = strtok(lines[i], " ");
+        while (token != NULL) {
+            words[i][num_words[i]++] = token;
+            token = strtok(NULL, " ");
         }
-        printf("
-");
     }
-}
 
-int main() {
-    transposeFile("file.txt");
+    for (int i = 0; i < num_words[0]; i++) {
+        for (int j = 0; j < num_lines; j++) {
+            printf("%s", words[j][i]);
+            if (j < num_lines - 1) printf(" ");
+        }
+        printf("\n");
+    }
+
     return 0;
 }

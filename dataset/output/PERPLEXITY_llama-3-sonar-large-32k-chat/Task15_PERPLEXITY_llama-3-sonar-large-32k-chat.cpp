@@ -1,25 +1,20 @@
-#include <iostream>
 #include <vector>
 #include <string>
 
-int main() {
-    int floors = 6;
-    std::vector<std::string> tower(floors);
-    for (int i = 0; i < floors; i++) {
-        std::string floor;
-        for (int j = 0; j < floors - i - 1; j++) {
-            floor += " ";
+std::vector<std::string> towerBuilder(int nFloors) {
+    std::vector<std::string> tower;
+    for (int i = 0; i < nFloors; i++) {
+        std::string str;
+        for (int j = 0; j < nFloors - i - 1; j++) {
+            str += " ";
         }
         for (int j = 0; j < 2 * i + 1; j++) {
-            floor += "*";
+            str += "*";
         }
-        for (int j = 0; j < floors - i - 1; j++) {
-            floor += " ";
+        for (int j = 0; j < nFloors - i - 1; j++) {
+            str += " ";
         }
-        tower[i] = floor;
+        tower.push_back(str);
     }
-    for (const std::string& floor : tower) {
-        std::cout << floor << std::endl;
-    }
-    return 0;
+    return tower;
 }

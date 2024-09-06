@@ -8,8 +8,10 @@ int main() {
     std::cout << "Enter data for OS command: ";
     std::getline(std::cin, userInput);
 
-    // Run OS command with user input
-    std::string command = "your_command " + userInput;
+    // Construct the OS command
+    std::string command = "your_command_here " + userInput;
+
+    // Execute the command
     std::system(command.c_str());
 
     return 0;

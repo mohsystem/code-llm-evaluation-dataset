@@ -1,23 +1,34 @@
+code here:
 #include <iostream>
+#include <map>
 #include <string>
 
-std::string createCipher(std::string secretKey) {
-    return secretKey + secretKey + secretKey + secretKey + secretKey + secretKey + secretKey + secretKey + secretKey + secretKey;
+std::map<char, char> createCipher(int key) {
+    std::map<char, char> cipher;
+    for (int i = 0; i < 26; i++) {
+        cipher[(char) (65 + i)] = (char) (65 + (i + key) % 26);
+        cipher[(char) (97 + i)] = (char) (97 + (i + key) % 26);
+    }
+    return cipher;
 }
 
-std::string encryptMessage(std::string message, std::string cipher) {
+std::string encryptMessage(std::string message, int key) {
+    std::map<char, char> cipher = createCipher(key);
     std::string encryptedMessage;
-    for (int i = 0; i < message.length(); i++) {
-        encryptedMessage += (char) (message[i] + cipher[i % cipher.length()]);
+    for (char c : message) {
+        if (cipher.find(c) != cipher.end()) {
+            encryptedMessage += cipher[c];
+        } else {
+            encryptedMessage += c;
+        }
     }
     return encryptedMessage;
 }
 
 int main() {
+    int key = 3;
     std::string message = "Hello, World!";
-    std::string secretKey = "mySecretKey";
-    std::string cipher = createCipher(secretKey);
-    std::string encryptedMessage = encryptMessage(message, cipher);
-    std::cout << "Encrypted Message: " << encryptedMessage << std::endl;
+    std::cout << "Original Message: " << message << std::endl;
+    std::cout << "Encrypted Message: " << encryptMessage(message, key) << std::endl;
     return 0;
 }

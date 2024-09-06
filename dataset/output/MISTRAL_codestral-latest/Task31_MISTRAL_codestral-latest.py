@@ -1,12 +1,3 @@
-def make_complement(dna):
-    result = ""
-    for c in dna:
-        if c == 'A':
-            result += 'T'
-        elif c == 'T':
-            result += 'A'
-        elif c == 'C':
-            result += 'G'
-        elif c == 'G':
-            result += 'C'
-    return result
+def dna_complement(dna):
+    complement = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+    return ''.join(complement[base] for base in dna)

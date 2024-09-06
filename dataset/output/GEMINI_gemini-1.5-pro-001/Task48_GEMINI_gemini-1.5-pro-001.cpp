@@ -1,109 +1,96 @@
 #include <iostream>
-#include <thread>
-#include <vector>
 #include <string>
+#include <vector>
+#include <thread>
 #include <mutex>
-#include <WS2tcpip.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
-#pragma comment (lib, "ws2_32.lib")
+#pragma comment(lib, "Ws2_32.lib")
 
 using namespace std;
 
 const int PORT = 65432;
-vector<thread> clientThreads;
+
 vector<SOCKET> clientSockets;
-mutex clientsMutex;
+mutex clientSocketsMutex;
 
 void handleClient(SOCKET clientSocket) {
-    char buffer[4096];
+    char buffer[1024];
+    int bytesReceived;
 
-    while (true) {
-        int bytesReceived = recv(clientSocket, buffer, 4096, 0);
-        if (bytesReceived == SOCKET_ERROR) {
-            break;
-        }
-        if (bytesReceived == 0) {
-            // Client disconnected
-            break;
-        }
+    while ((bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
+        buffer[bytesReceived] = '\0';
 
-        // Broadcast the message to other clients
-        clientsMutex.lock();
-        for (SOCKET otherSocket : clientSockets) {
-            if (otherSocket != clientSocket) {
-                send(otherSocket, buffer, bytesReceived, 0);
+        clientSocketsMutex.lock();
+        for (SOCKET& socket : clientSockets) {
+            if (socket != clientSocket) {
+                send(socket, buffer, bytesReceived, 0);
             }
         }
-        clientsMutex.unlock();
+        clientSocketsMutex.unlock();
     }
 
-    // Remove the client from the list
-    clientsMutex.lock();
+    clientSocketsMutex.lock();
     clientSockets.erase(remove(clientSockets.begin(), clientSockets.end(), clientSocket), clientSockets.end());
-    clientsMutex.unlock();
+    clientSocketsMutex.unlock();
 
     closesocket(clientSocket);
 }
 
 int main() {
-    // Initialize Winsock
-    WSADATA wsData;
-    int result = WSAStartup(MAKEWORD(2, 2), &wsData);
-    if (result != 0) {
-        cerr << "WSAStartup failed with error: " << result << endl;
+    WSADATA wsaData;
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+        cerr << "WSAStartup failed." << endl;
         return 1;
     }
 
-    // Create a socket
-    SOCKET listenSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (listenSocket == INVALID_SOCKET) {
-        cerr << "Socket creation failed with error: " << WSAGetLastError() << endl;
+    SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (serverSocket == INVALID_SOCKET) {
+        cerr << "Socket creation failed." << endl;
         WSACleanup();
         return 1;
     }
 
-    // Bind the socket to an address and port
     sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_addr.S_un.S_addr = INADDR_ANY;
     serverAddress.sin_port = htons(PORT);
-    if (bind(listenSocket, (sockaddr*)&serverAddress, sizeof(serverAddress)) == SOCKET_ERROR) {
-        cerr << "Bind failed with error: " << WSAGetLastError() << endl;
-        closesocket(listenSocket);
+
+    if (bind(serverSocket, (sockaddr*)&serverAddress, sizeof(serverAddress)) == SOCKET_ERROR) {
+        cerr << "Bind failed." << endl;
+        closesocket(serverSocket);
         WSACleanup();
         return 1;
     }
 
-    // Listen for incoming connections
-    if (listen(listenSocket, SOMAXCONN) == SOCKET_ERROR) {
-        cerr << "Listen failed with error: " << WSAGetLastError() << endl;
-        closesocket(listenSocket);
+    if (listen(serverSocket, SOMAXCONN) == SOCKET_ERROR) {
+        cerr << "Listen failed." << endl;
+        closesocket(serverSocket);
         WSACleanup();
         return 1;
     }
 
     cout << "Server started on port " << PORT << endl;
 
-    // Accept and handle client connections
     while (true) {
         sockaddr_in clientAddress;
-        int clientSize = sizeof(clientAddress);
-        SOCKET clientSocket = accept(listenSocket, (sockaddr*)&clientAddress, &clientSize);
+        int clientAddressSize = sizeof(clientAddress);
+        SOCKET clientSocket = accept(serverSocket, (sockaddr*)&clientAddress, &clientAddressSize);
         if (clientSocket == INVALID_SOCKET) {
-            cerr << "Accept failed with error: " << WSAGetLastError() << endl;
+            cerr << "Accept failed." << endl;
             continue;
         }
 
-        clientsMutex.lock();
+        clientSocketsMutex.lock();
         clientSockets.push_back(clientSocket);
-        clientsMutex.unlock();
+        clientSocketsMutex.unlock();
 
-        // Create a thread to handle the client
-        clientThreads.push_back(thread(handleClient, clientSocket));
+        thread clientThread(handleClient, clientSocket);
+        clientThread.detach();
     }
 
-    // Close the listening socket and clean up Winsock
-    closesocket(listenSocket);
+    closesocket(serverSocket);
     WSACleanup();
 
     return 0;

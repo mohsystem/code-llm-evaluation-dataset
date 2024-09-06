@@ -2,21 +2,20 @@
 #include <stdlib.h>
 #include <time.h>
 
-void generateRandomString(char *str, int length) {
-    const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    for (int i = 0; i < length; i++) {
-        int key = rand() % (int)(sizeof(charset) - 1);
-        str[i] = charset[key];
+void generateRandomString(int length, char* result) {
+    const char characters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    srand(time(0));
+
+    for (int i = 0; i < length; ++i) {
+        result[i] = characters[rand() % (sizeof(characters) - 1)];
     }
-    str[length] = '\0';
+    result[length] = '\0';
 }
 
 int main() {
-    srand(time(0));
     int length = 10;
-    char str[length + 1];
-    generateRandomString(str, length);
-    printf("%s
-", str);
+    char result[length + 1];
+    generateRandomString(length, result);
+    printf("%s\n", result);
     return 0;
 }

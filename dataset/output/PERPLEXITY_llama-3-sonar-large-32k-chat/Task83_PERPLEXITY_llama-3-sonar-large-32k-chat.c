@@ -1,36 +1,28 @@
-#include <openssl/aes.h>
-#include <openssl/err.h>
 #include <stdio.h>
 #include <string.h>
+#include <openssl/aes.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
 
-#define KEY_SIZE 16
-#define BLOCK_SIZE 16
+void encryptAESCBC(unsigned char* key, unsigned char* plaintext, unsigned char* encrypted) {
+    AES_KEY aes_key;
+    AES_set_encrypt_key(key, 128, &aes_key);
+    unsigned char iv[AES_BLOCK_SIZE];
+    for (int i = 0; i < AES_BLOCK_SIZE; i++) {
+        iv[i] = 0;
+    }
+    int len = strlen((char*)plaintext);
+    AES_cbc_encrypt(plaintext, encrypted, len, &aes_key, iv, AES_ENCRYPT);
+}
 
 int main() {
-    unsigned char key[KEY_SIZE];
-    unsigned char iv[BLOCK_SIZE];
-    RAND_bytes(key, KEY_SIZE);
-    RAND_bytes(iv, BLOCK_SIZE);
-
-    AES_KEY aes_key;
-    AES_set_encrypt_key(key, KEY_SIZE * 8, &aes_key);
-
-    unsigned char encryptedKey[KEY_SIZE];
-    AES_cbc_encrypt(key, encryptedKey, KEY_SIZE, &aes_key, iv, AES_ENCRYPT);
-
-    printf("IV: ");
-    for (int i = 0; i < BLOCK_SIZE; i++) {
-        printf("%02x", iv[i]);
+    unsigned char key[16];  // 16 byte key
+    unsigned char plaintext[] = "Hello, World!";
+    unsigned char encrypted[strlen((char*)plaintext) + AES_BLOCK_SIZE];
+    encryptAESCBC(key, plaintext, encrypted);
+    for (int i = 0; i < strlen((char*)plaintext) + AES_BLOCK_SIZE; i++) {
+        printf("%02x", encrypted[i]);
     }
-    printf("
-");
-
-    printf("Encrypted Key: ");
-    for (int i = 0; i < KEY_SIZE; i++) {
-        printf("%02x", encryptedKey[i]);
-    }
-    printf("
-");
-
+    printf("\n");
     return 0;
 }

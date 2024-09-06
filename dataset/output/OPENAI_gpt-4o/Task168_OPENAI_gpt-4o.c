@@ -1,30 +1,23 @@
 #include <stdio.h>
 #include <string.h>
 
-void tweakLetters(char* txt, int arr[], int len) {
-    for (int i = 0; i < len; ++i) {
-        txt[i] = txt[i] + arr[i];
+void tweakLetters(const char* s, const int* arr, char* result) {
+    size_t len = strlen(s);
+    for (size_t i = 0; i < len; ++i) {
+        result[i] = (char)(((s[i] - 'a' + arr[i]) % 26 + 26) % 26 + 'a');
     }
+    result[len] = '\0';
 }
 
 int main() {
-    char txt1[] = "apple";
-    int arr1[] = {0, 1, -1, 0, -1};
-    tweakLetters(txt1, arr1, sizeof(arr1) / sizeof(arr1[0]));
-    printf("%s
-", txt1);
-
-    char txt2[] = "many";
-    int arr2[] = {0, 0, 0, -1};
-    tweakLetters(txt2, arr2, sizeof(arr2) / sizeof(arr2[0]));
-    printf("%s
-", txt2);
-
-    char txt3[] = "rhino";
-    int arr3[] = {1, 1, 1, 1, 1};
-    tweakLetters(txt3, arr3, sizeof(arr3) / sizeof(arr3[0]));
-    printf("%s
-", txt3);
-
+    char result1[10], result2[10], result3[10];
+    tweakLetters("apple", (int[]){0, 1, -1, 0, -1}, result1);
+    tweakLetters("many", (int[]){0, 0, 0, -1}, result2);
+    tweakLetters("rhino", (int[]){1, 1, 1, 1, 1}, result3);
+    
+    printf("%s\n", result1);  // "aqold"
+    printf("%s\n", result2);  // "manx"
+    printf("%s\n", result3);  // "sijop"
+    
     return 0;
 }

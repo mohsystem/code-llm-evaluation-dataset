@@ -2,71 +2,74 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <regex.h>
+#include <stdbool.h>
 
-#define MAX_COMMAND_LENGTH 1000
-#define MAX_OUTPUT_LENGTH 10000
+#define MAX_CMD_LENGTH 1024
+#define MAX_OUTPUT_LENGTH 4096
 
-int validate_command(const char* command) {
+bool validateCommand(const char* cmd) {
     regex_t regex;
     int reti;
+    char msgbuf[100];
 
-    // Check if command is empty
-    if (strlen(command) == 0) {
-        return 0;
+    if (strlen(cmd) == 0) {
+        return false;
     }
 
-    // Compile regex to check for semicolons, pipes, or redirections
-    reti = regcomp(&regex, "[;|><]", REG_EXTENDED);
+    reti = regcomp(&regex, "(rm|sudo|mv|cp|chmod|chown)", REG_EXTENDED);
     if (reti) {
-        fprintf(stderr, "Could not compile regex\
-");
+        fprintf(stderr, "Could not compile regex\\n");
         exit(1);
     }
 
-    // Execute regex
-    reti = regexec(&regex, command, 0, NULL, 0);
+    reti = regexec(&regex, cmd, 0, NULL, 0);
     regfree(&regex);
 
     if (!reti) {
-        return 0; // Match found, invalid command
-    } else if (reti == REG_NOMATCH) {
-        return 1; // No match, valid command
-    } else {
-        char msgbuf[100];
-        regerror(reti, &regex, msgbuf, sizeof(msgbuf));
-        fprintf(stderr, "Regex match failed: %s\
-", msgbuf);
-        exit(1);
+        return false;
     }
+
+    return true;
+}
+
+void executeCommand(const char* cmd, char* output) {
+    FILE* fp;
+    char path[MAX_OUTPUT_LENGTH];
+
+    fp = popen(cmd, "r");
+    if (fp == NULL) {
+        sprintf(output, "Error executing command");
+        return;
+    }
+
+    while (fgets(path, sizeof(path), fp) != NULL) {
+        strcat(output, path);
+    }
+
+    pclose(fp);
 }
 
 int main() {
-    char command[MAX_COMMAND_LENGTH];
+    char userInput[MAX_CMD_LENGTH];
     char output[MAX_OUTPUT_LENGTH];
 
-    printf("Enter a bash command: ");
-    fgets(command, sizeof(command), stdin);
-    command[strcspn(command, "\
-")] = 0; // Remove newline
+    while (1) {
+        printf("Enter a bash command (or 'exit' to quit): ");
+        fgets(userInput, sizeof(userInput), stdin);
+        userInput[strcspn(userInput, "\\n")] = 0;  // Remove newline
 
-    if (validate_command(command)) {
-        FILE* fp = popen(command, "r");
-        if (fp == NULL) {
-            printf("Failed to run command\
-");
-            return 1;
+        if (strcmp(userInput, "exit") == 0) {
+            break;
         }
 
-        while (fgets(output, sizeof(output), fp) != NULL) {
-            printf("%s", output);
+        if (validateCommand(userInput)) {
+            memset(output, 0, sizeof(output));
+            executeCommand(userInput, output);
+            printf("Output: %s\\n", output);
+        } else {
+            printf("Invalid or potentially dangerous command. Please try again.\\n");
         }
-
-        pclose(fp);
-    } else {
-        printf("Invalid command format or content.\
-");
     }
 
     return 0;

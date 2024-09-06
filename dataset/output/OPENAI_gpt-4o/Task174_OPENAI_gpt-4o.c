@@ -1,35 +1,33 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
+
+void reverse(char *str) {
+    int n = strlen(str);
+    for (int i = 0; i < n / 2; i++) {
+        char tmp = str[i];
+        str[i] = str[n - i - 1];
+        str[n - i - 1] = tmp;
+    }
+}
 
 char* shortestPalindrome(char* s) {
-    int len = strlen(s);
-    if (len == 0) return s;
-    char* rev_s = (char*)malloc(len + 1);
-    for (int i = 0; i < len; i++) {
-        rev_s[i] = s[len - i - 1];
-    }
-    rev_s[len] = '\0';
-    
-    for (int i = 0; i <= len; i++) {
-        if (strncmp(s, rev_s + i, len - i) == 0) {
-            char* result = (char*)malloc(len + i + 1);
-            strncpy(result, rev_s, i);
-            strcpy(result + i, s);
-            free(rev_s);
+    static char rev_s[50000];  // static to avoid returning local variable address
+    strcpy(rev_s, s);
+    reverse(rev_s);
+    for (int i = 0; i <= strlen(s); i++) {
+        if (strncmp(s, rev_s + i, strlen(s) - i) == 0) {
+            char *result = (char*)malloc(50000);
+            strcpy(result, rev_s);
+            result[i] = '\0';
+            strcat(result, s);
             return result;
         }
     }
-    free(rev_s);
     return "";
 }
 
 int main() {
-    char s1[] = "aacecaaa";
-    char s2[] = "abcd";
-    printf("%s
-", shortestPalindrome(s1));  // Output: aaacecaaa
-    printf("%s
-", shortestPalindrome(s2));  // Output: dcbabcd
+    char s[] = "aacecaaa";
+    printf("%s", shortestPalindrome(s));
     return 0;
 }

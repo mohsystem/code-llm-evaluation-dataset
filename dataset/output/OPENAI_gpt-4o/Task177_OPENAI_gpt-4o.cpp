@@ -1,14 +1,15 @@
 #include <iostream>
 #include <deque>
 #include <vector>
-#include <algorithm>
+#include <climits>
+
 using namespace std;
 
 int maxSubsequenceSum(vector<int>& nums, int k) {
-    int n = nums.size();
-    if (n == 0) return 0;
+    if (nums.empty()) return 0;
 
-    vector<int> dp(n, 0);
+    int n = nums.size();
+    vector<int> dp(n);
     dp[0] = nums[0];
     deque<int> deq;
     deq.push_back(0);
@@ -29,10 +30,16 @@ int maxSubsequenceSum(vector<int>& nums, int k) {
 
 int main() {
     vector<int> nums1 = {10, 2, -10, 5, 20};
+    int k1 = 2;
+    cout << maxSubsequenceSum(nums1, k1) << endl; // Output: 37
+
     vector<int> nums2 = {-1, -2, -3};
+    int k2 = 1;
+    cout << maxSubsequenceSum(nums2, k2) << endl; // Output: -1
+
     vector<int> nums3 = {10, -2, -10, -5, 20};
-    cout << maxSubsequenceSum(nums1, 2) << endl;  // 37
-    cout << maxSubsequenceSum(nums2, 1) << endl;  // -1
-    cout << maxSubsequenceSum(nums3, 2) << endl;  // 23
+    int k3 = 2;
+    cout << maxSubsequenceSum(nums3, k3) << endl; // Output: 23
+
     return 0;
 }

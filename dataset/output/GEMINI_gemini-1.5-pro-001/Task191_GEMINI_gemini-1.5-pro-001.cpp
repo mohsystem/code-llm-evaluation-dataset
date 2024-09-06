@@ -1,22 +1,22 @@
 class Solution {
 public:
     int longestValidParentheses(string s) {
-        int dp[s.length() + 1];
-        memset(dp, 0, sizeof(dp));
+        int maxLen = 0;
         stack<int> st;
-        int maxLength = 0;
-        for (int i = 0; i < s.length(); i++) {
-            if (s[i] == '(') {
+        st.push(-1); // Initialize with a sentinel
+        for (int i = 0; i < s.size(); i++) {
+            char c = s[i];
+            if (c == '(') {
                 st.push(i);
             } else {
-                if (!st.empty()) {
-                    int j = st.top();
-                    st.pop();
-                    dp[i + 1] = dp[j] + i - j + 1;
-                    maxLength = max(maxLength, dp[i + 1]);
+                st.pop();
+                if (st.empty()) {
+                    st.push(i);
+                } else {
+                    maxLen = max(maxLen, i - st.top());
                 }
             }
         }
-        return maxLength;
+        return maxLen;
     }
 };

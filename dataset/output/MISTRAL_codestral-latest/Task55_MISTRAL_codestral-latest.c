@@ -1,39 +1,40 @@
 #include <stdio.h>
 #include <regex.h>
 
+int validateEmail(const char* email) {
+    regex_t regex;
+    int reti;
+    const char* pattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+
+    reti = regcomp(&regex, pattern, REG_EXTENDED);
+    if (reti) {
+        fprintf(stderr, "Could not compile regex\n");
+        return 0;
+    }
+
+    reti = regexec(&regex, email, 0, NULL, 0);
+    regfree(&regex);
+
+    if (!reti) {
+        return 1;
+    } else if (reti == REG_NOMATCH) {
+        return 0;
+    } else {
+        char msgbuf[100];
+        regerror(reti, &regex, msgbuf, sizeof(msgbuf));
+        fprintf(stderr, "Regex match failed: %s\n", msgbuf);
+        return 0;
+    }
+}
+
 int main() {
     char email[100];
     printf("Enter your email: ");
     scanf("%s", email);
-
-    const char *emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."
-                            "[a-zA-Z0-9_+&*-]+)*@"
-                            "(?:[a-zA-Z0-9-]+\\.)+[a-z"
-                            "A-Z]{2,7}$";
-
-    regex_t regex;
-    int reti = regcomp(&regex, emailRegex, 0);
-    if (reti) {
-        fprintf(stderr, "Could not compile regex
-");
-        return 1;
-    }
-
-    reti = regexec(&regex, email, 0, NULL, 0);
-    if (!reti) {
-        printf("Valid email address
-");
-    } else if (reti == REG_NOMATCH) {
-        printf("Invalid email address
-");
+    if (validateEmail(email)) {
+        printf("Email is valid\n");
     } else {
-        char msgbuf[100];
-        regerror(reti, &regex, msgbuf, sizeof(msgbuf));
-        fprintf(stderr, "Regex match failed: %s
-", msgbuf);
+        printf("Email is invalid\n");
     }
-
-    regfree(&regex);
-
     return 0;
 }

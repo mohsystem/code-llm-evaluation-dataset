@@ -1,63 +1,65 @@
-// C++ code
+// CPP code
 #include<iostream>
 using namespace std;
 
 struct Node {
-    int key;
-    Node *left, *right;
+    int data;
+    Node* left;
+    Node* right;
 };
 
-Node* newNode(int item) {
-    Node* temp = new Node;
-    temp->key = item;
-    temp->left = temp->right = NULL;
-    return temp;
+Node* GetNewNode(int data) {
+    Node* newNode = new Node();
+    if (!newNode) {
+        cout << "Memory error\n";
+        return NULL;
+    }
+    newNode->data = data;
+    newNode->left = newNode->right = NULL;
+    return newNode;
 }
 
-Node* insert(Node* node, int key) {
-    if (node == NULL) return newNode(key);
-    if (key < node->key)
-        node->left = insert(node->left, key);
-    else if (key > node->key)
-        node->right = insert(node->right, key);
-    return node;
-}
-
-Node * minValueNode(Node* node) {
-    Node* current = node;
-    while (current && current->left != NULL)
-        current = current->left;
-    return current;
-}
-
-Node* deleteNode(Node* root, int key) {
-    if (root == NULL) return root;
-    if (key < root->key)
-        root->left = deleteNode(root->left, key);
-    else if (key > root->key)
-        root->right = deleteNode(root->right, key);
-    else {
-        if (root->left == NULL) {
-            Node *temp = root->right;
-            free(root);
-            return temp;
-        }
-        else if (root->right == NULL) {
-            Node *temp = root->left;
-            free(root);
-            return temp;
-        }
-        Node* temp = minValueNode(root->right);
-        root->key = temp->key;
-        root->right = deleteNode(root->right, temp->key);
+Node* Insert(Node* root, int data) {
+    if (root == NULL) {
+        root = GetNewNode(data);
+    } else if (data <= root->data) {
+        root->left = Insert(root->left, data);
+    } else {
+        root->right = Insert(root->right, data);
     }
     return root;
 }
 
-bool search(Node* root, int key) {
-    if (root == NULL || root->key == key)
-       return (root != NULL);
-    if (root->key < key)
-       return search(root->right, key);
-    return search(root->left, key);
+Node* FindMin(Node* root) {
+    while(root->left != NULL) root = root->left;
+    return root;
+}
+
+Node* Delete(Node* root, int data) {
+    Node* temp;
+    if(root == NULL) return NULL;
+    else if(data < root->data) root->left = Delete(root->left, data);
+    else if(data > root->data) root->right = Delete(root->right, data);
+    else {
+        if(root->left && root->right) {
+            temp = FindMin(root->right);
+            root->data = temp->data;
+            root->right = Delete(root->right, root->data);
+        } else {
+            temp = root;
+            if(root->left == NULL) root = root->right;
+            else if(root->right == NULL) root = root->left;
+            delete temp;
+        }
+    }
+    return root;
+}
+
+bool Search(Node* root, int data) {
+    while(root != NULL) {
+        if(root->data > data) root = root->left;
+        else if(root->data < data) root = root->right;
+        else return true;
+    }
+    return false;
 }

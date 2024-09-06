@@ -1,9 +1,7 @@
-def to_jaden_case(phrase):
-    if not phrase:
+def to_jaden_case(string):
+    if not string:
         return None
-    return ' '.join(word.capitalize() for word in phrase.split())
+    return ' '.join(word.capitalize() for word in string.split())
 
-# Add test cases here
+# Example usage
 print(to_jaden_case("How can mirrors be real if our eyes aren't real"))
-print(to_jaden_case(""))
-print(to_jaden_case(None))

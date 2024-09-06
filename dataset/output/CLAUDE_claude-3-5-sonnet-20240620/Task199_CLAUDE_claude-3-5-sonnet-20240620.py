@@ -1,7 +1,7 @@
 
 class Clock:
-    def __init__(self, hours, minutes):
-        self.minutes = (hours * 60 + minutes) % 1440
+    def __init__(self, hour, minute):
+        self.minutes = (hour * 60 + minute) % 1440
 
     def __repr__(self):
         hours, minutes = divmod(self.minutes, 60)
@@ -10,20 +10,19 @@ class Clock:
     def __eq__(self, other):
         return self.minutes == other.minutes
 
-    def add(self, minutes):
+    def __add__(self, minutes):
         self.minutes = (self.minutes + minutes) % 1440
         return self
 
-    def subtract(self, minutes):
+    def __sub__(self, minutes):
         self.minutes = (self.minutes - minutes) % 1440
         return self
 
 # Example usage
-clock1 = Clock(10, 30)
-clock2 = Clock(10, 30)
-print(clock1)  # 10:30
-print(clock1 == clock2)  # True
-clock1.add(30)
-print(clock1)  # 11:00
-clock1.subtract(60)
-print(clock1)  # 10:00
+clock = Clock(10, 30)
+print(clock)  # 10:30
+clock.add(60)
+print(clock)  # 11:30
+clock.sub(90)
+print(clock)  # 10:00
+print(clock == Clock(10, 0))  # True

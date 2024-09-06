@@ -1,66 +1,35 @@
 #include <iostream>
 #include <string>
 #include <curl/curl.h>
-#include <libxml/HTMLparser.h>
+#include <gumbo.h>
 
-size_t write_data(void *ptr, size_t size, size_t nmeb, void *stream) {
-    size_t written = fwrite(ptr, size, nmeb, (FILE*)stream);
-    return written;
+size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp) {
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
 }
 
-std::string get_page_title(const std::string& url) {
+int main(int argc, char *argv[]) {
     CURL *curl;
-    FILE *fp;
-    char *data_buffer;
-    long data_size;
-    std::string title;
+    CURLcode res;
+    std::string readBuffer;
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
     curl = curl_easy_init();
     if(curl) {
-        fp = fopen("page.html", "wb");
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-        curl_easy_perform(curl);
-        fclose(fp);
+        curl_easy_setopt(curl, CURLOPT_URL, argv[1]);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
 
-        fp = fopen("page.html", "rb");
-        fseek(fp, 0, SEEK_END);
-        data_size = ftell(fp);
-        rewind(fp);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
 
-        data_buffer = new char[data_size + 1];
-        data_buffer[data_size] = '\0';
-        fread(data_buffer, sizeof(char), data_size, fp);
-        fclose(fp);
-
-        htmlDocPtr doc = htmlReadMemory(data_buffer, data_size, NULL, NULL, HTML_PARSE_NOBLANKS | HTML_PARSE_NOERROR | HTML_PARSE_RECOVER);
-        if(doc) {
-            xmlNodePtr cur = xmlDocGetRootElement(doc);
-            for(cur = cur->children; cur != NULL; cur = cur->next) {
-                if(cur->type == XML_ELEMENT_NODE && !xmlStrcmp(cur->name, (const xmlChar*)"title")) {
-                    xmlChar *key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-                    title = std::string((char*)key);
-                    xmlFree(key);
-                    break;
-                }
-            }
-            xmlFreeDoc(doc);
-        }
-        delete[] data_buffer;
         curl_easy_cleanup(curl);
     }
-    curl_global_cleanup();
-    return title;
-}
 
-int main(int argc, char *argv[]) {
-    if(argc > 1) {
-        std::string title = get_page_title(argv[1]);
-        std::cout << "Page title: " << title << std::endl;
-    } else {
-        std::cout << "Please provide an URL as a command line argument." << std::endl;
-    }
+    GumboOutput* output = gumbo_parse(readBuffer.c_str());
+    std::cout << "Page title is: " << output->root->v.element.tag << std::endl;
+    gumbo_destroy_output(&kGumboDefaultOptions, output);
+
     return 0;
 }

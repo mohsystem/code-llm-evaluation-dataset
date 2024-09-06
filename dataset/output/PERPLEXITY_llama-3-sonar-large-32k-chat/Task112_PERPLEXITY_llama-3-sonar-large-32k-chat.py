@@ -1,20 +1,19 @@
-from pymongo import MongoClient
+import pymongo
 
-client = MongoClient("mongodb://localhost:27017")
+client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client["mydatabase"]
 collection = db["mycollection"]
 
 # Create
-doc = {"name": "John", "age": 30}
-collection.insert_one(doc)
+data = {"name": "John", "age": 30}
+collection.insert_one(data)
 
 # Read
-found_doc = collection.find_one()
-print(found_doc)
+data = collection.find_one({"name": "John"})
+print(data)
 
 # Update
-collection.update_one(found_doc, {"$set": {"age": 31}})
+collection.update_one({"name": "John"}, {"$set": {"age": 31}})
 
 # Delete
-collection.delete_one(found_doc)
-client.close()
+collection.delete_one({"name": "John"})

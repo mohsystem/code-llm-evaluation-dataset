@@ -1,40 +1,50 @@
+// C code
 #include <stdlib.h>
 
 int countRangeSum(int* nums, int numsSize, int lower, int upper) {
-    long* sums = malloc(sizeof(long) * (numsSize + 1));
-    sums[0] = 0;
+    long* prefixSum = (long*)malloc((numsSize + 1) * sizeof(long));
+    prefixSum[0] = 0;
     for (int i = 0; i < numsSize; i++) {
-        sums[i + 1] = sums[i] + nums[i];
+        prefixSum[i + 1] = prefixSum[i] + nums[i];
     }
-    int count = countWhileMergeSort(sums, 0, numsSize, lower, upper);
-    free(sums);
+    int count = countWhileMergeSort(prefixSum, 0, numsSize, lower, upper);
+    free(prefixSum);
     return count;
 }
 
-int countWhileMergeSort(long* sums, int start, int end, int lower, int upper) {
+int countWhileMergeSort(long* prefixSum, int start, int end, int lower, int upper) {
     if (end <= start) {
         return 0;
     }
     int mid = start + (end - start) / 2;
-    int count = countWhileMergeSort(sums, start, mid, lower, upper) + countWhileMergeSort(sums, mid + 1, end, lower, upper);
-    int j = mid + 1, k = mid + 1;
-    long* cache = malloc(sizeof(long) * (end - start));
+    int count = countWhileMergeSort(prefixSum, start, mid, lower, upper) + countWhileMergeSort(prefixSum, mid + 1, end, lower, upper);
+    int j = mid + 1, k = mid + 1, lowerBound = mid + 1, upperBound = mid + 1;
+    long* cache = (long*)malloc((end - start + 1) * sizeof(long));
     int idx = 0;
     for (int i = start; i <= mid; i++) {
-        while (j <= end && sums[j] - sums[i] < lower) {
+        while (j <= end && prefixSum[j] - prefixSum[i] < lower) {
             j++;
         }
-        while (k <= end && sums[k] - sums[i] <= upper) {
+        while (k <= end && prefixSum[k] - prefixSum[i] <= upper) {
             k++;
         }
         count += k - j;
-        while (idx < end - start && sums[start + idx] <= sums[i]) {
-            cache[idx++] = sums[start + idx];
+        while (lowerBound <= end && prefixSum[lowerBound] <= prefixSum[i]) {
+            lowerBound++;
         }
-        cache[idx++] = sums[i];
+        while (upperBound <= end && prefixSum[upperBound] < prefixSum[i]) {
+            upperBound++;
+        }
+        count -= upperBound - lowerBound;
+        while (start + idx <= mid && prefixSum[start + idx] <= prefixSum[i]) {
+            cache[idx++] = prefixSum[start + idx];
+        }
     }
-    for (int i = 0; i < idx; i++) {
-        sums[start + i] = cache[i];
+    for (int i = start + idx; i <= mid; i++) {
+        cache[idx++] = prefixSum[i];
+    }
+    for (int i = start; i <= mid; i++) {
+        prefixSum[i] = cache[i - start];
     }
     free(cache);
     return count;

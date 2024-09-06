@@ -2,71 +2,65 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <pthread.h>
+#include <unistd.h>
 #include <dirent.h>
-#include <sys/stat.h>
 
-#define DIRECTORY_PATH "shared_directory"
-#define NUM_THREADS 4
+#define MAX_FILES 100
 #define MAX_FILENAME 256
+
+typedef struct {
+    char filename[MAX_FILENAME];
+} FileTask;
+
+FileTask fileTasks[MAX_FILES];
+int taskCount = 0;
+int processedCount = 0;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void* process_files(void* arg) {
-    while (1) {
-        DIR* dir;
-        struct dirent* entry;
-        char filename[MAX_FILENAME];
-
-        pthread_mutex_lock(&mutex);
-        dir = opendir(DIRECTORY_PATH);
-        if (dir == NULL) {
-            pthread_mutex_unlock(&mutex);
-            continue;
-        }
-
-        while ((entry = readdir(dir)) != NULL) {
-            if (entry->d_type == DT_REG) {
-                snprintf(filename, sizeof(filename), "%s/%s", DIRECTORY_PATH, entry->d_name);
-                break;
-            }
-        }
-
-        closedir(dir);
+void* processFile(void* arg) {
+    FileTask* task = (FileTask*)arg;
+    
+    pthread_mutex_lock(&mutex);
+    if (processedCount >= taskCount) {
         pthread_mutex_unlock(&mutex);
-
-        if (entry == NULL) {
-            sleep(1);
-            continue;
-        }
-
-        printf("Processing file: %s by thread: %ld\
-", filename, (long)pthread_self());
-        // Simulating file processing
-        sleep(2);
-
-        // Delete the processed file
-        remove(filename);
+        return NULL;
     }
+    processedCount++;
+    pthread_mutex_unlock(&mutex);
+
+    printf("Processing file: %s\\n", task->filename);
+    sleep(1); // Simulate file processing
+    printf("Finished processing file: %s\\n", task->filename);
 
     return NULL;
 }
 
 int main() {
-    pthread_t threads[NUM_THREADS];
-    int i;
+    DIR* dir;
+    struct dirent* entry;
+    pthread_t threads[MAX_FILES];
 
-    mkdir(DIRECTORY_PATH, 0777);
-
-    for (i = 0; i < NUM_THREADS; i++) {
-        if (pthread_create(&threads[i], NULL, process_files, NULL) != 0) {
-            perror("Failed to create thread");
-            return 1;
-        }
+    dir = opendir("./files");
+    if (dir == NULL) {
+        perror("Unable to open directory");
+        return 1;
     }
 
-    for (i = 0; i < NUM_THREADS; i++) {
+    while ((entry = readdir(dir)) != NULL && taskCount < MAX_FILES) {
+        if (strstr(entry->d_name, ".txt") != NULL) {
+            strncpy(fileTasks[taskCount].filename, entry->d_name, MAX_FILENAME - 1);
+            taskCount++;
+        }
+    }
+    closedir(dir);
+
+    for (int i = 0; i < taskCount; i++) {
+        pthread_create(&threads[i], NULL, processFile, &fileTasks[i]);
+    }
+
+    for (int i = 0; i < taskCount; i++) {
         pthread_join(threads[i], NULL);
     }
 

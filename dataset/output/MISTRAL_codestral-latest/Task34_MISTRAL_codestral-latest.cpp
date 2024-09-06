@@ -1,17 +1,14 @@
-#include <iostream>
 #include <cmath>
+#include <string>
 
-bool isNarcissistic(int number) {
-    int originalNumber, result = 0, remainder;
-    int n = std::to_string(number).length();
+bool narcissistic(int value) {
+    std::string str_value = std::to_string(value);
+    int n = str_value.length();
+    int sum = 0;
 
-    originalNumber = number;
-
-    while (originalNumber != 0) {
-        remainder = originalNumber % 10;
-        result += std::pow(remainder, n);
-        originalNumber /= 10;
+    for (char c : str_value) {
+        sum += std::pow(c - '0', n);
     }
 
-    return number == result;
+    return value == sum;
 }

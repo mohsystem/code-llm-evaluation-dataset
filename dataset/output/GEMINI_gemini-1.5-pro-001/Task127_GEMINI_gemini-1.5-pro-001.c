@@ -2,44 +2,45 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_FILENAME_LENGTH 256
-
-int main() {
-    char filename[MAX_FILENAME_LENGTH];
-    char* temp_filename = "temp.txt";
-    FILE *source_file, *temp_file;
+void processFile(const char* sourceFilePath) {
+    FILE *sourceFile, *tempFile;
     char ch;
+    char tempFilePath[] = "tempXXXXXX"; 
 
-    printf("Enter the file name: ");
-    scanf("%s", filename);
-
-    // Open source file in read mode
-    source_file = fopen(filename, "r");
-    if (source_file == NULL) {
-        fprintf(stderr, "Error: Could not open file %s.
-", filename);
-        return 1;
+    // Create a temporary file
+    int tempFileDescriptor = mkstemp(tempFilePath);
+    if (tempFileDescriptor == -1) {
+        fprintf(stderr, "Error: Could not create temporary file\n");
+        return;
     }
 
-    // Open temporary file in write mode
-    temp_file = fopen(temp_filename, "w");
-    if (temp_file == NULL) {
-        fclose(source_file);
-        fprintf(stderr, "Error: Could not create temporary file.
-");
-        return 1;
+    sourceFile = fopen(sourceFilePath, "rb");
+    if (sourceFile == NULL) {
+        fprintf(stderr, "Error: File not found at %s\n", sourceFilePath);
+        return;
     }
 
-    // Copy contents to temporary file
-    while ((ch = fgetc(source_file)) != EOF) {
-        fputc(ch, temp_file);
+    tempFile = fdopen(tempFileDescriptor, "wb");
+    if (tempFile == NULL) {
+        fprintf(stderr, "Error: Could not open temporary file\n");
+        fclose(sourceFile); 
+        return;
+    }
+
+    // Copy contents
+    while ((ch = fgetc(sourceFile)) != EOF) {
+        fputc(ch, tempFile);
     }
 
     // Close files
-    fclose(source_file);
-    fclose(temp_file);
+    fclose(sourceFile);
+    fclose(tempFile);
 
-    printf("File copied to temporary location: %s
-", temp_filename);
+    printf("File copied successfully to: %s\n", tempFilePath);
+}
+
+int main() {
+    const char* sourceFilePath = "/path/to/your/source/file";
+    processFile(sourceFilePath);
     return 0;
 }

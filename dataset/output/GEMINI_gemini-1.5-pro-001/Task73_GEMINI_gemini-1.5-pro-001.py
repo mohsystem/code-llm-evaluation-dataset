@@ -1,21 +1,19 @@
-import re
-
-def is_valid_admin_password(password):
-    if len(password) < 10:
+def is_password_valid(password):
+    if len(password) < 8:
         return False
-    if not re.search("[A-Z]", password):
+    if not any(char.isupper() for char in password):
         return False
-    if not re.search("[a-z]", password):
+    if not any(char.islower() for char in password):
         return False
-    if not re.search("[0-9]", password):
-        return False
-    if not re.search("[!@#$%^&*()]", password):
+    if not any(char.isdigit() for char in password):
         return False
     return True
 
+# Get the password input
+password = input("Enter the password: ")
 
-password = input("Enter password: ")
-if is_valid_admin_password(password):
+# Check if the password is valid
+if is_password_valid(password):
     print("Valid password")
 else:
     print("Invalid password")

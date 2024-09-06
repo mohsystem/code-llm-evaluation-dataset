@@ -3,46 +3,44 @@ class Solution {
 public:
     string longestDupSubstring(string s) {
         int left = 0, right = s.length();
-        string res = "";
+        string result = "";
         while (left < right) {
             int mid = left + (right - left) / 2;
             string candidate = rabinKarp(s, mid);
             if (!candidate.empty()) {
                 left = mid + 1;
-                res = candidate;
+                result = candidate;
             } else {
                 right = mid;
             }
         }
-        return res;
+        return result;
     }
-    
+
 private:
-    const long long MOD = (1LL << 63) - 1;
-    
-    string rabinKarp(const string& s, int len) {
-        if (len == 0) return "";
-        long long p = 1;
-        for (int i = 0; i < len - 1; i++) {
-            p = (p * 26) % MOD;
+    string rabinKarp(const string& s, int length) {
+        long long q = (1LL << 31) - 1;
+        long long h = 0;
+        for (int i = 0; i < length; i++) {
+            h = (h * 26 + s[i] - 'a') % q;
         }
-        
-        long long cur = 0;
-        for (int i = 0; i < len; i++) {
-            cur = (cur * 26 + s[i] - \'a\') % MOD;
-        }
-        
+
         unordered_set<long long> seen;
-        seen.insert(cur);
-        
-        for (int i = len; i < s.length(); i++) {
-            cur = (cur * 26 - (s[i - len] - \'a\') * p % MOD + MOD) % MOD;
-            cur = (cur + s[i] - \'a\') % MOD;
-            if (seen.count(cur)) {
-                return s.substr(i - len + 1, len);
-            }
-            seen.insert(cur);
+        seen.insert(h);
+        long long aL = 1;
+        for (int i = 0; i < length; i++) {
+            aL = (aL * 26) % q;
         }
+
+        for (int start = 1; start <= s.length() - length; start++) {
+            h = (h * 26 - (s[start - 1] - 'a') * aL % q + q) % q;
+            h = (h + s[start + length - 1] - 'a') % q;
+            if (seen.count(h)) {
+                return s.substr(start, length);
+            }
+            seen.insert(h);
+        }
+
         return "";
     }
 };

@@ -1,22 +1,8 @@
-def find_outlier(arr):
-    odd_count, even_count = 0, 0
-    odd_num, even_num = 0, 0
+def find_outlier(integers):
+    odds = [i for i in integers if i % 2 != 0]
+    evens = [i for i in integers if i % 2 == 0]
+    return odds[0] if len(odds) == 1 else evens[0]
 
-    for i in range(len(arr)):
-        if arr[i] % 2 == 0:
-            even_count += 1
-            even_num = arr[i]
-        else:
-            odd_count += 1
-            odd_num = arr[i]
-        if odd_count and even_count:
-            break
-
-    return odd_num if odd_count == 1 else even_num
-
-
-example1 = [2, 4, 0, 100, 4, 11, 2602, 36]
-example2 = [160, 3, 1719, 19, 11, 13, -21]
-
-print(find_outlier(example1))  # Should print 11
-print(find_outlier(example2))  # Should print 160
+# Test case
+print(find_outlier([2, 4, 0, 100, 4, 11, 2602, 36]))  # Output: 11
+print(find_outlier([160, 3, 1719, 19, 11, 13, -21]))  # Output: 160

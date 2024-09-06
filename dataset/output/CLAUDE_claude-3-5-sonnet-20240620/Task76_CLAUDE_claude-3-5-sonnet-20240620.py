@@ -3,21 +3,19 @@ import sys
 import requests
 from bs4 import BeautifulSoup
 
-def extract_title(url):
+def get_page_title(url):
     try:
         response = requests.get(url)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, \'html.parser\')
-        title = soup.title.string if soup.title else "Title not found"
-        return title.strip()
-    except requests.RequestException as e:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        title = soup.title.string if soup.title else "No title found"
+        return title
+    except Exception as e:
         return f"Error: {str(e)}"
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python script.py <URL>")
-        sys.exit(1)
-
-    url = sys.argv[1]
-    title = extract_title(url)
-    print(f"Page Title: {title}")
+        print("Usage: python script.py <url>")
+    else:
+        url = sys.argv[1]
+        title = get_page_title(url)
+        print(f"Page title: {title}")

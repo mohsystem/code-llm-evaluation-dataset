@@ -1,11 +1,11 @@
-# Python
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
+from Crypto.Random import get_random_bytes
 
-KEY = b'1234567890123456' # 128 bit key
-IV = b'RandomInitVector' # 16 bytes IV
-
-def encrypt(plain_text):
-    cipher = AES.new(KEY, AES.MODE_CBC, IV)
-    cipher_text = cipher.encrypt(pad(plain_text, AES.block_size))
-    return cipher_text
+def encrypt_data(data):
+    key = get_random_bytes(16)
+    iv = b'This is an IV456'
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    padded_data = pad(data, AES.block_size)
+    encrypted_data = cipher.encrypt(padded_data)
+    return encrypted_data

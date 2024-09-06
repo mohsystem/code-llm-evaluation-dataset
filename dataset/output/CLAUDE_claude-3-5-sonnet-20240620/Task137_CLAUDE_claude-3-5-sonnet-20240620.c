@@ -13,8 +13,7 @@ void createTable(sqlite3 *db) {
 
     int rc = sqlite3_exec(db, sql, 0, 0, &errMsg);
     if (rc != SQLITE_OK) {
-        fprintf(stderr, "SQL error: %s\
-", errMsg);
+        fprintf(stderr, "SQL error: %s\\n", errMsg);
         sqlite3_free(errMsg);
     }
 }
@@ -30,12 +29,10 @@ void addProduct(sqlite3 *db, const char *name, double price) {
 
         rc = sqlite3_step(stmt);
         if (rc != SQLITE_DONE) {
-            fprintf(stderr, "Execution failed: %s\
-", sqlite3_errmsg(db));
+            fprintf(stderr, "Execution failed: %s\\n", sqlite3_errmsg(db));
         }
     } else {
-        fprintf(stderr, "SQL error: %s\
-", sqlite3_errmsg(db));
+        fprintf(stderr, "SQL error: %s\\n", sqlite3_errmsg(db));
     }
     sqlite3_finalize(stmt);
 }
@@ -50,18 +47,15 @@ void getProduct(sqlite3 *db, int id) {
 
         rc = sqlite3_step(stmt);
         if (rc == SQLITE_ROW) {
-            printf("ID: %d, Name: %s, Price: $%.2f\
-",
+            printf("ID: %d, Name: %s, Price: $%.2f\\n",
                    sqlite3_column_int(stmt, 0),
                    sqlite3_column_text(stmt, 1),
                    sqlite3_column_double(stmt, 2));
         } else {
-            printf("Product not found.\
-");
+            printf("Product not found.\\n");
         }
     } else {
-        fprintf(stderr, "SQL error: %s\
-", sqlite3_errmsg(db));
+        fprintf(stderr, "SQL error: %s\\n", sqlite3_errmsg(db));
     }
     sqlite3_finalize(stmt);
 }
@@ -71,21 +65,16 @@ int main() {
     int rc = sqlite3_open("products.db", &db);
 
     if (rc) {
-        fprintf(stderr, "Can\'t open database: %s\
-", sqlite3_errmsg(db));
+        fprintf(stderr, "Can't open database: %s\\n", sqlite3_errmsg(db));
         return 1;
     }
 
     createTable(db);
 
     while (1) {
-        printf("\
-1. Add product\
-");
-        printf("2. Get product details\
-");
-        printf("3. Exit\
-");
+        printf("\\n1. Add product\\n");
+        printf("2. Get product details\\n");
+        printf("3. Exit\\n");
         printf("Enter your choice: ");
 
         int choice;
@@ -98,13 +87,11 @@ int main() {
                 printf("Enter product name: ");
                 getchar(); // Consume newline
                 fgets(name, sizeof(name), stdin);
-                name[strcspn(name, "\
-")] = 0; // Remove newline
+                name[strcspn(name, "\\n")] = 0; // Remove newline
                 printf("Enter product price: ");
                 scanf("%lf", &price);
                 addProduct(db, name, price);
-                printf("Product added successfully!\
-");
+                printf("Product added successfully!\\n");
                 break;
             }
             case 2: {
@@ -118,8 +105,7 @@ int main() {
                 sqlite3_close(db);
                 return 0;
             default:
-                printf("Invalid choice. Please try again.\
-");
+                printf("Invalid choice. Please try again.\\n");
         }
     }
 

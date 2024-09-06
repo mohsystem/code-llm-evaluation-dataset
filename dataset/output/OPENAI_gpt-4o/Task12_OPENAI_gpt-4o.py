@@ -1,8 +1,15 @@
-def word_score(word):
-    return sum(ord(c) - ord('a') + 1 for c in word)
+def high(input_string):
+    words = input_string.split()
+    max_score = 0
+    best_word = ""
+    
+    for word in words:
+        score = sum(ord(char) - 96 for char in word)
+        if score > max_score:
+            max_score = score
+            best_word = word
+            
+    return best_word
 
-def highest_scoring_word(s):
-    return max(s.split(), key=word_score)
-
-input_string = "example input sentence"
-print(highest_scoring_word(input_string))
+input_string = "abad test example"
+print(high(input_string))

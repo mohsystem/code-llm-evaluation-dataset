@@ -1,45 +1,29 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <b64/cdecode.h>
+#include <stdlib.h>
 
-// Function to decode Base64 string
-char* b64_decode(const char *src, size_t len) {
-    base64_decodestate state;
-    base64_init_decodestate(&state);
+// Add base64 and json libraries if needed
 
-    // Calculate the maximum output buffer size
-    size_t out_len = len * 3 / 4 + 1;
-    char *out = (char*)malloc(out_len);
-    if (out == NULL) {
-        return NULL;
-    }
+char *process_request(const char *request) {
+  // Assuming request is already UTF-8 encoded
 
-    // Decode the input string
-    int result = base64_decode_block(src, len, out, &state);
-    out[result] = '\0'; // Null-terminate the output string
+  // Base64 decode
+  // ... Implement base64 decoding logic here ...
 
-    return out;
-}
+  // Deserialize the decoded data
+  // ... Implement deserialization logic here (e.g., using a JSON library) ...
 
-// Function to process the request
-char* processRequest(const char *rawData) {
-    // Decode the raw_data using Base64
-    char *decodedData = b64_decode(rawData, strlen(rawData));
-
-    // Deserialize the decoded data
-    // ... Implementation for deserialization (replace with your logic)
-
-    return decodedData;
+  // Store and return the deserialized data
+  // ...
 }
 
 int main() {
-    // Example usage:
-    const char rawData[] = "eyJtZXNzYWdlIjogIkhlbGxvIHdvcmxkIn0=";
-    char *processedData = processRequest(rawData);
-    printf("%s
-", processedData);
+  // Example usage:
+  char *request = /* ... Get the request data ... */;
+  char *data = process_request(request);
 
-    free(processedData);
-    return 0;
+  // ... Use the processed data ...
+
+  free(data); // Free allocated memory
+  return 0;
 }

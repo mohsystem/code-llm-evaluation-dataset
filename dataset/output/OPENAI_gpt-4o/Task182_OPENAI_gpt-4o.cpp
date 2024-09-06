@@ -1,25 +1,25 @@
 #include <iostream>
+#include <vector>
 #include <regex>
-#include <string>
 
-std::string cleanPhoneNumber(const std::string &phone) {
-    std::string cleaned_phone = std::regex_replace(phone, std::regex("\\D"), "");
-    if (cleaned_phone.length() == 11 && cleaned_phone[0] == '1') {
-        cleaned_phone = cleaned_phone.substr(1);
+std::string cleanNumber(std::string number) {
+    number = std::regex_replace(number, std::regex("[^0-9]"), "");
+    if (number.length() == 11 && number[0] == '1') {
+        number = number.substr(1);
     }
-    return cleaned_phone;
+    return number;
 }
 
 int main() {
-    std::string numbers[] = {
-        "+1 (613)-995-0253",
-        "613-995-0253",
-        "1 613 995 0253",
-        "613.995.0253"
-    };
+    std::vector<std::string> numbers = {"+1 (613)-995-0253", "613-995-0253", "1 613 995 0253", "613.995.0253"};
+    std::vector<std::string> cleanedNumbers;
 
-    for (const auto &number : numbers) {
-        std::cout << cleanPhoneNumber(number) << std::endl;
+    for (auto& number : numbers) {
+        cleanedNumbers.push_back(cleanNumber(number));
+    }
+
+    for (auto& cleanedNumber : cleanedNumbers) {
+        std::cout << cleanedNumber << std::endl;
     }
 
     return 0;

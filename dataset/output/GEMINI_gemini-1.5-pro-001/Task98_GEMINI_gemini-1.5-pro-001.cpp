@@ -5,15 +5,15 @@
 using namespace std;
 
 int main() {
-    string input;
-    int number;
+    string userInput;
+    int integerValue;
 
-    cout << "Enter a number: ";
-    getline(cin, input);
+    cout << "Enter an integer: ";
+    getline(cin, userInput);
 
-    stringstream ss(input);
-    if (ss >> number) {
-        cout << "You entered: " << number << endl;
+    stringstream ss(userInput);
+    if (ss >> integerValue) {
+        cout << "Successfully converted to integer: " << integerValue << endl;
     } else {
         cout << "Invalid input. Please enter a valid integer." << endl;
     }

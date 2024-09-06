@@ -7,11 +7,11 @@ def bfs(graph, start):
     while queue:
         node = queue.popleft()
         if node not in visited:
-            print(node)
+            print(node, end=" ")
             visited.add(node)
             queue.extend(graph[node] - visited)
 
-# Example usage:
+# Test the function
 graph = {
     'A': set(['B', 'C']),
     'B': set(['A', 'D', 'E']),

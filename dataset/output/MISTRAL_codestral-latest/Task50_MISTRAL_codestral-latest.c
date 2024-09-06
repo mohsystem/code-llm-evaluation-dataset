@@ -1,59 +1,64 @@
-// C
+// C code using libmicrohttpd library
+// Note: This is a simplified example and does not include error handling and security measures
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <unistd.h>
+#include <microhttpd.h>
 
-#define PORT 1234
-#define BUFFER_SIZE 1024
+#define UPLOAD_FOLDER "/path/to/upload/folder"
 
-int main(int argc, char const *argv[]) {
-    int server_fd, new_socket, valread;
-    struct sockaddr_in address;
-    int opt = 1;
-    int addrlen = sizeof(address);
-    char buffer[BUFFER_SIZE] = {0};
-    FILE *fp;
+int upload_file(void *cls, struct MHD_Connection *connection,
+                const char *upload_data, size_t *upload_data_size, void **con_cls) {
+    static FILE *fp = NULL;
+    static int received = 0;
 
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        perror("socket failed");
-        exit(EXIT_FAILURE);
+    if (*con_cls == NULL) {
+        fp = fopen("/tmp/uploaded_file", "w");
+        if (fp == NULL) {
+            return MHD_NO;
+        }
+        *con_cls = fp;
+    } else {
+        fp = *con_cls;
     }
 
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
-        perror("setsockopt");
-        exit(EXIT_FAILURE);
+    if (*upload_data_size != 0) {
+        fwrite(upload_data, *upload_data_size, 1, fp);
+        received += *upload_data_size;
+        *upload_data_size = 0;
+        return MHD_YES;
+    } else {
+        fclose(fp);
+        *con_cls = NULL;
+        return MHD_YES;
+    }
+}
+
+int answer_to_connection(void *cls, struct MHD_Connection *connection,
+                         const char *url, const char *method,
+                         const char *version, const char *upload_data,
+                         size_t *upload_data_size, void **con_cls) {
+    if (0 == strcmp(method, "POST") && 0 == strcmp(url, "/upload")) {
+        return upload_file(cls, connection, upload_data, upload_data_size, con_cls);
+    } else {
+        const char *page = "<html><body>Invalid request</body></html>";
+        struct MHD_Response *response = MHD_create_response_from_buffer(strlen(page), (void *)page, MHD_RESPMEM_PERSISTENT);
+        int ret = MHD_queue_response(connection, MHD_HTTP_BAD_REQUEST, response);
+        MHD_destroy_response(response);
+        return ret;
+    }
+}
+
+int main() {
+    struct MHD_Daemon *daemon;
+
+    daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY, 8080, NULL, NULL, &answer_to_connection, NULL, MHD_OPTION_END);
+    if (NULL == daemon) {
+        return 1;
     }
 
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
+    getchar();
 
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0) {
-        perror("bind failed");
-        exit(EXIT_FAILURE);
-    }
-
-    if (listen(server_fd, 3) < 0) {
-        perror("listen");
-        exit(EXIT_FAILURE);
-    }
-
-    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0) {
-        perror("accept");
-        exit(EXIT_FAILURE);
-    }
-
-    fp = fopen("uploadedFile.txt", "w");
-    while ((valread = read(new_socket, buffer, BUFFER_SIZE)) > 0) {
-        fwrite(buffer, 1, valread, fp);
-        memset(buffer, 0, sizeof(buffer));
-    }
-
-    printf("File transfer successful.
-");
-    fclose(fp);
+    MHD_stop_daemon(daemon);
     return 0;
 }

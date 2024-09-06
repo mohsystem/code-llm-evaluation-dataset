@@ -1,24 +1,29 @@
+// C
 #include <stdio.h>
 #include <stdlib.h>
 
 int main() {
-    int size;
-    printf("Enter the size of the buffer: ");
-    scanf("%d", &size);
-    int* buffer = (int*)malloc(size * sizeof(int));
+    // Allocate memory buffer
+    FILE *file = fopen("buffer.dat", "wb");
+    char zero = 0;
+    for (int i = 0; i < 1024; i++) {
+        fwrite(&zero, sizeof(zero), 1, file);
+    }
+    fclose(file);
 
+    // User input for index
     int index;
-    printf("Enter the index to read from the buffer: ");
+    printf("Enter index: ");
     scanf("%d", &index);
 
-    if (index >= 0 && index < size) {
-        printf("Value at index %d: %d
-", index, buffer[index]);
-    } else {
-        printf("Invalid index.
-");
-    }
+    // Read from buffer
+    file = fopen("buffer.dat", "rb");
+    fseek(file, index, SEEK_SET);
+    char value;
+    fread(&value, sizeof(value), 1, file);
+    fclose(file);
 
-    free(buffer);
+    printf("Value at index: %d\n", value);
+
     return 0;
 }

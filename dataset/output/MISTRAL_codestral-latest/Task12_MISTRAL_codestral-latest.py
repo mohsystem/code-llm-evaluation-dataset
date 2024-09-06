@@ -1,9 +1,5 @@
-def high(x):
-    words = x.split()
-    scores = []
-    for word in words:
-        score = sum(ord(c) - 96 for c in word)
-        scores.append(score)
+def high_scoring_word(input_string):
+    words = input_string.split()
+    scores = [sum(ord(c) - 96 for c in word) for word in words]
     max_score = max(scores)
-    max_index = scores.index(max_score)
-    return words[max_index]
+    return words[scores.index(max_score)]

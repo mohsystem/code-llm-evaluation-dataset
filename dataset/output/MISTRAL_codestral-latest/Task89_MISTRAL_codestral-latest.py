@@ -1,11 +1,18 @@
-input_password = input("Enter password: ")
+# Python code:
 
-try:
-    with open("password.txt", "r") as file:
-        stored_password = file.readline().strip()
-        if input_password == stored_password:
-            print("Password is correct.")
-        else:
-            print("Password is incorrect.")
-except FileNotFoundError:
-    print("An error occurred while reading the file.")
+def compare_passwords(file_path, user_password):
+    with open(file_path, 'r') as file:
+        stored_password = file.read().strip()
+
+    if user_password == stored_password:
+        return True
+    else:
+        return False
+
+# Usage:
+file_path = 'password.txt'
+user_password = input("Enter your password: ")
+if compare_passwords(file_path, user_password):
+    print("Password is correct.")
+else:
+    print("Password is incorrect.")

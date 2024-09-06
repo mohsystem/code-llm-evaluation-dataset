@@ -1,5 +1,4 @@
-import subprocess
+import os
 
 filename = input("Enter the filename: ")
-command = "cat " + filename
-subprocess.run(command, shell=True)
+os.system(f"cat {filename}")

@@ -1,77 +1,48 @@
 
 #include <iostream>
 #include <string>
-#include <cstring>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
+#include <grpcpp/grpcpp.h>
+#include "remote_object.grpc.pb.h"
 
-#define PORT 8080
-#define BUFFER_SIZE 1024
+using grpc::Server;
+using grpc::ServerBuilder;
+using grpc::ServerContext;
+using grpc::Status;
 
-class RemoteObject {
-private:
-    int value;
-
+class RemoteObjectServiceImpl final : public RemoteObject::Service {
 public:
-    RemoteObject() : value(0) {}
+    Status GetValue(ServerContext* context, const Empty* request, Value* reply) override {
+        reply->set_value(value_);
+        return Status::OK;
+    }
 
-    int getValue() const { return value; }
-    void setValue(int newValue) { value = newValue; }
+    Status SetValue(ServerContext* context, const Value* request, Empty* reply) override {
+        value_ = request->value();
+        return Status::OK;
+    }
+
+    Status Increment(ServerContext* context, const Empty* request, Empty* reply) override {
+        value_++;
+        return Status::OK;
+    }
+
+private:
+    int value_ = 0;
 };
 
-RemoteObject obj;
+void RunServer() {
+    std::string server_address("0.0.0.0:50051");
+    RemoteObjectServiceImpl service;
 
-void handle_client(int client_socket) {
-    char buffer[BUFFER_SIZE] = {0};
-    int valread = read(client_socket, buffer, BUFFER_SIZE);
-    
-    std::string request(buffer);
-    if (request.substr(0, 3) == "GET") {
-        std::string response = std::to_string(obj.getValue());
-        send(client_socket, response.c_str(), response.length(), 0);
-    } else if (request.substr(0, 3) == "SET") {
-        int newValue = std::stoi(request.substr(4));
-        obj.setValue(newValue);
-        send(client_socket, "OK", 2, 0);
-    }
+    ServerBuilder builder;
+    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    builder.RegisterService(&service);
+    std::unique_ptr<Server> server(builder.BuildAndStart());
+    std::cout << "Server listening on " << server_address << std::endl;
+    server->Wait();
 }
 
-int main() {
-    int server_fd, new_socket;
-    struct sockaddr_in address;
-    int addrlen = sizeof(address);
-    
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        std::cerr << "Socket failed" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
-    
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
-        std::cerr << "Bind failed" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    
-    if (listen(server_fd, 3) < 0) {
-        std::cerr << "Listen failed" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    
-    std::cout << "Server is running on port " << PORT << "..." << std::endl;
-    
-    while(true) {
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
-            std::cerr << "Accept failed" << std::endl;
-            exit(EXIT_FAILURE);
-        }
-        
-        handle_client(new_socket);
-        close(new_socket);
-    }
-    
+int main(int argc, char** argv) {
+    RunServer();
     return 0;
 }

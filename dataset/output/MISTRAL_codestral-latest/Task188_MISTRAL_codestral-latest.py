@@ -1,19 +1,20 @@
-from threading import Semaphore
+import threading
 
 class FooBar:
     def __init__(self, n):
         self.n = n
-        self.fooSemaphore = Semaphore(1)
-        self.barSemaphore = Semaphore(0)
+        self.foo_lock = threading.Lock()
+        self.bar_lock = threading.Lock()
+        self.bar_lock.acquire()
 
-    def foo(self, printFoo):
+    def foo(self, print_foo):
         for i in range(self.n):
-            self.fooSemaphore.acquire()
-            printFoo()
-            self.barSemaphore.release()
+            self.foo_lock.acquire()
+            print_foo()
+            self.bar_lock.release()
 
-    def bar(self, printBar):
+    def bar(self, print_bar):
         for i in range(self.n):
-            self.barSemaphore.acquire()
-            printBar()
-            self.fooSemaphore.release()
+            self.bar_lock.acquire()
+            print_bar()
+            self.foo_lock.release()

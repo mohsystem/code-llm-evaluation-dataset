@@ -3,71 +3,102 @@
 #include <string.h>
 #include <sqlite3.h>
 #include <curl/curl.h>
+#include <gumbo.h>
 
-struct MemoryStruct {
-    char *memory;
-    size_t size;
-};
-
-static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp) {
-    size_t realsize = size * nmemb;
-    struct MemoryStruct *mem = (struct MemoryStruct *)userp;
-
-    char *ptr = realloc(mem->memory, mem->size + realsize + 1);
-    if(ptr == NULL) {
-        return 0;
-    }
-
-    mem->memory = ptr;
-    memcpy(&(mem->memory[mem->size]), contents, realsize);
-    mem->size += realsize;
-    mem->memory[mem->size] = 0;
-
-    return realsize;
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp) {
+    size_t totalSize = size * nmemb;
+    strcat(userp, (char*)contents);
+    return totalSize;
 }
 
-void scrape(const char *url, sqlite3 *db) {
-    CURL *curl_handle;
+void search_for_list_items(GumboNode* node, FILE* file) {
+    if (node->type != GUMBO_NODE_ELEMENT) return;
+    if (node->v.element.tag == GUMBO_TAG_LI) {
+        if (node->v.element.children.length == 1) {
+            GumboNode* text = node->v.element.children.data[0];
+            if (text->type == GUMBO_NODE_TEXT) {
+                fprintf(file, "%s,", text->v.text.text);
+            }
+        }
+    }
+    GumboVector* children = &node->v.element.children;
+    for (unsigned int i = 0; i < children->length; ++i) {
+        search_for_list_items(children->data[i], file);
+    }
+}
+
+void scrapeData(const char* url, const char* fileName) {
+    CURL *curl;
     CURLcode res;
-    struct MemoryStruct chunk;
-
-    chunk.memory = malloc(1);
-    chunk.size = 0;
-
-    curl_global_init(CURL_GLOBAL_ALL);
-    curl_handle = curl_easy_init();
-    curl_easy_setopt(curl_handle, CURLOPT_URL, url);
-    curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-    curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
-    curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
-    res = curl_easy_perform(curl_handle);
-
-    if(res == CURLE_OK) {
-        sqlite3_stmt *stmt;
-        sqlite3_prepare_v2(db, "INSERT INTO data (info) VALUES (?)", -1, &stmt, NULL);
-        sqlite3_bind_text(stmt, 1, chunk.memory, -1, SQLITE_STATIC);
-        sqlite3_step(stmt);
-        sqlite3_finalize(stmt);
+    char *readBuffer = malloc(1000000);
+    memset(readBuffer, 0, 1000000);
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, readBuffer);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
     }
 
-    curl_easy_cleanup(curl_handle);
-    free(chunk.memory);
-    curl_global_cleanup();
+    const char* html = readBuffer;
+    GumboOutput* output = gumbo_parse(html);
+
+    FILE* file = fopen(fileName, "w");
+    search_for_list_items(output->root, file);
+    fclose(file);
+
+    gumbo_destroy_output(&kGumboDefaultOptions, output);
+    free(readBuffer);
 }
 
-int main(void) {
+void storeData(const char* dbName, const char* fileName) {
     sqlite3 *db;
-    if (sqlite3_open("sample.db", &db)) {
-        fprintf(stderr, "Can't open database: %s
-", sqlite3_errmsg(db));
-        return(1);
+    char *zErrMsg = 0;
+    int rc;
+
+    rc = sqlite3_open(dbName, &db);
+    if(rc) {
+        fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+        return;
+    } else {
+        fprintf(stderr, "Opened database successfully\n");
     }
 
-    char *errMsg = 0;
-    sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS data (info TEXT)", 0, 0, &errMsg);
+    const char* sqlCreate = "CREATE TABLE IF NOT EXISTS scraped_data (content TEXT);";
+    rc = sqlite3_exec(db, sqlCreate, 0, 0, &zErrMsg);
+    if(rc != SQLITE_OK) {
+        fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    }
 
-    scrape("https://example.com", db);
+    const char* sqlInsert = "INSERT INTO scraped_data (content) VALUES (?);";
+    sqlite3_stmt *stmt;
+    if(sqlite3_prepare_v2(db, sqlInsert, -1, &stmt, 0) != SQLITE_OK) {
+        fprintf(stderr, "Failed to prepare statement\n");
+        return;
+    }
 
+    FILE* file = fopen(fileName, "r");
+    char item[500];
+    while(fscanf(file, "%499[^,],", item) == 1) {
+        sqlite3_bind_text(stmt, 1, item, strlen(item), SQLITE_STATIC);
+        sqlite3_step(stmt);
+        sqlite3_reset(stmt);
+    }
+    fclose(file);
+
+    sqlite3_finalize(stmt);
     sqlite3_close(db);
+}
+
+int main() {
+    const char* url = "https://example.com";
+    const char* dbName = "scraped_data.db";
+    const char* fileName = "scraped_data.txt";
+    
+    scrapeData(url, fileName);
+    storeData(dbName, fileName);
+    
     return 0;
 }

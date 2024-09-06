@@ -1,36 +1,30 @@
-# Python code using Flask
-
-from flask import Flask, render_template_string, request, redirect, url_for
-from flask_wtf.csrf import CSRFProtect
-from wtforms import Form, StringField, validators
+# Import the required modules for web framework
+from flask import Flask, render_template_string, request, session
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'
-csrf = CSRFProtect(app)
+app.secret_key = "supersecretkey"
 
-class UserSettingsForm(Form):
-    setting1 = StringField('Setting 1', [validators.InputRequired()])
-    setting2 = StringField('Setting 2', [validators.InputRequired()])
-
+# Route to display the form
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
-    form = UserSettingsForm(request.form)
-    if request.method == 'POST' and form.validate():
-        return redirect(url_for('result', setting1=form.setting1.data, setting2=form.setting2.data))
-    return render_template_string('''
-        <form method="post">
-            {{ form.hidden_tag() }}
-            <div>{{ form.setting1.label }} {{ form.setting1(size=20) }}</div>
-            <div>{{ form.setting2.label }} {{ form.setting2(size=20) }}</div>
-            <div><input type="submit" value="Submit"></div>
-        </form>
-    ''', form=form)
+    if request.method == 'POST':
+        csrf_token = session.pop('_csrf_token', None)
+        if not csrf_token or csrf_token != request.form.get('_csrf_token'):
+            return "CSRF token is missing or incorrect", 403
+        # Save settings logic here
+        return "Settings updated!"
+    
+    # Render form with CSRF token
+    session['_csrf_token'] = "aCSRFtoken"
+    html_form = '''
+    <form method="POST" action="/settings">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+        <input type="text" name="username" placeholder="Username">
+        <button type="submit">Save</button>
+    </form>
+    '''
+    return render_template_string(html_form, csrf_token=session['_csrf_token'])
 
-@app.route('/result')
-def result():
-    setting1 = request.args.get('setting1')
-    setting2 = request.args.get('setting2')
-    return f'Settings updated: Setting 1 = {setting1}, Setting 2 = {setting2}'
-
-if __name__ == '__main__':
-    app.run()
+# Run the Flask application
+if __name__ == "__main__":
+    app.run(debug=True)

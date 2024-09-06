@@ -14,4 +14,4 @@ class Clock:
     def __str__(self):
         hours = self.minutes // 60
         minutes = self.minutes % 60
-        return f"{hours:02d}:{minutes:02d}"
+        return f'{hours:02d}:{minutes:02d}'

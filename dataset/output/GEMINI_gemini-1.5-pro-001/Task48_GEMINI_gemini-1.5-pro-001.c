@@ -11,7 +11,7 @@
 
 int client_sockets[MAX_CLIENTS];
 int num_clients = 0;
-pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex;
 
 void *handle_client(void *arg) {
     int client_socket = *(int *)arg;
@@ -23,18 +23,16 @@ void *handle_client(void *arg) {
             break;
         }
 
-        // Broadcast message to other clients
-        pthread_mutex_lock(&clients_mutex);
+        pthread_mutex_lock(&mutex);
         for (int i = 0; i < num_clients; i++) {
             if (client_sockets[i] != client_socket) {
                 send(client_sockets[i], buffer, bytes_received, 0);
             }
         }
-        pthread_mutex_unlock(&clients_mutex);
+        pthread_mutex_unlock(&mutex);
     }
 
-    // Remove client from list
-    pthread_mutex_lock(&clients_mutex);
+    pthread_mutex_lock(&mutex);
     for (int i = 0; i < num_clients; i++) {
         if (client_sockets[i] == client_socket) {
             for (int j = i; j < num_clients - 1; j++) {
@@ -44,7 +42,7 @@ void *handle_client(void *arg) {
             break;
         }
     }
-    pthread_mutex_unlock(&clients_mutex);
+    pthread_mutex_unlock(&mutex);
 
     close(client_socket);
     pthread_exit(NULL);
@@ -54,12 +52,16 @@ int main() {
     int server_socket, client_socket;
     struct sockaddr_in server_address, client_address;
     socklen_t client_address_size;
+    pthread_t thread_id;
+
+    // Initialize mutex
+    pthread_mutex_init(&mutex, NULL);
 
     // Create socket
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket == -1) {
-        perror("socket creation failed");
-        exit(EXIT_FAILURE);
+        perror("socket");
+        exit(1);
     }
 
     // Set address information
@@ -68,48 +70,46 @@ int main() {
     server_address.sin_addr.s_addr = INADDR_ANY;
     server_address.sin_port = htons(PORT);
 
-    // Bind socket to address
+    // Bind socket
     if (bind(server_socket, (struct sockaddr *)&server_address, sizeof(server_address)) == -1) {
-        perror("binding failed");
+        perror("bind");
         close(server_socket);
-        exit(EXIT_FAILURE);
+        exit(1);
     }
 
-    // Listen for incoming connections
-    if (listen(server_socket, MAX_CLIENTS) == -1) {
-        perror("listening failed");
+    // Listen for connections
+    if (listen(server_socket, 5) == -1) {
+        perror("listen");
         close(server_socket);
-        exit(EXIT_FAILURE);
+        exit(1);
     }
 
-    printf("Server started on port %d
-", PORT);
+    printf("Server started on port %d\n", PORT);
 
     while (1) {
         client_address_size = sizeof(client_address);
-
-        // Accept incoming connection
         client_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_address_size);
         if (client_socket == -1) {
-            perror("accepting connection failed");
+            perror("accept");
             continue;
         }
 
-        // Add client to list
-        pthread_mutex_lock(&clients_mutex);
+        pthread_mutex_lock(&mutex);
         if (num_clients < MAX_CLIENTS) {
             client_sockets[num_clients++] = client_socket;
-
-            // Create thread to handle client
-            pthread_t thread_id;
             pthread_create(&thread_id, NULL, handle_client, (void *)&client_socket);
             pthread_detach(thread_id);
         } else {
             close(client_socket);
         }
-        pthread_mutex_unlock(&clients_mutex);
+        pthread_mutex_unlock(&mutex);
     }
 
+    // Close sockets
     close(server_socket);
+
+    // Destroy mutex
+    pthread_mutex_destroy(&mutex);
+
     return 0;
 }

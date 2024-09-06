@@ -5,8 +5,8 @@
 #include <openssl/aes.h>
 #include <openssl/rand.h>
 
+#define KEY_SIZE 32
 #define KEY_FILE "secret.key"
-#define KEY_SIZE 32 // 256 bits
 
 void generate_key(unsigned char *key) {
     RAND_bytes(key, KEY_SIZE);
@@ -27,7 +27,7 @@ void load_key(unsigned char *key, const char *filename) {
 void encrypt_message(const unsigned char *message, int message_len, const unsigned char *key, unsigned char *encrypted) {
     AES_KEY aes_key;
     AES_set_encrypt_key(key, KEY_SIZE * 8, &aes_key);
-
+    
     int padded_len = ((message_len + AES_BLOCK_SIZE - 1) / AES_BLOCK_SIZE) * AES_BLOCK_SIZE;
     unsigned char padded_message[padded_len];
     memcpy(padded_message, message, message_len);
@@ -49,17 +49,17 @@ void decrypt_message(const unsigned char *encrypted, int encrypted_len, const un
 
 int main() {
     unsigned char key[KEY_SIZE];
-
     FILE *key_file = fopen(KEY_FILE, "rb");
-    if (key_file) {
-        load_key(key, KEY_FILE);
-        fclose(key_file);
-    } else {
+
+    if (key_file == NULL) {
         generate_key(key);
         save_key(key, KEY_FILE);
+    } else {
+        fclose(key_file);
+        load_key(key, KEY_FILE);
     }
 
-    const char *message = "Hello, this is a secret message!";
+    const char *message = "Hello, World!";
     int message_len = strlen(message);
     int padded_len = ((message_len + AES_BLOCK_SIZE - 1) / AES_BLOCK_SIZE) * AES_BLOCK_SIZE;
 
@@ -69,16 +69,13 @@ int main() {
     encrypt_message((unsigned char *)message, message_len, key, encrypted);
     decrypt_message(encrypted, padded_len, key, decrypted);
 
-    printf("Original: %s\
-", message);
+    printf("Original: %s\\n", message);
     printf("Encrypted: ");
     for (int i = 0; i < padded_len; i++) {
         printf("%02x", encrypted[i]);
     }
-    printf("\
-");
-    printf("Decrypted: %s\
-", decrypted);
+    printf("\\n");
+    printf("Decrypted: %s\\n", decrypted);
 
     return 0;
 }

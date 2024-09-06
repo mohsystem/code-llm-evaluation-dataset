@@ -1,23 +1,16 @@
+// C++
 #include <iostream>
 #include <fstream>
-#include <sys/stat.h>
+#include <cstdlib>
 
 int main() {
-    std::ofstream file("script.sh");
-    if (file.is_open()) {
-        std::cout << "File created: script.sh
-";
-        file.close();
-        if (chmod("script.sh", S_IRWXU) == 0) {
-            std::cout << "File is now executable
-";
-        } else {
-            std::cout << "Failed to make file executable
-";
-        }
+    std::ofstream outfile("script.sh");
+    if (outfile.is_open()) {
+        outfile << "#!/bin/bash\necho \"Hello, World!\"";
+        outfile.close();
+        std::system("chmod +x script.sh");
     } else {
-        std::cout << "Failed to create file
-";
+        std::cout << "Unable to open file";
     }
     return 0;
 }

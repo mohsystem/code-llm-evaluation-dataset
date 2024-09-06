@@ -4,7 +4,7 @@ import threading
 HOST = '127.0.0.1'
 PORT = 65432
 
-clients = []
+client_list = []
 
 def handle_client(client_socket):
     while True:
@@ -13,37 +13,33 @@ def handle_client(client_socket):
             if message:
                 broadcast(message, client_socket)
             else:
-                remove_client(client_socket)
+                client_list.remove(client_socket)
+                client_socket.close()
                 break
         except:
-            remove_client(client_socket)
+            client_list.remove(client_socket)
+            client_socket.close()
             break
 
 def broadcast(message, client_socket):
-    for client in clients:
+    for client in client_list:
         if client != client_socket:
             try:
                 client.send(message.encode('utf-8'))
             except:
-                remove_client(client)
+                client.close()
+                client_list.remove(client)
 
-def remove_client(client_socket):
-    clients.remove(client_socket)
-    client_socket.close()
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind((HOST, PORT))
+server_socket.listen(5)
 
-def start_server():
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind((HOST, PORT))
-    server_socket.listen()
-    print(f"Server started on {HOST}:{PORT}")
+print(f"Server started on {HOST}:{PORT}")
 
-    while True:
-        client_socket, client_address = server_socket.accept()
-        clients.append(client_socket)
-        print(f"Client connected from {client_address}")
+while True:
+    client_socket, address = server_socket.accept()
+    client_list.append(client_socket)
+    print(f"Client connected from {address}")
 
-        client_thread = threading.Thread(target=handle_client, args=(client_socket,))
-        client_thread.start()
-
-if __name__ == "__main__":
-    start_server()
+    client_thread = threading.Thread(target=handle_client, args=(client_socket,))
+    client_thread.start()

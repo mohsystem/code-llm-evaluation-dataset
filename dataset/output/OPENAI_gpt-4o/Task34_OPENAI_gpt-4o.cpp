@@ -1,30 +1,22 @@
-// C++ Code
 #include <iostream>
 #include <cmath>
-
-int countDigits(int number) {
-    int count = 0;
-    while (number != 0) {
-        number /= 10;
-        count++;
-    }
-    return count;
-}
+#include <string>
 
 bool isNarcissistic(int number) {
-    int originalNumber = number;
+    std::string numStr = std::to_string(number);
+    int power = numStr.length();
     int sum = 0;
-    int numberOfDigits = countDigits(number);
-    while (number > 0) {
-        int digit = number % 10;
-        sum += pow(digit, numberOfDigits);
-        number /= 10;
+
+    for (char c : numStr) {
+        int digit = c - '0';
+        sum += std::pow(digit, power);
     }
-    return sum == originalNumber;
+
+    return sum == number;
 }
 
 int main() {
-    int num = 153; // example number
-    std::cout << std::boolalpha << isNarcissistic(num) << std::endl;
+    std::cout << isNarcissistic(153) << std::endl;  // 1 (true)
+    std::cout << isNarcissistic(1652) << std::endl;  // 0 (false)
     return 0;
 }

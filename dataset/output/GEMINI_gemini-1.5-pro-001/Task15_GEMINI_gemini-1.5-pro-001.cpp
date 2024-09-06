@@ -5,13 +5,10 @@ using namespace std;
 
 vector<string> towerBuilder(int nFloors) {
   vector<string> tower;
-
   for (int i = 0; i < nFloors; i++) {
-    int stars = 2 * i + 1;
-    int spaces = nFloors - i - 1;
-
-    tower.push_back(string(spaces, ' ') + string(stars, '*') + string(spaces, ' '));
+    string stars(2 * i + 1, '*');
+    string spaces(nFloors - i - 1, ' ');
+    tower.push_back(spaces + stars + spaces);
   }
-
   return tower;
 }

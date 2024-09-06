@@ -3,33 +3,28 @@
 #include <string>
 
 int main() {
-    std::string inputPassword;
-    std::string storedPassword;
-
-    std::cout << "Enter password: ";
-    std::cin >> inputPassword;
-
     std::ifstream file("password.txt");
-    file >> storedPassword;
+    std::string storedPassword;
+    std::getline(file, storedPassword);
     file.close();
-
-    bool isValid = true;
-    if (inputPassword.length() != storedPassword.length()) {
-        isValid = false;
+    std::string userPassword;
+    std::cout << "Enter your password: ";
+    std::getline(std::cin, userPassword);
+    if (storedPassword.length() != userPassword.length()) {
+        std::cout << "Password does not match" << std::endl;
     } else {
-        for (int i = 0; i < inputPassword.length(); i++) {
-            if (inputPassword[i] != storedPassword[i]) {
-                isValid = false;
+        bool match = true;
+        for (int i = 0; i < storedPassword.length(); i++) {
+            if (storedPassword[i] != userPassword[i]) {
+                match = false;
                 break;
             }
         }
+        if (match) {
+            std::cout << "Password matches" << std::endl;
+        } else {
+            std::cout << "Password does not match" << std::endl;
+        }
     }
-
-    if (isValid) {
-        std::cout << "Password is valid" << std::endl;
-    } else {
-        std::cout << "Password is invalid" << std::endl;
-    }
-
     return 0;
 }

@@ -1,47 +1,74 @@
 import socket
 import threading
 
-HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
-PORT = 65432        # Port to listen on (non-privileged ports are > 1023)
+HOST = '127.0.0.1'
+PORT = 65432
 
-user_credentials = {
-    "user1": "pass1",
-    "user2": "pass2"
-}
+client_list = []
+usernames = {}
 
-def handle_client(conn, addr):
-    print(f"[CONNECTION] {addr} connected.")
-
+def handle_client(client_socket):
     while True:
-        data = conn.recv(1024).decode('utf-8')
-        if not data:
-            break
-        
-        command, username, password = data.split(" ", 2)
-
-        if command == "LOGIN":
-            if username in user_credentials and user_credentials[username] == password:
-                response = "Welcome, " + username + "!"
+        try:
+            message = client_socket.recv(1024).decode('utf-8')
+            if message:
+                print(f"Received message: {message}")
+                broadcast(message, client_socket)
             else:
-                response = "Invalid username or password."
-            conn.send(response.encode('utf-8'))
-        else:
-            conn.send("Invalid command.".encode('utf-8'))
+                remove_client(client_socket)
+                break
+        except:
+            remove_client(client_socket)
+            break
 
-    conn.close()
-    print(f"[DISCONNECTION] {addr} disconnected.")
+def broadcast(message, client_socket):
+    for client in client_list:
+        if client != client_socket:
+            try:
+                client.send(message.encode('utf-8'))
+            except:
+                remove_client(client)
+
+def remove_client(client_socket):
+    client_list.remove(client_socket)
+    client_socket.close()
+    username = usernames[client_socket]
+    del usernames[client_socket]
+    broadcast(f"{username} has left the chat!".encode('utf-8'), client_socket)
+
+def authenticate_user(username, password):
+    with open('users.txt', 'r') as f:
+        for line in f:
+            u, p = line.strip().split(':')
+            if u == username and p == password:
+                return True
+    return False
+
+def handle_login(client_socket):
+    client_socket.send("Enter username: ".encode('utf-8'))
+    username = client_socket.recv(1024).decode('utf-8')
+    client_socket.send("Enter password: ".encode('utf-8'))
+    password = client_socket.recv(1024).decode('utf-8')
+    if authenticate_user(username, password):
+        client_socket.send("Login successful!".encode('utf-8'))
+        usernames[client_socket] = username
+        client_list.append(client_socket)
+        broadcast(f"{username} has joined the chat!".encode('utf-8'), client_socket)
+        threading.Thread(target=handle_client, args=(client_socket,)).start()
+    else:
+        client_socket.send("Invalid credentials!".encode('utf-8'))
+        client_socket.close()
 
 def start_server():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind((HOST, PORT))
-    server.listen(5)
-    print(f"[LISTENING] Server is listening on {HOST}:{PORT}")
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((HOST, PORT))
+    server_socket.listen()
+    print(f"Server listening on {HOST}:{PORT}")
 
     while True:
-        conn, addr = server.accept()
-        thread = threading.Thread(target=handle_client, args=(conn, addr))
-        thread.start()
-        print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
+        client_socket, address = server_socket.accept()
+        print(f"Connection from {address} established!")
+        threading.Thread(target=handle_login, args=(client_socket,)).start()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     start_server()

@@ -1,24 +1,25 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 int main() {
-    char filePath[100];
+    char filename[100];
     FILE *file;
 
-    printf("Enter the file path: ");
-    scanf("%s", filePath);
+    printf("Enter the file name: ");
+    scanf("%s", filename);
 
-    file = fopen(filePath, "r");
+    file = fopen(filename, "r");
+
     if (file == NULL) {
-        perror("Error opening file");
+        printf("Error: File not found.\n");
         return 1;
     }
 
-    char character;
-    while ((character = fgetc(file)) != EOF) {
-        putchar(character);
+    char ch;
+    while ((ch = fgetc(file)) != EOF) {
+        putchar(ch);
     }
 
     fclose(file);
+
     return 0;
 }

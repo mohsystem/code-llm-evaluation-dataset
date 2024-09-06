@@ -1,21 +1,23 @@
 #include <stdio.h>
-
-int performOperation(int input);
+#include <stdlib.h>
 
 int main() {
-    int userInput;
-    printf("Enter an integer: ");
-    if(scanf("%d", &userInput) == 1) {
-        int result = performOperation(userInput);
-        printf("The result from C operation is: %d
-", result);
-    } else {
-        printf("Invalid input.
-");
+    char input[20];
+    int number;
+    printf("Enter a number: ");
+    while (1) {
+        if (fgets(input, sizeof(input), stdin) != NULL) {
+            char *endptr;
+            number = strtol(input, &endptr, 10);
+            if (endptr != input && *endptr == '\n') break;
+        }
+        printf("Invalid input. Please enter a number.\n");
     }
-    return 0;
-}
+    
+    printf("You entered: %d\n", number);
 
-int performOperation(int input) {
-    return input * 2;
+    int squared = number * number;
+    printf("Square of the number: %d\n", squared);
+
+    return 0;
 }

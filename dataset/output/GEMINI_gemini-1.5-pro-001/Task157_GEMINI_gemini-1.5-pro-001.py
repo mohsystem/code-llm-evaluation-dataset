@@ -1,10 +1,11 @@
 import ctypes
 
 # Allocate memory
-memory = ctypes.cast(ctypes.create_string_buffer(1024), ctypes.POINTER(ctypes.c_int))
+size = 1024  # Size in bytes
+memory = ctypes.cast(ctypes.create_string_buffer(size), ctypes.POINTER(ctypes.c_byte))
 
-# Use memory (example)
-memory[0] = 10
+# Use the allocated memory (optional)
+# ...
 
 # Deallocate memory
 ctypes.free(memory)

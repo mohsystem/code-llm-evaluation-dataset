@@ -6,11 +6,11 @@ def bubble_sort(arr):
             if arr[j] > arr[j + 1]:
                 arr[j], arr[j + 1] = arr[j + 1], arr[j]
 
-def main():
-    input_str = input("Enter integers separated by spaces: ")
-    arr = list(map(int, input_str.split()))
-    bubble_sort(arr)
-    print("Sorted array:", " ".join(map(str, arr)))
+# Input
+arr = list(map(int, input("Enter integers separated by space: ").split()))
 
-if __name__ == "__main__":
-    main()
+# Sort
+bubble_sort(arr)
+
+# Output
+print("Sorted array:", arr)

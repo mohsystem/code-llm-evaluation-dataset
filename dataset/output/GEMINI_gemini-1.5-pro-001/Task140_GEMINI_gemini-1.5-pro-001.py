@@ -10,8 +10,8 @@ elif op == "*":
     print(num1 * num2)
 elif op == "/":
     if num2 == 0:
-        print("Division by zero not allowed")
+        print("Division by zero error!")
     else:
         print(num1 / num2)
 else:
-    print("Invalid input")
+    print("Invalid operator!")

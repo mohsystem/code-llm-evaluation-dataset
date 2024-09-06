@@ -4,29 +4,28 @@
 #include <ctype.h>
 
 void encrypt(char *text, int shift) {
-    for (int i = 0; text[i] != \'\\0\'; i++) {
+    int i;
+    for (i = 0; text[i] != '\\0'; ++i) {
         if (isalpha(text[i])) {
-            char base = isupper(text[i]) ? \'A\' : \'a\';
-            text[i] = (text[i] - base + shift) % 26 + base;
+            char asciiOffset = isupper(text[i]) ? 65 : 97;
+            text[i] = ((text[i] - asciiOffset + shift) % 26) + asciiOffset;
         }
     }
 }
 
 int main() {
-    char text[100];
+    char text[1000];
     int shift;
-
-    printf("Enter a string to encrypt: ");
+    
+    printf("Enter text to encrypt: ");
     fgets(text, sizeof(text), stdin);
-    text[strcspn(text, "\
-")] = \'\\0\';  // Remove newline
-
-    printf("Enter the shift value: ");
+    text[strcspn(text, "\\n")] = 0;  // Remove newline
+    
+    printf("Enter shift value: ");
     scanf("%d", &shift);
-
+    
     encrypt(text, shift);
-    printf("Encrypted string: %s\
-", text);
-
+    printf("Encrypted text: %s\\n", text);
+    
     return 0;
 }

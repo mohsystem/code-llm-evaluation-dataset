@@ -1,21 +1,22 @@
-// C++
 #include <iostream>
-#include <algorithm>
-#include <cctype>
+#include <string>
 
-void cpp_string_operations() {
-    std::string str1 = "Hello";
-    std::string str2 = "World";
-    std::string copied_str = str1;
-    std::string concatenated_str = str1 + " " + str2;
-    std::reverse(str1.begin(), str1.end());
-    std::transform(str2.begin(), str2.end(), str2.begin(), ::toupper);
-    std::cout << "C++ - Copied: " << copied_str << std::endl;
-    std::cout << "C++ - Concatenated: " << concatenated_str << std::endl;
-    std::cout << "C++ - Manipulated: " << str1 << " " << str2 << std::endl;
+std::string cpp_copy_string(const std::string& s) {
+    return s;
+}
+std::string cpp_concat_strings(const std::string& s1, const std::string& s2) {
+    return s1 + s2;
 }
 
 int main() {
-    cpp_string_operations();
+    // C++ string operations
+    std::string cppStr = "Hello, C++!";
+    std::string cppCopiedStr = cpp_copy_string(cppStr);
+    std::string cppConcatenatedStr = cpp_concat_strings(cppStr, " How are you?");
+
+    // Output C++ strings
+    std::cout << "C++ copied string: " << cppCopiedStr << std::endl;
+    std::cout << "C++ concatenated string: " << cppConcatenatedStr << std::endl;
+
     return 0;
 }

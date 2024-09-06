@@ -1,23 +1,23 @@
-#include <stdio.h>
+#include <stdbool.h>
 #include <math.h>
 
-int narcissistic(int value) {
-    int original, remainder, n = 0, result = 0;
+bool narcissistic(int value) {
+    int original_value = value;
+    int n = 0;
+    int sum = 0;
 
-    original = value;
-
-    while (original != 0) {
-        original /= 10;
+    while (original_value != 0) {
+        original_value /= 10;
         ++n;
     }
 
-    original = value;
+    original_value = value;
 
-    while (original != 0) {
-        remainder = original % 10;
-        result += pow(remainder, n);
-        original /= 10;
+    while (original_value != 0) {
+        int remainder = original_value % 10;
+        sum += pow(remainder, n);
+        original_value /= 10;
     }
 
-    return value == result;
+    return value == sum;
 }

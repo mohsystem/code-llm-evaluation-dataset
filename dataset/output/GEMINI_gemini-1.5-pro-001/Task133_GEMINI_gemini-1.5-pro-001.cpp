@@ -1,31 +1,30 @@
 #include <iostream>
 #include <string>
+#include <regex>
 
 using namespace std;
 
-void resetPassword() {
-    string currentPassword, newPassword, confirmPassword;
-
-    while (true) {
-        cout << "Enter your current password: ";
-        getline(cin, currentPassword);
-        if (currentPassword == "password123") {
-            break;
-        } else {
-            cout << "Incorrect password. Please try again." << endl;
-        }
+bool isValidPassword(const string& password) {
+    if (password.length() < 8) {
+        return false;
     }
+    regex pattern("(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+");
+    return regex_search(password, pattern);
+}
 
+void resetPassword() {
+    string newPassword, confirmPassword;
     while (true) {
         cout << "Enter your new password: ";
         getline(cin, newPassword);
         cout << "Confirm your new password: ";
         getline(cin, confirmPassword);
-        if (newPassword == confirmPassword) {
-            cout << "Password reset successful." << endl;
+
+        if (newPassword == confirmPassword && isValidPassword(newPassword)) {
+            cout << "Password reset successfully!" << endl;
             break;
         } else {
-            cout << "Passwords don't match. Please try again." << endl;
+            cout << "Invalid password or passwords don't match. Please try again." << endl;
         }
     }
 }

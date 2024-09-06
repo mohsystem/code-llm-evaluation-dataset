@@ -1,3 +1,4 @@
+// C++
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -16,10 +17,18 @@ int main() {
         }
         lines.push_back(words);
     }
+    file.close();
 
-    for (int i = 0; i < lines[0].size(); i++) {
-        for (int j = 0; j < lines.size(); j++) {
-            std::cout << lines[j][i] << " ";
+    std::vector<std::vector<std::string>> transposed(lines[0].size(), std::vector<std::string>(lines.size()));
+    for (size_t i = 0; i < lines.size(); i++) {
+        for (size_t j = 0; j < lines[i].size(); j++) {
+            transposed[j][i] = lines[i][j];
+        }
+    }
+
+    for (const auto &row : transposed) {
+        for (const auto &word : row) {
+            std::cout << word << " ";
         }
         std::cout << std::endl;
     }

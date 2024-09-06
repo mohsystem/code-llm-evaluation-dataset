@@ -1,29 +1,22 @@
-// C++
+// CPP
 #include <iostream>
 #include <fstream>
-#include <map>
-#include <string>
+#include <vector>
+#include <algorithm>
 
 int main() {
-    std::map<std::string, std::string> map;
+    std::vector<std::string> records;
     std::ifstream file("file.txt");
     if (file.is_open()) {
         std::string line;
         while (std::getline(file, line)) {
-            size_t pos = line.find("=");
-            if (pos != std::string::npos) {
-                map[line.substr(0, pos)] = line.substr(pos + 1);
-            }
+            records.push_back(line);
         }
         file.close();
-    } else {
-        std::cout << "Unable to open file";
-        return 1;
     }
-
-    for (const auto& entry : map) {
-        std::cout << entry.first << "=" << entry.second << std::endl;
+    std::sort(records.begin(), records.end());
+    for (const auto &record : records) {
+        std::cout << record << std::endl;
     }
-
     return 0;
 }

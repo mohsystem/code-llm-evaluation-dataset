@@ -1,24 +1,30 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 int main() {
-    std::string result;
-    std::string input;
-    
-    std::cout << "Enter strings to concatenate (type \'done\' to finish):" << std::endl;
-    
+    std::vector<std::string> strings;
+    std::string s;
+
     while (true) {
-        std::getline(std::cin, input);
-        
-        if (input == "done") {
+        std::cout << "Enter a string (or press Enter to finish): ";
+        std::getline(std::cin, s);
+        if (s.empty()) {
             break;
         }
-        
-        result += input;
+        strings.push_back(s);
     }
-    
+
+    std::string result;
+    for (const auto& str : strings) {
+        if (!result.empty()) {
+            result += " ";
+        }
+        result += str;
+    }
+
     std::cout << "Concatenated string: " << result << std::endl;
-    
+
     return 0;
 }

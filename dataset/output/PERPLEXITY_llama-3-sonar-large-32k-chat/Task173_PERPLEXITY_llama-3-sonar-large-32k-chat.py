@@ -7,15 +7,14 @@ def longestDupSubstring(s: str) -> str:
                 return tmp
             seen.add(tmp)
         return ""
-
-    lo, hi = 1, len(s)
+    left, right = 1, len(s)
     ans = ""
-    while lo <= hi:
-        mid = (lo + hi) // 2
+    while left <= right:
+        mid = (left + right) // 2
         tmp = search(mid)
         if tmp != "":
             ans = tmp
-            lo = mid + 1
+            left = mid + 1
         else:
-            hi = mid - 1
+            right = mid - 1
     return ans

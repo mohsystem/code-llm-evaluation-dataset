@@ -3,41 +3,21 @@
 #include <string.h>
 #include <ctype.h>
 
-int word_score(char *word);
-
-int main() {
-    char sentence[1024];
-    fgets(sentence, sizeof(sentence), stdin);
-    sentence[strcspn(sentence, "
-")] = 0; 
-
-    char *word;
-    char *highest_word = NULL;
-    int highest_score = 0;
-    int score;
-
-    word = strtok(sentence, " ");
-    while (word != NULL) {
-        score = word_score(word);
-        if (score > highest_score) {
-            highest_score = score;
-            highest_word = word;
-        }
-        word = strtok(NULL, " ");
+char * highestScoringWord(char *str) {
+  char *word, *highest_word;
+  int score, highest_score = 0;
+  word = strtok(str, " ");
+  highest_word = word;
+  while (word != NULL) {
+    score = 0;
+    for (int i = 0; i < strlen(word); i++) {
+      score += tolower(word[i]) - 'a' + 1;
     }
-    
-    printf("%s
-", highest_word);
-
-    return 0;
-}
-
-
-int word_score(char *word) {
-    int score = 0;
-    while (*word) {
-        score += tolower(*word) - 'a' + 1;
-        word++;
+    if (score > highest_score) {
+      highest_score = score;
+      highest_word = word;
     }
-    return score;
+    word = strtok(NULL, " ");
+  }
+  return highest_word;
 }

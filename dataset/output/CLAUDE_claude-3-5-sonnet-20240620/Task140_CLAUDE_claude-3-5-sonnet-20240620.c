@@ -15,31 +15,29 @@ int main() {
     scanf(" %c", &operator);
     
     switch(operator) {
-        case \'+\':
+        case '+':
             result = num1 + num2;
             break;
-        case \'-\':
+        case '-':
             result = num1 - num2;
             break;
-        case \'*\':
+        case '*':
             result = num1 * num2;
             break;
-        case \'/\':
+        case '/':
             if(num2 != 0) {
                 result = num1 / num2;
             } else {
-                printf("Error: Division by zero\
-");
+                printf("Error: Division by zero\\n");
                 return 1;
             }
             break;
         default:
-            printf("Error: Invalid operator\
-");
+            printf("Error: Invalid operator\\n");
             return 1;
     }
     
-    printf("Result: %f\
-", result);
+    printf("Result: %f\\n", result);
+    
     return 0;
 }

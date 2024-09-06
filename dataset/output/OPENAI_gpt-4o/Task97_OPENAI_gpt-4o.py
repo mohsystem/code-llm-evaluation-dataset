@@ -1,17 +1,27 @@
 import sys
 import xml.etree.ElementTree as ET
 
-if len(sys.argv) != 3:
-    print("Usage: <program> <xpath> <xmlfile>")
-    sys.exit(1)
+def main():
+    if len(sys.argv) != 3:
+        print("Usage: script.py <xpath> <xmlfile>")
+        return
+    
+    xpath = sys.argv[1]
+    xmlfile = sys.argv[2]
+    
+    try:
+        tree = ET.parse(xmlfile)
+        root = tree.getroot()
+        
+        # Execute XPath query
+        result = root.find(xpath)
+        if result is not None:
+            print(ET.tostring(result).decode())
+        else:
+            print("No result found for the XPath query.")
+    
+    except Exception as e:
+        print(f"Error: {e}")
 
-xpath_expr = sys.argv[1]
-xml_file = sys.argv[2]
-
-tree = ET.parse(xml_file)
-root = tree.getroot()
-
-elements = root.findall(xpath_expr)
-
-for elem in elements:
-    print(elem.text)
+if __name__ == "__main__":
+    main()

@@ -8,20 +8,20 @@ public:
             prefixSum[i + 1] = prefixSum[i] + nums[i];
         }
         
-        deque<int> deque;
+        deque<int> deq;
         int shortest = INT_MAX;
         
         for (int i = 0; i <= n; i++) {
-            while (!deque.empty() && prefixSum[i] - prefixSum[deque.front()] >= k) {
-                shortest = min(shortest, i - deque.front());
-                deque.pop_front();
+            while (!deq.empty() && prefixSum[i] - prefixSum[deq.front()] >= k) {
+                shortest = min(shortest, i - deq.front());
+                deq.pop_front();
             }
             
-            while (!deque.empty() && prefixSum[i] <= prefixSum[deque.back()]) {
-                deque.pop_back();
+            while (!deq.empty() && prefixSum[i] <= prefixSum[deq.back()]) {
+                deq.pop_back();
             }
             
-            deque.push_back(i);
+            deq.push_back(i);
         }
         
         return shortest == INT_MAX ? -1 : shortest;

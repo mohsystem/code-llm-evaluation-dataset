@@ -1,5 +1,4 @@
 // C
-#include <stdio.h>
 #include <stdbool.h>
 
 typedef struct {
@@ -18,13 +17,10 @@ void endSession(Session* session) {
     session->isActive = false;
 }
 
-// Usage
+// Example usage:
 int main() {
     Session userSession = createSession(123);
-    printf("%d
-", userSession.isActive);  // 1 (true)
+    // ... user interacts with the system ...
     endSession(&userSession);
-    printf("%d
-", userSession.isActive);  // 0 (false)
     return 0;
 }

@@ -1,27 +1,22 @@
 #include <stdio.h>
 #include <regex.h>
+#include <string.h>
 
-void match_lines(const char *file_name) {
-    FILE *file = fopen(file_name, "r");
+void match_lines(const char *filename) {
+    FILE *file = fopen(filename, "r");
     if (!file) {
-        perror("Failed to open file");
+        perror("Cannot open file");
         return;
     }
-
-    regex_t regex;
-    int reti = regcomp(&regex, "^[0-9].*\.$", REG_EXTENDED);
-    if (reti) {
-        fclose(file);
-        fprintf(stderr, "Could not compile regex
-");
-        return;
-    }
-
+    
     char line[256];
+    regex_t regex;
+    regcomp(&regex, "^[0-9].*\\.$", REG_NOSUB | REG_EXTENDED);
+
     while (fgets(line, sizeof(line), file)) {
-        reti = regexec(&regex, line, 0, NULL, 0);
-        if (!reti) {
-            printf("%s", line);
+        line[strcspn(line, "\n")] = 0; // Remove trailing newline character
+        if (regexec(&regex, line, 0, NULL, 0) == 0) {
+            printf("%s\n", line);
         }
     }
 
@@ -30,7 +25,7 @@ void match_lines(const char *file_name) {
 }
 
 int main() {
-    const char *file_name = "input.txt";
-    match_lines(file_name);
+    const char *filename = "input.txt";
+    match_lines(filename);
     return 0;
 }

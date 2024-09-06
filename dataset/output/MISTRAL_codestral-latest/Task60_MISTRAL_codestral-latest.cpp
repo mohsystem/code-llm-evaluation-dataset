@@ -1,17 +1,18 @@
-// C++
 #include <string>
 #include <sstream>
 
 std::string expandedForm(int num) {
     std::stringstream ss;
-    int digits[] = {10000, 1000, 100, 10, 1};
-    for (int i = 0; i < 5; i++) {
-        if (num >= digits[i]) {
-            int count = num / digits[i];
-            ss << count * digits[i];
-            num -= count * digits[i];
-            if (num > 0) {
+    std::string numStr = std::to_string(num);
+    for (int i = 0; i < numStr.length(); i++) {
+        char digit = numStr[i];
+        if (digit != '0') {
+            if (ss.tellp() > 0) {
                 ss << " + ";
+            }
+            ss << digit;
+            for (int j = 0; j < numStr.length() - i - 1; j++) {
+                ss << "0";
             }
         }
     }

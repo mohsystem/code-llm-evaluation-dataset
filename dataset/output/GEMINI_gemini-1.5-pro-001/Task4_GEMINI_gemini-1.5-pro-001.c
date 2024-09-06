@@ -1,34 +1,20 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
 
-bool is_isogram(const char *str) {
+int isIsogram(char *str) {
     if (strlen(str) == 0) {
-        return true;
+        return 1; 
     }
-
-    int letters[26] = {0}; 
-
+    for (int i = 0; str[i]; i++) {
+        str[i] = tolower(str[i]);
+    }
     for (int i = 0; str[i] != '\0'; i++) {
-        char c = tolower(str[i]);
-        if (isalpha(c)) {
-            int index = c - 'a'; 
-            if (letters[index] > 0) {
-                return false; 
-            } else {
-                letters[index]++;
+        for (int j = i + 1; str[j] != '\0'; j++) {
+            if (str[i] == str[j]) {
+                return 0; 
             }
         }
     }
-    return true; 
-}
-int main() {
-    printf("%s
-", is_isogram("Dermatoglyphics") ? "true" : "false");
-    printf("%s
-", is_isogram("aba") ? "true" : "false");
-    printf("%s
-", is_isogram("moOse") ? "true" : "false");
-    return 0;
+    return 1; 
 }

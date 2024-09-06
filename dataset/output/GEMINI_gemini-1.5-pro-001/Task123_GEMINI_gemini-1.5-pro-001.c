@@ -1,91 +1,84 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <stdlib.h>
+
+// Note: This implementation uses a simple array for session storage,
+// which is not efficient for large numbers of sessions.
+// In a real application, use a more robust data structure like a hash table.
 
 #define MAX_SESSIONS 100
-#define MAX_USERNAME_LENGTH 50
 
 struct Session {
-    char username[MAX_USERNAME_LENGTH];
-    time_t loginTime;
+    char username[50];
+    char session_id[50];
+    time_t created_at;
 };
 
 struct Session sessions[MAX_SESSIONS];
-int sessionCount = 0;
+int session_count = 0;
 
-int findSessionIndex(char username[]) {
-    for (int i = 0; i < sessionCount; i++) {
-        if (strcmp(sessions[i].username, username) == 0) {
-            return i;
-        }
+char* createSession(char* username) {
+    if (session_count >= MAX_SESSIONS) {
+        return NULL; // Session limit reached
     }
-    return -1;
+
+    struct Session* new_session = &sessions[session_count++];
+    strcpy(new_session->username, username);
+
+    // In a real application, generate a unique session ID
+    sprintf(new_session->session_id, "session_%d", session_count);
+    new_session->created_at = time(NULL);
+
+    return new_session->session_id;
 }
 
-void createSession(char username[]) {
-    if (sessionCount < MAX_SESSIONS) {
-        int index = findSessionIndex(username);
-        if (index == -1) {
-            strcpy(sessions[sessionCount].username, username);
-            sessions[sessionCount].loginTime = time(NULL);
-            sessionCount++;
-            printf("Session created for %s
-", username);
-        } else {
-            printf("Session already exists for %s
-", username);
+struct Session* getSession(char* session_id) {
+    for (int i = 0; i < session_count; i++) {
+        if (strcmp(sessions[i].session_id, session_id) == 0) {
+            return &sessions[i];
         }
-    } else {
-        printf("Session limit reached
-");
     }
+    return NULL;
 }
 
-void getSession(char username[]) {
-    int index = findSessionIndex(username);
-    if (index != -1) {
-        printf("Username: %s, Login Time: %s", sessions[index].username, ctime(&sessions[index].loginTime));
-    } else {
-        printf("Session not found for %s
-", username);
-    }
-}
-
-void deleteSession(char username[]) {
-    int index = findSessionIndex(username);
-    if (index != -1) {
-        for (int i = index; i < sessionCount - 1; i++) {
-            sessions[i] = sessions[i + 1];
+int deleteSession(char* session_id) {
+    for (int i = 0; i < session_count; i++) {
+        if (strcmp(sessions[i].session_id, session_id) == 0) {
+            // Shift remaining sessions back in the array
+            for (int j = i; j < session_count - 1; j++) {
+                sessions[j] = sessions[j + 1];
+            }
+            session_count--;
+            return 1; // Session deleted
         }
-        sessionCount--;
-        printf("Session deleted for %s
-", username);
-    } else {
-        printf("Session not found for %s
-", username);
     }
+    return 0; // Session not found
 }
 
 int main() {
-    char action[20], username[MAX_USERNAME_LENGTH];
-    while (1) {
-        printf("Enter action (create/get/delete/exit): ");
-        scanf("%s", action);
-        if (strcmp(action, "exit") == 0) {
-            break;
-        }
-        printf("Enter username: ");
-        scanf("%s", username);
-        if (strcmp(action, "create") == 0) {
-            createSession(username);
-        } else if (strcmp(action, "get") == 0) {
-            getSession(username);
-        } else if (strcmp(action, "delete") == 0) {
-            deleteSession(username);
-        } else {
-            printf("Invalid action
-");
-        }
+    // Create a new session
+    char* session_id = createSession("user1");
+    if (session_id != NULL) {
+        printf("Session created for user1 with ID: %s\n", session_id);
+    } else {
+        printf("Session creation failed.\n");
     }
+
+    // Get the session
+    struct Session* session = getSession(session_id);
+    if (session != NULL) {
+        printf("Session is valid for user: %s\n", session->username);
+    } else {
+        printf("Session is not valid.\n");
+    }
+
+    // Delete the session
+    if (deleteSession(session_id)) {
+        printf("Session with ID %s deleted.\n", session_id);
+    } else {
+        printf("Session with ID %s not found.\n", session_id);
+    }
+
     return 0;
 }

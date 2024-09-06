@@ -1,28 +1,19 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_LENGTH 1000
-
 int main() {
-    int n;
-    char result[MAX_LENGTH] = "";
-    char str[100];
+    char inputStr1[100], inputStr2[100], result[200];
+    printf("Enter first string: ");
+    fgets(inputStr1, sizeof(inputStr1), stdin);
+    printf("Enter second string: ");
+    fgets(inputStr2, sizeof(inputStr2), stdin);
     
-    printf("Enter number of strings to concatenate:
-");
-    scanf("%d", &n);
-    getchar(); // Consume the newline
+    // Removing the newline character from strings if present
+    inputStr1[strcspn(inputStr1, "\n")] = 0;
+    inputStr2[strcspn(inputStr2, "\n")] = 0;
 
-    for(int i = 0; i < n; i++) {
-        printf("Enter string %d:
-", i + 1);
-        fgets(str, 100, stdin);
-        str[strcspn(str, "
-")] = '\0'; // Remove trailing newline
-        strcat(result, str);
-    }
-
-    printf("Concatenated string: %s
-", result);
+    strcpy(result, inputStr1);
+    strcat(result, inputStr2);
+    printf("Concatenated result: %s\n", result);
     return 0;
 }

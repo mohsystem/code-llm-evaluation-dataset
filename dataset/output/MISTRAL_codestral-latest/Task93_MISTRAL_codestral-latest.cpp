@@ -1,29 +1,33 @@
-#include <iostream>
-#include <fstream>
-#include <map>
-#include <string>
+// C++
 
-int main() {
-    std::map<std::string, std::string> map;
-    std::ifstream file("file.txt");
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
+
+std::vector<std::string> readAndSortFile(const std::string& filePath) {
+    std::vector<std::string> records;
+    std::string line;
+    std::ifstream file(filePath);
+
     if (file.is_open()) {
-        std::string line;
         while (std::getline(file, line)) {
-            size_t pos = line.find("=");
-            if (pos != std::string::npos) {
-                map[line.substr(0, pos)] = line.substr(pos + 1);
-            }
+            records.push_back(line);
         }
         file.close();
+        std::sort(records.begin(), records.end());
     } else {
-        std::cout << "Unable to open file";
-        return 1;
+        std::cerr << "Unable to open file: " << filePath << std::endl;
     }
 
-    for (const auto &pair : map) {
-        std::cout << pair.first << "=" << pair.second << '
-';
-    }
+    return records;
+}
 
+int main() {
+    std::vector<std::string> sortedRecords = readAndSortFile("path_to_your_file.txt");
+    for (const auto& record : sortedRecords) {
+        std::cout << record << std::endl;
+    }
     return 0;
 }

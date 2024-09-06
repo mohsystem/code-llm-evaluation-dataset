@@ -2,91 +2,107 @@
 #include <iostream>
 #include <unordered_map>
 #include <string>
-#include <chrono>
+#include <ctime>
 #include <random>
-#include <sstream>
-#include <iomanip>
 
 class Session {
-private:
+public:
     std::string sessionId;
     std::string userId;
-    std::chrono::system_clock::time_point creationTime;
-    std::chrono::system_clock::time_point lastAccessTime;
+    time_t createdAt;
+    time_t lastAccessed;
 
-public:
-    Session(const std::string& sessionId, const std::string& userId)
-        : sessionId(sessionId), userId(userId), 
-          creationTime(std::chrono::system_clock::now()),
-          lastAccessTime(creationTime) {}
+    Session(const std::string& userId) : userId(userId) {
+        sessionId = generateUUID();
+        createdAt = time(nullptr);
+        lastAccessed = createdAt;
+    }
 
-    const std::string& getSessionId() const { return sessionId; }
-    const std::string& getUserId() const { return userId; }
-    const std::chrono::system_clock::time_point& getCreationTime() const { return creationTime; }
-    const std::chrono::system_clock::time_point& getLastAccessTime() const { return lastAccessTime; }
-    void updateLastAccessTime() { lastAccessTime = std::chrono::system_clock::now(); }
+private:
+    std::string generateUUID() {
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        static std::uniform_int_distribution<> dis(0, 15);
+        static const char* chars = "0123456789abcdef";
+
+        std::string uuid;
+        for (int i = 0; i < 32; i++) {
+            uuid += chars[dis(gen)];
+            if (i == 7 || i == 11 || i == 15 || i == 19) {
+                uuid += '-';
+            }
+        }
+        return uuid;
+    }
 };
 
 class SessionManager {
 private:
     std::unordered_map<std::string, Session> sessions;
-    const std::chrono::minutes SESSION_TIMEOUT{30};
-
-    std::string generateSessionId() {
-        static std::random_device rd;
-        static std::mt19937 gen(rd());
-        static std::uniform_int_distribution<> dis(0, 15);
-        
-        std::stringstream ss;
-        ss << std::hex;
-        for (int i = 0; i < 32; i++) {
-            ss << dis(gen);
-        }
-        return ss.str();
-    }
+    time_t sessionTimeout;
 
 public:
+    SessionManager(time_t timeout = 1800) : sessionTimeout(timeout) {}
+
     std::string createSession(const std::string& userId) {
-        std::string sessionId = generateSessionId();
-        sessions.emplace(sessionId, Session(sessionId, userId));
-        return sessionId;
+        Session session(userId);
+        sessions[session.sessionId] = session;
+        return session.sessionId;
     }
 
-    bool validateSession(const std::string& sessionId) {
+    Session* getSession(const std::string& sessionId) {
         auto it = sessions.find(sessionId);
         if (it != sessions.end()) {
-            auto now = std::chrono::system_clock::now();
-            if (now - it->second.getLastAccessTime() < SESSION_TIMEOUT) {
-                it->second.updateLastAccessTime();
-                return true;
-            } else {
-                sessions.erase(it);
+            Session& session = it->second;
+            time_t now = time(nullptr);
+            if (now - session.lastAccessed > sessionTimeout) {
+                destroySession(sessionId);
+                return nullptr;
             }
+            session.lastAccessed = now;
+            return &session;
         }
-        return false;
+        return nullptr;
     }
 
-    void endSession(const std::string& sessionId) {
+    void destroySession(const std::string& sessionId) {
         sessions.erase(sessionId);
+    }
+
+    void cleanupExpiredSessions() {
+        time_t now = time(nullptr);
+        for (auto it = sessions.begin(); it != sessions.end();) {
+            if (now - it->second.lastAccessed > sessionTimeout) {
+                it = sessions.erase(it);
+            } else {
+                ++it;
+            }
+        }
     }
 };
 
 int main() {
-    SessionManager manager;
+    SessionManager sessionManager;
 
-    // Example usage
+    // Create a new session
     std::string userId = "user123";
-    std::string sessionId = manager.createSession(userId);
-    std::cout << "Session created: " << sessionId << std::endl;
+    std::string sessionId = sessionManager.createSession(userId);
+    std::cout << "New session created: " << sessionId << std::endl;
 
-    bool isValid = manager.validateSession(sessionId);
-    std::cout << "Session valid: " << std::boolalpha << isValid << std::endl;
+    // Get session
+    Session* session = sessionManager.getSession(sessionId);
+    if (session) {
+        std::cout << "Session found for user: " << session->userId << std::endl;
+    } else {
+        std::cout << "Session not found" << std::endl;
+    }
 
-    manager.endSession(sessionId);
-    std::cout << "Session ended" << std::endl;
+    // Cleanup expired sessions
+    sessionManager.cleanupExpiredSessions();
 
-    isValid = manager.validateSession(sessionId);
-    std::cout << "Session valid after ending: " << std::boolalpha << isValid << std::endl;
+    // Destroy session
+    sessionManager.destroySession(sessionId);
+    std::cout << "Session destroyed" << std::endl;
 
     return 0;
 }

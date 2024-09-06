@@ -3,53 +3,32 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_LINE_LENGTH 1000
-
-char* read_file(const char* filename) {
-    FILE* file = fopen(filename, "r");
-    if (file == NULL) {
-        return NULL;
+void read_file(const char* filename) {
+    if (strlen(filename) < 4 || strcmp(filename + strlen(filename) - 4, ".txt") != 0) {
+        printf("Error: File must have a .txt extension\\n");
+        return;
     }
 
-    char* content = NULL;
-    char line[MAX_LINE_LENGTH];
-    size_t total_length = 0;
+    FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error: Unable to open file '%s'\\n", filename);
+        return;
+    }
 
-    while (fgets(line, sizeof(line), file) != NULL) {
-        size_t line_length = strlen(line);
-        char* new_content = realloc(content, total_length + line_length + 1);
-        if (new_content == NULL) {
-            free(content);
-            fclose(file);
-            return NULL;
-        }
-        content = new_content;
-        strcpy(content + total_length, line);
-        total_length += line_length;
+    printf("File contents:\\n");
+    char buffer[1024];
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        printf("%s", buffer);
     }
 
     fclose(file);
-    return content;
 }
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        printf("Usage: %s <filename>\
-", argv[0]);
-        return 1;
+        printf("Usage: %s <filename>\\n", argv[0]);
+    } else {
+        read_file(argv[1]);
     }
-
-    const char* filename = argv[1];
-    char* content = read_file(filename);
-
-    if (content == NULL) {
-        printf("Error: Unable to read file \'%s\'\
-", filename);
-        return 1;
-    }
-
-    printf("File content:\
-%s", content);
-    free(content);
     return 0;
 }

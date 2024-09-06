@@ -5,35 +5,49 @@
 
 using namespace std;
 
+// Structure to represent a node in the priority queue
+struct Node {
+    string vertex;
+    int distance;
+
+    Node(string v, int d) : vertex(v), distance(d) {}
+};
+
+// Custom comparator for priority queue
+struct CompareDistance {
+    bool operator()(const Node& n1, const Node& n2) {
+        return n1.distance > n2.distance;
+    }
+};
+
 unordered_map<string, int> dijkstra(const unordered_map<string, unordered_map<string, int>>& graph, const string& start) {
     unordered_map<string, int> distances;
-    for (const auto& [node, _] : graph) {
-        distances[node] = numeric_limits<int>::max();
+    for (const auto& pair : graph) {
+        distances[pair.first] = numeric_limits<int>::max();
     }
     distances[start] = 0;
 
-    priority_queue<pair<int, string>, vector<pair<int, string>>, greater<pair<int, string>>> queue;
-    queue.push({0, start});
-
+    priority_queue<Node, vector<Node>, CompareDistance> queue;
+    queue.push(Node(start, 0));
     unordered_set<string> visited;
 
     while (!queue.empty()) {
-        int currentDistance;
-        string currentNode;
-        tie(currentDistance, currentNode) = queue.top();
+        Node current = queue.top();
         queue.pop();
 
-        if (visited.count(currentNode)) {
+        if (visited.find(current.vertex) != visited.end()) {
             continue;
         }
+        visited.insert(current.vertex);
 
-        visited.insert(currentNode);
+        for (const auto& neighborPair : graph[current.vertex]) {
+            string neighbor = neighborPair.first;
+            int weight = neighborPair.second;
+            int distance = distances[current.vertex] + weight;
 
-        for (const auto& [neighbor, weight] : graph.at(currentNode)) {
-            int distance = currentDistance + weight;
             if (distance < distances[neighbor]) {
                 distances[neighbor] = distance;
-                queue.push({distance, neighbor});
+                queue.push(Node(neighbor, distance));
             }
         }
     }
@@ -43,18 +57,18 @@ unordered_map<string, int> dijkstra(const unordered_map<string, unordered_map<st
 
 int main() {
     unordered_map<string, unordered_map<string, int>> graph = {
-        {"A", {{"B", 4}, {"C", 2}}},
-        {"B", {{"C", 1}, {"D", 5}}},
-        {"C", {{"D", 8}, {"E", 10}}},
-        {"D", {{"E", 2}}},
-        {"E", {}}
+        {"A", {{"B", 1}, {"C", 4}}},
+        {"B", {{"A", 1}, {"C", 2}, {"D", 5}}},
+        {"C", {{"A", 4}, {"B", 2}, {"D", 1}}},
+        {"D", {{"B", 5}, {"C", 1}}}
     };
 
     string startNode = "A";
-    unordered_map<string, int> shortestDistances = dijkstra(graph, startNode);
+    unordered_map<string, int> distances = dijkstra(graph, startNode);
 
-    for (const auto& [node, distance] : shortestDistances) {
-        cout << "Shortest distance from " << startNode << " to " << node << ": " << distance << endl;
+    cout << "Shortest distances from node " << startNode << ": " << endl;
+    for (const auto& pair : distances) {
+        cout << pair.first << ": " << pair.second << endl;
     }
 
     return 0;

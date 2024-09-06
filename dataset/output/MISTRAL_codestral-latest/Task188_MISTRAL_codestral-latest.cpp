@@ -1,5 +1,5 @@
 #include <semaphore.h>
-#include <functional>
+#include <iostream>
 
 class FooBar {
 private:

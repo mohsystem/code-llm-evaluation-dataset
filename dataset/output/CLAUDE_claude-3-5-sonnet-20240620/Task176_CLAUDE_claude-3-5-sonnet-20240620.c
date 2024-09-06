@@ -1,6 +1,4 @@
 
-#include <stdlib.h>
-
 typedef struct {
     int* products;
     int size;
@@ -9,9 +7,9 @@ typedef struct {
 
 ProductOfNumbers* productOfNumbersCreate() {
     ProductOfNumbers* obj = (ProductOfNumbers*)malloc(sizeof(ProductOfNumbers));
-    obj->capacity = 16;
-    obj->size = 1;
+    obj->capacity = 40000;
     obj->products = (int*)malloc(sizeof(int) * obj->capacity);
+    obj->size = 1;
     obj->products[0] = 1;
     return obj;
 }
@@ -19,6 +17,7 @@ ProductOfNumbers* productOfNumbersCreate() {
 void productOfNumbersAdd(ProductOfNumbers* obj, int num) {
     if (num == 0) {
         obj->size = 1;
+        obj->products[0] = 1;
     } else {
         if (obj->size == obj->capacity) {
             obj->capacity *= 2;

@@ -1,21 +1,22 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 class Node {
 public:
-    int value;
+    int data;
     std::vector<Node*> children;
 
-    Node(int val) : value(val) {}
+    Node(int data) : data(data) {}
 };
 
-Node* findNode(Node* node, int value) {
-    if (node->value == value) {
+Node* findNode(Node* node, int data) {
+    if (node->data == data) {
         return node;
     }
     for (Node* child : node->children) {
-        Node* result = findNode(child, value);
+        Node* result = findNode(child, data);
         if (result) {
             return result;
         }
@@ -24,23 +25,19 @@ Node* findNode(Node* node, int value) {
 }
 
 void reparentHelper(Node* node, Node* parent) {
-    std::vector<Node*> newChildren;
-    for (Node* child : node->children) {
-        if (child != parent) {
-            newChildren.push_back(child);
-        }
-    }
     if (parent) {
-        newChildren.push_back(parent);
+        node->children.erase(std::remove(node->children.begin(), node->children.end(), parent), node->children.end());
+        node->children.push_back(parent);
     }
-    node->children = newChildren;
-    for (Node* child : node->children) {
-        reparentHelper(child, node);
+    for (Node* child : std::vector<Node*>(node->children)) {
+        if (child != parent) {
+            reparentHelper(child, node);
+        }
     }
 }
 
-Node* reparent(Node* root, int newRootValue) {
-    Node* newRoot = findNode(root, newRootValue);
+Node* reparent(Node* root, int newRootData) {
+    Node* newRoot = findNode(root, newRootData);
     if (!newRoot) {
         return root;
     }
@@ -50,7 +47,7 @@ Node* reparent(Node* root, int newRootValue) {
 }
 
 void printTree(Node* node, int level = 0) {
-    std::cout << std::string(level * 2, \' \') << node->value << std::endl;
+    std::cout << std::string(level * 2, ' ') << node->data << std::endl;
     for (Node* child : node->children) {
         printTree(child, level + 1);
     }
@@ -67,8 +64,7 @@ int main() {
     printTree(root);
 
     Node* newRoot = reparent(root, 6);
-    std::cout << "\
-Reparented tree with 6 as root:" << std::endl;
+    std::cout << "\\nReparented tree with 6 as root:" << std::endl;
     printTree(newRoot);
 
     return 0;

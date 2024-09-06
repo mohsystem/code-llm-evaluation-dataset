@@ -1,25 +1,39 @@
 // C
-#include <stdio.h>
+// C does not support classes or maps directly, so this example is more complex.
+// We'll use a linked list to store sessions and a simple hash function to map user IDs to sessions.
+
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct {
-    char sessionId[37];
-    char userId[256];
+typedef struct Session {
+    char* userId;
+    bool isActive;
+    struct Session* next;
 } Session;
 
-Session* createSession(const char* userId) {
-    Session* session = malloc(sizeof(Session));
-    if (session == NULL) {
-        return NULL;
-    }
-    for (int i = 0; i < 36; i++) {
-        session->sessionId[i] = rand() % 26 + 'a';
-    }
-    session->sessionId[36] = '\0';
-    strncpy(session->userId, userId, 255);
-    session->userId[255] = '\0';
-    return session;
+// Hash function for user IDs
+unsigned int hash(const char* str) {
+    unsigned int hash = 5381;
+    int c;
+
+    while ((c = *str++))
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+    return hash % 100; // Modulo to keep the hash within a reasonable range
 }
 
-// You would need to implement a way to store and retrieve sessions by sessionId
+// Example usage:
+int main() {
+    Session* userSessions[100] = {NULL}; // Array of 100 pointers to Session
+    const char* userId = "123";
+    unsigned int index = hash(userId);
+
+    Session* newSession = malloc(sizeof(Session));
+    newSession->userId = strdup(userId);
+    newSession->isActive = true;
+    newSession->next = userSessions[index];
+    userSessions[index] = newSession;
+
+    return 0;
+}

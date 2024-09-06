@@ -2,12 +2,8 @@
 #include <cstdlib>
 #include <ctime>
 
-int generateRandomNumber() {
-    return rand() % 100 + 1;
-}
-
 int main() {
-    srand(time(0));
-    std::cout << "C++ random number: " << generateRandomNumber() << std::endl;
+    std::srand(std::time(0));
+    std::cout << "CPP Random Number: " << std::rand() % 100 + 1 << std::endl;
     return 0;
 }

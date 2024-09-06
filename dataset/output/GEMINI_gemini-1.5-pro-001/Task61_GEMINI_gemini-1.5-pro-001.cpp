@@ -1,27 +1,23 @@
 #include <iostream>
 #include <string>
-#include <pugixml.hpp>
+#include "pugixml.hpp"
 
-std::string getRootElement(const std::string& xmlString) {
+using namespace std;
+
+string getRootElement(const string& xmlString) {
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_string(xmlString.c_str());
-
-    if (!result) {
-        std::cerr << "Failed to parse XML: " << result.description() << std::endl;
+    if (result) {
+        return doc.root().name();
+    } else {
+        cerr << "XML parsing error: " << result.description() << endl;
         return "";
     }
-
-    pugi::xml_node root = doc.first_child();
-    return root.name();
 }
 
 int main() {
-    std::string xmlString = "<note><to>Tove</to><from>Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>";
-    std::string rootElement = getRootElement(xmlString);
-
-    if (!rootElement.empty()) {
-        std::cout << rootElement << std::endl;
-    }
-
+    string xmlString = "<note><to>Tove</to><from>Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>";
+    string rootElement = getRootElement(xmlString);
+    cout << rootElement << endl;
     return 0;
 }

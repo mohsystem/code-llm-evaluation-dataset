@@ -1,35 +1,22 @@
 #include <iostream>
 #include <vector>
-using namespace std;
+#include <algorithm>
 
-vector<int> mergeSortedArrays(vector<int>& arr1, vector<int>& arr2) {
-    vector<int> mergedArray;
-    int i = 0, j = 0;
-    while (i < arr1.size() && j < arr2.size()) {
-        if (arr1[i] < arr2[j]) {
-            mergedArray.push_back(arr1[i++]);
-        } else {
-            mergedArray.push_back(arr2[j++]);
-        }
-    }
-    while (i < arr1.size()) {
-        mergedArray.push_back(arr1[i++]);
-    }
-    while (j < arr2.size()) {
-        mergedArray.push_back(arr2[j++]);
-    }
-    return mergedArray;
+std::vector<int> mergeArrays(const std::vector<int>& arr1, const std::vector<int>& arr2) {
+    std::vector<int> merged(arr1.begin(), arr1.end());
+    merged.insert(merged.end(), arr2.begin(), arr2.end());
+    std::sort(merged.begin(), merged.end());
+    return merged;
 }
 
 int main() {
-    vector<int> arr1 = {1, 3, 5, 7};
-    vector<int> arr2 = {2, 4, 6, 8};
-    
-    vector<int> mergedArray = mergeSortedArrays(arr1, arr2);
-    cout << "Merged array: ";
-    for (int num : mergedArray) {
-        cout << num << " ";
+    std::vector<int> arr1 = {1, 3, 5, 7};
+    std::vector<int> arr2 = {2, 4, 6, 8};
+    std::vector<int> merged = mergeArrays(arr1, arr2);
+    std::cout << "Merged array in C++: ";
+    for (int num : merged) {
+        std::cout << num << " ";
     }
-    cout << endl;
+    std::cout << std::endl;
     return 0;
 }

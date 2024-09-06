@@ -3,30 +3,32 @@
 #include <string>
 #include <ftp/ftp.h>
 
-using namespace std;
-
 int main(int argc, char* argv[]) {
     if (argc != 5) {
-        cerr << "Usage: ftp_download <hostname> <username> <password> <filename>" << endl;
+        std::cerr << "Usage: ftp_downloader <hostname> <username> <password> <remote_filename>" << std::endl;
         return 1;
     }
 
-    string hostname = argv[1];
-    string username = argv[2];
-    string password = argv[3];
-    string filename = argv[4];
+    std::string hostname = argv[1];
+    std::string username = argv[2];
+    std::string password = argv[3];
+    std::string remote_filename = argv[4];
 
-    ftp::Client ftp;
-    ftp.Connect(hostname);
-    ftp.Login(username, password);
-    ftp.BinaryMode();
+    try {
+        ftp::Client ftp;
+        ftp.Connect(hostname);
+        ftp.Login(username, password);
 
-    ofstream file(filename, ios::binary);
-    if (!ftp.RetrieveFile(filename, file)) {
-        cerr << "Error downloading file: " << ftp.last_response() << endl;
+        ftp.SetBinaryMode();
+        ftp.RetrieveFile(remote_filename, remote_filename);
+
+        std::cout << "File '" << remote_filename << "' downloaded successfully." << std::endl;
+
+        ftp.Disconnect();
+    } catch (const ftp::Exception& e) {
+        std::cerr << "FTP error: " << e.what() << std::endl;
         return 1;
     }
 
-    cout << "File downloaded successfully." << endl;
     return 0;
 }

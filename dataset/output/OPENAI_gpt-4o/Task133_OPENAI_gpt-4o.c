@@ -1,45 +1,20 @@
+// C
 #include <stdio.h>
-#include <string.h>
-#include <openssl/sha.h>
 
-void hashPassword(const char* password, unsigned char* digest) {
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-    SHA256_Update(&sha256, password, strlen(password));
-    SHA256_Final(digest, &sha256);
-}
-
-void printHash(unsigned char* hash) {
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        printf("%02x", hash[i]);
-    }
-    printf("
-");
+void resetPassword(const char* username, const char* newPassword) {
+    printf("Password for %s has been reset to %s\n", username, newPassword);
 }
 
 int main() {
-    char currentPassword[256];
-    char newPassword[256];
+    char username[50], newPassword[50];
     
-    unsigned char currentHash[SHA256_DIGEST_LENGTH];
-    unsigned char newHash[SHA256_DIGEST_LENGTH];
-    
-    printf("C: Enter your current password:
-");
-    fgets(currentPassword, sizeof(currentPassword), stdin);
-    currentPassword[strcspn(currentPassword, "
-")] = 0;  // Remove newline character
-    hashPassword(currentPassword, currentHash);
-    
-    printf("C: Enter new password:
-");
-    fgets(newPassword, sizeof(newPassword), stdin);
-    newPassword[strcspn(newPassword, "
-")] = 0;  // Remove newline character
-    hashPassword(newPassword, newHash);
+    printf("Enter your username: ");
+    scanf("%49s", username);
 
-    printf("C: Password has been reset!
-");
+    printf("Enter your new password: ");
+    scanf("%49s", newPassword);
+
+    resetPassword(username, newPassword);
 
     return 0;
 }

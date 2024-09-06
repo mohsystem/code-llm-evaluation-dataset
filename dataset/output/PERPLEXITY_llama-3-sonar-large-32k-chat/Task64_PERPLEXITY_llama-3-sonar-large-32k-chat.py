@@ -2,13 +2,14 @@ import sys
 import requests
 import json
 
-if len(sys.argv) != 2:
-    print("Usage: python3 main.py <url>")
-    exit(1)
+def read_json_from_url(url):
+    response = requests.get(url)
+    return json.loads(response.text)
 
-url = sys.argv[1]
-response = requests.get(url)
-if response.status_code == 200:
-    print(json.dumps(response.json(), indent=4))
-else:
-    print("Failed to retrieve data:", response.status_code)
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <url>")
+        sys.exit(1)
+    url = sys.argv[1]
+    json_obj = read_json_from_url(url)
+    print(json_obj)

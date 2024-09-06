@@ -1,25 +1,20 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import urllib
+from flask import Flask, request
 
-class DisplayInputHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        params = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
-        user_input = params.get('userInput', [''])[0]
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
-        self.wfile.write(bytes(f"""
-            <html><body>
-            <h1>User Input:</h1>
-            <p>{user_input}</p>
-            </body></html>
-        """, "utf-8"))
+app = Flask(__name__)
 
-def run(server_class=HTTPServer, handler_class=DisplayInputHandler, port=8080):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    print(f'Starting server on port {port}...')
-    httpd.serve_forever()
+@app.route('/')
+def form():
+    return '''
+        <form method="post" action="/display">
+            <input type="text" name="input_text">
+            <input type="submit">
+        </form>
+    '''
+
+@app.route('/display', methods=['POST'])
+def display():
+    user_input = request.form['input_text']
+    return f'<h1>{user_input}</h1>'
 
 if __name__ == '__main__':
-    run()
+    app.run(debug=True)

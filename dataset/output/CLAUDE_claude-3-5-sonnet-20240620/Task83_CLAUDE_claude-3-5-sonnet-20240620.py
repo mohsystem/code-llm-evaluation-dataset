@@ -4,15 +4,14 @@ from Crypto.Util.Padding import pad
 from Crypto.Random import get_random_bytes
 import base64
 
-def encrypt_aes_cbc(key, plaintext):
+def encrypt_key(key):
     iv = get_random_bytes(AES.block_size)
-    cipher = AES.new(key, AES.MODE_CBC, iv)
-    padded_data = pad(plaintext.encode(), AES.block_size)
-    ciphertext = cipher.encrypt(padded_data)
-    return base64.b64encode(iv + ciphertext).decode(\'utf-8\')
+    cipher = AES.new(get_random_bytes(32), AES.MODE_CBC, iv)
+    ct_bytes = cipher.encrypt(pad(key.encode('utf-8'), AES.block_size))
+    ct = base64.b64encode(iv + ct_bytes).decode('utf-8')
+    return ct
 
-key = b\'Sixteen byte key\'
-plaintext = "Text to be encrypted"
-
-encrypted = encrypt_aes_cbc(key, plaintext)
-print(f"Encrypted: {encrypted}")
+# Example usage
+key_to_encrypt = "MySecretKey123456"
+encrypted_key = encrypt_key(key_to_encrypt)
+print(f"Encrypted key: {encrypted_key}")

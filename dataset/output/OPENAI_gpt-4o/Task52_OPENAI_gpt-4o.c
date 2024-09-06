@@ -1,103 +1,81 @@
 #include <stdio.h>
-#include <string.h>
-#include <openssl/evp.h>
+#include <stdlib.h>
 #include <openssl/aes.h>
+#include <openssl/rand.h>
 
-void handleErrors() {
-    fprintf(stderr, "An error occurred!
-");
-    exit(1);
-}
-
-void encrypt(const char *in_filename, const char *out_filename) {
-    FILE *in_file = fopen(in_filename, "rb");
-    FILE *out_file = fopen(out_filename, "wb");
-    if (!in_file || !out_file) {
-        fprintf(stderr, "File open error!
-");
-        exit(1);
-    }
-
-    unsigned char key[16] = "1234567890123456";
-    unsigned char iv[16] = {0};
-
-    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    if (!ctx) handleErrors();
-
-    if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key, iv))
-        handleErrors();
-
-    unsigned char in_buf[1024];
-    unsigned char out_buf[1024 + EVP_MAX_BLOCK_LENGTH];
-    int in_len, out_len;
-
-    while ((in_len = fread(in_buf, 1, 1024, in_file)) > 0) {
-        if (1 != EVP_EncryptUpdate(ctx, out_buf, &out_len, in_buf, in_len))
-            handleErrors();
-        fwrite(out_buf, 1, out_len, out_file);
-    }
-
-    if (1 != EVP_EncryptFinal_ex(ctx, out_buf, &out_len))
-        handleErrors();
-    fwrite(out_buf, 1, out_len, out_file);
-
-    EVP_CIPHER_CTX_free(ctx);
-    fclose(in_file);
-    fclose(out_file);
-}
-
-void decrypt(const char *in_filename, const char *out_filename) {
-    FILE *in_file = fopen(in_filename, "rb");
-    FILE *out_file = fopen(out_filename, "wb");
-    if (!in_file || !out_file) {
-        fprintf(stderr, "File open error!
-");
-        exit(1);
-    }
-
-    unsigned char key[16] = "1234567890123456";
-    unsigned char iv[16] = {0};
-
-    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    if (!ctx) handleErrors();
-
-    if (1 != EVP_DecryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key, iv))
-        handleErrors();
-
-    unsigned char in_buf[1024];
-    unsigned char out_buf[1024 + EVP_MAX_BLOCK_LENGTH];
-    int in_len, out_len;
-
-    while ((in_len = fread(in_buf, 1, 1024, in_file)) > 0) {
-        if (1 != EVP_DecryptUpdate(ctx, out_buf, &out_len, in_buf, in_len))
-            handleErrors();
-        fwrite(out_buf, 1, out_len, out_file);
-    }
-
-    if (1 != EVP_DecryptFinal_ex(ctx, out_buf, &out_len))
-        handleErrors();
-    fwrite(out_buf, 1, out_len, out_file);
-
-    EVP_CIPHER_CTX_free(ctx);
-    fclose(in_file);
-    fclose(out_file);
-}
-
-int main(int argc, char *argv[]) {
-    if (argc != 4) {
-        fprintf(stderr, "Usage: %s <encrypt/decrypt> <inputFile> <outputFile>
-", argv[0]);
-        return 1;
-    }
-
-    if (strcmp(argv[1], "encrypt") == 0) {
-        encrypt(argv[2], argv[3]);
-    } else if (strcmp(argv[1], "decrypt") == 0) {
-        decrypt(argv[2], argv[3]);
+void writeKeyToFile(const unsigned char* key, const char* filename) {
+    FILE* fp = fopen(filename, "wb");
+    if (fp != NULL) {
+        fwrite(key, 1, AES_BLOCK_SIZE, fp);
+        fclose(fp);
     } else {
-        fprintf(stderr, "Invalid command.
-");
+        fprintf(stderr, "Failed to open file %s for writing\n", filename);
     }
+}
+
+void readKeyFromFile(unsigned char* key, const char* filename) {
+    FILE* fp = fopen(filename, "rb");
+    if (fp != NULL) {
+        fread(key, 1, AES_BLOCK_SIZE, fp);
+        fclose(fp);
+    } else {
+        fprintf(stderr, "Failed to open file %s for reading\n", filename);
+    }
+}
+
+void encryptFile(const unsigned char* key, const char* input_filename, const char* output_filename) {
+    AES_KEY encryptKey;
+    AES_set_encrypt_key(key, 128, &encryptKey);
+
+    FILE* ifp = fopen(input_filename, "rb");
+    FILE* ofp = fopen(output_filename, "wb");
+
+    unsigned char indata[AES_BLOCK_SIZE];
+    unsigned char outdata[AES_BLOCK_SIZE];
+
+    while (fread(indata, 1, AES_BLOCK_SIZE, ifp) > 0) {
+        AES_encrypt(indata, outdata, &encryptKey);
+        fwrite(outdata, 1, AES_BLOCK_SIZE, ofp);
+    }
+
+    fclose(ifp);
+    fclose(ofp);
+}
+
+void decryptFile(const unsigned char* key, const char* input_filename, const char* output_filename) {
+    AES_KEY decryptKey;
+    AES_set_decrypt_key(key, 128, &decryptKey);
+
+    FILE* ifp = fopen(input_filename, "rb");
+    FILE* ofp = fopen(output_filename, "wb");
+
+    unsigned char indata[AES_BLOCK_SIZE];
+    unsigned char outdata[AES_BLOCK_SIZE];
+
+    while (fread(indata, 1, AES_BLOCK_SIZE, ifp) > 0) {
+        AES_decrypt(indata, outdata, &decryptKey);
+        fwrite(outdata, 1, AES_BLOCK_SIZE, ofp);
+    }
+
+    fclose(ifp);
+    fclose(ofp);
+}
+
+int main() {
+    const char* keyfile = "filekey.key";
+    const char* input_filename = "test.txt";
+    const char* encrypted_filename = "test.encrypted";
+    const char* decrypted_filename = "test.decrypted";
+
+    unsigned char key[AES_BLOCK_SIZE];
+    RAND_bytes(key, AES_BLOCK_SIZE);
+    writeKeyToFile(key, keyfile);
+
+    encryptFile(key, input_filename, encrypted_filename);
+
+    unsigned char loaded_key[AES_BLOCK_SIZE];
+    readKeyFromFile(loaded_key, keyfile);
+    decryptFile(loaded_key, encrypted_filename, decrypted_filename);
 
     return 0;
 }

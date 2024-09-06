@@ -3,13 +3,17 @@
 
 using namespace std;
 
+const int BUFFER_SIZE = 1024;
+
 int main() {
-    const int BUFFER_SIZE = 100;
     char buffer[BUFFER_SIZE];
 
-    cout << "Enter input: ";
+    cout << "Enter your input (max " << BUFFER_SIZE << " characters): ";
     cin.getline(buffer, BUFFER_SIZE);
 
-    cout << "Buffer contents: " << buffer << endl;
+    string inputData(buffer);
+
+    cout << "\nYou entered:\n" << inputData << endl;
+
     return 0;
 }

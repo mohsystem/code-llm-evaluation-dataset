@@ -4,23 +4,16 @@
 #include <algorithm>
 
 std::string toJadenCase(std::string phrase) {
-    if (phrase.empty()) {
-        return "";
-    }
+    if (phrase.empty()) return phrase;
     
     std::istringstream iss(phrase);
-    std::ostringstream oss;
-    std::string word;
-    bool first = true;
+    std::string word, result;
     
     while (iss >> word) {
-        if (!first) {
-            oss << " ";
-        }
         word[0] = std::toupper(word[0]);
-        oss << word;
-        first = false;
+        result += word + " ";
     }
     
-    return oss.str();
+    result.pop_back();  // Remove trailing space
+    return result;
 }

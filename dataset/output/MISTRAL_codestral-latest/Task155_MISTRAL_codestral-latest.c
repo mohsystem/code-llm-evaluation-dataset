@@ -33,18 +33,13 @@ void heapSort(int arr[], int n) {
     }
 }
 
-void printArray(int arr[], int n) {
-    for (int i = 0; i < n; ++i)
-        printf("%d ", arr[i]);
-    printf("
-");
-}
-
+// Test the function
 int main() {
     int arr[] = {12, 11, 13, 5, 6, 7};
     int n = sizeof(arr) / sizeof(arr[0]);
     heapSort(arr, n);
-    printf("Sorted array is 
-");
-    printArray(arr, n);
+    printf("Sorted array is \n");
+    for (int i = 0; i < n; ++i)
+        printf("%d ", arr[i]);
+    printf("\n");
 }

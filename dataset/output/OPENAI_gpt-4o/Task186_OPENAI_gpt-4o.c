@@ -1,3 +1,4 @@
+// C code for merging k sorted linked lists
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -6,61 +7,60 @@ struct ListNode {
     struct ListNode *next;
 };
 
+struct ListNode* createNode(int val) {
+    struct ListNode* node = (struct ListNode*)malloc(sizeof(struct ListNode));
+    node->val = val;
+    node->next = NULL;
+    return node;
+}
+
 struct ListNode* mergeKLists(struct ListNode** lists, int listsSize) {
-    struct ListNode* head = NULL;
-    struct ListNode** tail = &head;
+    int* heap = (int*)malloc(100000 * sizeof(int));
+    int heapSize = 0;
     
-    while (1) {
-        int minIndex = -1;
-        for (int i = 0; i < listsSize; i++) {
-            if (lists[i] && (minIndex == -1 || lists[i]->val < lists[minIndex]->val)) {
-                minIndex = i;
-            }
+    for (int i = 0; i < listsSize; ++i) {
+        struct ListNode* l = lists[i];
+        while (l) {
+            heap[heapSize++] = l->val;
+            l = l->next;
         }
-        if (minIndex == -1) break;
-        *tail = lists[minIndex];
-        tail = &((*tail)->next);
-        lists[minIndex] = lists[minIndex]->next;
     }
     
-    return head;
+    qsort(heap, heapSize, sizeof(int), (int(*)(const void*, const void*)) strcmp);
+    
+    struct ListNode* dummy = createNode(0);
+    struct ListNode* curr = dummy;
+    for (int i = 0; i < heapSize; ++i) {
+        curr->next = createNode(heap[i]);
+        curr = curr->next;
+    }
+    
+    return dummy->next;
 }
 
-struct ListNode* createList(int* arr, int size) {
-    if (size == 0) return NULL;
-    struct ListNode* head = malloc(sizeof(struct ListNode));
-    head->val = arr[0];
-    struct ListNode* current = head;
-    for (int i = 1; i < size; i++) {
-        current->next = malloc(sizeof(struct ListNode));
-        current = current->next;
-        current->val = arr[i];
+void printList(struct ListNode* node) {
+    while (node) {
+        printf("%d ", node->val);
+        node = node->next;
     }
-    current->next = NULL;
-    return head;
-}
-
-void printList(struct ListNode* head) {
-    struct ListNode* current = head;
-    while (current) {
-        printf("%d ", current->val);
-        current = current->next;
-    }
+    printf("\n");
 }
 
 int main() {
-    int arr1[] = {1, 4, 5};
-    int arr2[] = {1, 3, 4};
-    int arr3[] = {2, 6};
+    struct ListNode* lists[3];
+    lists[0] = createNode(1);
+    lists[0]->next = createNode(4);
+    lists[0]->next->next = createNode(5);
     
-    struct ListNode* lists[] = {
-        createList(arr1, 3),
-        createList(arr2, 3),
-        createList(arr3, 2)
-    };
+    lists[1] = createNode(1);
+    lists[1]->next = createNode(3);
+    lists[1]->next->next = createNode(4);
     
-    struct ListNode* result = mergeKLists(lists, 3);
-    printList(result);
+    lists[2] = createNode(2);
+    lists[2]->next = createNode(6);
+    
+    struct ListNode* merged = mergeKLists(lists, 3);
+    printList(merged);
     
     return 0;
 }

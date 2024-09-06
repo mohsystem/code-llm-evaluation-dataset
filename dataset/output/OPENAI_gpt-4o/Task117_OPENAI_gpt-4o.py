@@ -1,26 +1,26 @@
 import zipfile
 import tarfile
-import os
+import sys
 
-def extract_zip(zip_file, output_dir):
-    with zipfile.ZipFile(zip_file, 'r') as zip_ref:
-        zip_ref.extractall(output_dir)
+def extract_zip(file_path, extract_to='.'):
+    with zipfile.ZipFile(file_path, 'r') as zip_ref:
+        zip_ref.extractall(extract_to)
 
-def extract_tar(tar_file, output_dir):
-    with tarfile.open(tar_file) as tar_ref:
-        tar_ref.extractall(output_dir)
-
-def main():
-    zip_file = 'yourfile.zip'
-    tar_file = 'yourfile.tar'
-    output_dir = 'output_dir'
-
-    if zipfile.is_zipfile(zip_file):
-        extract_zip(zip_file, output_dir)
-    elif tarfile.is_tarfile(tar_file):
-        extract_tar(tar_file, output_dir)
-    else:
-        print("Not a valid archive file")
+def extract_tar(file_path, extract_to='.'):
+    with tarfile.open(file_path, 'r') as tar_ref:
+        tar_ref.extractall(extract_to)
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 3:
+        print("Usage: python <script_name> <archive_path> <extract_to>")
+        sys.exit(1)
+
+    archive_path = sys.argv[1]
+    extract_to = sys.argv[2]
+
+    if archive_path.endswith('.zip'):
+        extract_zip(archive_path, extract_to)
+    elif archive_path.endswith('.tar'):
+        extract_tar(archive_path, extract_to)
+    else:
+        print("Unsupported file type")

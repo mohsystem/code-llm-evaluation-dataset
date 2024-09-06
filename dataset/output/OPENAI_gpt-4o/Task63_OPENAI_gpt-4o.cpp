@@ -1,38 +1,53 @@
 #include <iostream>
-#include <cstring>
-#include <cstdlib>
-#include <json/json.h>
-#include <openssl/bio.h>
-#include <openssl/evp.h>
+#include <string>
+#include <vector>
+#include <base64/base64.h>
+#include "json/json.h"
 
-std::string base64_decode(const std::string &in) {
-    BIO *bio, *b64;
-    char *buffer = (char *)malloc(in.size());
-    bio = BIO_new_mem_buf(in.c_str(), -1);
-    b64 = BIO_new(BIO_f_base64());
-    bio = BIO_push(b64, bio);
-    int decodeLen = BIO_read(bio, buffer, in.size());
-    buffer[decodeLen] = '\0';
-    BIO_free_all(bio);
-    std::string result(buffer, decodeLen);
-    free(buffer);
-    return result;
+using namespace std;
+
+string processRequest(string req);
+Json::Value base64_decode(string const& encoded_string);
+
+// Example usage
+int main() {
+    Json::Value data;
+    data["key"] = "value";
+    Json::StreamWriterBuilder writer;
+    string json = Json::writeString(writer, data);
+    string encoded = base64_encode(reinterpret_cast<const unsigned char*>(json.c_str()), json.length());
+    string result = processRequest(encoded);
+    cout << result << endl;
+    return 0;
 }
 
-int main() {
-    std::string requestData = "eyJrZXkiOiAiVmFsdWUifQ==";
+string processRequest(string req) {
+    // Step 1: Retrieve the raw_data from the request, ensuring it is encoded in UTF-8
+    
+    // Step 2: Decode the raw_data using Base64
+    string decoded_data = base64_decode(req);
 
-    // Step 1 and 2: Retrieve and decode raw data
-    std::string decodedData = base64_decode(requestData);
+    // Step 3: Deserialize the decoded data into its original format (e.g., JSON)
+    Json::CharReaderBuilder reader;
+    Json::Value deserialized_data;
+    string errs;
+    istringstream s(decoded_data);
+    if (!Json::parseFromStream(reader, s, &deserialized_data, &errs)) {
+        cout << "Error decoding JSON: " << errs << endl;
+        return "";
+    }
 
-    // Step 3: Deserialize JSON data
-    Json::Reader reader;
-    Json::Value jsonObject;
-    reader.parse(decodedData, jsonObject);
+    // Step 4: Store the deserialized data in a variable
+    Json::Value stored_data = deserialized_data;
 
-    // Step 4: Store deserialized data in variable and return it
-    std::string storedData = jsonObject.toStyledString();
-    std::cout << storedData << std::endl;
+    // Step 5: Return the stored data
+    Json::StreamWriterBuilder writer;
+    return Json::writeString(writer, stored_data);
+}
 
-    return 0;
+// Function Definitions
+
+string base64_decode(string const& encoded_string) {
+    vector<unsigned char> decoded = base64::decode(encoded_string);
+    return string(decoded.begin(), decoded.end());
 }

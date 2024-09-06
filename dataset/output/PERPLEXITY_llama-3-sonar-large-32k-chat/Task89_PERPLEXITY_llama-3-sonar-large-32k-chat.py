@@ -1,22 +1,15 @@
-def main():
-    input_password = input("Enter password: ")
-
-    with open("password.txt", "r") as file:
-        stored_password = file.read().strip()
-
-    is_valid = True
-    if len(input_password) != len(stored_password):
-        is_valid = False
+def check_password():
+    password_file = open("password.txt", "r")
+    stored_password = password_file.read()
+    password_file.close()
+    user_password = input("Enter your password: ")
+    if len(stored_password) != len(user_password):
+        print("Password does not match")
     else:
-        for i in range(len(input_password)):
-            if input_password[i] != stored_password[i]:
-                is_valid = False
-                break
+        for i in range(len(stored_password)):
+            if stored_password[i] != user_password[i]:
+                print("Password does not match")
+                return
+        print("Password matches")
 
-    if is_valid:
-        print("Password is valid")
-    else:
-        print("Password is invalid")
-
-if __name__ == "__main__":
-    main()
+check_password()

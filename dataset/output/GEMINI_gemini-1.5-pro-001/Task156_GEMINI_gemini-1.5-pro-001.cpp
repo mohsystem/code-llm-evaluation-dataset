@@ -4,64 +4,56 @@ using namespace std;
 struct Node {
     int data;
     Node *left, *right;
-
-    Node(int data) {
-        this->data = data;
-        left = right = nullptr;
-    }
 };
 
-class BinaryTree {
-public:
-    Node *root;
+Node* newNode(int data) {
+    Node* node = new Node;
+    node->data = data;
+    node->left = node->right = nullptr;
+    return node;
+}
 
-    BinaryTree() {
-        root = nullptr;
+void preorderTraversal(Node* root) {
+    if (root) {
+        cout << root->data << " ";
+        preorderTraversal(root->left);
+        preorderTraversal(root->right);
     }
+}
 
-    void preorderTraversal(Node *node) {
-        if (node != nullptr) {
-            cout << node->data << " ";
-            preorderTraversal(node->left);
-            preorderTraversal(node->right);
-        }
+void inorderTraversal(Node* root) {
+    if (root) {
+        inorderTraversal(root->left);
+        cout << root->data << " ";
+        inorderTraversal(root->right);
     }
+}
 
-    void inorderTraversal(Node *node) {
-        if (node != nullptr) {
-            inorderTraversal(node->left);
-            cout << node->data << " ";
-            inorderTraversal(node->right);
-        }
+void postorderTraversal(Node* root) {
+    if (root) {
+        postorderTraversal(root->left);
+        postorderTraversal(root->right);
+        cout << root->data << " ";
     }
-
-    void postorderTraversal(Node *node) {
-        if (node != nullptr) {
-            postorderTraversal(node->left);
-            postorderTraversal(node->right);
-            cout << node->data << " ";
-        }
-    }
-};
+}
 
 int main() {
-    BinaryTree tree;
-    tree.root = new Node(1);
-    tree.root->left = new Node(2);
-    tree.root->right = new Node(3);
-    tree.root->left->left = new Node(4);
-    tree.root->left->right = new Node(5);
+    Node* root = newNode(1);
+    root->left = newNode(2);
+    root->right = newNode(3);
+    root->left->left = newNode(4);
+    root->left->right = newNode(5);
 
     cout << "Preorder traversal: ";
-    tree.preorderTraversal(tree.root);
+    preorderTraversal(root);
     cout << endl;
 
     cout << "Inorder traversal: ";
-    tree.inorderTraversal(tree.root);
+    inorderTraversal(root);
     cout << endl;
 
     cout << "Postorder traversal: ";
-    tree.postorderTraversal(tree.root);
+    postorderTraversal(root);
     cout << endl;
 
     return 0;

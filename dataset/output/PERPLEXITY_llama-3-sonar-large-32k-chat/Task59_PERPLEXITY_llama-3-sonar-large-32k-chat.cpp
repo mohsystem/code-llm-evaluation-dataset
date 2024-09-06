@@ -6,11 +6,9 @@ std::string accum(const std::string& s) {
     for (int i = 0; i < s.length(); i++) {
         result += std::toupper(s[i]);
         for (int j = 0; j < i; j++) {
-            result += std::tolower(s[j]);
+            result += std::tolower(s[i]);
         }
-        if (i < s.length() - 1) {
-            result += "-";
-        }
+        if (i < s.length() - 1) result += "-";
     }
     return result;
 }

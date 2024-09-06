@@ -2,26 +2,24 @@
 #include <string.h>
 #include <ctype.h>
 
-void accum(char *s) {
-    for (int i = 0; i < strlen(s); i++) {
-        printf("%c", toupper(s[i]));
+char* accum(const char* s) {
+    int len = strlen(s);
+    char* result = (char*)malloc((len * len / 2 + len) * sizeof(char));
+    int index = 0;
+    for (int i = 0; i < len; i++) {
+        result[index++] = toupper(s[i]);
         for (int j = 0; j < i; j++) {
-            printf("%c", tolower(s[j]));
+            result[index++] = tolower(s[i]);
         }
-        if (i < strlen(s) - 1) {
-            printf("-");
-        }
+        if (i < len - 1) result[index++] = '-';
     }
-    printf("
-");
+    result[index] = '\0';
+    return result;
 }
 
 int main() {
-    char s1[] = "abcd";
-    char s2[] = "RqaEzty";
-    char s3[] = "cwAt";
-    accum(s1);
-    accum(s2);
-    accum(s3);
+    printf("%s\n", accum("abcd"));
+    printf("%s\n", accum("RqaEzty"));
+    printf("%s\n", accum("cwAt"));
     return 0;
 }

@@ -1,61 +1,58 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Node {
+typedef struct Node {
     int data;
     struct Node* next;
-};
+} Node;
 
-struct SinglyLinkedList {
-    struct Node* head;
-};
+typedef struct {
+    Node* head;
+} SinglyLinkedList;
 
-struct Node* create_node(int data) {
-    struct Node* new_node = (struct Node*) malloc(sizeof(struct Node));
-    new_node->data = data;
-    new_node->next = NULL;
-    return new_node;
+void initList(SinglyLinkedList* list) {
+    list->head = NULL;
 }
 
-void insert(struct SinglyLinkedList* list, int data) {
-    struct Node* new_node = create_node(data);
-    if (list->head == NULL) {
-        list->head = new_node;
+void insert(SinglyLinkedList* list, int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    
+    if (!list->head) {
+        list->head = newNode;
     } else {
-        struct Node* current = list->head;
-        while (current->next != NULL) {
+        Node* current = list->head;
+        while (current->next) {
             current = current->next;
         }
-        current->next = new_node;
+        current->next = newNode;
     }
 }
 
-void delete_node(struct SinglyLinkedList* list, int key) {
-    struct Node* current = list->head;
-    struct Node* prev = NULL;
-
-    while (current != NULL && current->data != key) {
+int delete(SinglyLinkedList* list, int data) {
+    Node* current = list->head;
+    Node* prev = NULL;
+    while (current && current->data != data) {
         prev = current;
         current = current->next;
     }
-
-    if (current == NULL) {
-        return;
+    if (!current) {
+        return 0;
     }
-
-    if (prev == NULL) {
+    if (!prev) {
         list->head = current->next;
     } else {
         prev->next = current->next;
     }
-
     free(current);
+    return 1;
 }
 
-int search(struct SinglyLinkedList* list, int key) {
-    struct Node* current = list->head;
-    while (current != NULL) {
-        if (current->data == key) {
+int search(SinglyLinkedList* list, int data) {
+    Node* current = list->head;
+    while (current) {
+        if (current->data == data) {
             return 1;
         }
         current = current->next;
@@ -63,31 +60,14 @@ int search(struct SinglyLinkedList* list, int key) {
     return 0;
 }
 
-void display(struct SinglyLinkedList* list) {
-    struct Node* current = list->head;
-    printf("LinkedList: ");
-    while (current != NULL) {
-        printf("%d ", current->data);
-        current = current->next;
-    }
-    printf("
-");
-}
-
 int main() {
-    struct SinglyLinkedList list;
-    list.head = NULL;
-
+    SinglyLinkedList list;
+    initList(&list);
     insert(&list, 1);
     insert(&list, 2);
     insert(&list, 3);
-    display(&list);
-    delete_node(&list, 2);
-    display(&list);
-    printf("%d
-", search(&list, 3));
-    printf("%d
-", search(&list, 2));
-
+    printf("%d\n", search(&list, 2));  // 1 (true)
+    delete(&list, 2);
+    printf("%d\n", search(&list, 2));  // 0 (false)
     return 0;
 }

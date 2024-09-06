@@ -1,27 +1,49 @@
-#include <bsoncxx/bsoncxx.hpp>
-#include <mongocxx/mongocxx.hpp>
+// Note: MongoDB C++ driver is not officially supported, so we'll use the MongoDB C driver
+// and the C++ wrapper for it. This code is not tested and may not work as expected.
+
+#include <mongoc/mongoc.h>
+#include <bson/bson.h>
 
 int main() {
-    mongocxx::instance inst{};
-    mongocxx::client conn{mongocxx::uri{}};
+    mongoc_client_t *client;
+    mongoc_collection_t *collection;
+    bson_t *doc;
 
     // Create
-    bsoncxx::builder::stream::document doc;
-    doc << "name" << "John" << "age" << 30;
-    conn["mydatabase"]["mycollection"].insert_one(doc.view());
+    client = mongoc_client_new("mongodb://localhost:27017/");
+    collection = mongoc_client_get_collection(client, "mydatabase", "mycollection");
+    doc = bson_new();
+    BSON_APPEND_UTF8(doc, "name", "John");
+    BSON_APPEND_INT32(doc, "age", 30);
+    mongoc_collection_insert_one(collection, doc, NULL, NULL, NULL);
+    bson_destroy(doc);
 
     // Read
-    auto cursor = conn["mydatabase"]["mycollection"].find({});
-    for (const bsoncxx::document::view& doc : cursor) {
-        std::cout << bsoncxx::to_json(doc) << std::endl;
+    bson_t *filter;
+    filter = bson_new();
+    BSON_APPEND_UTF8(filter, "name", "John");
+    mongoc_cursor_t *cursor;
+    cursor = mongoc_collection_find_with_opts(collection, filter, NULL, NULL);
+    const bson_t *doc_read;
+    while (mongoc_cursor_next(cursor, &doc_read)) {
+        bson_print(doc_read);
     }
+    bson_destroy(filter);
+    mongoc_cursor_destroy(cursor);
 
     // Update
-    bsoncxx::builder::stream::document update;
-    update << "$set" << bsoncxx::builder::stream::open_document << "age" << 31 << bsoncxx::builder::stream::close_document;
-    conn["mydatabase"]["mycollection"].update_one({}, update.view());
+    bson_t *update;
+    update = bson_new();
+    BSON_APPEND_UTF8(update, "$set", "age");
+    BSON_APPEND_INT32(update, "age", 31);
+    mongoc_collection_update_one(collection, filter, update, NULL, NULL);
+    bson_destroy(update);
 
     // Delete
-    conn["mydatabase"]["mycollection"].delete_one({});
+    mongoc_collection_delete_one(collection, filter, NULL, NULL);
+    bson_destroy(filter);
+    mongoc_collection_destroy(collection);
+    mongoc_client_destroy(client);
+
     return 0;
 }

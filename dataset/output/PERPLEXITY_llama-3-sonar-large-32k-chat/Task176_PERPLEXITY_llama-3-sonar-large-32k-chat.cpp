@@ -1,7 +1,8 @@
 class ProductOfNumbers {
-public:
+private:
     vector<int> products;
 
+public:
     ProductOfNumbers() {
         products.push_back(1);
     }

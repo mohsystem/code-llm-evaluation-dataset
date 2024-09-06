@@ -2,84 +2,38 @@
 import socket
 import threading
 
-HOST = \'127.0.0.1\'
-PORT = 5000
-
-clients = []
-clients_lock = threading.Lock()
-
-def broadcast(message, sender_conn):
-    with clients_lock:
-        for client in clients:
-            if client != sender_conn:
-                try:
-                    client.send(message)
-                except:
-                    clients.remove(client)
-
-def handle_client(conn, addr):
-    print(f"New connection from {addr}")
-    with clients_lock:
-        clients.append(conn)
-    
-    try:
-        while True:
-            message = conn.recv(1024)
+def handle_client(client_socket, client_address):
+    while True:
+        try:
+            message = client_socket.recv(1024).decode('utf-8')
             if not message:
                 break
-            broadcast(message, conn)
-    finally:
-        with clients_lock:
-            clients.remove(conn)
-        conn.close()
+            print(f"Received from {client_address}: {message}")
+            broadcast(f"{client_address}: {message}")
+        except:
+            break
+    client_socket.close()
+
+def broadcast(message):
+    for client in clients:
+        try:
+            client.send(message.encode('utf-8'))
+        except:
+            clients.remove(client)
 
 def start_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind((HOST, PORT))
+    server.bind(('localhost', 5555))
     server.listen()
-    print(f"Server is listening on {HOST}:{PORT}")
+
+    print("Server is listening...")
 
     while True:
-        conn, addr = server.accept()
-        thread = threading.Thread(target=handle_client, args=(conn, addr))
-        thread.start()
+        client_socket, client_address = server.accept()
+        print(f"Connected with {client_address}")
+        clients.append(client_socket)
+        client_thread = threading.Thread(target=handle_client, args=(client_socket, client_address))
+        client_thread.start()
 
-if __name__ == "__main__":
-    start_server()
-
-# Chat Client
-import socket
-import threading
-
-HOST = \'127.0.0.1\'
-PORT = 5000
-
-def receive_messages(sock):
-    while True:
-        try:
-            message = sock.recv(1024).decode()
-            if not message:
-                break
-            print(message)
-        except:
-            break
-
-def start_client():
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect((HOST, PORT))
-    print(f"Connected to server at {HOST}:{PORT}")
-
-    receive_thread = threading.Thread(target=receive_messages, args=(client,))
-    receive_thread.start()
-
-    try:
-        while True:
-            message = input()
-            client.send(message.encode())
-    except KeyboardInterrupt:
-        print("Disconnecting from server...")
-    finally:
-        client.close()
-
-if __name__ == "__main__":
-    start_client()
+clients = []
+start_server()

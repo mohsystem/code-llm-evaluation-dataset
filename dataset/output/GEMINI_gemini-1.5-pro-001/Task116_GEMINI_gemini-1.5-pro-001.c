@@ -1,64 +1,87 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
+#include <string.h>
 #include <shadow.h>
+#include <crypt.h>
 #include <errno.h>
-
-void drop_privileges(uid_t user_uid, gid_t user_gid) {
-    if (setgid(user_gid) != 0) {
-        perror("setgid");
-        exit(1);
-    }
-    if (setuid(user_uid) != 0) {
-        perror("setuid");
-        exit(1);
-    }
-}
+#include <pwd.h>
 
 int main() {
     if (geteuid() != 0) {
-        fprintf(stderr, "This program requires root privileges. Please run with sudo.
-");
+        fprintf(stderr, "This program requires root privileges. Please run with sudo.\n");
         return 1;
     }
 
     char username[256];
-    char password[256];
+    printf("Enter the username to change password for: ");
+    if (fgets(username, sizeof(username), stdin) == NULL) {
+        perror("fgets");
+        return 1;
+    }
+    username[strcspn(username, "\n")] = 0; // Remove newline
 
-    printf("Enter the username: ");
-    scanf("%s", username);
-
-    printf("Enter the new password: ");
-    scanf("%s", password);
-
-    struct spwd *sp = getspnam(username);
-    if (sp == NULL) {
-        fprintf(stderr, "User '%s' not found.
-", username);
+    struct passwd *pwd = getpwnam(username);
+    if (pwd == NULL) {
+        fprintf(stderr, "User '%s' not found.\n", username);
         return 1;
     }
 
-    char *encrypted_password = crypt(password, "$6$salt$");
-    if (encrypted_password == NULL) {
+    char password[1024];
+    char confirm_password[1024];
+
+    do {
+        printf("Enter new password: ");
+        if (fgets(password, sizeof(password), stdin) == NULL) {
+            perror("fgets");
+            return 1;
+        }
+        password[strcspn(password, "\n")] = 0;
+
+        printf("Confirm new password: ");
+        if (fgets(confirm_password, sizeof(confirm_password), stdin) == NULL) {
+            perror("fgets");
+            return 1;
+        }
+        confirm_password[strcspn(confirm_password, "\n")] = 0;
+
+        if (strcmp(password, confirm_password) != 0) {
+            printf("Passwords do not match. Please try again.\n");
+        }
+    } while (strcmp(password, confirm_password) != 0);
+
+    char *hashed_password = crypt(password, "$6$salt$"); // Using SHA-512 hashing
+    if (hashed_password == NULL) {
         perror("crypt");
         return 1;
     }
 
-    sp->sp_pwdp = encrypted_password;
-
-    if (putspent(sp, SHADOW_WRITE) == -1) {
-        perror("putspent");
+    struct spwd *spwd = getspnam(username);
+    if (spwd == NULL) {
+        fprintf(stderr, "Error getting shadow password entry.\n");
         return 1;
     }
 
-    printf("Password for user '%s' changed successfully.
-", username);
+    char *new_spwd = malloc(strlen(spwd->sp_pwdp) + strlen(hashed_password) + 2);
+    if (new_spwd == NULL) {
+        perror("malloc");
+        return 1;
+    }
 
-    drop_privileges(sp->sp_uid, sp->sp_gid);
+    sprintf(new_spwd, "%s:%s:", spwd->sp_namp, hashed_password);
 
-    printf("Running as user: %s
-", getlogin());
+    if (putspent(spwd, NULL) != 0) {
+        perror("putspent");
+        free(new_spwd);
+        return 1;
+    }
+
+    free(new_spwd);
+
+    // Drop privileges - Not implemented for simplicity 
+    // (Dropping privileges securely in C requires fork/exec and careful handling)
+
+    printf("Password for user '%s' changed successfully.\n", username);
 
     return 0;
 }

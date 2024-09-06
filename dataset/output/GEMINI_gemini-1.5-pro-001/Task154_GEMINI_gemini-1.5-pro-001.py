@@ -7,8 +7,12 @@ def depth_first_search(graph, start_node):
         if node not in visited:
             visited.add(node)
             print(node, end=" ")  # Process the node here
-            stack.extend(neighbor for neighbor in graph[node] if neighbor not in visited)
 
+            # Push unvisited neighbors onto the stack
+            neighbors = graph[node]
+            for neighbor in neighbors:
+                if neighbor not in visited:
+                    stack.append(neighbor)
 
 # Example graph represented as an adjacency list
 graph = {

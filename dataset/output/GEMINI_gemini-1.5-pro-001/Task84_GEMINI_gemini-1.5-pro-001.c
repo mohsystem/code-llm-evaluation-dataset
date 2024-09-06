@@ -1,31 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
-char *generateSessionId(int length) {
-    char *sessionId = malloc(length + 1);
-    if (sessionId == NULL) {
-        return NULL;
-    }
-    srand(time(NULL));
-    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    for (int i = 0; i < length; i++) {
-        sessionId[i] = charset[rand() % (sizeof(charset) - 1)];
-    }
-    sessionId[length] = '\0';
-    return sessionId;
-}
+char* generate_session_id(size_t length) {
+  const char characters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  char *session_id = malloc(length + 1);
+  if (session_id == NULL) {
+    return NULL;
+  }
 
-int main() {
-    char *sessionId = generateSessionId(32);
-    if (sessionId != NULL) {
-        printf("%s
-", sessionId);
-        free(sessionId);
-    } else {
-        fprintf(stderr, "Failed to generate session ID.
-");
-        return 1;
-    }
-    return 0;
+  srand(time(NULL));
+  for (size_t i = 0; i < length; ++i) {
+    session_id[i] = characters[rand() % (sizeof(characters) - 1)];
+  }
+  session_id[length] = '\0';
+
+  return session_id;
 }

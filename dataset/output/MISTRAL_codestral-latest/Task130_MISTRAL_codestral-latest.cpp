@@ -1,14 +1,10 @@
 #include <httplib.h>
 
-int main(void) {
+int main() {
     httplib::Server svr;
 
-    svr.Get("/", [](const httplib::Request &req, httplib::Response &res) {
-        res.set_header("Access-Control-Allow-Origin", "*");
-        res.set_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-        res.set_content("Hello, cross-origin-world!", "text/plain");
-    });
+    svr.set_mount_point("/", "./www");
+    svr.set_header_value_adder("Access-Control-Allow-Origin", "http://example.com");
 
-    svr.listen("localhost", 8080);
+    svr.listen("0.0.0.0", 8080);
 }

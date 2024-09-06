@@ -1,23 +1,16 @@
 
-import cgi
-import cgitb
-cgitb.enable()
+from flask import Flask, request, render_template_string
 
-print("Content-Type: text/html\
-")
-print("<html><body>")
+app = Flask(__name__)
 
-form = cgi.FieldStorage()
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    user_input = ''
+    if request.method == 'POST':
+        user_input = request.form.get('user_input', '')
+    
+    html = '''\n    <!DOCTYPE html>\n    <html>\n    <body>\n        <form method="post">\n            <input type="text" name="user_input">\n            <input type="submit" value="Submit">\n        </form>\n        <p>{{ user_input }}</p>\n    </body>\n    </html>\n    '''
+    return render_template_string(html, user_input=user_input)
 
-if "userInput" in form:
-    user_input = form.getvalue("userInput")
-    print("<h2>User Input:</h2>")
-    print(f"<p>{user_input}</p>")
-else:
-    print("<h2>Enter your input:</h2>")
-    print("<form method=\'post\'>")
-    print("<input type=\'text\' name=\'userInput\'>")
-    print("<input type=\'submit\' value=\'Submit\'>")
-    print("</form>")
-
-print("</body></html>")
+if __name__ == '__main__':
+    app.run(debug=True)

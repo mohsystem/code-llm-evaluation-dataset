@@ -1,6 +1,10 @@
-def queue_time(customers, n):
+import heapq
+
+def queueTime(customers, n):
+    if not customers:
+        return 0
     tills = [0] * n
     for time in customers:
-        min_index = tills.index(min(tills))
-        tills[min_index] += time
+        min_till = tills.index(min(tills))
+        tills[min_till] += time
     return max(tills)

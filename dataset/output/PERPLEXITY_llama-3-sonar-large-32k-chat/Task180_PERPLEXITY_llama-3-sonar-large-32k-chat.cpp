@@ -1,4 +1,5 @@
 #include <iostream>
+#include <queue>
 #include <vector>
 
 using namespace std;
@@ -15,31 +16,19 @@ Node* reparentTree(Node* root, Node* newRoot) {
     if (root == newRoot) {
         return root;
     }
-    Node* parent = findParent(root, newRoot);
-    if (parent) {
-        for (auto it = parent->children.begin(); it != parent->children.end(); ++it) {
-            if (*it) == newRoot) {
-                parent->children.erase(it);
-                break;
-            }
+    queue<Node*> queue;
+    queue.push(root);
+    while (!queue.empty()) {
+        Node* node = queue.front();
+        queue.pop();
+        if (node == newRoot) {
+            return node;
         }
-        newRoot->children.push_back(root);
-        return newRoot;
-    }
-    return root;
-}
-
-Node* findParent(Node* root, Node* node) {
-    if (root == node) {
-        return nullptr;
-    }
-    for (auto child : root->children) {
-        Node* parent = findParent(child, node);
-        if (parent) {
-            return parent;
+        for (Node* child : node->children) {
+            queue.push(child);
         }
     }
-    return root;
+    return nullptr;
 }
 
 void printTree(Node* node, int level) {
@@ -47,7 +36,7 @@ void printTree(Node* node, int level) {
         cout << "  ";
     }
     cout << node->value << endl;
-    for (auto child : node->children) {
+    for (Node* child : node->children) {
         printTree(child, level + 1);
     }
 }
@@ -64,10 +53,12 @@ int main() {
     root->children[2]->children.push_back(new Node(8));
     root->children[2]->children.push_back(new Node(9));
 
-    Node* newRoot = root->children[1]->children[1];  // Node 6
-    newRoot = reparentTree(root, newRoot);
+    cout << "Original tree:" << endl;
+    printTree(root, 0);
 
-    printTree(newRoot);
+    Node* newRoot = reparentTree(root, new Node(6));
+    cout << "\nReparented tree:" << endl;
+    printTree(newRoot, 0);
 
     return 0;
 }

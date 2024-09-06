@@ -1,25 +1,41 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 
-#define MAX_COMMAND_LENGTH 100
+bool validateCommand(const char* command) {
+    // Simple validation: check if command is not empty
+    while (*command != '\0') {
+        if (*command != ' ') {
+            return true;
+        }
+        command++;
+    }
+    return false;
+}
 
 int main() {
-    char command[MAX_COMMAND_LENGTH];
+    char command[256];
+    printf("Enter a bash shell command: ");
+    fgets(command, sizeof(command), stdin);
 
-    printf("Enter a shell command:
-");
-    fgets(command, MAX_COMMAND_LENGTH, stdin);
+    // Remove trailing newline character
+    command[strcspn(command, "\n")] = '\0';
 
-    // Remove newline character from command
-    command[strcspn(command, "
-")] = 0;
+    if (validateCommand(command)) {
+        FILE* pipe = popen(command, "r");
+        if (!pipe) {
+            fprintf(stderr, "Error: Failed to execute command\n");
+            return 1;
+        }
 
-    int result = system(command);
+        char buffer[256];
+        while (fgets(buffer, sizeof(buffer), pipe) != NULL) {
+            printf("%s", buffer);
+        }
 
-    if (result == -1) {
-        fprintf(stderr, "Error executing command
-");
-        return 1;
+        pclose(pipe);
+    } else {
+        printf("Invalid command\n");
     }
 
     return 0;

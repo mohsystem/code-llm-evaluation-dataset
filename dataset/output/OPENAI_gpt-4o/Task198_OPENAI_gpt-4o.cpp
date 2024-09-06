@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 #include <vector>
 
 int rand7() {
@@ -7,21 +9,22 @@ int rand7() {
 
 int rand10() {
     while (true) {
-        int x = (rand7() - 1) * 7 + rand7();
-        if (x <= 40) {
-            return 1 + (x - 1) % 10;
+        int num = (rand7() - 1) * 7 + rand7();
+        if (num <= 40) {
+            return (num - 1) % 10 + 1;
         }
     }
 }
 
 int main() {
-    srand(time(0));
-    int n = 3;
-    std::vector<int> result;
-    for (int i = 0; i < n; ++i) {
-        result.push_back(rand10());
+    srand((unsigned)time(0));
+    int n;
+    std::cin >> n;
+    std::vector<int> results;
+    for (int i = 0; i < n; i++) {
+        results.push_back(rand10());
     }
-    for (int num : result) {
+    for (int num : results) {
         std::cout << num << " ";
     }
     std::cout << std::endl;

@@ -1,11 +1,23 @@
 // C
 #include <stdio.h>
-#define MAX_SIZE 100 // Define a maximum size for the input
+#include <stdlib.h>
+
+void processString(char* inputString) {
+    // Process the string here
+    printf("Processed string: %s\n", inputString);
+}
 
 int main() {
-    char input[MAX_SIZE];
+    char* inputString = NULL;
+    size_t size = 0;
+
     printf("Enter a string: ");
-    fgets(input, MAX_SIZE, stdin);
-    printf("You entered: %s", input);
+    getline(&inputString, &size, stdin);
+
+    processString(inputString);
+
+    free(inputString);
     return 0;
 }
+
+// C is not safe from buffer overflow by default. However, getline() function is used which reads a line from stream and resizes the buffer as needed.

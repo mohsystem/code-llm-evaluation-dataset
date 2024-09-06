@@ -2,35 +2,30 @@
 #include <string.h>
 
 int main() {
-    char inputPassword[100];
-    char storedPassword[100];
-
-    printf("Enter password: ");
-    scanf("%99s", inputPassword);
-
     FILE *file = fopen("password.txt", "r");
-    fscanf(file, "%99s", storedPassword);
+    char storedPassword[100];
+    fgets(storedPassword, 100, file);
+    storedPassword[strcspn(storedPassword, "\n")] = 0; // remove newline character
     fclose(file);
-
-    int isValid = 1;
-    if (strlen(inputPassword) != strlen(storedPassword)) {
-        isValid = 0;
+    char userPassword[100];
+    printf("Enter your password: ");
+    fgets(userPassword, 100, stdin);
+    userPassword[strcspn(userPassword, "\n")] = 0; // remove newline character
+    if (strlen(storedPassword) != strlen(userPassword)) {
+        printf("Password does not match\n");
     } else {
-        for (int i = 0; i < strlen(inputPassword); i++) {
-            if (inputPassword[i] != storedPassword[i]) {
-                isValid = 0;
+        int match = 1;
+        for (int i = 0; i < strlen(storedPassword); i++) {
+            if (storedPassword[i] != userPassword[i]) {
+                match = 0;
                 break;
             }
         }
+        if (match) {
+            printf("Password matches\n");
+        } else {
+            printf("Password does not match\n");
+        }
     }
-
-    if (isValid) {
-        printf("Password is valid
-");
-    } else {
-        printf("Password is invalid
-");
-    }
-
     return 0;
 }

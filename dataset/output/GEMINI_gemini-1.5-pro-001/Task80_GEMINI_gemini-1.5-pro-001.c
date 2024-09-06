@@ -8,64 +8,73 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
-#define HOST "localhost"
-#define PORT 8443
-
-int main() {
-    int sockfd;
-    struct sockaddr_in6 serv_addr;
-    SSL_CTX *ctx;
-    SSL *ssl;
-
+int create_ssl_client_socket_ipv6(const char *hostname, int port) {
     // Initialize OpenSSL
     SSL_library_init();
     SSL_load_error_strings();
-    ctx = SSL_CTX_new(TLS_client_method());
-    if (ctx == NULL) {
-        fprintf(stderr, "Error creating SSL context.
-");
-        ERR_print_errors_fp(stderr);
-        return 1;
-    }
+    OpenSSL_add_all_algorithms();
 
-    // Create socket
-    sockfd = socket(AF_INET6, SOCK_STREAM, 0);
+    // Create a TCP socket using IPv6
+    int sockfd = socket(AF_INET6, SOCK_STREAM, 0);
     if (sockfd < 0) {
-        perror("Error opening socket");
-        return 1;
+        perror("Failed to create socket");
+        return -1;
     }
 
-    // Set address
-    memset(&serv_addr, 0, sizeof(serv_addr));
-    serv_addr.sin6_family = AF_INET6;
-    inet_pton(AF_INET6, HOST, &serv_addr.sin6_addr);
-    serv_addr.sin6_port = htons(PORT);
-
-    // Connect to server
-    if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-        perror("Error connecting");
-        return 1;
+    // Create an SSL context
+    SSL_CTX *ctx = SSL_CTX_new(TLS_client_method());
+    if (!ctx) {
+        fprintf(stderr, "Failed to create SSL context\n");
+        close(sockfd);
+        return -1;
     }
 
-    // Create SSL object
-    ssl = SSL_new(ctx);
-    SSL_set_fd(ssl, sockfd);
-
-    // Connect to SSL server
-    if (SSL_connect(ssl) != 1) {
-        fprintf(stderr, "Error connecting to SSL server.
-");
-        ERR_print_errors_fp(stderr);
-        return 1;
+    // Create an SSL object
+    SSL *ssl = SSL_new(ctx);
+    if (!ssl) {
+        fprintf(stderr, "Failed to create SSL object\n");
+        SSL_CTX_free(ctx);
+        close(sockfd);
+        return -1;
     }
 
-    printf("Connected to: %s:%d
-", HOST, PORT);
+    // Bind the SSL object to the socket
+    if (SSL_set_fd(ssl, sockfd) <= 0) {
+        fprintf(stderr, "Failed to bind SSL object to socket\n");
+        SSL_free(ssl);
+        SSL_CTX_free(ctx);
+        close(sockfd);
+        return -1;
+    }
 
-    // Clean up
-    SSL_free(ssl);
-    close(sockfd);
-    SSL_CTX_free(ctx);
+    // Connect to the server
+    struct sockaddr_in6 server_addr;
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin6_family = AF_INET6;
+    server_addr.sin6_port = htons(port);
+    if (inet_pton(AF_INET6, hostname, &server_addr.sin6_addr) <= 0) {
+        perror("Invalid address/Address not supported");
+        SSL_free(ssl);
+        SSL_CTX_free(ctx);
+        close(sockfd);
+        return -1;
+    }
+    if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+        perror("Failed to connect to server");
+        SSL_free(ssl);
+        SSL_CTX_free(ctx);
+        close(sockfd);
+        return -1;
+    }
 
-    return 0;
+    // Establish SSL connection
+    if (SSL_connect(ssl) <= 0) {
+        fprintf(stderr, "Failed to establish SSL connection\n");
+        SSL_free(ssl);
+        SSL_CTX_free(ctx);
+        close(sockfd);
+        return -1;
+    }
+
+    return sockfd;
 }

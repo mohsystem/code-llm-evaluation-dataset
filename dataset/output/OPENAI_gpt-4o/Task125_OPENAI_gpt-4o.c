@@ -1,24 +1,25 @@
 #include <stdio.h>
 #include <string.h>
 
-int main() {
-    char userInput[50];
-    char *resource1 = "resource1";
-    char *resource2 = "resource2";
-
-    printf("Enter your resource: ");
-    scanf("%s", userInput);
-
-    if (strcmp(userInput, resource1) == 0) {
-        printf("Access to Resource 1
-");
-    } else if (strcmp(userInput, resource2) == 0) {
-        printf("Access to Resource 2
-");
+const char* accessResource(const char* user) {
+    if (strcmp(user, "admin") == 0) {
+        return "Access to administrative resources granted.";
+    } else if (strcmp(user, "user") == 0) {
+        return "Access to user resources granted.";
+    } else if (strcmp(user, "guest") == 0) {
+        return "Access to guest resources granted.";
     } else {
-        printf("Resource not found
-");
+        return "No resources available for this user role";
     }
+}
+
+int main() {
+    char userRole[10];
+    printf("Enter user role (admin/user/guest): ");
+    scanf("%s", userRole);
+
+    const char* result = accessResource(userRole);
+    printf("%s\n", result);
 
     return 0;
 }

@@ -7,95 +7,98 @@ typedef struct Node {
     struct Node* right;
 } Node;
 
+Node* insert(Node* node, int val) {
+    if (node == NULL) {
+        return (Node*)malloc(sizeof(Node));
+        node->val = val;
+        node->left = node->right = NULL;
+    } else {
+        if (val < node->val) {
+            node->left = insert(node->left, val);
+        } else if (val > node->val) {
+            node->right = insert(node->right, val);
+        }
+    }
+    return node;
+}
+
 Node* minValueNode(Node* node) {
     Node* current = node;
-    while (current && current->left != NULL)
+    while (current->left != NULL) {
         current = current->left;
+    }
     return current;
 }
 
-Node* deleteNode(Node* root, int key) {
-    if (root == NULL)
-        return root;
-    if (key < root->val)
-        root->left = deleteNode(root->left, key);
-    else if (key > root->val)
-        root->right = deleteNode(root->right, key);
-    else {
-        if (root->left == NULL)
-            return root->right;
-        else if (root->right == NULL)
-            return root->left;
-        root->val = minValueNode(root->right)->val;
-        root->right = deleteNode(root->right, root->val);
+Node* deleteNode(Node* node, int val) {
+    if (node == NULL) {
+        return node;
     }
-    return root;
+    if (val < node->val) {
+        node->left = deleteNode(node->left, val);
+    } else if (val > node->val) {
+        node->right = deleteNode(node->right, val);
+    } else {
+        if (node->left == NULL) {
+            Node* temp = node->right;
+            node = NULL;
+            return temp;
+        } else if (node->right == NULL) {
+            Node* temp = node->left;
+            node = NULL;
+            return temp;
+        }
+        Node* temp = minValueNode(node->right);
+        node->val = temp->val;
+        node->right = deleteNode(node->right, temp->val);
+    }
+    return node;
 }
 
-Node* searchNode(Node* root, int key) {
-    if (root == NULL || root->val == key)
-        return root;
-    if (root->val < key)
-        return searchNode(root->right, key);
-    return searchNode(root->left, key);
-}
-
-void insert(Node** root, int key) {
-    if (*root == NULL) {
-        *root = (Node*)malloc(sizeof(Node));
-        (*root)->val = key;
-        (*root)->left = NULL;
-        (*root)->right = NULL;
+Node* searchNode(Node* node, int val) {
+    if (node == NULL || node->val == val) {
+        return node;
     }
-    else {
-        if (key < (*root)->val)
-            insert(&((*root)->left), key);
-        else if (key > (*root)->val)
-            insert(&((*root)->right), key);
+    if (node->val < val) {
+        return searchNode(node->right, val);
+    } else {
+        return searchNode(node->left, val);
     }
 }
 
-void inorder(Node* root) {
-    if (root != NULL) {
-        inorder(root->left);
-        printf("%d ", root->val);
-        inorder(root->right);
+void inorder(Node* node) {
+    if (node != NULL) {
+        inorder(node->left);
+        printf("%d ", node->val);
+        inorder(node->right);
     }
 }
 
 int main() {
     Node* root = NULL;
-    insert(&root, 50);
-    insert(&root, 30);
-    insert(&root, 20);
-    insert(&root, 40);
-    insert(&root, 70);
-    insert(&root, 60);
-    insert(&root, 80);
+    root = insert(root, 50);
+    root = insert(root, 30);
+    root = insert(root, 20);
+    root = insert(root, 40);
+    root = insert(root, 70);
+    root = insert(root, 60);
+    root = insert(root, 80);
 
-    printf("Inorder traversal of the given tree
-");
+    printf("Inorder traversal of the given tree\n");
     inorder(root);
-    printf("
-");
 
-    printf("Delete 20
-");
+    printf("\nDelete 20\n");
     root = deleteNode(root, 20);
-    printf("Inorder traversal of the modified tree
-");
+    printf("Inorder traversal of the modified tree\n");
     inorder(root);
-    printf("
-");
 
-    printf("Search for 40
-");
-    if (searchNode(root, 40) != NULL)
-        printf("Found
-");
-    else
-        printf("Not Found
-");
+    printf("\nSearch for 40\n");
+    Node* res = searchNode(root, 40);
+    if (res != NULL) {
+        printf("Found\n");
+    } else {
+        printf("Not Found\n");
+    }
 
     return 0;
 }

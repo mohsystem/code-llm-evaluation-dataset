@@ -1,18 +1,15 @@
 from Crypto.Cipher import AES
-import base64
+from Crypto.Util.Padding import pad
 
-def encrypt(input: str, key: str, iv: str) -> bytes:
-    cipher = AES.new(key.encode('utf-8'), AES.MODE_CBC, iv.encode('utf-8'))
-    padded_input = input + (AES.block_size - len(input) % AES.block_size) * chr(AES.block_size - len(input) % AES.block_size)
-    encrypted = cipher.encrypt(padded_input.encode('utf-8'))
-    return base64.b64encode(encrypted)
+def encrypt_data(data, key):
+    iv = b'\x00' * 16  # Static IV
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    padded_data = pad(data.encode('utf-8'), AES.block_size)
+    encrypted_data = cipher.encrypt(padded_data)
+    return encrypted_data
 
-def runPython():
-    input = "This is a secret message."
-    key = "1234567890123456"
-    iv = "abcdef1234567890"
-    encrypted = encrypt(input, key, iv)
-    print("Encrypted (Python):", encrypted.decode())
-
-if __name__ == "__main__":
-    runPython()
+# Example usage
+key = b'sixteen byte key'
+data = 'Hello, World!'
+encrypted_data = encrypt_data(data, key)
+print(encrypted_data)

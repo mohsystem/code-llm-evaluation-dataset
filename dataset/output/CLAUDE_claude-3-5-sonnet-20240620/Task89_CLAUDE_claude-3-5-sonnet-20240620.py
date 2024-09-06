@@ -1,25 +1,28 @@
 
-def check_password():
-    try:
-        with open("password.txt", "r") as file:
-            stored_password = file.readline().strip()
+import sys
 
-        entered_password = input("Enter password: ")
-
-        if len(stored_password) != len(entered_password):
+def check_password(stored_password, entered_password):
+    if len(stored_password) != len(entered_password):
+        return False
+    for s, e in zip(stored_password, entered_password):
+        if s != e:
             return False
+    return True
 
-        for stored_char, entered_char in zip(stored_password, entered_password):
-            if stored_char != entered_char:
-                return False
-
-        return True
-
+def main():
+    try:
+        with open('password.txt', 'r') as file:
+            stored_password = file.read().strip()
     except FileNotFoundError:
         print("Password file not found.")
-        return False
+        sys.exit(1)
 
-if check_password():
-    print("Password correct!")
-else:
-    print("Password incorrect!")
+    entered_password = input("Enter your password: ")
+
+    if check_password(stored_password, entered_password):
+        print("Password correct!")
+    else:
+        print("Password incorrect.")
+
+if __name__ == "__main__":
+    main()

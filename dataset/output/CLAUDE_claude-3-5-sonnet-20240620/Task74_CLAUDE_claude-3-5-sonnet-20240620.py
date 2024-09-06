@@ -1,7 +1,7 @@
 
 import psycopg2
 
-def get_connection():
+def create_connection():
     try:
         conn = psycopg2.connect(
             host="localhost",
@@ -10,14 +10,12 @@ def get_connection():
             password="your_password"
         )
         return conn
-    except psycopg2.Error as e:
-        print(f"Error connecting to the database: {e}")
+    except (Exception, psycopg2.Error) as error:
+        print("Error while connecting to PostgreSQL", error)
         return None
 
-if __name__ == "__main__":
-    conn = get_connection()
-    if conn:
-        print("Connected to the database!")
-        conn.close()
-    else:
-        print("Failed to connect to the database.")
+# Usage
+connection = create_connection()
+if connection:
+    print("Connection created successfully")
+    connection.close()

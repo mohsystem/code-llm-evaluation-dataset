@@ -1,17 +1,16 @@
 #include <iostream>
 #include <string>
 
-using namespace std;
-
-bool solution(const string &str, const string &ending) {
-    if (ending.size() > str.size()) {
+bool solution(const std::string& str, const std::string& ending) {
+    if (str.length() >= ending.length()) {
+        return (0 == str.compare (str.length() - ending.length(), ending.length(), ending));
+    } else {
         return false;
     }
-    return str.compare(str.size() - ending.size(), ending.size(), ending) == 0;
 }
 
 int main() {
-    cout << solution("abc", "bc") << endl; // true
-    cout << solution("abc", "d") << endl; // false
+    std::cout << solution("abc", "bc") << std::endl;  // returns true
+    std::cout << solution("abc", "d") << std::endl;   // returns false
     return 0;
 }

@@ -1,47 +1,41 @@
+// C code
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <openssl/evp.h>
-#include <openssl/bio.h>
-#include <openssl/buffer.h>
 
-char* base64_encode(const char* input, int length) {
-    BIO *bmem, *b64;
-    BUF_MEM *bptr;
-    b64 = BIO_new(BIO_f_base64());
-    bmem = BIO_new(BIO_s_mem());
-    b64 = BIO_push(b64, bmem);
-    BIO_write(b64, input, length);
-    BIO_flush(b64);
-    BIO_get_mem_ptr(b64, &bptr);
-    char *buff = (char *)malloc(bptr->length + 1);
-    memcpy(buff, bptr->data, bptr->length);
-    buff[bptr->length] = 0;
-    BIO_free_all(b64);
-    return buff;
+typedef struct SensitiveData {
+    char *key;
+    char *value;
+    struct SensitiveData *next;
+} SensitiveData;
+
+SensitiveData* createNode(const char *key, const char *value) {
+    SensitiveData *newNode = (SensitiveData*) malloc(sizeof(SensitiveData));
+    newNode->key = strdup(key);
+    newNode->value = strdup(value);
+    newNode->next = NULL;
+    return newNode;
 }
 
-char* base64_decode(char* input, int length) {
-    BIO *b64, *bmem;
-    char *buffer = (char *)malloc(length);
-    memset(buffer, 0, length);
-    b64 = BIO_new(BIO_f_base64());
-    bmem = BIO_new_mem_buf(input, length);
-    bmem = BIO_push(b64, bmem);
-    BIO_read(bmem, buffer, length);
-    BIO_free_all(b64);
-    return buffer;
+void storeData(SensitiveData **head, const char *key, const char *value) {
+    SensitiveData *newNode = createNode(key, value);
+    newNode->next = *head;
+    *head = newNode;
+}
+
+const char* retrieveData(SensitiveData *head, const char *key) {
+    while (head != NULL) {
+        if (strcmp(head->key, key) == 0) {
+            return head->value;
+        }
+        head = head->next;
+    }
+    return "Data not found";
 }
 
 int main() {
-    char* sensitive_data = "4111-1111-1111-1111";
-    char* encoded = base64_encode(sensitive_data, strlen(sensitive_data));
-    printf("Encoded Data (C): %s
-", encoded);
-    char* decoded = base64_decode(encoded, strlen(encoded));
-    printf("Decoded Data (C): %s
-", decoded);
-    free(encoded);
-    free(decoded);
+    SensitiveData *head = NULL;
+    storeData(&head, "credit_card", "1234-5678-9012-3456");
+    printf("%s\n", retrieveData(head, "credit_card"));
     return 0;
 }

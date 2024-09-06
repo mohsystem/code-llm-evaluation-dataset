@@ -1,17 +1,22 @@
-// C
 #include <stdio.h>
 
-double findUniq(const double arr[], int n) {
+double findUniq(double arr[], int n) {
+    int i;
     double a = arr[0];
     double b = arr[1];
-    double c = arr[2];
-
-    if (a != b && a != c) return a;
-    if (a != b) return c;
-
-    for (int i = 3; i < n; i++) {
-        if (arr[i] != a) return arr[i];
+    for (i = 2; i < n; i++) {
+        if (arr[i] != a) {
+            b = arr[i];
+            break;
+        }
     }
-
-    return -1;
+    int count_a = 0, count_b = 0;
+    for (i = 0; i < n; i++) {
+        if (arr[i] == a) {
+            count_a++;
+        } else if (arr[i] == b) {
+            count_b++;
+        }
+    }
+    return count_a == 1 ? a : b;
 }

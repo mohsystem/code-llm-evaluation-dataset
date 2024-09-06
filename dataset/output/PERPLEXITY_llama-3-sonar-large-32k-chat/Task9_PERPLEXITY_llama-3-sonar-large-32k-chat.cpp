@@ -1,19 +1,22 @@
 #include <iostream>
-#include <string>
+#include <vector>
 
-std::string sumType(int arr[], int size) {
-    if (size == 0) {
-        arr[0] = 0;
-        size = 1;
-    }
+std::string oddOrEven(std::vector<int> arr) {
     int sum = 0;
-    for (int i = 0; i < size; i++) sum += arr[i];
-    return sum % 2 == 0 ? "even" : "odd";
+    for (int i : arr) {
+        sum += i;
+    }
+    return (sum % 2 == 0) ? "even" : "odd";
 }
 
 int main() {
-    int arr[] = {0, 1, 4};
-    int size = sizeof(arr) / sizeof(arr[0]);
-    std::cout << sumType(arr, size) << std::endl;
+    std::vector<int> arr1 = {0};
+    std::vector<int> arr2 = {0, 1, 4};
+    std::vector<int> arr3 = {0, -1, -5};
+
+    std::cout << oddOrEven(arr1) << std::endl;  // Output: "even"
+    std::cout << oddOrEven(arr2) << std::endl;  // Output: "odd"
+    std::cout << oddOrEven(arr3) << std::endl;  // Output: "even"
+
     return 0;
 }

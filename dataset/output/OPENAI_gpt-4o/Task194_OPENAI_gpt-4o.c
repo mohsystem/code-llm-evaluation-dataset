@@ -3,74 +3,69 @@
 #include <stdlib.h>
 #include <time.h>
 
+char* words[] = {"acckzz", "ccbazz", "eiowzz", "abcczz"};
+int wordsSize = 4;
+
 typedef struct {
-    char secret[7];
-    int guess_count;
+    char* secret;
+    int guessCount;
 } Master;
 
-int guess(Master* master, char word[7], char words[][7], int words_size) {
-    master->guess_count++;
-    int found = 0;
-    for (int i = 0; i < words_size; i++) {
-        if (strcmp(word, words[i]) == 0) {
-            found = 1;
-            break;
+int guess(Master* master, char* word) {
+    master->guessCount += 1;
+    for (int i = 0; i < wordsSize; i++) {
+        if (strcmp(words[i], word) == 0) {
+            int matches = 0;
+            for (int j = 0; j < strlen(master->secret); j++) {
+                if (master->secret[j] == word[j]) {
+                    matches++;
+                }
+            }
+            return matches;
         }
     }
-    if (!found) {
-        return -1;
-    }
-    int matches = 0;
-    for (int i = 0; i < 6; i++) {
-        if (master->secret[i] == word[i]) {
-            matches++;
-        }
-    }
-    return matches;
+    return -1;
 }
 
-int match(char word1[7], char word2[7]) {
-    int matches = 0;
-    for (int i = 0; i < 6; i++) {
-        if (word1[i] == word2[i]) {
-            matches++;
+int matchCount(char* w1, char* w2) {
+    int count = 0;
+    for (int i = 0; i < strlen(w1); i++) {
+        if (w1[i] == w2[i]) {
+            count++;
         }
     }
-    return matches;
+    return count;
 }
 
-void findSecretWord(char words[][7], int words_size, Master* master, int allowedGuesses) {
-    int attempts = 0;
-    srand(time(NULL));
-    while (attempts < allowedGuesses) {
-        char guess_word[7];
-        strcpy(guess_word, words[rand() % words_size]);
-        int matches = guess(master, guess_word, words, words_size);
+void findSecretWord(char* words[], int wordsSize, Master* master, int allowedGuesses) {
+    srand(time(0));
+    for (int i = 0; i < allowedGuesses; i++) {
+        char* guessWord = words[rand() % wordsSize];
+        int matches = guess(master, guessWord);
         if (matches == 6) {
-            printf("You guessed the secret word correctly.
-");
+            printf("You guessed the secret word correctly.\n");
             return;
         }
-        char filtered_words[words_size][7];
-        int count = 0;
-        for (int i = 0; i < words_size; i++) {
-            if (match(words[i], guess_word) == matches) {
-                strcpy(filtered_words[count++], words[i]);
+        char* newWords[wordsSize];
+        int newWordsSize = 0;
+        for (int j = 0; j < wordsSize; j++) {
+            if (matchCount(words[j], guessWord) == matches) {
+                newWords[newWordsSize++] = words[j];
             }
         }
-        memcpy(words, filtered_words, sizeof(filtered_words));
-        words_size = count;
-        attempts++;
+        for (int j = 0; j < newWordsSize; j++) {
+            words[j] = newWords[j];
+        }
+        wordsSize = newWordsSize;
     }
-    printf("Either you took too many guesses, or you did not find the secret word.
-");
+    printf("Either you took too many guesses, or you did not find the secret word.\n");
 }
 
 int main() {
-    char secret[7] = "hamada";
-    char words[2][7] = {"hamada", "khaled"};
+    char* secret = "acckzz";
     int allowedGuesses = 10;
-    Master master = { .secret = "hamada", .guess_count = 0 };
-    findSecretWord(words, 2, &master, allowedGuesses);
+    Master master = {secret, 0};
+    findSecretWord(words, wordsSize, &master, allowedGuesses);
+
     return 0;
 }

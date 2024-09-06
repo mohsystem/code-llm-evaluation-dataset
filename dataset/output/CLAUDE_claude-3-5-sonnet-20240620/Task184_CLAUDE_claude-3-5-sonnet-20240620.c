@@ -20,7 +20,7 @@ void generate_name(char *name) {
         name[2] = digits[rand() % 10];
         name[3] = digits[rand() % 10];
         name[4] = digits[rand() % 10];
-        name[5] = \'\\0\';
+        name[5] = '\\0';
     } while (used_count > 0 && strstr((char*)used_names, name) != NULL);
 
     strcpy(used_names[used_count++], name);
@@ -43,12 +43,10 @@ int main() {
 
     Robot robot;
     robot_init(&robot);
-    printf("%s\
-", robot.name);
+    printf("%s\\n", robot.name);
 
     robot_reset(&robot);
-    printf("%s\
-", robot.name);
+    printf("%s\\n", robot.name);
 
     return 0;
 }

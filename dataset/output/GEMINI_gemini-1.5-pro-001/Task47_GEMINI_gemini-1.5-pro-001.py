@@ -2,40 +2,25 @@ import requests
 from bs4 import BeautifulSoup
 import sqlite3
 
-# Target website URL
-url = "https://www.example.com/" # Replace with the target website
+# Target website and data to scrape
+url = "https://www.example.com"  # Replace with the target website
+table_name = "scraped_data"
+data_attributes = {"class": "example-class"}  # Replace with actual attributes
 
-# Send a GET request to the URL
+# Database setup
+conn = sqlite3.connect('scraped_data.db')
+cursor = conn.cursor()
+cursor.execute(f'''CREATE TABLE IF NOT EXISTS {table_name} (id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT)''')
+
+# Data scraping and storage
 response = requests.get(url)
-
-# Parse the HTML content using BeautifulSoup
 soup = BeautifulSoup(response.content, 'html.parser')
 
-# Connect to the SQLite database (or create it if it doesn't exist)
-conn = sqlite3.connect('data.db')
-cursor = conn.cursor()
+data_elements = soup.find_all(attrs=data_attributes)
+for element in data_elements:
+    data = element.text.strip()
+    cursor.execute(f"INSERT INTO {table_name} (data) VALUES (?)", (data,))
 
-# Create a table to store the data (if it doesn't exist)
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS website_data (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        link TEXT
-    )
-''')
-
-# Extract data (example: titles and links from 'a' tags)
-for link in soup.find_all('a', href=True):
-    title = link.text.strip()
-    href = link['href']
-
-    # Insert the data into the database
-    cursor.execute("INSERT INTO website_data (title, link) VALUES (?, ?)", (title, href))
-
-# Commit the changes to the database
 conn.commit()
-
-# Close the database connection
 conn.close()
-
 print("Data scraped and stored successfully!")

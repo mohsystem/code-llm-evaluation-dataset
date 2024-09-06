@@ -1,16 +1,24 @@
 
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad
-import base64
+import random
 
-def encrypt(message, secret_key):
-    cipher = AES.new(secret_key.encode(\'utf-8\'), AES.MODE_ECB)
-    padded_message = pad(message.encode(\'utf-8\'), AES.block_size)
-    encrypted_message = cipher.encrypt(padded_message)
-    return base64.b64encode(encrypted_message).decode(\'utf-8\')
+def encrypt_message(message, key):
+    cipher = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    random.seed(key)
+    random.shuffle(cipher)
+    
+    encrypted = ''
+    for char in message.upper():
+        if char.isalpha():
+            index = ord(char) - ord('A')
+            encrypted += cipher[index]
+        else:
+            encrypted += char
+    
+    return encrypted
 
+# Example usage
 message = "Hello, World!"
-secret_key = "MySecretKey12345"
-
-encrypted_message = encrypt(message, secret_key)
-print("Encrypted message:", encrypted_message)
+key = 42
+encrypted = encrypt_message(message, key)
+print(f"Original: {message}")
+print(f"Encrypted: {encrypted}")

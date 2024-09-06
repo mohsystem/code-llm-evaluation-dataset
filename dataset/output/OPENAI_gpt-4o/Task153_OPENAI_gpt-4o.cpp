@@ -1,49 +1,48 @@
 #include <iostream>
-#include <vector>
+#include <list>
 #include <queue>
-#include <unordered_map>
-#include <unordered_set>
+#include <map>
+#include <set>
 
 class Graph {
+    std::map<int, std::list<int>> adj;
+
 public:
     void addEdge(int u, int v) {
-        adjList[u].push_back(v);
+        adj[u].push_back(v);
     }
-    
+
     void bfs(int start) {
-        std::unordered_set<int> visited;
-        std::queue<int> q;
-        q.push(start);
+        std::set<int> visited;
+        std::queue<int> queue;
+        queue.push(start);
         visited.insert(start);
-        
-        while (!q.empty()) {
-            int node = q.front();
-            q.pop();
+
+        while (!queue.empty()) {
+            int node = queue.front();
             std::cout << node << " ";
-            
-            for (int neighbor : adjList[node]) {
-                if (visited.find(neighbor) == visited.end()) {
-                    q.push(neighbor);
-                    visited.insert(neighbor);
+            queue.pop();
+
+            for (int neighbour : adj[node]) {
+                if (visited.find(neighbour) == visited.end()) {
+                    queue.push(neighbour);
+                    visited.insert(neighbour);
                 }
             }
         }
     }
-    
-private:
-    std::unordered_map<int, std::vector<int>> adjList;
 };
 
 int main() {
-    Graph graph;
-    graph.addEdge(0, 1);
-    graph.addEdge(0, 2);
-    graph.addEdge(1, 2);
-    graph.addEdge(2, 0);
-    graph.addEdge(2, 3);
-    graph.addEdge(3, 3);
-    
-    graph.bfs(2);
-    
+    Graph g;
+    g.addEdge(0, 1);
+    g.addEdge(0, 2);
+    g.addEdge(1, 2);
+    g.addEdge(2, 0);
+    g.addEdge(2, 3);
+    g.addEdge(3, 3);
+
+    g.bfs(2);
+
     return 0;
 }

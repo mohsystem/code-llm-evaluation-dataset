@@ -1,40 +1,43 @@
 #include <iostream>
 #include <string>
 #include <curl/curl.h>
-#include <nlohmann/json.hpp>
-
-using json = nlohmann::json;
+#include <nlohmann/json.hpp> // You likely need to install a JSON library
 
 // Callback function for cURL to write data to a string
-size_t write_callback(void* contents, size_t size, size_t nmemb, std::string* output) {
-    size_t realsize = size * nmemb;
-    output->append((char*)contents, realsize);
-    return realsize;
+size_t writeCallback(void* contents, size_t size, size_t nmemb, void* userp) {
+    size_t totalSize = size * nmemb;
+    ((std::string*)userp)->append((char*)contents, totalSize);
+    return totalSize;
 }
 
-// Function to fetch JSON data from a URL
-json fetch_json_from_url(const std::string& url) {
+// Function to fetch JSON from a URL
+nlohmann::json getJsonFromUrl(const std::string& url) {
     CURL* curl = curl_easy_init();
-    json json_data;
+    std::string responseBuffer;
 
     if (curl) {
-        std::string response_data;
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseBuffer);
 
         CURLcode res = curl_easy_perform(curl);
-        if (res != CURLE_OK) {
-            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
-        } else {
-            json_data = json::parse(response_data);
-        }
         curl_easy_cleanup(curl);
-    } else {
-        std::cerr << "Failed to initialize libcurl" << std::endl;
-    }
 
-    return json_data;
+        if (res == CURLE_OK) {
+            try {
+                return nlohmann::json::parse(responseBuffer);
+            } catch (nlohmann::json::parse_error& e) {
+                std::cerr << "JSON parsing error: " << e.what() << std::endl;
+                return nlohmann::json();
+            }
+        } else {
+            std::cerr << "Error fetching URL: " << curl_easy_strerror(res) << std::endl;
+            return nlohmann::json();
+        }
+    } else {
+        std::cerr << "Error initializing cURL" << std::endl;
+        return nlohmann::json();
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -44,10 +47,10 @@ int main(int argc, char* argv[]) {
     }
 
     std::string url = argv[1];
-    json data = fetch_json_from_url(url);
+    nlohmann::json jsonData = getJsonFromUrl(url);
 
-    if (!data.empty()) {
-        std::cout << data.dump(4) << std::endl; // Pretty print with 4 spaces indentation
+    if (!jsonData.empty()) {
+        std::cout << jsonData.dump(4) << std::endl; // Pretty-print JSON
     }
 
     return 0;

@@ -1,37 +1,34 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <cctype>
-#include <algorithm>
-#include <array>
-#include <sstream>
+#include <cstdio>
+#include <memory>
 
 using namespace std;
 
-bool is_valid_command(const string& command) {
-    for (char c : command) {
-        if (!isalnum(c) && !isspace(c) && 
-            string("./_-").find(c) == string::npos) {
-            return false;
-        }
-    }
-    return true;
-}
-
 int main() {
-    string command;
+  string command;
+  cout << "Enter a bash command: ";
+  getline(cin, command);
 
-    cout << "Enter a bash command: ";
-    getline(cin, command);
-
-    if (is_valid_command(command)) {
-        int result = system(command.c_str());
-        if (result != 0) {
-            cerr << "Error executing command: " << command << endl;
-        }
-    } else {
-        cout << "Invalid command format. Please use only alphanumeric characters, spaces, and './-_' " << endl;
+  try {
+    // Execute the command and capture output
+    unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"), pclose);
+    if (!pipe) {
+      throw runtime_error("popen() failed!");
+    }
+    char buffer[128];
+    string result;
+    while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr) {
+      result += buffer;
     }
 
-    return 0;
+    cout << result;
+
+  } catch (const runtime_error& e) {
+    cerr << "Error executing command: " << e.what() << endl;
+    return 1; // Indicate an error occurred
+  }
+
+  return 0; // Indicate successful execution
 }

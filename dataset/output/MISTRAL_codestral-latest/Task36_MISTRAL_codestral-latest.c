@@ -1,21 +1,23 @@
+// C
 #include <stdio.h>
+#include <stdlib.h>
 
 int main() {
-    char filePath[100];
-    printf("Enter the file path: ");
-    scanf("%s", filePath);
+    char fileName[100];
+    printf("Enter file name: ");
+    fgets(fileName, sizeof(fileName), stdin);
+    fileName[strcspn(fileName, "\n")] = 0;  // Remove trailing newline
 
-    FILE *file = fopen(filePath, "r");
-    if (file == NULL) {
-        perror("Error opening file");
-        return(-1);
+    FILE *file = fopen(fileName, "r");
+    if (file) {
+        char line[256];
+        while (fgets(line, sizeof(line), file)) {
+            printf("%s", line);
+        }
+        fclose(file);
+    } else {
+        printf("Unable to open file");
     }
 
-    char ch;
-    while ((ch = fgetc(file)) != EOF) {
-        printf("%c", ch);
-    }
-
-    fclose(file);
     return 0;
 }

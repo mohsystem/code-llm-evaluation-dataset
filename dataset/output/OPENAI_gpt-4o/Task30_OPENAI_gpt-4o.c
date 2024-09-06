@@ -1,29 +1,29 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
+#include <stdlib.h>
 
-void longest(char *s1, char *s2, char *result) {
-    bool seen[26] = { false };
-    int pos = 0;
-    
-    for (int i = 0; i < strlen(s1); i++) seen[s1[i] - 'a'] = true;
-    for (int i = 0; i < strlen(s2); i++) seen[s2[i] - 'a'] = true;
-    
-    for (int i = 0; i < 26; i++) {
-        if (seen[i]) result[pos++] = 'a' + i;
+void longest(const char *s1, const char *s2, char *result) {
+    int count[26] = {0};
+    while (*s1) count[*s1++ - 'a'] = 1;
+    while (*s2) count[*s2++ - 'a'] = 1;
+    char *p = result;
+    for (char c = 'a'; c <= 'z'; c++) {
+        if (count[c - 'a']) *p++ = c;
     }
-    result[pos] = '\0';
+    *p = '\0';
 }
 
 int main() {
+    char a[] = "xyaabbbccccdefww";
+    char b[] = "xxxxyyyyabklmopq";
     char result[27];
-    longest("xyaabbbccccdefww", "xxxxyyyyabklmopq", result);
-    printf("%s
-", result); // "abcdefklmopqwxy"
-    
-    longest("abcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrstuvwxyz", result);
-    printf("%s
-", result); // "abcdefghijklmnopqrstuvwxyz"
-    
+
+    longest(a, b, result);
+    printf("%s\n", result);
+
+    char c[] = "abcdefghijklmnopqrstuvwxyz";
+    longest(c, c, result);
+    printf("%s\n", result);
+
     return 0;
 }

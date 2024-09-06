@@ -1,25 +1,37 @@
 #include <iostream>
 #include <string>
-#include <sstream>
+#include <vector>
+#include <algorithm>
 
-void reverseWords(std::string str) {
-    std::istringstream iss(str);
+std::string reverseWords(std::string s) {
     std::string word;
-    while (iss >> word) {
-        if (word.length() >= 5) {
-            std::reverse(word.begin(), word.end());
+    std::vector<std::string> words;
+    for (char c : s) {
+        if (c == ' ') {
+            if (word.length() >= 5) {
+                std::reverse(word.begin(), word.end());
+            }
+            words.push_back(word);
+            word = "";
+        } else {
+            word += c;
         }
-        std::cout << word << " ";
     }
-    std::cout << std::endl;
+    if (word.length() >= 5) {
+        std::reverse(word.begin(), word.end());
+    }
+    words.push_back(word);
+    word = "";
+    for (std::string w : words) {
+        word += w + " ";
+    }
+    word.pop_back();
+    return word;
 }
 
 int main() {
-    std::string str1 = "Hey fellow warriors";
-    std::string str2 = "This is a test";
-    std::string str3 = "This is another test";
-    reverseWords(str1);
-    reverseWords(str2);
-    reverseWords(str3);
+    std::cout << reverseWords("Hey fellow warriors") << std::endl;
+    std::cout << reverseWords("This is a test") << std::endl;
+    std::cout << reverseWords("This is another test") << std::endl;
     return 0;
 }

@@ -2,43 +2,41 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_LINE_LENGTH 256
+typedef struct {
+    char key[50];
+    char value[50];
+} Record;
 
 int compare(const void *a, const void *b) {
-    return strcmp(*(const char **)a, *(const char **)b);
+    return strcmp(((Record *)a)->key, ((Record *)b)->key);
 }
 
-int main() {
-    FILE *file = fopen("data.txt", "r");
-    if (file == NULL) {
-        perror("Unable to open file");
-        return 1;
+void read_and_sort(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        printf("Unable to open file.\n");
+        return;
     }
 
-    char **lines = NULL;
-    size_t count = 0;
-    char line[MAX_LINE_LENGTH];
-    while (fgets(line, sizeof(line), file)) {
-        lines = realloc(lines, (count + 1) * sizeof(char *));
-        lines[count] = strdup(line);
+    Record records[100];
+    int count = 0;
+    while (fscanf(file, "%s %s", records[count].key, records[count].value) != EOF) {
         count++;
     }
     fclose(file);
 
-    qsort(lines, count, sizeof(char *), compare);
+    qsort(records, count, sizeof(Record), compare);
 
-    file = fopen("sorted_data.txt", "w");
-    if (file == NULL) {
-        perror("Unable to open file");
+    for (int i = 0; i < count; i++) {
+        printf("%s %s\n", records[i].key, records[i].value);
+    }
+}
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("Please provide a filename as argument.\n");
         return 1;
     }
-
-    for (size_t i = 0; i < count; i++) {
-        fputs(lines[i], file);
-        free(lines[i]);
-    }
-    free(lines);
-    fclose(file);
-
+    read_and_sort(argv[1]);
     return 0;
 }

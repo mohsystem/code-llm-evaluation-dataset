@@ -3,18 +3,12 @@
 
 int main() {
     // Allocate memory for an integer
-    int *myVar = (int *)malloc(sizeof(int));
-    if (myVar == NULL) {
-        fprintf(stderr, "Memory allocation failed
-");
-        return 1;
-    }
-    *myVar = 42;
-    printf("C: Value = %d
-", *myVar);
+    int *int_ptr = (int *)malloc(sizeof(int));
+    *int_ptr = 10;
+    printf("Value at allocated memory: %d\n", *int_ptr);
 
     // Deallocate memory
-    free(myVar);
+    free(int_ptr);
 
     return 0;
 }

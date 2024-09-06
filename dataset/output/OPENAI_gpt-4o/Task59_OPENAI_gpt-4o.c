@@ -2,22 +2,27 @@
 #include <ctype.h>
 #include <string.h>
 
-void accum(const char* s) {
-    int len = strlen(s);
-    for (int i = 0; i < len; i++) {
-        if (i > 0) printf("-");
-        putchar(toupper(s[i]));
+void accum(const char *s, char *result) {
+    for (int i = 0, pos = 0; s[i] != '\0'; i++) {
+        if (i > 0) result[pos++] = '-';
+        result[pos++] = toupper(s[i]);
         for (int j = 0; j < i; j++) {
-            putchar(tolower(s[i]));
+            result[pos++] = tolower(s[i]);
         }
     }
-    printf("
-");
 }
 
 int main() {
-    accum("abcd");       // Output: A-Bb-Ccc-Dddd
-    accum("RqaEzty");    // Output: R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy
-    accum("cwAt");       // Output: C-Ww-Aaa-Tttt
+    char result[256];
+
+    accum("abcd", result);
+    printf("%s\n", result); // Output: A-Bb-Ccc-Dddd
+
+    accum("RqaEzty", result);
+    printf("%s\n", result); // Output: R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy
+
+    accum("cwAt", result);
+    printf("%s\n", result); // Output: C-Ww-Aaa-Tttt
+
     return 0;
 }

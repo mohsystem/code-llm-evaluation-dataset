@@ -5,23 +5,29 @@ char * shortestPalindrome(char * s){
     int best = 0;
     for (int i = n - 1; i >= 0; --i) {
         hashVal = (hashVal * base + (s[i] - 'a')) % mod;
-        if (hashVal == ((s[i] - 'a') * powBase) % mod) {
-            best = i;
+        if (i == 0 || isPalindrome(s, 0, i)) {
+            best = i + 1;
         }
-        powBase = (powBase * base) % mod;
     }
-    char *add = (char *)malloc((n - best) * sizeof(char));
-    for (int i = best + 1, j = 0; i < n; ++i, ++j) {
-        add[j] = s[i];
+    char *res = (char *)malloc(sizeof(char) * (n + n - best + 1));
+    int idx = 0;
+    for (int i = n - best - 1; i >= 0; --i) {
+        res[idx++] = s[i];
     }
-    add[n - best - 1] = '\0';
-    for (int i = 0, j = n - best - 2; i < j; ++i, --j) {
-        char temp = add[i];
-        add[i] = add[j];
-        add[j] = temp;
+    for (int i = 0; i < n; ++i) {
+        res[idx++] = s[i];
     }
-    char *res = (char *)malloc((2 * n - best) * sizeof(char));
-    strcpy(res, add);
-    strcat(res, s);
+    res[idx] = '\0';
     return res;
+}
+
+bool isPalindrome(char *s, int left, int right) {
+    while (left < right) {
+        if (s[left] != s[right]) {
+            return false;
+        }
+        ++left;
+        --right;
+    }
+    return true;
 }

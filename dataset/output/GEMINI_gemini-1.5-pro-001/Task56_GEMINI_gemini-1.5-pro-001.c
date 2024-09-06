@@ -3,23 +3,30 @@
 #include <string.h>
 #include <time.h>
 
-char* generate_token(int length) {
-    char* token = malloc((length + 1) * sizeof(char));
-    const char characters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    const int characters_len = strlen(characters);
+char* generate_token(size_t length) {
+  const char characters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  char* token = malloc((length + 1) * sizeof(char));
+  if (token == NULL) {
+    return NULL;
+  }
 
-    srand(time(NULL));
-    for (int i = 0; i < length; i++) {
-        token[i] = characters[rand() % characters_len];
-    }
-    token[length] = '\0';
-    return token;
+  srand(time(NULL));
+  for (size_t i = 0; i < length; ++i) {
+    token[i] = characters[rand() % (sizeof(characters) - 1)];
+  }
+  token[length] = '\0';
+
+  return token;
 }
 
 int main() {
-    char* token = generate_token(32);
-    printf("%s
-", token);
+  char* token = generate_token(32);
+  if (token != NULL) {
+    printf("%s\n", token);
     free(token);
-    return 0;
+  } else {
+    fprintf(stderr, "Memory allocation failed.\n");
+    return 1;
+  }
+  return 0;
 }

@@ -1,27 +1,27 @@
 
 #include <stdlib.h>
 
-int* removeSmallest(int* numbers, int numbersSize, int* resultSize) {
-    if (numbersSize == 0) {
-        *resultSize = 0;
+int* remove_smallest(const int* numbers, int length, int* new_length) {
+    if (length == 0) {
+        *new_length = 0;
         return NULL;
     }
-
-    int* result = (int*)malloc((numbersSize - 1) * sizeof(int));
-    int minIndex = 0;
-    for (int i = 1; i < numbersSize; i++) {
-        if (numbers[i] < numbers[minIndex]) {
-            minIndex = i;
+    
+    int min_index = 0;
+    for (int i = 1; i < length; i++) {
+        if (numbers[i] < numbers[min_index]) {
+            min_index = i;
         }
     }
-
+    
+    int* result = malloc((length - 1) * sizeof(int));
     int j = 0;
-    for (int i = 0; i < numbersSize; i++) {
-        if (i != minIndex) {
+    for (int i = 0; i < length; i++) {
+        if (i != min_index) {
             result[j++] = numbers[i];
         }
     }
-
-    *resultSize = numbersSize - 1;
+    
+    *new_length = length - 1;
     return result;
 }

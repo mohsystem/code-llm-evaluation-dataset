@@ -1,18 +1,23 @@
 import base64
 import json
 
-def process_request(request_data):
-    # Step 1: Retrieve and decode raw data
-    decoded_data = base64.b64decode(request_data).decode('utf-8')
-
-    # Step 2: Deserialize JSON data
+# Function to process the request
+def process_request(req):
+    # Step 1: Retrieve the raw_data from the request, ensuring it is encoded in UTF-8
+    raw_data = req.encode('utf-8')
+    
+    # Step 2: Decode the raw_data using Base64
+    decoded_data = base64.b64decode(raw_data)
+    
+    # Step 3: Deserialize the decoded data into its original format (e.g., JSON)
     deserialized_data = json.loads(decoded_data)
-
-    # Step 3: Store deserialized data in variable and return it
+    
+    # Step 4: Store the deserialized data in a variable
     stored_data = deserialized_data
+    
+    # Step 5: Return the stored data
     return stored_data
 
 # Example usage
-request_data = "eyJrZXkiOiAiVmFsdWUifQ=="
-stored_data = process_request(request_data)
-print(stored_data)
+req = base64.b64encode(json.dumps({"key": "value"}).encode('utf-8')).decode('utf-8')
+print(process_request(req))

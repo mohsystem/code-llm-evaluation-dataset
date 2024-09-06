@@ -1,18 +1,5 @@
-class BitFieldExample:
-    def __init__(self, bitField):
-        self.bitField = bitField
-
-    def get_bit_field(self):
-        return self.bitField
-
-    def set_bit_field(self, bitField):
-        self.bitField = bitField
-
-    def get_bit(self, position):
-        return ((self.bitField & (1 << position)) != 0)
-
-    def set_bit(self, position, value):
-        if value:
-            self.bitField |= (1 << position)
-        else:
-            self.bitField &= ~(1 << position)
+class BitFields:
+    def __init__(self, bit1, bit2, bit3):
+        self.bit1 = bit1
+        self.bit2 = bit2
+        self.bit3 = bit3

@@ -1,32 +1,26 @@
 #include <iostream>
 #include <string>
-#include <variant>
-#include <unordered_map>
-#include <vector>
-#include <any>
+#include <nlohmann/json.hpp>
 
-using namespace std;
+using json = nlohmann::json;
 
-using JSON = std::variant<std::nullptr_t, bool, int, double, std::string, 
-                           std::unordered_map<std::string, std::any>, std::vector<std::any>>;
-
-JSON parse_json(const std::string& json) {
-  // Implementation for parsing the JSON string goes here
-  // This is a placeholder, you need to implement the actual parsing logic
-  // For simplicity, we just return an empty object for now
-  return JSON(std::unordered_map<std::string, std::any>()); 
+// Function to get the root element of a JSON string
+nlohmann::json getRootElement(const std::string& jsonString) {
+    try {
+        return json::parse(jsonString);
+    } catch (const json::exception& e) {
+        std::cerr << "Invalid JSON string: " << e.what() << std::endl;
+        return nullptr;
+    }
 }
 
 int main() {
-  std::string jsonString = "{\"name\":\"John\", \"age\":30, \"city\":\"New York\"}";
-  JSON root = parse_json(jsonString);
+    std::string jsonString = "{\"name\": \"John\", \"age\": 30, \"city\": \"New York\"}";
+    nlohmann::json rootElement = getRootElement(jsonString);
 
-  // Check if parsing was successful and root element is an object
-  if (std::holds_alternative<std::unordered_map<std::string, std::any>>(root)) {
-    std::cout << "JSON parsing successful!" << std::endl;
-  } else {
-    std::cout << "JSON parsing failed!" << std::endl;
-  }
+    if (!rootElement.is_null()) {
+        std::cout << rootElement.dump(4) << std::endl;
+    }
 
-  return 0;
+    return 0;
 }

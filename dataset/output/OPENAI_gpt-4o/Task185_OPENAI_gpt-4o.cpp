@@ -1,41 +1,43 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
 using namespace std;
 
 double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
-    if (nums1.size() > nums2.size()) {
-        return findMedianSortedArrays(nums2, nums1);
-    }
+    vector<int> merged;
+    int i = 0, j = 0;
     
-    int m = nums1.size(), n = nums2.size();
-    int half = (m + n + 1) / 2;
-    int l = 0, r = m;
-    
-    while (l <= r) {
-        int i = (l + r) / 2;
-        int j = half - i;
-        
-        int Aleft = (i == 0) ? INT_MIN : nums1[i - 1];
-        int Aright = (i == m) ? INT_MAX : nums1[i];
-        int Bleft = (j == 0) ? INT_MIN : nums2[j - 1];
-        int Bright = (j == n) ? INT_MAX : nums2[j];
-        
-        if (Aleft <= Bright && Bleft <= Aright) {
-            if ((m + n) % 2) {
-                return max(Aleft, Bleft);
-            }
-            return (max(Aleft, Bleft) + min(Aright, Bright)) / 2.0;
+    while (i < nums1.size() && j < nums2.size()) {
+        if (nums1[i] < nums2[j]) {
+            merged.push_back(nums1[i++]);
+        } else {
+            merged.push_back(nums2[j++]);
         }
-        if (Aleft > Bright) r = i - 1;
-        else l = i + 1;
     }
-    return 0.0;
+    
+    while (i < nums1.size()) {
+        merged.push_back(nums1[i++]);
+    }
+    
+    while (j < nums2.size()) {
+        merged.push_back(nums2[j++]);
+    }
+    
+    int len = merged.size();
+    if (len % 2 == 0) {
+        return (merged[len / 2 - 1] + merged[len / 2]) / 2.0;
+    } else {
+        return merged[len / 2];
+    }
 }
 
 int main() {
-    vector<int> nums1 = {1, 3};
-    vector<int> nums2 = {2};
-    cout << findMedianSortedArrays(nums1, nums2) << endl;
+    vector<int> nums1a = {1, 3};
+    vector<int> nums2a = {2};
+    cout << findMedianSortedArrays(nums1a, nums2a) << endl;
+    
+    vector<int> nums1b = {1, 2};
+    vector<int> nums2b = {3, 4};
+    cout << findMedianSortedArrays(nums1b, nums2b) << endl;
+    
     return 0;
 }

@@ -1,7 +1,7 @@
 import heapq
 
 def dijkstra(graph, start):
-    distances = {node: float('inf') for node in graph}
+    distances = {node: float('infinity') for node in graph}
     distances[start] = 0
     priority_queue = [(0, start)]
 
@@ -27,7 +27,5 @@ graph = {
     'C': {'A': 4, 'B': 2, 'D': 1},
     'D': {'B': 5, 'C': 1}
 }
-
 start_node = 'A'
-shortest_paths = dijkstra(graph, start_node)
-print(shortest_paths)
+print(dijkstra(graph, start_node))

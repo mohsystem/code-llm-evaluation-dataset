@@ -1,9 +1,7 @@
 
-#include <vector>
-
 class ProductOfNumbers {
 private:
-    std::vector<int> products;
+    vector<int> products;
 
 public:
     ProductOfNumbers() {
@@ -21,6 +19,6 @@ public:
     
     int getProduct(int k) {
         int n = products.size();
-        return k < n ? products[n - 1] / products[n - k - 1] : 0;
+        return k < n ? products.back() / products[n - k - 1] : 0;
     }
 };

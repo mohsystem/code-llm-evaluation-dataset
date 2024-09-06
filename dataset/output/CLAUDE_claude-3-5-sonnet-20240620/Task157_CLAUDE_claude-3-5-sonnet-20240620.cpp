@@ -5,7 +5,7 @@ int main() {
     // Allocate memory
     int* ptr = new int[10];
 
-    // Use the allocated memory
+    // Use the memory
     ptr[0] = 5;
     std::cout << ptr[0] << std::endl;
 

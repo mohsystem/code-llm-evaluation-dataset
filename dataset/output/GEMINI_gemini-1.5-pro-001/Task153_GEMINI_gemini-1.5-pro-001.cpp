@@ -1,42 +1,42 @@
 #include <iostream>
+#include <list>
 #include <queue>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 using namespace std;
 
-void bfs(const unordered_map<char, vector<char>>& graph, char start_node) {
-  unordered_set<char> visited;
-  queue<char> q;
+void breadthFirstSearch(const vector<list<int>>& graph, int startNode) {
+    vector<bool> visited(graph.size(), false);
+    queue<int> q;
+    visited[startNode] = true;
+    q.push(startNode);
 
-  visited.insert(start_node);
-  q.push(start_node);
+    while (!q.empty()) {
+        int node = q.front();
+        q.pop();
+        cout << node << " ";
 
-  while (!q.empty()) {
-    char node = q.front();
-    q.pop();
-    cout << node << " ";
-
-    for (char neighbor : graph.at(node)) {
-      if (visited.find(neighbor) == visited.end()) {
-        visited.insert(neighbor);
-        q.push(neighbor);
-      }
+        for (int neighbor : graph[node]) {
+            if (!visited[neighbor]) {
+                visited[neighbor] = true;
+                q.push(neighbor);
+            }
+        }
     }
-  }
 }
 
 int main() {
-  unordered_map<char, vector<char>> graph = {
-    {'A', {'B', 'C'}},
-    {'B', {'A', 'D', 'E'}},
-    {'C', {'A', 'F'}},
-    {'D', {'B'}},
-    {'E', {'B', 'F'}},
-    {'F', {'C', 'E'}}
-  };
-  char start_node = 'A';
-  bfs(graph, start_node);
-  return 0;
+    vector<list<int>> graph;
+    // Add edges to the graph (example)
+    graph.push_back({1, 2});
+    graph.push_back({3, 4});
+    graph.push_back({5});
+    graph.push_back({});
+    graph.push_back({5});
+    graph.push_back({});
+
+    int startNode = 0;
+    breadthFirstSearch(graph, startNode);
+
+    return 0;
 }

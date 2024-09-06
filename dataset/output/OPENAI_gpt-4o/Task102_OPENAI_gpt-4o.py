@@ -1,17 +1,21 @@
+# Python code to accept username and password, hash the password, and update the database
+
 import hashlib
+import sqlite3
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
-def update_password_in_database(username, hashed_password):
-    print(f"Updating password for user: {username}")
-    # Database interaction code would go here
+def update_password(username, password):
+    hashed_password = hash_password(password)
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT)''')
+    cursor.execute('''UPDATE users SET password = ? WHERE username = ?''', (hashed_password, username))
+    conn.commit()
+    conn.close()
 
-def main():
+if __name__ == "__main__":
     username = input("Enter username: ")
     password = input("Enter new password: ")
-    hashed_password = hash_password(password)
-    update_password_in_database(username, hashed_password)
-
-if __name__ == '__main__':
-    main()
+    update_password(username, password)

@@ -2,39 +2,29 @@
 #include <fstream>
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
-#include <openssl/err.h>
 
-void handleOpenSSLErrors(void) {
-    ERR_print_errors_fp(stderr);
-    abort();
+void save_key(RSA* key, const char* filename) {
+    FILE* file = fopen(filename, "wb");
+    PEM_write_RSAPrivateKey(file, key, nullptr, nullptr, 0, nullptr, nullptr);
+    fclose(file);
 }
 
-void generateRSAKeys() {
-    RSA* rsa = nullptr;
-    BIGNUM* bn = nullptr;
-    BIO* bio_private = nullptr;
-    BIO* bio_public = nullptr;
-
-    bn = BN_new();
-    if (!BN_set_word(bn, RSA_F4)) handleOpenSSLErrors();
-
-    rsa = RSA_new();
-    if (!RSA_generate_key_ex(rsa, 2048, bn, nullptr)) handleOpenSSLErrors();
-
-    bio_private = BIO_new_file("rsa_private.pem", "w+");
-    PEM_write_bio_RSAPrivateKey(bio_private, rsa, NULL, NULL, 0, NULL, NULL);
-
-    bio_public = BIO_new_file("rsa_public.pem", "w+");
-    PEM_write_bio_RSAPublicKey(bio_public, rsa);
-
-    BIO_free_all(bio_private);
-    BIO_free_all(bio_public);
-    RSA_free(rsa);
-    BN_free(bn);
+RSA* load_key(const char* filename) {
+    RSA* rsa = RSA_new();
+    FILE* file = fopen(filename, "rb");
+    PEM_read_RSAPrivateKey(file, &rsa, nullptr, nullptr);
+    fclose(file);
+    return rsa;
 }
 
 int main() {
-    generateRSAKeys();
-    std::cout << "Keys are generated and stored as rsa_private.pem and rsa_public.pem" << std::endl;
+    RSA* rsa = RSA_generate_key(2048, RSA_F4, nullptr, nullptr);
+    save_key(rsa, "private_key.pem");
+    RSA* loaded_rsa = load_key("private_key.pem");
+    char* key_str = BN_bn2hex(loaded_rsa->p);
+    std::cout << "Key: " << key_str << std::endl;
+    OPENSSL_free(key_str);
+    RSA_free(rsa);
+    RSA_free(loaded_rsa);
     return 0;
 }

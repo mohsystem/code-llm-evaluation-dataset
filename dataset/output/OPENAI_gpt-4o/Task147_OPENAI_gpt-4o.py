@@ -1,15 +1,8 @@
-import ctypes
+import heapq
 
-lib = ctypes.CDLL('./shared.so')
-find_kth_largest = lib.find_kth_largest
-find_kth_largest.restype = ctypes.c_int
+def find_kth_largest(nums, k):
+    return heapq.nlargest(k, nums)[-1]
 
-def main():
-    arr = [int(x) for x in input().split()]
-    k = int(input())
-    arr_c = (ctypes.c_int * len(arr))(*arr)
-    result = find_kth_largest(arr_c, len(arr), k)
-    print(result)
-
-if __name__ == "__main__":
-    main()
+nums = [3, 2, 1, 5, 6, 4]
+k = 2
+print(find_kth_largest(nums, k))

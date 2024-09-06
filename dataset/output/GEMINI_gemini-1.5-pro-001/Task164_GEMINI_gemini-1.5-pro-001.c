@@ -7,14 +7,13 @@ int compare_last_names(const void *a, const void *b) {
     char *name2 = *(char **)b;
     char *lastName1 = strrchr(name1, ' ') + 1;
     char *lastName2 = strrchr(name2, ' ') + 1;
-    int lenDiff = strlen(lastName1) - strlen(lastName2);
-    if (lenDiff != 0) {
-        return lenDiff;
-    } else {
+    if (strlen(lastName1) == strlen(lastName2)) {
         return strcmp(lastName1, lastName2);
     }
+    return strlen(lastName1) - strlen(lastName2);
 }
 
-void lastNameLensort(char **names, int size) {
+char **lastNameLensort(char **names, int size) {
     qsort(names, size, sizeof(char *), compare_last_names);
+    return names;
 }

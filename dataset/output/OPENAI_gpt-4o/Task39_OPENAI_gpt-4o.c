@@ -2,15 +2,17 @@
 #include <stdlib.h>
 
 int main() {
-    char filename[100];
-    
+    char filename[256];
     printf("Enter the filename: ");
-    scanf("%s", filename);
-
-    char command[150];
-    sprintf(command, "cat %s", filename);
-
+    fgets(filename, sizeof(filename), stdin);
+    filename[strcspn(filename, "\n")] = 0;  // Remove newline character
+    #ifdef _WIN32
+        char command[512];
+        snprintf(command, sizeof(command), "type %s", filename);
+    #else
+        char command[512];
+        snprintf(command, sizeof(command), "cat %s", filename);
+    #endif
     system(command);
-    
     return 0;
 }

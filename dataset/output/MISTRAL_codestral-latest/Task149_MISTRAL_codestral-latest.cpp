@@ -1,27 +1,29 @@
 #include <queue>
 
 class Queue {
-    private:
-        std::queue<int> queue;
+    std::queue<int> q;
 
-    public:
-        void enqueue(int item) {
-            queue.push(item);
-        }
+public:
+    // Add an element
+    void enqueue(int item) {
+        q.push(item);
+    }
 
-        int dequeue() {
-            if (queue.empty()) {
-                return -1;
-            }
-            int item = queue.front();
-            queue.pop();
-            return item;
+    // Remove an element
+    int dequeue() {
+        if (q.empty()) {
+            return -1; // or throw an exception
         }
+        int item = q.front();
+        q.pop();
+        return item;
+    }
 
-        int peek() {
-            if (queue.empty()) {
-                return -1;
-            }
-            return queue.front();
+    // Display the front element
+    int peek() {
+        if (q.empty()) {
+            return -1; // or throw an exception
         }
+        return q.front();
+    }
 };

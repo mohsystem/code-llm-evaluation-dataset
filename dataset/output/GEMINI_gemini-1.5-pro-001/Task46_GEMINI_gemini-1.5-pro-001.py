@@ -1,32 +1,27 @@
-import mysql.connector
+import sqlite3
 
-def register_user():
-    name = input("Enter your name: ")
-    email = input("Enter your email: ")
-    password = input("Enter your password: ")
-
-    try:
-        mydb = mysql.connector.connect(
-            host="localhost",
-            user="username",
-            password="password",
-            database="user_db"
+def register_user(name, email, password):
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL
         )
-
-        cursor = mydb.cursor()
-        sql = "INSERT INTO users (name, email, password) VALUES (%s, %s, %s)"
-        values = (name, email, password)
-        cursor.execute(sql, values)
-        mydb.commit()
-
+    ''')
+    try:
+        cursor.execute("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", (name, email, password))
+        conn.commit()
         print("Registration successful!")
-
-    except mysql.connector.Error as err:
-        print("Error: ", err)
-
+    except sqlite3.IntegrityError:
+        print("Error: Email already exists.")
     finally:
-        if mydb.is_connected():
-            cursor.close()
-            mydb.close()
+        conn.close()
 
-register_user()
+name = input("Enter your name: ")
+email = input("Enter your email: ")
+password = input("Enter your password: ")
+
+register_user(name, email, password)

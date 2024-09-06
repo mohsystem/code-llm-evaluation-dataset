@@ -1,19 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 int main() {
-    char input[256];
-    int number;
+    char userInput[50];
     printf("Enter a number: ");
-    fgets(input, 256, stdin);
-    char *endptr;
-    number = strtol(input, &endptr, 10);
-    if (endptr == input || *endptr != '
-') {
-        printf("Invalid input. Not an integer.
-");
-    } else {
-        printf("You entered: %d
-", number);
+    if (fgets(userInput, 50, stdin) != NULL) {
+        char *end;
+        long result = strtol(userInput, &end, 10);
+        if (end != userInput && *end == '\n') {
+            printf("Converted Integer: %ld\n", result);
+        } else {
+            printf("Error: Not a valid integer\n");
+        }
     }
     return 0;
 }

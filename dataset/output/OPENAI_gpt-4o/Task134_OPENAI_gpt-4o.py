@@ -1,21 +1,30 @@
 import os
-from Crypto.PublicKey import RSA
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 
-def generate_rsa_keys():
-    key = RSA.generate(2048)
-    private_key = key.export_key()
-    public_key = key.publickey().export_key()
-    
-    with open('rsa_private.pem', 'wb') as pvt_file:
-        pvt_file.write(private_key)
-        
-    with open('rsa_public.pem', 'wb') as pub_file:
-        pub_file.write(public_key)
+def generate_key():
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    return key
 
-def main():
-    if not os.path.exists('rsa_private.pem') or not os.path.exists('rsa_public.pem'):
-        generate_rsa_keys()
-    print("Keys are generated and stored as rsa_private.pem and rsa_public.pem")
+def save_key(key, filename):
+    with open(filename, "wb") as key_file:
+        key_file.write(
+            key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.PKCS8,
+                encryption_algorithm=serialization.NoEncryption(),
+            )
+        )
 
-if __name__ == "__main__":
-    main()
+def load_key(filename):
+    with open(filename, "rb") as key_file:
+        key = serialization.load_pem_private_key(
+            key_file.read(),
+            password=None,
+        )
+    return key
+
+key = generate_key()
+save_key(key, "private_key.pem")
+loaded_key = load_key("private_key.pem")
+print(f"Key: {loaded_key}")

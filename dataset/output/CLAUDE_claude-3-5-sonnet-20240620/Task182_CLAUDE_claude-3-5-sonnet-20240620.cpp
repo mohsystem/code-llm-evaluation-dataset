@@ -1,41 +1,30 @@
 
 #include <iostream>
 #include <string>
-#include <regex>
+#include <algorithm>
 #include <stdexcept>
 
 std::string clean_phone_number(const std::string& phone) {
-    // Remove all non-digit characters
-    std::string cleaned = std::regex_replace(phone, std::regex("\\\\D"), "");
+    std::string digits;
+    std::copy_if(phone.begin(), phone.end(), std::back_inserter(digits), ::isdigit);
     
-    // Remove country code if present
-    if (cleaned.length() == 11 && cleaned[0] == \'1\') {
-        cleaned = cleaned.substr(1);
-    }
-    
-    // Check if the number is valid
-    if (cleaned.length() != 10 || cleaned[0] < \'2\' || cleaned[0] > \'9\') {
+    if (digits.length() == 11 && digits[0] == '1') {
+        return digits.substr(1);
+    } else if (digits.length() == 10) {
+        return digits;
+    } else {
         throw std::invalid_argument("Invalid phone number");
     }
-    
-    return cleaned;
 }
 
 int main() {
-    std::vector<std::string> test_numbers = {
-        "+1 (613)-995-0253",
-        "613-995-0253",
-        "1 613 995 0253",
-        "613.995.0253"
-    };
-
-    for (const auto& number : test_numbers) {
-        try {
-            std::cout << clean_phone_number(number) << std::endl;
-        } catch (const std::invalid_argument& e) {
-            std::cout << "Error: " << e.what() << std::endl;
-        }
+    try {
+        std::cout << clean_phone_number("+1 (613)-995-0253") << std::endl;
+        std::cout << clean_phone_number("613-995-0253") << std::endl;
+        std::cout << clean_phone_number("1 613 995 0253") << std::endl;
+        std::cout << clean_phone_number("613.995.0253") << std::endl;
+    } catch (const std::invalid_argument& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
     }
-
     return 0;
 }

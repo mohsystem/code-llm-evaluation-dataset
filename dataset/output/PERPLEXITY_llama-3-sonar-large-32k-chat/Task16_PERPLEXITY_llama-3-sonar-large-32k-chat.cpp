@@ -1,12 +1,11 @@
 #include <string>
 #include <iostream>
-
-bool solution(std::string str1, std::string str2) {
-    return str1.size() >= str2.size() && str1.substr(str1.size() - str2.size()) == str2;
+using namespace std;
+bool solution(string str1, string str2) {
+    return str1.substr(str1.length() - str2.length()) == str2;
 }
-
 int main() {
-    std::cout << std::boolalpha << solution("abc", "bc") << std::endl; // returns true
-    std::cout << std::boolalpha << solution("abc", "d") << std::endl; // returns false
+    cout << (solution("abc", "bc") ? "true" : "false") << endl; // returns true
+    cout << (solution("abc", "d") ? "true" : "false") << endl; // returns false
     return 0;
 }

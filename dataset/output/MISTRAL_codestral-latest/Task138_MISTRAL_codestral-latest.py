@@ -1,4 +1,5 @@
 # Python
+
 class User:
     def __init__(self, name, permissions):
         self.name = name

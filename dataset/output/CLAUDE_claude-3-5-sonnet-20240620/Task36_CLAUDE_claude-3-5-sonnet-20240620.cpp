@@ -3,14 +3,17 @@
 #include <fstream>
 #include <string>
 
-int main() {
-    std::string filename;
-    std::cout << "Enter the file name: ";
-    std::getline(std::cin, filename);
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cout << "Usage: " << argv[0] << " <filename>" << std::endl;
+        return 1;
+    }
 
+    std::string filename = argv[1];
     std::ifstream file(filename);
+
     if (!file.is_open()) {
-        std::cout << "Error opening file." << std::endl;
+        std::cerr << "Error: Unable to open file '" << filename << "'" << std::endl;
         return 1;
     }
 

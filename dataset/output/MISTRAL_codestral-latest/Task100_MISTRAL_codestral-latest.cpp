@@ -2,34 +2,27 @@
 #include <fstream>
 #include <regex>
 
-int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <pattern> <filename>
-";
-        return 1;
-    }
+int main(int argc, char* argv[]) {
+    std::string pattern = argv[1];
+    std::string fileName = argv[2];
 
-    const std::string pattern = argv[1];
-    const std::string filename = argv[2];
+    std::ifstream file(fileName);
+    if (file.is_open()) {
+        std::string line;
+        std::regex regexPattern(pattern);
 
-    std::regex regex(pattern);
-
-    std::ifstream file(filename);
-    if (!file.is_open()) {
-        std::cerr << "Error opening file
-";
-        return 1;
-    }
-
-    std::string line;
-    while (std::getline(file, line)) {
-        if (std::regex_search(line, regex)) {
-            std::cout << "Match found: " << line << '
-';
+        while (std::getline(file, line)) {
+            std::smatch match;
+            while (std::regex_search(line, match, regexPattern)) {
+                std::cout << match.str() << std::endl;
+                line = match.suffix().str();
+            }
         }
-    }
 
-    file.close();
+        file.close();
+    } else {
+        std::cout << "File not found: " << fileName << std::endl;
+    }
 
     return 0;
 }

@@ -11,7 +11,7 @@ int main() {
     }
     while (true) {
         int index;
-        std::cout << "Enter the index to read (or -1 to quit): ";
+        std::cout << "Enter the index to read from the buffer (or -1 to exit): ";
         std::cin >> index;
         if (index == -1) {
             break;

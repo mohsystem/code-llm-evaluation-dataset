@@ -6,24 +6,24 @@
 #define MAX_CHILDREN 10
 
 typedef struct Node {
-    int value;
+    int data;
     struct Node* children[MAX_CHILDREN];
     int childCount;
 } Node;
 
-Node* createNode(int value) {
-    Node* node = (Node*)malloc(sizeof(Node));
-    node->value = value;
-    node->childCount = 0;
-    return node;
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->childCount = 0;
+    return newNode;
 }
 
-Node* findNode(Node* node, int value) {
-    if (node->value == value) {
+Node* findNode(Node* node, int data) {
+    if (node->data == data) {
         return node;
     }
     for (int i = 0; i < node->childCount; i++) {
-        Node* result = findNode(node->children[i], value);
+        Node* result = findNode(node->children[i], data);
         if (result) {
             return result;
         }
@@ -31,29 +31,43 @@ Node* findNode(Node* node, int value) {
     return NULL;
 }
 
-void reparentHelper(Node* node, Node* parent) {
-    Node* newChildren[MAX_CHILDREN];
-    int newChildCount = 0;
-
-    for (int i = 0; i < node->childCount; i++) {
-        if (node->children[i] != parent) {
-            newChildren[newChildCount++] = node->children[i];
+void removeChild(Node* parent, Node* child) {
+    int index = -1;
+    for (int i = 0; i < parent->childCount; i++) {
+        if (parent->children[i] == child) {
+            index = i;
+            break;
         }
     }
-    if (parent) {
-        newChildren[newChildCount++] = parent;
-    }
-
-    memcpy(node->children, newChildren, sizeof(Node*) * newChildCount);
-    node->childCount = newChildCount;
-
-    for (int i = 0; i < node->childCount; i++) {
-        reparentHelper(node->children[i], node);
+    if (index != -1) {
+        for (int i = index; i < parent->childCount - 1; i++) {
+            parent->children[i] = parent->children[i + 1];
+        }
+        parent->childCount--;
     }
 }
 
-Node* reparent(Node* root, int newRootValue) {
-    Node* newRoot = findNode(root, newRootValue);
+void addChild(Node* parent, Node* child) {
+    if (parent->childCount < MAX_CHILDREN) {
+        parent->children[parent->childCount++] = child;
+    }
+}
+
+void reparentHelper(Node* node, Node* parent) {
+    if (parent) {
+        removeChild(node, parent);
+        addChild(node, parent);
+    }
+    for (int i = 0; i < node->childCount; i++) {
+        Node* child = node->children[i];
+        if (child != parent) {
+            reparentHelper(child, node);
+        }
+    }
+}
+
+Node* reparent(Node* root, int newRootData) {
+    Node* newRoot = findNode(root, newRootData);
     if (!newRoot) {
         return root;
     }
@@ -66,8 +80,7 @@ void printTree(Node* node, int level) {
     for (int i = 0; i < level; i++) {
         printf("  ");
     }
-    printf("%d\
-", node->value);
+    printf("%d\\n", node->data);
     for (int i = 0; i < node->childCount; i++) {
         printTree(node->children[i], level + 1);
     }
@@ -92,14 +105,11 @@ int main() {
     root->children[2]->children[1] = createNode(9);
     root->children[2]->childCount = 2;
 
-    printf("Original tree:\
-");
+    printf("Original tree:\\n");
     printTree(root, 0);
 
     Node* newRoot = reparent(root, 6);
-    printf("\
-Reparented tree with 6 as root:\
-");
+    printf("\\nReparented tree with 6 as root:\\n");
     printTree(newRoot, 0);
 
     return 0;

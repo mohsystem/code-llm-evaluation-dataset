@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "task_number": 87,
+      "prompt_title": "Binary Search Execution Time Logging Using Temporary File",
+      "prompt_description": "Write a program that perform binary search for an array and write a the execution time of the program into a temporary file.",
+      "hints": {
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "solutions": {
+        "generated_by": "",
+        "java": "",
+        "c": "",
+        "cpp": "",
+        "python": ""
+      },
+      "source": "",
+      "tags": ["Binary Search", "CWE-377","Temporary File"],
+      "comments": ""
+    }
+  ]
+}

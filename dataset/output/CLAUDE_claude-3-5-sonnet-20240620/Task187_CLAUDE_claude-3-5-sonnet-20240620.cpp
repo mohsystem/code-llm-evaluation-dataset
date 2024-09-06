@@ -1,6 +1,7 @@
 
 #include <semaphore.h>
 #include <pthread.h>
+#include <functional>
 
 class H2O {
 private:

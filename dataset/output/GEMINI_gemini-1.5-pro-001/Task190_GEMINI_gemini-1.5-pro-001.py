@@ -1,10 +1,8 @@
-import fileinput
+with open("file.txt", "r") as f:
+    lines = f.readlines()
 
-matrix = []
-for line in fileinput.input("file.txt"):
-    matrix.append(line.strip().split())
+words = [line.strip().split() for line in lines]
+transposed = zip(*words)
 
-for j in range(len(matrix[0])):
-    for i in range(len(matrix)):
-        print(matrix[i][j], end=" ")
-    print()
+for row in transposed:
+    print(" ".join(row))

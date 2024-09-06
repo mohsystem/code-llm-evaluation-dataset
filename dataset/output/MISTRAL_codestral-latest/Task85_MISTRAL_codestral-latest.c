@@ -1,30 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
-char* generateRandomString(int length) {
-    const char characters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    int charactersLength = sizeof(characters) - 1;
+void generateRandomString(int length, char* result) {
+    const char letters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    int lettersLength = strlen(letters);
 
-    char* randomString = malloc(length + 1);
-    if (randomString == NULL) {
-        return NULL;
-    }
+    srand(time(0));
 
-    srand(time(NULL));
     for (int i = 0; i < length; i++) {
-        randomString[i] = characters[rand() % charactersLength];
+        int index = rand() % lettersLength;
+        result[i] = letters[index];
     }
-    randomString[length] = '\0';
 
-    return randomString;
+    result[length] = '\0';
 }
 
 int main() {
-    int length = 10; // specify the length of the random string
-    char* randomString = generateRandomString(length);
-    printf("Random String: %s
-", randomString);
-    free(randomString);
+    int length = 10; // specify the length of the string
+    char result[length + 1];
+    generateRandomString(length, result);
+    printf("%s\n", result);
     return 0;
 }

@@ -1,10 +1,13 @@
 
-long findNb(long m) {
-    long n = 0;
-    long sum = 0;
-    while (sum < m) {
+long long findNb(long long m) {
+    long long n = 1;
+    long long volume = 0;
+    while (volume < m) {
+        volume += n * n * n;
+        if (volume == m) {
+            return n;
+        }
         n++;
-        sum += n * n * n;
     }
-    return sum == m ? n : -1;
+    return -1;
 }

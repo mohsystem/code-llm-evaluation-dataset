@@ -1,3 +1,4 @@
+// C
 #include<stdio.h>
 
 int gcd(int a, int b) {
@@ -7,11 +8,11 @@ int gcd(int a, int b) {
 }
 
 int main() {
-    int a, b;
+    int num1, num2;
     printf("Enter first number: ");
-    scanf("%d", &a);
+    scanf("%d", &num1);
     printf("Enter second number: ");
-    scanf("%d", &b);
-    printf("The GCD of %d and %d is: %d", a, b, gcd(a, b));
+    scanf("%d", &num2);
+    printf("The GCD is %d", gcd(num1, num2));
     return 0;
 }

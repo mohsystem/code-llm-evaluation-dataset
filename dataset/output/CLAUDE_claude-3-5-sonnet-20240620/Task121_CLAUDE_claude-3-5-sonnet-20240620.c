@@ -10,8 +10,7 @@ void uploadFile() {
     char filename[MAX_FILENAME];
     printf("Enter the filename to upload: ");
     fgets(filename, sizeof(filename), stdin);
-    filename[strcspn(filename, "\
-")] = 0;  // Remove newline
+    filename[strcspn(filename, "\\n")] = 0;  // Remove newline
 
     FILE *file = fopen(filename, "rb");
     if (file) {
@@ -29,13 +28,10 @@ void uploadFile() {
 
         fclose(file);
 
-        printf("File \'%s\' uploaded successfully.\
-", filename);
-        printf("File size: %ld bytes\
-", fileSize);
+        printf("File \'%s\' uploaded successfully.\\n", filename);
+        printf("File size: %ld bytes\\n", fileSize);
     } else {
-        printf("File \'%s\' not found.\
-", filename);
+        printf("File \'%s\' not found.\\n", filename);
     }
 }
 

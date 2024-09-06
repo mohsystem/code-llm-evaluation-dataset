@@ -2,17 +2,16 @@
 #include <fstream>
 #include <string>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 2) {
-        std::cerr << "Usage: ./a.out <file path>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <file_path>" << std::endl;
         return 1;
     }
 
     std::string filePath = argv[1];
     std::ifstream file(filePath);
-
-    if (!file) {
-        std::cerr << "Error opening file" << std::endl;
+    if (!file.is_open()) {
+        std::cerr << "An error occurred: Could not open the file" << std::endl;
         return 1;
     }
 

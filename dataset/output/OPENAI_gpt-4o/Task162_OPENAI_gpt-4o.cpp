@@ -1,73 +1,49 @@
 #include <iostream>
+#include <vector>
+#include <queue>
+#include <unordered_map>
 #include <climits>
+
 using namespace std;
 
-class Graph {
-    int V;
-    int **graph;
-    
-public:
-    Graph(int V) {
-        this->V = V;
-        graph = new int*[V];
-        for (int i = 0; i < V; i++) {
-            graph[i] = new int[V];
-            for (int j = 0; j < V; j++)
-                graph[i][j] = 0;
-        }
-    }
-    
-    int minDistance(int dist[], bool sptSet[]) {
-        int min = INT_MAX, min_index;
-        for (int v = 0; v < V; v++)
-            if (!sptSet[v] && dist[v] <= min)
-                min = dist[v], min_index = v;
-        return min_index;
-    }
-    
-    void dijkstra(int src) {
-        int dist[V];
-        bool sptSet[V];
-        fill_n(dist, V, INT_MAX);
-        fill_n(sptSet, V, false);
-        dist[src] = 0;
-
-        for (int count = 0; count < V - 1; count++) {
-            int u = minDistance(dist, sptSet);
-            sptSet[u] = true;
-            for (int v = 0; v < V; v++)
-                if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX && dist[u] + graph[u][v] < dist[v])
-                    dist[v] = dist[u] + graph[u][v];
-        }
-
-        for (int i = 0; i < V; i++)
-            cout << dist[i] << " ";
-        cout << endl;
-    }
-    
-    void setGraph(int inputGraph[5][5]) {
-        for (int i = 0; i < V; i++)
-            for (int j = 0; j < V; j++)
-                graph[i][j] = inputGraph[i][j];
-    }
-
-    ~Graph() {
-        for (int i = 0; i < V; i++)
-            delete [] graph[i];
-        delete [] graph;
-    }
+typedef pair<int, string> P;
+unordered_map<string, unordered_map<string, int>> graph = {
+    {"A", {{"B", 1}, {"C", 4}}},
+    {"B", {{"A", 1}, {"C", 2}, {"D", 5}}},
+    {"C", {{"A", 4}, {"B", 2}, {"D", 1}}},
+    {"D", {{"B", 5}, {"C", 1}}}
 };
 
+unordered_map<string, int> dijkstra(const string& start) {
+    priority_queue<P, vector<P>, greater<P>> pq;
+    unordered_map<string, int> distances;
+    for (const auto& node : graph) {
+        distances[node.first] = INT_MAX;
+    }
+    distances[start] = 0;
+    pq.push({0, start});
+
+    while (!pq.empty()) {
+        int current_distance = pq.top().first;
+        string current_node = pq.top().second;
+        pq.pop();
+
+        for (const auto& neighbor : graph[current_node]) {
+            int distance = current_distance + neighbor.second;
+            if (distance < distances[neighbor.first]) {
+                distances[neighbor.first] = distance;
+                pq.push({distance, neighbor.first});
+            }
+        }
+    }
+    return distances;
+}
+
 int main() {
-    Graph g(5);
-    int inputGraph[5][5] = {
-        {0, 10, 20, 0, 0},
-        {10, 0, 0, 50, 10},
-        {20, 0, 0, 20, 33},
-        {0, 50, 20, 0, 2},
-        {0, 10, 33, 2, 0}
-    };
-    g.setGraph(inputGraph);
-    g.dijkstra(0);
+    string start_node = "A";
+    unordered_map<string, int> distances = dijkstra(start_node);
+    for (const auto& distance : distances) {
+        cout << distance.first << ": " << distance.second << endl;
+    }
     return 0;
 }

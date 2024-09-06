@@ -1,16 +1,21 @@
 // C++ code
 #include <iostream>
+#include <map>
 #include <string>
 
 int main() {
+    std::map<std::string, std::string> users;
+    users["admin"] = "password";
+    users["user"] = "password";
+
     std::string username, password;
     std::cout << "Enter username: ";
-    std::getline(std::cin, username);
+    std::cin >> username;
     std::cout << "Enter password: ";
-    std::getline(std::cin, password);
+    std::cin >> password;
 
-    if (username == "admin" && password == "password") {
-        std::cout << "Login successful!" << std::endl;
+    if (users.find(username) != users.end() && users[username] == password) {
+        std::cout << "Authentication successful!" << std::endl;
     } else {
         std::cout << "Invalid username or password" << std::endl;
     }

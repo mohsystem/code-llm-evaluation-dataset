@@ -1,22 +1,23 @@
-#include <stdbool.h>
 #include <string.h>
-
-bool isValid(char *walk, int length) {
-  if (length != 10) {
-    return false;
+int isValidWalk(char *walk) {
+  if (strlen(walk) != 10) {
+    return 0;
   }
-  int x = 0;
-  int y = 0;
-  for (int i = 0; i < length; i++) {
-    char c = walk[i];
-    if (c == 'n') {
-      y++;
-    } else if (c == 's') {
-      y--;
-    } else if (c == 'e') {
-      x++;
-    } else if (c == 'w') {
-      x--;
+  int x = 0, y = 0;
+  for (int i = 0; i < 10; i++) {
+    switch (walk[i]) {
+      case 'n':
+        y++;
+        break;
+      case 's':
+        y--;
+        break;
+      case 'e':
+        x++;
+        break;
+      case 'w':
+        x--;
+        break;
     }
   }
   return x == 0 && y == 0;

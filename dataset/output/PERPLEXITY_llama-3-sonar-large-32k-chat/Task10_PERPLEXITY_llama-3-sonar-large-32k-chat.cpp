@@ -1,4 +1,5 @@
 #include <iostream>
+using namespace std;
 
 int sumBetween(int a, int b) {
     int min = (a < b) ? a : b;
@@ -11,6 +12,11 @@ int sumBetween(int a, int b) {
 }
 
 int main() {
-    std::cout << sumBetween(-1, 2) << std::endl;
+    cout << sumBetween(1, 0) << endl;
+    cout << sumBetween(1, 2) << endl;
+    cout << sumBetween(0, 1) << endl;
+    cout << sumBetween(1, 1) << endl;
+    cout << sumBetween(-1, 0) << endl;
+    cout << sumBetween(-1, 2) << endl;
     return 0;
 }

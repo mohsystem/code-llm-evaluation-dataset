@@ -1,7 +1,8 @@
-def is_isogram(string):
-    string = string.lower()
-    return len(string) == len(set(string))
+def is_isogram(s):
+    s = s.lower()
+    return len(s) == len(set(s))
 
-print(is_isogram("Dermatoglyphics")) # true
-print(is_isogram("aba")) # false
-print(is_isogram("moOse")) # false
+# Test cases
+print(is_isogram("Dermatoglyphics"))  # True
+print(is_isogram("aba"))              # False
+print(is_isogram("moOse"))            # False

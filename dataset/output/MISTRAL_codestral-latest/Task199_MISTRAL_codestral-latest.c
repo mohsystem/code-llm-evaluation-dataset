@@ -10,8 +10,8 @@ Clock createClock(int hours, int minutes) {
     return clock;
 }
 
-int areClocksEqual(Clock clock1, Clock clock2) {
-    return clock1.minutes == clock2.minutes;
+int areClocksEqual(Clock c1, Clock c2) {
+    return c1.minutes == c2.minutes;
 }
 
 Clock addMinutes(Clock clock, int minutes) {
@@ -27,5 +27,5 @@ Clock subtractMinutes(Clock clock, int minutes) {
 void printClock(Clock clock) {
     int hours = clock.minutes / 60;
     int minutes = clock.minutes % 60;
-    printf("%02d:%02d", hours, minutes);
+    printf("%02d:%02d\n", hours, minutes);
 }

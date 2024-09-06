@@ -1,35 +1,38 @@
 import ldap
 import sys
 
-def main():
-    if len(sys.argv) != 3:
-        print("Usage: python ldap_search.py <domain> <username>")
-        sys.exit(1)
-
-    domain_component = sys.argv[1]
-    username = sys.argv[2]
-
-    ldap_query = f"(&(objectClass=user)(sAMAccountName={username}))"
-    search_base = "dc=" + domain_component.replace(".", ",dc=")
+def get_ldap_user_info(username, domain_component):
+    ldap_server = "ldap://localhost"
+    base_dn = f"dc={domain_component.replace('.', ',dc=')}"
+    search_filter = f"(sAMAccountName={username})"
+    attributes = ["cn", "mail", "memberOf"]
 
     try:
-        l = ldap.initialize("ldap://localhost:389")
-        l.simple_bind_s()
+        conn = ldap.initialize(ldap_server)
+        conn.simple_bind_s()
+        result = conn.search_s(base_dn, ldap.SCOPE_SUBTREE, search_filter, attributes)
 
-        search_result = l.search_s(search_base, ldap.SCOPE_SUBTREE, ldap_query)
-
-        if search_result:
-            dn, attributes = search_result[0]
-            print(f"dn: {dn.decode()}")
-            for attr, value in attributes.items():
-                print(f"{attr.decode()}: {value[0].decode()}")
+        if result:
+            user_info = result[0][1]
+            return user_info
         else:
-            print("User not found.")
+            return None
 
-        l.unbind_s()
-
-    except ldap.LDAPError as e:
-        print(f"LDAP Error: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 3:
+        print("Usage: python ldap_query.py <username> <domain_component>")
+        sys.exit(1)
+
+    username = sys.argv[1]
+    domain_component = sys.argv[2]
+
+    user_info = get_ldap_user_info(username, domain_component)
+
+    if user_info:
+        print(user_info)
+    else:
+        print("User not found.")

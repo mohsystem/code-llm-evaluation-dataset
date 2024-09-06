@@ -1,5 +1,5 @@
-#include <random>
 #include <cmath>
+#include <cstdlib>
 #include <vector>
 
 class Solution {
@@ -7,19 +7,19 @@ private:
     double radius;
     double x_center;
     double y_center;
-    std::mt19937 gen;
-    std::uniform_real_distribution<double> dis;
 
 public:
-    Solution(double radius, double x_center, double y_center) : radius(radius), x_center(x_center), y_center(y_center), gen(std::random_device{}()) {
-        dis = std::uniform_real_distribution<double>(0, 1);
+    Solution(double radius, double x_center, double y_center) {
+        this->radius = radius;
+        this->x_center = x_center;
+        this->y_center = y_center;
     }
 
     std::vector<double> randPoint() {
-        double r = this->radius * std::sqrt(dis(gen));
-        double theta = dis(gen) * 2 * M_PI;
-        double x = this->x_center + r * std::cos(theta);
-        double y = this->y_center + r * std::sin(theta);
+        double r = radius * sqrt((double)rand() / RAND_MAX);
+        double theta = (double)rand() / RAND_MAX * 2 * M_PI;
+        double x = x_center + r * cos(theta);
+        double y = y_center + r * sin(theta);
         return {x, y};
     }
 };

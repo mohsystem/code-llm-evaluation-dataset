@@ -1,10 +1,10 @@
 #include <stdio.h>
+#include <string.h>
 
-int checkFlush(char* table[7], char* hand[2]) {
+int checkFlush(char* table[], char* hand[]) {
     int suits[4] = {0};
-    for (int i = 0; i < 7; i++) {
-        char suit = table[i][strlen(table[i]) - 1];
-        switch (suit) {
+    for (int i = 0; i < 5; i++) {
+        switch (table[i][strlen(table[i]) - 1]) {
             case 'S':
                 suits[0]++;
                 break;
@@ -20,8 +20,7 @@ int checkFlush(char* table[7], char* hand[2]) {
         }
     }
     for (int i = 0; i < 2; i++) {
-        char suit = hand[i][strlen(hand[i]) - 1];
-        switch (suit) {
+        switch (hand[i][strlen(hand[i]) - 1]) {
             case 'S':
                 suits[0]++;
                 break;
@@ -45,9 +44,8 @@ int checkFlush(char* table[7], char* hand[2]) {
 }
 
 int main() {
-    char* table[7] = {"A_S", "J_H", "7_D", "8_D", "10_D", "J_D", "3_D"};
-    char* hand[2] = {"J_D", "3_D"};
-    printf("%s
-", checkFlush(table, hand) ? "true" : "false");
+    char* table[] = {"A_S", "J_H", "7_D", "8_D", "10_D"};
+    char* hand[] = {"J_D", "3_D"};
+    printf("%d\n", checkFlush(table, hand));
     return 0;
 }

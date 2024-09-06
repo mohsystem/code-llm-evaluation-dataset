@@ -1,22 +1,17 @@
 import psycopg2
-from psycopg2 import OperationalError
 
-def create_connection():
-    connection = None
+def get_postgres_connection():
     try:
         connection = psycopg2.connect(
-            database="mydatabase",
-            user="myuser",
-            password="mypassword",
-            host="127.0.0.1",
-            port="5432"
+            user="your_username",
+            password="your_password",
+            host="your_host",
+            port="your_port",
+            database="your_database"
         )
-        print("Python: Connection established successfully.")
-    except OperationalError as e:
-        print(f"Python: Connection failed: {e}")
-    return connection
+        return connection
+    except (Exception, psycopg2.Error) as error:
+        print("Error while connecting to PostgreSQL", error)
+        return None
 
-if __name__ == "__main__":
-    conn = create_connection()
-    if conn:
-        conn.close()
+connection = get_postgres_connection()

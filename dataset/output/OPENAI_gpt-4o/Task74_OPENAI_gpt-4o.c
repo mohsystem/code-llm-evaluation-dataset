@@ -1,24 +1,26 @@
+// C does not have a native library for PostgreSQL connection in standard library.
+// You typically use libpq for this purpose.
+/*
 #include <stdio.h>
 #include <stdlib.h>
 #include <libpq-fe.h>
 
-PGconn* createConnection() {
-    PGconn *conn = PQconnectdb("user=myuser password=mypassword dbname=mydatabase hostaddr=127.0.0.1 port=5432");
-
-    if (PQstatus(conn) == CONNECTION_BAD) {
-        fprintf(stderr, "C: Connection to database failed: %s
-", PQerrorMessage(conn));
+PGconn *get_postgres_connection() {
+    PGconn *conn = PQsetdbLogin("your_host", "your_port", NULL, NULL, "your_database", "your_username", "your_password");
+    if (PQstatus(conn) != CONNECTION_OK) {
+        fprintf(stderr, "Connection to database failed: %s", PQerrorMessage(conn));
         PQfinish(conn);
-        exit(1);
-    } else {
-        printf("C: Connection established successfully.
-");
+        return NULL;
     }
     return conn;
 }
 
 int main() {
-    PGconn *conn = createConnection();
-    PQfinish(conn);
+    PGconn *conn = get_postgres_connection();
+    if (conn != NULL) {
+        // Connection successful
+        PQfinish(conn);
+    }
     return 0;
 }
+*/

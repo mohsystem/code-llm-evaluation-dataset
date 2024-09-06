@@ -2,25 +2,33 @@
 #include <iostream>
 #include <pqxx/pqxx>
 
-using namespace std;
-using namespace pqxx;
-
-connection* getConnection() {
+pqxx::connection* createConnection() {
     try {
-        return new connection("host=localhost port=5432 dbname=your_database user=your_username password=your_password");
-    } catch (const exception &e) {
-        cerr << e.what() << endl;
+        pqxx::connection* conn = new pqxx::connection(
+            "host=localhost "
+            "dbname=your_database "
+            "user=your_username "
+            "password=your_password"
+        );
+        
+        if (conn->is_open()) {
+            std::cout << "Connection created successfully" << std::endl;
+            return conn;
+        } else {
+            delete conn;
+            return nullptr;
+        }
+    } catch (const std::exception &e) {
+        std::cerr << "Error while connecting to PostgreSQL: " << e.what() << std::endl;
         return nullptr;
     }
 }
 
 int main() {
-    connection* conn = getConnection();
-    if (conn != nullptr) {
-        cout << "Connected to the database!" << endl;
+    pqxx::connection* conn = createConnection();
+    if (conn) {
+        conn->disconnect();
         delete conn;
-    } else {
-        cout << "Failed to connect to the database." << endl;
     }
     return 0;
 }

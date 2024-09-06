@@ -1,43 +1,48 @@
 
 #include <iostream>
 #include <string>
-#include <unordered_map>
-#include <vector>
-#include <algorithm>
+#include <limits>
 
-std::unordered_map<std::string, std::vector<std::string>> accessMatrix = {
-    {"admin", {"server", "database", "network"}},
-    {"developer", {"database", "codebase"}},
-    {"tester", {"codebase", "testbed"}},
-    {"user", {"application"}}
-};
+bool authenticate() {
+    std::string username, password;
+    std::cout << "Enter username: ";
+    std::cin >> username;
+    std::cout << "Enter password: ";
+    std::cin >> password;
+    return (username == "admin" && password == "password123");
+}
 
-bool checkAccess(const std::string& userRole, const std::string& resource) {
-    auto it = accessMatrix.find(userRole);
-    if (it != accessMatrix.end()) {
-        const auto& allowedResources = it->second;
-        return std::find(allowedResources.begin(), allowedResources.end(), resource) != allowedResources.end();
+void access_resource(const std::string& resource) {
+    if (resource == "1") {
+        std::cout << "Accessing confidential files..." << std::endl;
+    } else if (resource == "2") {
+        std::cout << "Accessing financial records..." << std::endl;
+    } else if (resource == "3") {
+        std::cout << "Accessing employee database..." << std::endl;
+    } else {
+        std::cout << "Invalid resource selection." << std::endl;
     }
-    return false;
 }
 
 int main() {
-    std::string userRole, resource;
-    
-    std::cout << "Enter your role: ";
-    std::cin >> userRole;
-    
-    std::cout << "Enter the resource you want to access: ";
-    std::cin >> resource;
-    
-    std::transform(userRole.begin(), userRole.end(), userRole.begin(), ::tolower);
-    std::transform(resource.begin(), resource.end(), resource.begin(), ::tolower);
-    
-    if (checkAccess(userRole, resource)) {
-        std::cout << "Access granted to " << resource << std::endl;
+    if (authenticate()) {
+        std::cout << "Authentication successful." << std::endl;
+        std::string choice;
+        while (true) {
+            std::cout << "\\nAvailable resources:" << std::endl;
+            std::cout << "1. Confidential files" << std::endl;
+            std::cout << "2. Financial records" << std::endl;
+            std::cout << "3. Employee database" << std::endl;
+            std::cout << "4. Exit" << std::endl;
+            std::cout << "Enter resource number to access (or 4 to exit): ";
+            std::cin >> choice;
+            if (choice == "4") {
+                break;
+            }
+            access_resource(choice);
+        }
     } else {
-        std::cout << "Access denied" << std::endl;
+        std::cout << "Authentication failed. Access denied." << std::endl;
     }
-    
     return 0;
 }

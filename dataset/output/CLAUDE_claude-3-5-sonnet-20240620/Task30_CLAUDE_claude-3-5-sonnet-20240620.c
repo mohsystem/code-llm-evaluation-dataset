@@ -1,30 +1,34 @@
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 
 char* longest(const char* s1, const char* s2) {
-    int chars[26] = {0};
-    int i, len1 = strlen(s1), len2 = strlen(s2);
-    
-    for (i = 0; i < len1; i++) chars[s1[i] - \'a\'] = 1;
-    for (i = 0; i < len2; i++) chars[s2[i] - \'a\'] = 1;
-    
-    char* result = (char*)malloc(27 * sizeof(char));
-    int index = 0;
-    
+    int counts[26] = {0};
+    int i, len = 0;
+    char* result;
+
+    while (*s1) counts[*s1++ - 'a'] = 1;
+    while (*s2) counts[*s2++ - 'a'] = 1;
+
     for (i = 0; i < 26; i++) {
-        if (chars[i]) result[index++] = \'a\' + i;
+        if (counts[i]) len++;
     }
-    result[index] = \'\\0\';
-    
-    return result;
+
+    result = (char*)malloc(len + 1);
+    result[len] = '\\0';
+
+    for (i = 0; i < 26; i++) {
+        if (counts[i]) {
+            *result++ = i + 'a';
+        }
+    }
+
+    return result - len;
 }
 
 int main() {
-    printf("%s\
-", longest("xyaabbbccccdefww", "xxxxyyyyabklmopq"));
-    printf("%s\
-", longest("abcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrstuvwxyz"));
+    printf("%s\\n", longest("xyaabbbccccdefww", "xxxxyyyyabklmopq"));
+    printf("%s\\n", longest("abcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrstuvwxyz"));
     return 0;
 }

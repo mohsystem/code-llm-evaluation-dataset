@@ -1,3 +1,2 @@
 import time
-
-print("Current processor time in seconds:", time.process_time())
+print(time.process_time())

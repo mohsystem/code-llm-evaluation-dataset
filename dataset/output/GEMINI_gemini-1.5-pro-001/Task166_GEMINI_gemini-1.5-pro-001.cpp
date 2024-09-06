@@ -6,21 +6,18 @@ vector<int> posNegSort(vector<int> arr) {
   if (arr.empty()) {
     return arr;
   }
-  vector<int> pos;
-  for (int num : arr) {
-    if (num > 0) {
-      pos.push_back(num);
-    }
-  }
-  sort(pos.begin(), pos.end());
-  int j = 0;
-  vector<int> result(arr.size());
+  vector<int> posList;
   for (int i = 0; i < arr.size(); i++) {
     if (arr[i] > 0) {
-      result[i] = pos[j++];
-    } else {
-      result[i] = arr[i];
+      posList.push_back(arr[i]);
     }
   }
-  return result;
+  sort(posList.begin(), posList.end());
+  int j = 0;
+  for (int i = 0; i < arr.size(); i++) {
+    if (arr[i] > 0) {
+      arr[i] = posList[j++];
+    }
+  }
+  return arr;
 }

@@ -1,8 +1,8 @@
 class Node:
     def __init__(self, data):
-        self.data = data
         self.left = None
         self.right = None
+        self.data = data
 
 def preorder_traversal(root):
     if root:
@@ -22,7 +22,6 @@ def postorder_traversal(root):
         postorder_traversal(root.right)
         print(root.data, end=" ")
 
-# Example usage:
 root = Node(1)
 root.left = Node(2)
 root.right = Node(3)
@@ -31,9 +30,7 @@ root.left.right = Node(5)
 
 print("Preorder traversal: ")
 preorder_traversal(root)
-print("
-Inorder traversal: ")
+print("\nInorder traversal: ")
 inorder_traversal(root)
-print("
-Postorder traversal: ")
+print("\nPostorder traversal: ")
 postorder_traversal(root)

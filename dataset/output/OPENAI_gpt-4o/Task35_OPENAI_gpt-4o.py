@@ -1,10 +1,10 @@
-def people_on_bus(bus_stops):
-    people = 0
-    for stop in bus_stops:
-        people += stop[0]
-        people -= stop[1]
-    return people
+def number_of_people(bus_stops):
+    total_people = 0
+    for on, off in bus_stops:
+        total_people += on
+        total_people -= off
+    return total_people
 
-if __name__ == "__main__":
-    bus_stops = [(3, 0), (2, 1), (5, 3), (2, 2)]
-    print(people_on_bus(bus_stops))
+# Test case
+bus_stops = [(10, 0), (3, 5), (5, 8)]
+print(number_of_people(bus_stops))

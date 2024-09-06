@@ -1,24 +1,18 @@
-#include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
-#include <ctype.h>
+#include <regex.h> 
 
-int validatePin(char *pin) {
-    int length = strlen(pin);
-    if (length != 4 && length != 6) {
-        return 0;
-    }
-    for (int i = 0; i < length; i++) {
-        if (!isdigit(pin[i])) {
-            return 0;
-        }
-    }
-    return 1;
-}
-int main(){
-   printf("%d
-", validatePin("1234"));
-   printf("%d
-", validatePin("12345"));
-   printf("%d
-", validatePin("a234"));
+bool validate_pin(const char* pin) {
+  regex_t regex;
+  int reti;
+  
+  reti = regcomp(&regex, "^(?:[0-9]{4}|[0-9]{6})$", REG_EXTENDED);
+  if (reti) {
+    return false;
+  }
+  
+  reti = regexec(&regex, pin, 0, NULL, 0);
+  regfree(&regex);
+  
+  return reti == 0;
 }

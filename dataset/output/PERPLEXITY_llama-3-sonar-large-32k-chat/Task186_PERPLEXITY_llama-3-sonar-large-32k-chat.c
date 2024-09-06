@@ -1,72 +1,71 @@
+// Note: C does not have a built-in priority queue, so we can use a simple array to simulate it.
+// This implementation is not efficient, but it works for the given constraints.
+
+#include <stdio.h>
 #include <stdlib.h>
 
-// Definition for singly-linked list.
 typedef struct ListNode {
     int val;
-    struct ListNode *next;
+    struct ListNode* next;
 } ListNode;
 
-typedef struct {
-    ListNode **array;
-    int size;
-} PriorityQueue;
-
-void PriorityQueue_init(PriorityQueue *queue, int size) {
-    queue->array = (ListNode **)malloc(size * sizeof(ListNode *));
-    queue->size = 0;
+void swap(ListNode** a, ListNode** b) {
+    ListNode* temp = *a;
+    *a = *b;
+    *b = temp;
 }
 
-void PriorityQueue_push(PriorityQueue *queue, ListNode *node) {
-    queue->array[queue->size++] = node;
-    int i = queue->size - 1;
-    while (i > 0) {
-        int parent = (i - 1) / 2;
-        if (queue->array[parent]->val <= queue->array[i]->val) break;
-        ListNode *temp = queue->array[parent];
-        queue->array[parent] = queue->array[i];
-        queue->array[i] = temp;
-        i = parent;
+void heapify(ListNode** arr, int n, int i) {
+    int smallest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    if (left < n && arr[left]->val < arr[smallest]->val) {
+        smallest = left;
+    }
+
+    if (right < n && arr[right]->val < arr[smallest]->val) {
+        smallest = right;
+    }
+
+    if (smallest != i) {
+        swap(&arr[i], &arr[smallest]);
+        heapify(arr, n, smallest);
     }
 }
 
-ListNode *PriorityQueue_pop(PriorityQueue *queue) {
-    ListNode *node = queue->array[0];
-    queue->array[0] = queue->array[--queue->size];
-    int i = 0;
-    while (1) {
-        int left = 2 * i + 1;
-        int right = 2 * i + 2;
-        int smallest = i;
-        if (left < queue->size && queue->array[left]->val < queue->array[smallest]->val) smallest = left;
-        if (right < queue->size && queue->array[right]->val < queue->array[smallest]->val) smallest = right;
-        if (smallest == i) break;
-        ListNode *temp = queue->array[i];
-        queue->array[i] = queue->array[smallest];
-        queue->array[smallest] = temp;
-        i = smallest;
+void buildHeap(ListNode** arr, int n) {
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        heapify(arr, n, i);
     }
-    return node;
 }
 
-ListNode *mergeKLists(ListNode **lists, int listsSize) {
-    PriorityQueue queue;
-    PriorityQueue_init(&queue, listsSize);
-    for (int i = 0; i < listsSize; i++) {
-        if (lists[i] != NULL) {
-            PriorityQueue_push(&queue, lists[i]);
-        }
+ListNode* mergeKLists(ListNode** lists, int k) {
+    ListNode* dummy = (ListNode*)malloc(sizeof(ListNode));
+    ListNode* curr = dummy;
+
+    ListNode** arr = (ListNode**)malloc(k * sizeof(ListNode*));
+    for (int i = 0; i < k; i++) {
+        arr[i] = lists[i];
     }
 
-    ListNode *dummy = (ListNode *)malloc(sizeof(ListNode));
-    ListNode *curr = dummy;
+    buildHeap(arr, k);
 
-    while (queue.size > 0) {
-        ListNode *node = PriorityQueue_pop(&queue);
-        curr->next = node;
+    while (arr[0] != NULL) {
+        curr->next = arr[0];
         curr = curr->next;
-        if (node->next != NULL) {
-            PriorityQueue_push(&queue, node->next);
+
+        if (arr[0]->next != NULL) {
+            arr[0] = arr[0]->next;
+        } else {
+            arr[0] = NULL;
+            for (int i = 0; i < k - 1; i++) {
+                arr[i] = arr[i + 1];
+            }
+            k--;
         }
+
+        buildHeap(arr, k);
     }
 
     return dummy->next;

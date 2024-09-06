@@ -1,60 +1,52 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <openssl/aes.h>
-#include <openssl/bio.h>
-#include <openssl/evp.h>
-#include <openssl/buffer.h>
+#include <ctype.h>
+#include <time.h>
 
-char* base64_encode(const unsigned char* input, int length) {
-    BIO *bmem, *b64;
-    BUF_MEM *bptr;
+#define MAX_LENGTH 1000
 
-    b64 = BIO_new(BIO_f_base64());
-    bmem = BIO_new(BIO_s_mem());
-    b64 = BIO_push(b64, bmem);
-    BIO_write(b64, input, length);
-    BIO_flush(b64);
-    BIO_get_mem_ptr(b64, &bptr);
-
-    char* buff = (char*)malloc(bptr->length);
-    memcpy(buff, bptr->data, bptr->length-1);
-    buff[bptr->length-1] = 0;
-
-    BIO_free_all(b64);
-
-    return buff;
+void shuffle(char *array, int n, unsigned int seed) {
+    srand(seed);
+    for (int i = n - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        char temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
 }
 
-void encrypt(const char* message, const char* key) {
-    unsigned char iv[AES_BLOCK_SIZE];
-    memset(iv, 0x00, AES_BLOCK_SIZE);
-
-    AES_KEY aes_key;
-    AES_set_encrypt_key((const unsigned char*)key, 128, &aes_key);
-
-    int message_len = strlen(message);
-    int padded_len = (message_len + AES_BLOCK_SIZE) & ~(AES_BLOCK_SIZE - 1);
-    unsigned char* padded_message = (unsigned char*)calloc(padded_len, sizeof(unsigned char));
-    memcpy(padded_message, message, message_len);
-
-    unsigned char* encrypted = (unsigned char*)malloc(padded_len);
-    AES_cbc_encrypt(padded_message, encrypted, padded_len, &aes_key, iv, AES_ENCRYPT);
-
-    char* base64_encrypted = base64_encode(encrypted, padded_len);
-    printf("Encrypted message: %s\
-", base64_encrypted);
-
-    free(padded_message);
-    free(encrypted);
-    free(base64_encrypted);
+void encrypt_message(const char *message, char *encrypted, int key) {
+    char cipher[26];
+    for (int i = 0; i < 26; i++) {
+        cipher[i] = 'A' + i;
+    }
+    
+    shuffle(cipher, 26, key);
+    
+    int i = 0;
+    while (message[i] != '\\0') {
+        if (isalpha(message[i])) {
+            int index = toupper(message[i]) - 'A';
+            encrypted[i] = cipher[index];
+        } else {
+            encrypted[i] = message[i];
+        }
+        i++;
+    }
+    encrypted[i] = '\\0';
 }
 
 int main() {
-    const char* message = "Hello, World!";
-    const char* key = "MySecretKey12345";
-
-    encrypt(message, key);
-
+    char message[MAX_LENGTH] = "Hello, World!";
+    char encrypted[MAX_LENGTH];
+    int key = 42;
+    
+    encrypt_message(message, encrypted, key);
+    
+    printf("Original: %s\\n", message);
+    printf("Encrypted: %s\\n", encrypted);
+    
     return 0;
 }

@@ -33,8 +33,7 @@ int main() {
     for (int i = 0; i < resultSize; i++) {
         printf("%d ", result[i]);
     }
-    printf("\
-");
+    printf("\\n");
     free(result);
     return 0;
 }

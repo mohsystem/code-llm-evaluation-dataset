@@ -29,16 +29,13 @@ int isEqual(const Clock* clock1, const Clock* clock2) {
 int main() {
     Clock clock1 = {10, 30};
     Clock clock2 = {10, 30};
-    printf("%d
-", isEqual(&clock1, &clock2));  // 1 (true)
+    printf("%d\n", isEqual(&clock1, &clock2));  // 1 (true)
 
     addMinutes(&clock1, 30);
-    printf("%d %d
-", clock1.hours, clock1.minutes);  // 11 0
+    printf("%d %d\n", clock1.hours, clock1.minutes);  // 11 0
 
-    subtractMinutes(&clock1, 90);
-    printf("%d %d
-", clock1.hours, clock1.minutes);  // 9 30
+    subtractMinutes(&clock1, 60);
+    printf("%d %d\n", clock1.hours, clock1.minutes);  // 10 0
 
     return 0;
 }

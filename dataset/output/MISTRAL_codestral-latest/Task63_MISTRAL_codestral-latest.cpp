@@ -1,16 +1,11 @@
-// C++
 #include <iostream>
+#include <string>
 #include <base64.h>
-#include <json/json.h>
+#include <nlohmann/json.hpp>
 
-std::string processRequest(const std::string& rawData) {
-    std::string decodedString = base64_decode(rawData);
+using json = nlohmann::json;
 
-    Json::Value root;
-    Json::Reader reader;
-    reader.parse(decodedString, root);
-
-    Json::StreamWriterBuilder builder;
-    builder["indentation"] = "";
-    return Json::writeString(builder, root);
+json processRequest(const std::string& rawData) {
+    std::string decodedData = base64_decode(rawData);
+    return json::parse(decodedData);
 }

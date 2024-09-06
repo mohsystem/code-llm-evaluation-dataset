@@ -1,31 +1,94 @@
 #include <iostream>
-#include <gmpxx.h>
+#include <random>
+#include <vector>
 
-void generate_keys(mpz_class& p, mpz_class& q, mpz_class& n, mpz_class& phi, mpz_class& e, mpz_class& d) {
-    p = 61; // prime number
-    q = 53; // prime number
-    n = p * q;
-    phi = (p - 1) * (q - 1);
-    e = 17; // coprime with phi
-    d = e.get_mod_inverse(phi);
-}
+using namespace std;
 
-void encrypt(const mpz_class& msg, mpz_class& encrypted, const mpz_class& e, const mpz_class& n) {
-    encrypted = powm(msg, e, n);
-}
+class RSA {
+private:
+    static int gcd(int a, int b) {
+        if (b == 0) {
+            return a;
+        } else {
+            return gcd(b, a % b);
+        }
+    }
 
-void decrypt(const mpz_class& encrypted, mpz_class& decrypted, const mpz_class& d, const mpz_class& n) {
-    decrypted = powm(encrypted, d, n);
-}
+    static int multiplicativeInverse(int e, int phi) {
+        int x = 0;
+        int y = 1;
+        int a = phi;
+        int b = e;
+
+        while (b != 0) {
+            int q = a / b;
+            int temp = b;
+            b = a % b;
+            a = temp;
+            temp = x;
+            x = y - q * x;
+            y = temp;
+        }
+
+        if (y < 0) {
+            y += phi;
+        }
+
+        return y;
+    }
+
+public:
+    static pair<pair<int, int>, pair<int, int>> generateKeyPair(int p, int q) {
+        int n = p * q;
+        int phi = (p - 1) * (q - 1);
+
+        random_device rd;
+        mt19937 mt(rd());
+        uniform_int_distribution<int> dist(1, phi - 1);
+
+        int e = dist(mt);
+        while (gcd(e, phi) != 1) {
+            e = dist(mt);
+        }
+
+        int d = multiplicativeInverse(e, phi);
+        return {{e, n}, {d, n}};
+    }
+
+    static vector<int> encrypt(pair<int, int> publicKey, string plaintext) {
+        vector<int> cipher;
+        for (char c : plaintext) {
+            cipher.push_back(pow(c, publicKey.first) % publicKey.second);
+        }
+        return cipher;
+    }
+
+    static string decrypt(pair<int, int> privateKey, vector<int> ciphertext) {
+        string plain;
+        for (int c : ciphertext) {
+            plain += char(pow(c, privateKey.first) % privateKey.second);
+        }
+        return plain;
+    }
+};
 
 int main() {
-    mpz_class p, q, n, phi, e, d, msg, encrypted, decrypted;
-    std::cout << "Enter a message (number): ";
-    std::cin >> msg;
-    generate_keys(p, q, n, phi, e, d);
-    encrypt(msg, encrypted, e, n);
-    std::cout << "Encrypted: " << encrypted << std::endl;
-    decrypt(encrypted, decrypted, d, n);
-    std::cout << "Decrypted: " << decrypted << std::endl;
+    int p = 61;
+    int q = 53;
+    pair<pair<int, int>, pair<int, int>> keyPair = RSA::generateKeyPair(p, q);
+    cout << "Public Key: " << keyPair.first.first << ", " << keyPair.first.second << endl;
+    cout << "Private Key: " << keyPair.second.first << ", " << keyPair.second.second << endl;
+
+    string message = "Hello, World!";
+    vector<int> encryptedMessage = RSA::encrypt(keyPair.first, message);
+    cout << "Encrypted Message: ";
+    for (int c : encryptedMessage) {
+        cout << c << " ";
+    }
+    cout << endl;
+
+    string decryptedMessage = RSA::decrypt(keyPair.second, encryptedMessage);
+    cout << "Decrypted Message: " << decryptedMessage << endl;
+
     return 0;
 }

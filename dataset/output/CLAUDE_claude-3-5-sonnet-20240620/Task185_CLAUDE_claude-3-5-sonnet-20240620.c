@@ -1,6 +1,10 @@
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <limits.h>
-#include <math.h>
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2, int nums2Size) {
     if (nums1Size > nums2Size) {
@@ -23,9 +27,9 @@ double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2, int nums2Si
         
         if (maxLeftX <= minRightY && maxLeftY <= minRightX) {
             if ((m + n) % 2 == 0) {
-                return (fmax(maxLeftX, maxLeftY) + fmin(minRightX, minRightY)) / 2.0;
+                return (MAX(maxLeftX, maxLeftY) + MIN(minRightX, minRightY)) / 2.0;
             } else {
-                return fmax(maxLeftX, maxLeftY);
+                return MAX(maxLeftX, maxLeftY);
             }
         } else if (maxLeftX > minRightY) {
             high = partitionX - 1;
@@ -34,5 +38,6 @@ double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2, int nums2Si
         }
     }
     
-    return -1; // Error case, should not reach here if input is valid
+    fprintf(stderr, "Input arrays are not sorted\\n");
+    exit(1);
 }

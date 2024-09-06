@@ -1,43 +1,44 @@
 #include <iostream>
-#include <limits>
+#include <string>
+#include <cctype>
+
+std::string getUserInput(const std::string& prompt) {
+    std::string inputStr;
+    while (true) {
+        std::cout << prompt;
+        std::getline(std::cin, inputStr);
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cout << "Invalid input. Please try again." << std::endl;
+        } else {
+            return inputStr;
+        }
+    }
+}
+
+void validateInput(const std::string& inputStr) {
+    for (char c : inputStr) {
+        if (!std::isalpha(c)) {
+            throw std::runtime_error("Input should only contain alphabets");
+        }
+    }
+}
 
 int main() {
-    int num1, num2;
-
-    while (true) {
-        std::cout << "Enter first number: ";
-        if (std::cin >> num1) {
-            break;
-        } else {
-            std::cout << "Invalid input. Please enter a valid number.
-";
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '
-');
+    std::string inputStr = getUserInput("Enter a string: ");
+    try {
+        validateInput(inputStr);
+        std::cout << "Input is valid" << std::endl;
+        for (char& c : inputStr) {
+            c = std::toupper(c);
         }
-    }
-
-    while (true) {
-        std::cout << "Enter second number: ";
-        if (std::cin >> num2) {
-            break;
-        } else {
-            std::cout << "Invalid input. Please enter a valid number.
-";
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '
-');
+        std::cout << "Upper case: " << inputStr << std::endl;
+        for (char& c : inputStr) {
+            c = std::tolower(c);
         }
+        std::cout << "Lower case: " << inputStr << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << "Error: " << e.what() << std::endl;
     }
-
-    std::cout << "Sum: " << num1 + num2 << std::endl;
-    std::cout << "Difference: " << num1 - num2 << std::endl;
-    std::cout << "Product: " << num1 * num2 << std::endl;
-    if (num2 != 0) {
-        std::cout << "Quotient: " << num1 / num2 << std::endl;
-    } else {
-        std::cout << "Cannot divide by zero." << std::endl;
-    }
-
     return 0;
 }

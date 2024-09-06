@@ -1,38 +1,36 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 
-void retrieveFile(const char* filename) {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in server_address;
-    server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(8080);
-    inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
-    connect(sock, (struct sockaddr*)&server_address, sizeof(server_address));
-    send(sock, filename, strlen(filename), 0);
-    char data[1024];
-    int bytesRead = recv(sock, data, 1024, 0);
-    if (bytesRead > 0) {
-        FILE* file = fopen(filename, "wb");
-        fwrite(data, 1, bytesRead, file);
-        fclose(file);
-        printf("File retrieved successfully
-");
+void retrieveFile(const char* fileName) {
+    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in serverAddress;
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_port = htons(12345);
+    inet_pton(AF_INET, "127.0.0.1", &serverAddress.sin_addr);
+    connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+    send(clientSocket, fileName, strlen(fileName), 0);
+    char buffer[1024];
+    int bytesRead;
+    if ((bytesRead = recv(clientSocket, buffer, 1024, 0)) == -1) {
+        printf("File not found on the server\n");
     } else {
-        printf("File not found on the server
-");
+        FILE* file = fopen(fileName, "wb");
+        while ((bytesRead = recv(clientSocket, buffer, 1024, 0)) > 0) {
+            fwrite(buffer, 1, bytesRead, file);
+        }
+        fclose(file);
     }
-    close(sock);
+    close(clientSocket);
 }
 
 int main() {
-    printf("Enter the filename: ");
-    char filename[256];
-    fgets(filename, 256, stdin);
-    filename[strcspn(filename, "
-")] = 0; // remove newline character
-    retrieveFile(filename);
+    printf("Enter the file name: ");
+    char fileName[256];
+    scanf("%255s", fileName);
+    retrieveFile(fileName);
     return 0;
 }

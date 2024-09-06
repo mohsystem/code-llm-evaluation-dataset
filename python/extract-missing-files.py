@@ -20,7 +20,8 @@ active_integration = gemini_model
 # active_integration = claude_model
 # active_integration = mistral_model
 
-
+destination_directory = f'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/test{active_integration[1]}'
+os.makedirs(destination_directory, exist_ok=True)
 # Function to extract task numbers from filenames
 def extract_task_numbers(directory):
     task_numbers = []
@@ -61,7 +62,7 @@ for file_name in missing_numbers:
 
     # Source and destination directories
     source_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/promptDescription-0XX'  # Update this with the actual path
-    destination_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/test'
+
 
     # File name to copy
     file_name = f"promptDescription-{formatted_task_number}.json"

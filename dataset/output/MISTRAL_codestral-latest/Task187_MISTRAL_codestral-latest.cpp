@@ -1,33 +1,27 @@
 #include <semaphore.h>
-#include <mutex>
 
 class H2O {
 private:
-    sem_t hydrogen;
-    sem_t oxygen;
-    std::mutex lock;
+    sem_t hSem;
+    sem_t oSem;
 
 public:
     H2O() {
-        sem_init(&hydrogen, 0, 2);
-        sem_init(&oxygen, 0, 0);
+        sem_init(&hSem, 0, 2);
+        sem_init(&oSem, 0, 0);
     }
 
     void hydrogen(function<void()> releaseHydrogen) {
-        sem_wait(&hydrogen);
-        lock.lock();
+        sem_wait(&hSem);
         releaseHydrogen();
-        sem_post(&oxygen);
-        lock.unlock();
+        sem_post(&oSem);
     }
 
     void oxygen(function<void()> releaseOxygen) {
-        sem_wait(&oxygen);
-        sem_wait(&oxygen);
-        lock.lock();
+        sem_wait(&oSem);
+        sem_wait(&oSem);
         releaseOxygen();
-        sem_post(&hydrogen);
-        sem_post(&hydrogen);
-        lock.unlock();
+        sem_post(&hSem);
+        sem_post(&hSem);
     }
 };

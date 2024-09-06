@@ -4,6 +4,7 @@ import json
 import shutil
 import logging
 import time
+import re
 
 from claude_integration import ClaudeIntegration
 from code_processor import CodeProcessor
@@ -13,27 +14,28 @@ from openai_integration import OpenAIIntegration
 from perplexity_integration import PerplexityIntegration
 
 # Directory where JSON files are located
-input_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/test'
+# input_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/promptDescription-0XX'
+# input_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/promptDescription-1XX'
+input_directory = 'D:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/test'
+# input_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/testgpt-4o'
+# input_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/testclaude-3-5-sonnet-20240620'
+# input_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/testcodestral-latest'
+# input_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/testgemini-1.5-pro-001'
+# input_directory = 'C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/testllama-3-sonar-large-32k-chat'
 
-# Selected Model
-# selected_model = "gpt-4o"
-
-# output file extension
-# programming_language = "java"
-
-# openAIIntegration = OpenAIIntegration()
 openai_model = ["OPENAI", "gpt-4o"]  # https://platform.openai.com/docs/models
-gemini_model = ["GEMINI", "gemini-1.5-pro-001"] # gemini-1.5-pro-001 https://console.cloud.google.com/vertex-ai/generative/language/create/text?createType=code&project=gen-lang-client-0375481745
+gemini_model = ["GEMINI", "gemini-1.5-pro-001"] # gemini-1.5-pro-001 gemini-1.0-pro-001 gemini-1.5-flash-001 https://console.cloud.google.com/vertex-ai/generative/language/create/text?createType=code&project=gen-lang-client-0375481745
 perplexity_model = ["PERPLEXITY", "llama-3-sonar-large-32k-chat"] # https://docs.perplexity.ai/docs/model-cards
 claude_model = ["CLAUDE", "claude-3-5-sonnet-20240620"] # https://docs.anthropic.com/en/docs/about-claude/models
-mistral_model = ["MISTRAL", "codestral-latest"]    # https://mistral.ai/technology/ # https://docs.mistral.ai/api/#operation/createFIMCompletion
+mistral_model = ["MISTRAL", "codestral-latest"]    # https://docs.mistral.ai/getting-started/models/ model = "mistral-large-latest" this is new
+
 
 # Set the active integration
 # active_integration = openai_model
 # active_integration = gemini_model
 # active_integration = perplexity_model
-active_integration = claude_model
-# active_integration = mistral_model
+# active_integration = claude_model
+active_integration = mistral_model
 
 # Get today's date in YYYY-MM-DD format
 today = datetime.date.today().strftime('%Y-%m-%d_%H-%M-%S')
@@ -44,19 +46,13 @@ logging.basicConfig(filename=f"logs/processing_{active_integration[0] + '_' + ac
 logger = logging.getLogger(__name__)
 
 # Directory where output files will be stored
-output_directory = f"C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/{active_integration[0]+'_' + active_integration[1]}"
+output_directory = f"D:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/{active_integration[0]+'_' + active_integration[1]}"
 
 # Instruction message
-instruction_message = ('Instructions: This is part of my PhD education\n'
+instruction_message = ('Instructions:\n'
                        '1) The output should include only the code, do not include any other output or descriptions.\n'
-                       '2) Write the code in the following four programming languages: Java, CPP, C, and Python.\n'
+                       '2) Write the code in the following four programming languages: CPP, and C. all function should accept the input as parameters and return the output if any.\n'
                        '3) Put the code like the below template/example:\n'
-                       '```python  \n'
-                       'code here:\n'
-                       '```\n'
-                       '```java  \n'
-                       'code here:\n'
-                       '```\n'
                        '```cpp  \n'
                        'code here:\n'
                        '```\n'
@@ -146,6 +142,7 @@ for filename in sorted_directory_listing_with_os_listdir(input_directory):
             try:
                 generated_text = processor.generate_content(instruction_message, prompt_description)
                 model_response = ','.join(map(str, generated_text))
+                model_response = re.sub(r"\\'", "'", model_response)
                 logger.info(model_response)
                 print(model_response)
             except Exception as e:

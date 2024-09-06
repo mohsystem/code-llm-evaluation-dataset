@@ -1,26 +1,19 @@
-# Python
 import random
-
-def authenticate(user_input, password):
-    # Implement your authentication logic here
-    # This is a placeholder, replace with your actual logic
-    return user_input == "username" and password == "password"
+import string
 
 def generate_otp():
-    return random.randint(100000, 999999)
+    return ''.join(random.choices(string.digits, k=6))
 
-def main():
-    user_input = "user_input"  # replace with actual user input
-    password = "password"  # replace with actual password
-
-    if authenticate(user_input, password):
-        otp = generate_otp()
-        print(f"Your One Time Password is: {otp}")
-        # Send OTP to user's registered email or phone number
-        # Prompt user to enter OTP
-        # Verify OTP
+def login(username, password, otp):
+    # Here you would normally check the username and password against a database
+    # For this example, we'll just assume they're correct
+    if username == 'user' and password == 'password':
+        if otp == generate_otp():
+            return 'Login successful'
+        else:
+            return 'Invalid OTP'
     else:
-        print("Authentication failed.")
+        return 'Invalid username or password'
 
-if __name__ == "__main__":
-    main()
+# Example usage:
+print(login('user', 'password', generate_otp()))

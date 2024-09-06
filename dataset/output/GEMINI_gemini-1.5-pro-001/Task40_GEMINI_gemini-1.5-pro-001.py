@@ -1,53 +1,35 @@
-import os
-import secrets
-
-from flask import Flask, session, render_template_string, request, redirect, url_for
+from flask import Flask, render_template_string, request, session
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.csrf.session import SessionCSRFProtect
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.config['SECRET_KEY'] = 'your-secret-key'
+csrf = SessionCSRFProtect(app)
 
-@app.route('/settings', methods=['GET', 'POST'])
+class SettingsForm(FlaskForm):
+    username = StringField('Username')
+    submit = SubmitField('Update Settings')
+
+@app.route('/', methods=['GET', 'POST'])
 def settings():
     if 'user_id' not in session:
-        return redirect(url_for('login'))  # Replace with your login route
+        return "Please log in to access settings."
 
-    if request.method == 'POST':
-        # Verify CSRF token
-        if not _verify_csrf_token(request.form.get('csrf_token')):
-            return "Invalid CSRF token", 403
-
-        # Process user settings update
+    form = SettingsForm()
+    if form.validate_on_submit():
+        # Process user settings update here
         # ...
 
         return "Settings updated successfully!"
 
-    # Generate and store CSRF token in the session
-    csrf_token = _generate_csrf_token()
-    session['csrf_token'] = csrf_token
-    return render_template_string(
-        """
-        <form method="post">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-            <!-- Your settings form fields here -->
-            <button type="submit">Update Settings</button>
+    return render_template_string('''
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.username.label }} {{ form.username }}
+            {{ form.submit }}
         </form>
-        """,
-        csrf_token=csrf_token
-    )
-
-def _generate_csrf_token():
-    return secrets.token_hex(16)
-
-def _verify_csrf_token(token):
-    if token is None:
-        return False
-    return token == session.get('csrf_token')
-
-@app.route('/login')
-def login():
-    # Simulate login for demonstration
-    session['user_id'] = 1
-    return redirect(url_for('settings'))
+    ''', form=form)
 
 if __name__ == '__main__':
     app.run(debug=True)

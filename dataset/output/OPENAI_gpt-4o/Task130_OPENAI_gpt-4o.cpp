@@ -1,18 +1,15 @@
-// C++ - Using Crow framework
-#include "crow.h"
+#include <iostream>
+#include <httplib.h>
 
 int main() {
-    crow::SimpleApp app;
-
-    CROW_ROUTE(app, "/api")
-    ([] {
-        crow::json::wvalue response;
-        response["message"] = "Hello from Crow API with CORS enabled!";
-
-        auto res = crow::response(response);
-        res.add_header("Access-Control-Allow-Origin", "*");
-        return res;
+    httplib::Server svr;
+    
+    svr.Get("/api/data", [](const httplib::Request&, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
+        res.set_content("{\"message\": \"This is a cross-origin response\"}", "application/json");
     });
 
-    app.port(8080).multithreaded().run();
+    svr.listen("localhost", 1234);
+    
+    return 0;
 }

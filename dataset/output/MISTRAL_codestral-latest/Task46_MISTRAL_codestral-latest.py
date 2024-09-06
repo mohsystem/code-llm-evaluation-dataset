@@ -1,22 +1,18 @@
-import mysql.connector
+# Python code using sqlite3 for database operations
+import sqlite3
 
-mydb = mysql.connector.connect(
-  host="localhost",
-  user="username",
-  password="password",
-  database="mydb"
-)
+# Connect to SQLite database
+conn = sqlite3.connect('user_database.db')
+c = conn.cursor()
 
-mycursor = mydb.cursor()
+# Create table
+c.execute('''CREATE TABLE IF NOT EXISTS users
+             (name TEXT, email TEXT, password TEXT)''')
 
-name = input("Enter name: ")
-email = input("Enter email: ")
-password = input("Enter password: ")
+# Function to register a new user
+def register_user(name, email, password):
+    c.execute("INSERT INTO users VALUES (?, ?, ?)", (name, email, password))
+    conn.commit()
 
-sql = "INSERT INTO users (name, email, password) VALUES (%s, %s, %s)"
-val = (name, email, password)
-mycursor.execute(sql, val)
-
-mydb.commit()
-
-print(mycursor.rowcount, "record inserted.")
+# Test the function
+register_user('John Doe', 'johndoe@example.com', 'password123')

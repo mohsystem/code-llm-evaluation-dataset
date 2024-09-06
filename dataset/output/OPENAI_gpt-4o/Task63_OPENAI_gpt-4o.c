@@ -2,40 +2,62 @@
 #include <stdlib.h>
 #include <string.h>
 #include <jansson.h>
-#include <openssl/bio.h>
-#include <openssl/evp.h>
+#include <libbase64.h>
 
-char* base64_decode(const char* base64_encoded) {
-    BIO *bio, *b64;
-    int decode_len = strlen(base64_encoded);
-    char *buffer = (char *)malloc(decode_len);
-    bio = BIO_new_mem_buf(base64_encoded, -1);
-    b64 = BIO_new(BIO_f_base64());
-    bio = BIO_push(b64, bio);
-    decode_len = BIO_read(bio, buffer, strlen(base64_encoded));
-    buffer[decode_len] = '\0';
-    BIO_free_all(bio);
-    return buffer;
+// Function to process the request
+char* process_request(const char* req);
+
+// Example usage
+int main() {
+    json_t *data = json_pack("{s:s}", "key", "value");
+    char *json_str = json_dumps(data, 0);
+    
+    size_t base64_len;
+    char *encoded_data = (char*) malloc(strlen(json_str) * 2); // Ensure sufficient space
+    
+    base64_encode(json_str, strlen(json_str), encoded_data, &base64_len, 0);
+    
+    char *result = process_request(encoded_data);
+    
+    printf("%s\n", result);
+    
+    free(encoded_data);
+    free(result);
+    json_decref(data);
+    free(json_str);
+    
+    return 0;
 }
 
-int main() {
-    const char *requestData = "eyJrZXkiOiAiVmFsdWUifQ==";
-    
-    // Step 1 and 2: Retrieve and decode raw data
-    char *decodedData = base64_decode(requestData);
+char* process_request(const char* req) {
+    // Step 1: Retrieve the raw_data from the request, ensuring it is encoded in UTF-8
 
-    // Step 3: Deserialize JSON data
-    json_t *jsonObject;
+    // Step 2: Decode the raw_data using Base64
+    size_t decode_len = strlen(req);
+    char *decoded_data = (char*) malloc(decode_len);
+    size_t outlen;
+    base64_decode(req, decode_len, decoded_data, &outlen, 0);
+    
+    // Null-terminate the decoded string
+    decoded_data[outlen] = '\0';
+
+    // Step 3: Deserialize the decoded data into its original format (e.g., JSON)
     json_error_t error;
-    jsonObject = json_loads(decodedData, 0, &error);
-
-    // Step 4: Store deserialized data in variable and return it
-    char *storedData = json_dumps(jsonObject, 0);
-    printf("%s
-", storedData);
+    json_t *deserialized_data = json_loads(decoded_data, 0, &error);
+    if (!deserialized_data) {
+        printf("error: on line %d: %s\n", error.line, error.text);
+        free(decoded_data);
+        return NULL;
+    }
     
-    free(decodedData);
-    free(storedData);
-
-    return 0;
+    // Step 4: Store the deserialized data in a variable
+    json_t *stored_data = deserialized_data;
+    
+    // Serialize JSON back to string for return
+    char *stored_data_str = json_dumps(stored_data, 0);
+    
+    // Step 5: Return the stored data
+    json_decref(stored_data);
+    free(decoded_data);
+    return stored_data_str;
 }

@@ -1,2 +1,6 @@
-input_str = input("Enter a string: ")
-print("You entered:", input_str)
+code here:
+def process_string():
+    user_input = input("Enter a string: ")
+    print("You entered: ", user_input)
+
+process_string()

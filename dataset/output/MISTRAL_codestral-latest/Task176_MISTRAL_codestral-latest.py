@@ -1,13 +1,11 @@
-from collections import deque
-
 class ProductOfNumbers:
 
     def __init__(self):
-        self.prefix_products = deque([1])
+        self.prefix_products = [1]
 
     def add(self, num: int) -> None:
         if num == 0:
-            self.prefix_products = deque([1])
+            self.prefix_products = [1]
         else:
             self.prefix_products.append(self.prefix_products[-1] * num)
 

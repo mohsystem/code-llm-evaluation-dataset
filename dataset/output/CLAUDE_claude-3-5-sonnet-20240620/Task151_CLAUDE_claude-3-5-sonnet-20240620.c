@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 struct Node {
     int key;
@@ -53,12 +54,12 @@ struct Node* deleteNode(struct Node* root, int key) {
     return root;
 }
 
-struct Node* search(struct Node* root, int key) {
+bool search(struct Node* root, int key) {
     if (root == NULL || root->key == key)
-        return root;
-    if (root->key < key)
-        return search(root->right, key);
-    return search(root->left, key);
+        return root != NULL;
+    if (key < root->key)
+        return search(root->left, key);
+    return search(root->right, key);
 }
 
 int main() {
@@ -71,14 +72,11 @@ int main() {
     insert(root, 60);
     insert(root, 80);
 
-    printf("Search for 40: %s\
-", search(root, 40) ? "Found" : "Not Found");
-    printf("Search for 90: %s\
-", search(root, 90) ? "Found" : "Not Found");
+    printf("Search for 40: %s\\n", search(root, 40) ? "Found" : "Not Found");
+    printf("Search for 90: %s\\n", search(root, 90) ? "Found" : "Not Found");
 
     root = deleteNode(root, 40);
-    printf("Search for 40 after deletion: %s\
-", search(root, 40) ? "Found" : "Not Found");
+    printf("Search for 40 after deletion: %s\\n", search(root, 40) ? "Found" : "Not Found");
 
     return 0;
 }

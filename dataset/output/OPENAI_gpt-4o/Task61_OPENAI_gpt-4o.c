@@ -3,17 +3,21 @@
 #include <libxml/tree.h>
 
 int main() {
-    char *xmlContent = "<root><child>value</child></root>";
-    xmlDoc *doc = xmlReadMemory(xmlContent, strlen(xmlContent), "noname.xml", NULL, 0);
-    if (doc == NULL) {
-        printf("Failed to parse XML
-");
-        return -1;
+    const char *xmlString = "<?xml version=\"1.0\"?><root><child1>Content1</child1><child2><subchild1>Content2</subchild1></child2></root>";
+    xmlDoc *document = xmlReadMemory(xmlString, strlen(xmlString), "noname.xml", NULL, 0);
+    if (document == NULL) {
+        printf("Failed to parse XML\n");
+        return 1;
     }
-    xmlNode *root_element = xmlDocGetRootElement(doc);
-    printf("Root element: %s
-", root_element->name);
-    xmlFreeDoc(doc);
-    xmlCleanupParser();
+
+    xmlNode *root = xmlDocGetRootElement(document);
+    if (root == NULL) {
+        printf("Empty document\n");
+        xmlFreeDoc(document);
+        return 1;
+    }
+
+    printf("%s\n", root->name);
+    xmlFreeDoc(document);
     return 0;
 }

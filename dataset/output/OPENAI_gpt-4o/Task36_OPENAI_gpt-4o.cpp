@@ -1,15 +1,17 @@
 #include <iostream>
 #include <fstream>
-#include <jni.h>
+#include <string>
 
-extern "C"
-JNIEXPORT void JNICALL Java_MultiLangFileReader_readFileInCpp(JNIEnv *env, jobject obj, jstring fileName) {
-    const char *nativeString = env->GetStringUTFChars(fileName, 0);
-    
-    std::ifstream file(nativeString);
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <file_name>" << std::endl;
+        return 1;
+    }
+
+    std::ifstream file(argv[1]);
     if (!file.is_open()) {
-        std::cout << "Error opening file" << std::endl;
-        return;
+        std::cerr << "Cannot open file: " << argv[1] << std::endl;
+        return 1;
     }
 
     std::string line;
@@ -18,5 +20,5 @@ JNIEXPORT void JNICALL Java_MultiLangFileReader_readFileInCpp(JNIEnv *env, jobje
     }
 
     file.close();
-    env->ReleaseStringUTFChars(fileName, nativeString);
+    return 0;
 }

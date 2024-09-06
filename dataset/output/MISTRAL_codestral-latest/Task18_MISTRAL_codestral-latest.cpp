@@ -1,10 +1,10 @@
-#include <iostream>
 #include <vector>
+#include <bitset>
 
 int binaryArrayToNumber(std::vector<int> arr) {
-    int result = 0;
+    std::bitset<32> bs;
     for (int i = 0; i < arr.size(); i++) {
-        result = result * 2 + arr[i];
+        bs[i] = arr[i];
     }
-    return result;
+    return bs.to_ulong();
 }

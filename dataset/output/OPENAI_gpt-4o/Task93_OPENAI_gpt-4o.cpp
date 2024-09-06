@@ -2,34 +2,36 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
-int main() {
-    std::ifstream file("data.txt");
-    if (!file.is_open()) {
-        std::cerr << "Unable to open file
-";
+using namespace std;
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        cout << "Please provide a filename as argument." << endl;
+        return 1;
+    }
+    string filename = argv[1];
+    ifstream file(filename);
+    if (!file) {
+        cout << "Unable to open file." << endl;
         return 1;
     }
 
-    std::vector<std::string> records;
-    std::string line;
-    while (std::getline(file, line)) {
-        records.push_back(line);
+    vector<pair<string, string>> records;
+    string line;
+    while (getline(file, line)) {
+        istringstream iss(line);
+        string key, value;
+        iss >> key >> value;
+        records.push_back(make_pair(key, value));
     }
     file.close();
 
-    std::sort(records.begin(), records.end());
-
-    std::ofstream sorted_file("sorted_data.txt");
-    if (!sorted_file.is_open()) {
-        std::cerr << "Unable to open file
-";
-        return 1;
-    }
+    sort(records.begin(), records.end());
 
     for (const auto &record : records) {
-        sorted_file << record << '
-';
+        cout << record.first << " " << record.second << endl;
     }
 
     return 0;

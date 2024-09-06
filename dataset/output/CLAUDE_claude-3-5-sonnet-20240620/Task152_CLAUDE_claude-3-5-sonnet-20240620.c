@@ -4,10 +4,10 @@
 #include <string.h>
 
 #define SIZE 10
-#define MAX_KEY_LENGTH 50
+#define MAX_NAME 256
 
 typedef struct Entry {
-    char key[MAX_KEY_LENGTH];
+    char key[MAX_NAME];
     int value;
     struct Entry* next;
 } Entry;
@@ -19,14 +19,14 @@ typedef struct {
 unsigned int hash(const char* key) {
     unsigned int hash = 0;
     while (*key) {
-        hash = (hash * 31 + *key) % SIZE;
+        hash = (hash * 31) + *key;
         key++;
     }
-    return hash;
+    return hash % SIZE;
 }
 
 HashTable* createHashTable() {
-    HashTable* ht = (HashTable*)malloc(sizeof(HashTable));
+    HashTable* ht = malloc(sizeof(HashTable));
     for (int i = 0; i < SIZE; i++) {
         ht->table[i] = NULL;
     }
@@ -35,9 +35,9 @@ HashTable* createHashTable() {
 
 void insert(HashTable* ht, const char* key, int value) {
     unsigned int index = hash(key);
-    Entry* newEntry = (Entry*)malloc(sizeof(Entry));
-    strncpy(newEntry->key, key, MAX_KEY_LENGTH - 1);
-    newEntry->key[MAX_KEY_LENGTH - 1] = \'\\0\';
+    Entry* newEntry = malloc(sizeof(Entry));
+    strncpy(newEntry->key, key, MAX_NAME - 1);
+    newEntry->key[MAX_NAME - 1] = '\\0';
     newEntry->value = value;
     newEntry->next = ht->table[index];
     ht->table[index] = newEntry;
@@ -73,7 +73,7 @@ int search(HashTable* ht, const char* key) {
         }
         current = current->next;
     }
-    return -1;  // Key not found
+    return -1; // Not found
 }
 
 void freeHashTable(HashTable* ht) {
@@ -95,14 +95,10 @@ int main() {
     insert(ht, "banana", 7);
     insert(ht, "orange", 3);
 
-    printf("%d\
-", search(ht, "apple"));  // Output: 5
-    printf("%d\
-", search(ht, "grape"));  // Output: -1
+    printf("%d\\n", search(ht, "banana")); // Output: 7
 
     delete(ht, "banana");
-    printf("%d\
-", search(ht, "banana"));  // Output: -1
+    printf("%d\\n", search(ht, "banana")); // Output: -1 (Not found)
 
     freeHashTable(ht);
     return 0;

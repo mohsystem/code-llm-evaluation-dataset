@@ -1,18 +1,18 @@
 #include <iostream>
-using namespace std;
 
-int findOdd(int arr[], int n) {
-    int res = 0;
-    for (int i = 0; i < n; i++) {
-        res ^= arr[i];
+int findOddOccurrence(int arr[], int size) {
+    int result = 0;
+    for (int i = 0; i < size; i++) {
+        result ^= arr[i];
     }
-    return res;
+    return result;
 }
 
 int main() {
-    int arr[] = {1,2,2,3,3,3,4,3,3,3,2,2,1};
-    int n = sizeof(arr)/sizeof(arr[0]);
-    int result = findOdd(arr, n);
-    cout << result << endl;
+    std::cout << findOddOccurrence((int[]){7}, 1) << std::endl;
+    std::cout << findOddOccurrence((int[]){0}, 1) << std::endl;
+    std::cout << findOddOccurrence((int[]){1, 1, 2}, 3) << std::endl;
+    std::cout << findOddOccurrence((int[]){0, 1, 0, 1, 0}, 5) << std::endl;
+    std::cout << findOddOccurrence((int[]){1, 2, 2, 3, 3, 3, 4, 3, 3, 3, 2, 2, 1}, 13) << std::endl;
     return 0;
 }

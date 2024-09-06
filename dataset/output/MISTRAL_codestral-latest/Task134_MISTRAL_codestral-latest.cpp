@@ -1,25 +1,25 @@
-// C++
-#include <map>
-#include <string>
+// CPP
+#include <openssl/evp.h>
+#include <fstream>
 
-class CryptoKeyManager {
-private:
-    std::map<std::string, std::string> keys;
+EVP_PKEY* generateKey() {
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
+    EVP_PKEY *pkey = NULL;
+    EVP_PKEY_keygen_init(ctx);
+    EVP_PKEY_keygen(ctx, &pkey);
+    EVP_PKEY_CTX_free(ctx);
+    return pkey;
+}
 
-public:
-    void addKey(const std::string& keyName, const std::string& keyValue) {
-        keys[keyName] = keyValue;
-    }
+void saveKey(EVP_PKEY* pkey, const std::string& filename) {
+    FILE* fp = fopen(filename.c_str(), "wb");
+    PEM_write_PrivateKey(fp, pkey, NULL, NULL, 0, NULL, NULL);
+    fclose(fp);
+}
 
-    std::string getKey(const std::string& keyName) {
-        auto it = keys.find(keyName);
-        if (it != keys.end()) {
-            return it->second;
-        }
-        return "";
-    }
-
-    void removeKey(const std::string& keyName) {
-        keys.erase(keyName);
-    }
-};
+EVP_PKEY* loadKey(const std::string& filename) {
+    FILE* fp = fopen(filename.c_str(), "rb");
+    EVP_PKEY* pkey = PEM_read_PrivateKey(fp, NULL, NULL, NULL);
+    fclose(fp);
+    return pkey;
+}

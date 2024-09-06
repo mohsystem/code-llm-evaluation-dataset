@@ -1,22 +1,28 @@
 
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad
 import os
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import padding
 
-class AESEncryption:
-    def __init__(self):
-        self.iv = os.urandom(AES.block_size)
+def encrypt_data(data, key):
+    # Create a static initialization vector (IV)
+    iv = b'\\x00' * 16
 
-    def encrypt(self, data, key):
-        cipher = AES.new(key.encode(), AES.MODE_CBC, self.iv)
-        padded_data = pad(data.encode(), AES.block_size)
-        encrypted_data = cipher.encrypt(padded_data)
-        return encrypted_data
+    # Initialize a cipher using AES in CBC mode with the static IV
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    encryptor = cipher.encryptor()
 
-if __name__ == "__main__":
-    aes = AESEncryption()
-    data = "Hello, World!"
-    key = "1234567890123456"
+    # Pad the input data to match the block size required by the cipher
+    padder = padding.PKCS7(128).padder()
+    padded_data = padder.update(data) + padder.finalize()
 
-    encrypted = aes.encrypt(data, key)
-    print("Encrypted:", encrypted.hex())
+    # Encrypt the padded data using the cipher
+    encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
+
+    return encrypted_data
+
+# Example usage
+key = os.urandom(32)  # 256-bit key
+data = b"This is a secret message."
+encrypted = encrypt_data(data, key)
+print(encrypted)

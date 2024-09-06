@@ -1,13 +1,14 @@
 import ftplib
 import sys
 
-if __name__ == "__main__":
-    ftp_server = sys.argv[1]
-    username = sys.argv[2]
-    password = sys.argv[3]
-    filename = sys.argv[4]
+if len(sys.argv) != 5:
+    print("Usage: ftp_downloader.py <hostname> <username> <password> <remote_filename>")
+    sys.exit(1)
 
-    with ftplib.FTP(ftp_server, username, password) as ftp:
-        ftp.cwd("/path/to/sensitive/files")
-        with open(filename, "wb") as file:
-            ftp.retrbinary(f"RETR {filename}", file.write)
+hostname, username, password, remote_filename = sys.argv[1:]
+
+with ftplib.FTP(hostname, username, password) as ftp:
+    with open(remote_filename, 'wb') as local_file:
+        ftp.retrbinary('RETR ' + remote_filename, local_file.write)
+
+print(f"File '{remote_filename}' downloaded successfully.")

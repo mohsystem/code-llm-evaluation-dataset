@@ -1,29 +1,30 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <string>
 #include <sstream>
 
 using namespace std;
 
 int main() {
-    vector<vector<string>> matrix;
-    ifstream file("file.txt");
+    ifstream infile("file.txt");
     string line;
+    vector<vector<string>> data;
 
-    while (getline(file, line)) {
-        vector<string> row;
+    // Read file into a vector of vectors (matrix)
+    while (getline(infile, line)) {
         stringstream ss(line);
-        string cell;
-        while (getline(ss, cell, ' ')) {
-            row.push_back(cell);
+        string word;
+        vector<string> row;
+        while (ss >> word) {
+            row.push_back(word);
         }
-        matrix.push_back(row);
+        data.push_back(row);
     }
 
-    for (size_t j = 0; j < matrix[0].size(); j++) {
-        for (size_t i = 0; i < matrix.size(); i++) {
-            cout << matrix[i][j] << " ";
+    // Transpose the matrix
+    for (size_t i = 0; i < data[0].size(); ++i) {
+        for (size_t j = 0; j < data.size(); ++j) {
+            cout << data[j][i] << " ";
         }
         cout << endl;
     }

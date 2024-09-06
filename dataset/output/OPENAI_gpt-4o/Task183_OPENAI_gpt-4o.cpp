@@ -1,15 +1,14 @@
 #include <iostream>
 #include <string>
 
-int largestProduct(const std::string& digits, int span) {
-    if (span == 0) {
-        return 1;
-    }
+int findLargestProduct(const std::string& sequence, int span) {
     int maxProduct = 0;
-    for (size_t i = 0; i <= digits.size() - span; i++) {
+    int length = sequence.length();
+    
+    for (int i = 0; i <= length - span; i++) {
         int product = 1;
-        for (size_t j = i; j < i + span; j++) {
-            product *= digits[j] - '0';
+        for (int j = 0; j < span; j++) {
+            product *= sequence[i + j] - '0';
         }
         if (product > maxProduct) {
             maxProduct = product;
@@ -19,8 +18,8 @@ int largestProduct(const std::string& digits, int span) {
 }
 
 int main() {
-    std::string digits = "63915";
+    std::string sequence = "63915";
     int span = 3;
-    std::cout << largestProduct(digits, span) << std::endl;
+    std::cout << findLargestProduct(sequence, span) << std::endl;
     return 0;
 }

@@ -1,39 +1,19 @@
-# Client
+# Python client
 import socket
 
-s = socket.socket()
-port = 4999
+def login():
+    username = input("Enter your username: ")
+    password = input("Enter your password: ")
+    return f"LOGIN|{username}|{password}"
 
-s.connect(('127.0.0.1', port))
+def main():
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect(('localhost', 12345))
+    message = login()
+    client_socket.send(message.encode())
+    response = client_socket.recv(1024).decode()
+    print(response)
+    client_socket.close()
 
-username = input("Enter username: ")
-password = input("Enter password: ")
-
-message = username + "," + password
-s.send(message.encode())
-
-s.close()
-
-# Server
-import socket
-
-s = socket.socket()
-print("Socket successfully created")
-
-port = 4999
-
-s.bind(('', port))
-print("socket binded to %s" %(port))
-
-s.listen(5)
-print("socket is listening")
-
-while True:
-   c, addr = s.accept()
-   print('Got connection from', addr)
-
-   message = c.recv(1024).decode()
-   print(message)
-   # Authenticate credentials here
-
-   c.close()
+if __name__ == "__main__":
+    main()

@@ -3,40 +3,48 @@
 #include <regex.h>
 
 int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        fprintf(stderr, "Usage: %s <regex> <filename>
-", argv[0]);
+    if (argc < 3) {
+        fprintf(stderr, "Usage: %s <regex_pattern> <file_name>\n", argv[0]);
         return 1;
     }
 
-    char *regex = argv[1];
-    char *filename = argv[2];
+    const char *pattern = argv[1];
+    const char *file_name = argv[2];
 
-    FILE *file = fopen(filename, "r");
-    if (file == NULL) {
-        perror("Error opening file");
-        return 1;
-    }
+    regex_t regex;
+    int reti;
+    char msgbuf[100];
 
-    regex_t re;
-    int reti = regcomp(&re, regex, 0);
+    /* Compile regular expression */
+    reti = regcomp(&regex, pattern, 0);
     if (reti) {
-        fprintf(stderr, "Could not compile regex
-");
+        fprintf(stderr, "Could not compile regex\n");
+        return 1;
+    }
+
+    /* Open file for reading */
+    FILE *file = fopen(file_name, "r");
+    if (file == NULL) {
+        fprintf(stderr, "Error opening file: %s\n", file_name);
         return 1;
     }
 
     char line[1024];
-    while (fgets(line, sizeof(line), file)) {
-        regmatch_t match;
-        reti = regexec(&re, line, 1, &match, 0);
+    while (fgets(line, sizeof(line), file) != NULL) {
+        /* Execute regular expression */
+        reti = regexec(&regex, line, 0, NULL, 0);
         if (!reti) {
-            printf("%.*s
-", (int)(match.rm_eo - match.rm_so), line + match.rm_so);
+            printf("%s", line);
+        } else if (reti != REG_NOMATCH) {
+            regerror(reti, &regex, msgbuf, sizeof(msgbuf));
+            fprintf(stderr, "Regex match failed: %s\n", msgbuf);
+            return 1;
         }
     }
 
-    regfree(&re);
+    /* Free memory allocated to the compiled regex. */
+    regfree(&regex);
+
     fclose(file);
     return 0;
 }

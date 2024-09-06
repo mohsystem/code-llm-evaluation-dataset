@@ -7,6 +7,7 @@
 typedef struct Graph {
     int numNodes;
     int adjList[MAX_NODES][MAX_NODES];
+    bool visited[MAX_NODES];
 } Graph;
 
 void addEdge(Graph* g, int u, int v) {
@@ -14,21 +15,20 @@ void addEdge(Graph* g, int u, int v) {
 }
 
 void bfs(Graph* g, int startNode) {
-    bool visited[MAX_NODES] = {false};
     int queue[MAX_NODES];
     int front = 0, rear = 0;
 
     queue[rear++] = startNode;
-    visited[startNode] = true;
+    g->visited[startNode] = true;
 
-    while (front != rear) {
+    while (front < rear) {
         int node = queue[front++];
         printf("%d ", node);
 
         for (int neighbor = 0; neighbor < g->numNodes; neighbor++) {
-            if (g->adjList[node][neighbor] && !visited[neighbor]) {
+            if (g->adjList[node][neighbor] && !g->visited[neighbor]) {
                 queue[rear++] = neighbor;
-                visited[neighbor] = true;
+                g->visited[neighbor] = true;
             }
         }
     }

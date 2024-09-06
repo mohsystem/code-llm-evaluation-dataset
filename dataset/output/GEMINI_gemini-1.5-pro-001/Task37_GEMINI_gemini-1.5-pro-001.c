@@ -1,48 +1,39 @@
 #include <stdio.h>
-#include <mysql.h>
+#include <sqlite3.h>
+#include <string.h>
 
 int main() {
-    MYSQL *conn;
-    MYSQL_RES *result;
-    MYSQL_ROW row;
-    char username[50];
-    char query[200];
+    sqlite3 *db;
+    char *zErrMsg = 0;
+    int rc;
 
-    conn = mysql_init(NULL);
-    if (!mysql_real_connect(conn, "localhost", "your_username", "your_password", "your_database_name", 3306, NULL, 0)) {
-        fprintf(stderr, "Error connecting to database: %s
-", mysql_error(conn));
+    rc = sqlite3_open("your_database.db", &db);
+    if (rc) {
+        fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
         return 1;
     }
 
+    char username[50];
     printf("Enter username: ");
     scanf("%s", username);
 
-    sprintf(query, "SELECT * FROM users WHERE username = '%s'", username);
-    if (mysql_query(conn, query)) {
-        fprintf(stderr, "Error executing query: %s
-", mysql_error(conn));
-        mysql_close(conn);
-        return 1;
-    }
+    char sql[100] = "SELECT * FROM users WHERE username='";
+    strcat(sql, username);
+    strcat(sql, "'");
 
-    result = mysql_store_result(conn);
-    if (!result) {
-        fprintf(stderr, "Error storing result: %s
-", mysql_error(conn));
-        mysql_close(conn);
-        return 1;
-    }
+    rc = sqlite3_exec(db, sql, [](void *data, int argc, char **argv, char **azColName) -> int {
+        for (int i = 0; i < argc; i++) {
+            printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+        }
+        printf("\n");
+        return 0;
+    }, 0, &zErrMsg);
 
-    while ((row = mysql_fetch_row(result))) {
-        printf("Username: %s
-", row[0]);
-        printf("Email: %s
-", row[1]);
-        // Retrieve other user information as needed
-    }
+    if (rc != SQLITE_OK) {
+        fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    } 
 
-    mysql_free_result(result);
-    mysql_close(conn);
+    sqlite3_close(db);
     return 0;
 }

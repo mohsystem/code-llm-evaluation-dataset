@@ -1,65 +1,29 @@
 // C
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+// C does not have built-in support for cryptographic key management.
+// You would typically use a library like OpenSSL for this.
+// Here's an example using OpenSSL to generate and save a RSA key.
 
-typedef struct {
-    char* keyName;
-    char* keyValue;
-} KeyPair;
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
 
-typedef struct {
-    KeyPair* keys;
-    int size;
-    int capacity;
-} CryptoKeyManager;
-
-CryptoKeyManager* createCryptoKeyManager() {
-    CryptoKeyManager* manager = (CryptoKeyManager*)malloc(sizeof(CryptoKeyManager));
-    manager->size = 0;
-    manager->capacity = 10;
-    manager->keys = (KeyPair*)malloc(sizeof(KeyPair) * manager->capacity);
-    return manager;
+RSA* generateKey() {
+    RSA *rsa = RSA_new();
+    BIGNUM *e = BN_new();
+    BN_set_word(e, RSA_F4);
+    RSA_generate_key_ex(rsa, 2048, e, NULL);
+    BN_free(e);
+    return rsa;
 }
 
-void addKey(CryptoKeyManager* manager, const char* keyName, const char* keyValue) {
-    if (manager->size == manager->capacity) {
-        manager->capacity *= 2;
-        manager->keys = (KeyPair*)realloc(manager->keys, sizeof(KeyPair) * manager->capacity);
-    }
-    manager->keys[manager->size].keyName = strdup(keyName);
-    manager->keys[manager->size].keyValue = strdup(keyValue);
-    manager->size++;
+void saveKey(RSA* rsa, const char* filename) {
+    FILE* fp = fopen(filename, "wb");
+    PEM_write_RSAPrivateKey(fp, rsa, NULL, NULL, 0, NULL, NULL);
+    fclose(fp);
 }
 
-char* getKey(CryptoKeyManager* manager, const char* keyName) {
-    for (int i = 0; i < manager->size; i++) {
-        if (strcmp(manager->keys[i].keyName, keyName) == 0) {
-            return manager->keys[i].keyValue;
-        }
-    }
-    return NULL;
-}
-
-void removeKey(CryptoKeyManager* manager, const char* keyName) {
-    for (int i = 0; i < manager->size; i++) {
-        if (strcmp(manager->keys[i].keyName, keyName) == 0) {
-            free(manager->keys[i].keyName);
-            free(manager->keys[i].keyValue);
-            for (int j = i; j < manager->size - 1; j++) {
-                manager->keys[j] = manager->keys[j + 1];
-            }
-            manager->size--;
-            break;
-        }
-    }
-}
-
-void freeCryptoKeyManager(CryptoKeyManager* manager) {
-    for (int i = 0; i < manager->size; i++) {
-        free(manager->keys[i].keyName);
-        free(manager->keys[i].keyValue);
-    }
-    free(manager->keys);
-    free(manager);
+RSA* loadKey(const char* filename) {
+    FILE* fp = fopen(filename, "rb");
+    RSA* rsa = PEM_read_RSAPrivateKey(fp, NULL, NULL, NULL);
+    fclose(fp);
+    return rsa;
 }

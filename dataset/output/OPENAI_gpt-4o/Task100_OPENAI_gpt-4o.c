@@ -1,45 +1,43 @@
-#include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <regex.h>
 
 int main(int argc, char *argv[]) {
-    if (argc < 3) {
-        printf("Usage: <pattern> <filename>
-");
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s <pattern> <filename>\n", argv[0]);
         return 1;
     }
+
     const char *pattern = argv[1];
     const char *filename = argv[2];
-
+    
     FILE *file = fopen(filename, "r");
     if (!file) {
-        perror("fopen");
+        fprintf(stderr, "Could not open the file!\n");
         return 1;
     }
 
     fseek(file, 0, SEEK_END);
-    long length = ftell(file);
+    long fsize = ftell(file);
     fseek(file, 0, SEEK_SET);
-    char *content = malloc(length);
-    if (!content) {
-        fclose(file);
-        return 1;
-    }
-    fread(content, 1, length, file);
+
+    char *content = (char *)malloc(fsize + 1);
+    fread(content, 1, fsize, file);
+    content[fsize] = '\0';
     fclose(file);
 
     regex_t regex;
-    regcomp(&regex, pattern, 0);
-    regmatch_t match;
-    const char *p = content;
+    regcomp(&regex, pattern, REG_EXTENDED);
 
-    while (regexec(&regex, p, 1, &match, 0) == 0) {
-        printf("%.*s
-", (int)(match.rm_eo - match.rm_so), p + match.rm_so);
-        p += match.rm_eo;
+    regmatch_t matches[1];
+    const char *p = content;
+    while (regexec(&regex, p, 1, matches, 0) != REG_NOMATCH) {
+        printf("%.*s\n", matches[0].rm_eo - matches[0].rm_so, p + matches[0].rm_so);
+        p += matches[0].rm_eo;
     }
 
     regfree(&regex);
     free(content);
+
     return 0;
 }

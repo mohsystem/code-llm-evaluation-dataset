@@ -1,23 +1,42 @@
 #include <iostream>
 #include <string>
-#include <fstream>
+#include <stdexcept>
+
+bool validateCommand(const std::string& command) {
+    // Add your validation logic here
+    return true;
+}
+
+std::string executeCommand(const std::string& command) {
+    try {
+        std::string cmd = "bash -c \"" + command + "\"";
+        FILE* pipe = popen(cmd.c_str(), "r");
+        if (!pipe) {
+            return "Error: unable to open pipe";
+        }
+        char buffer[128];
+        std::string result;
+        while (!feof(pipe)) {
+            if (fgets(buffer, 128, pipe) != NULL) {
+                result += buffer;
+            }
+        }
+        pclose(pipe);
+        return result;
+    } catch (const std::exception& e) {
+        return "Error: " + std::string(e.what());
+    }
+}
 
 int main() {
-    std::string cmd;
-    std::cout << "Enter a bash command: ";
-    std::getline(std::cin, cmd);
-
-    std::FILE *fp = popen(cmd.c_str(), "r");
-    if (fp == NULL) {
-        std::cerr << "Error executing command" << std::endl;
-        return 1;
+    std::cout << "Enter a bash shell command: ";
+    std::string command;
+    std::getline(std::cin, command);
+    if (validateCommand(command)) {
+        std::string result = executeCommand(command);
+        std::cout << result;
+    } else {
+        std::cout << "Invalid command format or content";
     }
-
-    char output[1024];
-    while (std::fgets(output, 1024, fp) != NULL) {
-        std::cout << output;
-    }
-
-    pclose(fp);
     return 0;
 }

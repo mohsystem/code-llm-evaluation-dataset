@@ -1,25 +1,15 @@
 // C++
-
-#include <iostream>
-#include <fstream>
+#include <map>
 #include <string>
 
-void signup() {
-    std::string username, password;
-    std::cout << "Enter username: ";
-    std::cin >> username;
-    std::cout << "Enter password: ";
-    std::cin >> password;
-    // In a real-world application, you would hash the password before storing it.
-    // For simplicity, we're storing it as is.
-    std::ofstream outfile;
-    outfile.open("passwords.txt", std::ios_base::app);
-    outfile << username << ":" << password << "
-";
-    outfile.close();
+std::map<std::string, std::string> passwords;
+
+void signup(std::string username, std::string password) {
+    passwords[username] = password;
 }
 
+// Example usage
 int main() {
-    signup();
+    signup("user1", "password1");
     return 0;
 }

@@ -1,15 +1,9 @@
-def find_nb(m):
-    n = 0
-    volume = 0
-    
-    while volume < m:
+def findNb(m):
+    n, total_volume = 0, 0
+    while total_volume < m:
         n += 1
-        volume += n**3
-    
-    if volume == m:
-        return n
-    else:
-        return -1
+        total_volume += n ** 3
+    return n if total_volume == m else -1
 
-print(find_nb(1071225))  # 45
-print(find_nb(91716553919377))  # -1
+print(findNb(1071225))  # 45
+print(findNb(91716553919377))  # -1

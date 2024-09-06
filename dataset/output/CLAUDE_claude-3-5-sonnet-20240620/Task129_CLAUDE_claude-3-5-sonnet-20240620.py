@@ -9,9 +9,9 @@ def retrieve_file(filename):
         response = requests.get(file_url)
         response.raise_for_status()
         
-        with open(filename, \'wb\') as file:
+        with open(filename, 'wb') as file:
             file.write(response.content)
-        print(f"File \'{filename}\' successfully retrieved and saved.")
+        print(f"File '{filename}' successfully retrieved and saved.")
     except requests.exceptions.RequestException as e:
         print(f"Error retrieving file: {e}")
 

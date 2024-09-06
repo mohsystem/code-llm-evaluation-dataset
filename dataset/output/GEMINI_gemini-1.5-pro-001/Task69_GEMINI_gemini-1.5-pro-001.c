@@ -2,20 +2,17 @@
 #include <stdlib.h>
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        fprintf(stderr, "Error: File path not provided.
-");
+    if (argc != 2) {
+        fprintf(stderr, "Usage: delete_file <file_path>\n");
         return 1;
     }
 
-    char *filePath = argv[1];
+    char *file_path = argv[1];
 
-    if (remove(filePath) == 0) {
-        printf("File deleted successfully.
-");
+    if (remove(file_path) == 0) {
+        printf("File '%s' deleted successfully.\n", file_path);
     } else {
-        fprintf(stderr, "Failed to delete the file. File may not exist.
-");
+        perror("Error deleting file");
         return 1;
     }
 

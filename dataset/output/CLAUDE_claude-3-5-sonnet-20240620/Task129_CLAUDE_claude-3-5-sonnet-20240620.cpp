@@ -12,33 +12,34 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
 void retrieveFile(const std::string& filename) {
     std::string serverUrl = "http://example.com/files/";  // Replace with actual server URL
     std::string fileUrl = serverUrl + filename;
-    
+
     CURL* curl;
     CURLcode res;
     std::string readBuffer;
-    
+
     curl = curl_easy_init();
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, fileUrl.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+
         res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
-        
+
         if (res == CURLE_OK) {
             std::ofstream outFile(filename, std::ios::binary);
             if (outFile.is_open()) {
                 outFile.write(readBuffer.c_str(), readBuffer.size());
                 outFile.close();
-                std::cout << "File \'" << filename << "\' successfully retrieved and saved." << std::endl;
+                std::cout << "File '" << filename << "' successfully retrieved and saved." << std::endl;
             } else {
                 std::cerr << "Error: Unable to save file." << std::endl;
             }
         } else {
-            std::cerr << "Error: Failed to retrieve file." << std::endl;
+            std::cerr << "Error retrieving file: " << curl_easy_strerror(res) << std::endl;
         }
     } else {
-        std::cerr << "Error: Failed to initialize CURL." << std::endl;
+        std::cerr << "Error: Unable to initialize CURL." << std::endl;
     }
 }
 

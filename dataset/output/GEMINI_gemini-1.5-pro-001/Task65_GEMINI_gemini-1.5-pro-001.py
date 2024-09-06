@@ -1,22 +1,31 @@
 import sys
 
-def main():
-    if len(sys.argv) < 2:
-        print("Error: Filename is required as a command-line argument.")
-        sys.exit(1)
+def read_file(filename):
+  """Reads the content of a file.
 
-    filename = sys.argv[1]
+  Args:
+    filename: The name of the file to read.
 
-    try:
-        with open(filename, 'r') as file:
-            content = file.read()
-            print(content)
-    except FileNotFoundError:
-        print(f"Error: File '{filename}' not found.")
-        sys.exit(1)
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        sys.exit(1)
+  Returns:
+    The content of the file as a string, or None if an error occurred.
+  """
+  try:
+    with open(filename, 'r') as f:
+      return f.read()
+  except FileNotFoundError:
+    print(f"Error: File '{filename}' not found.")
+    return None
+  except Exception as e:
+    print(f"Error reading file '{filename}': {e}")
+    return None
 
 if __name__ == "__main__":
-    main()
+  if len(sys.argv) < 2:
+    print("Usage: python your_script_name.py <filename>")
+    sys.exit(1)
+
+  filename = sys.argv[1]
+  file_content = read_file(filename)
+
+  if file_content:
+    print(file_content)

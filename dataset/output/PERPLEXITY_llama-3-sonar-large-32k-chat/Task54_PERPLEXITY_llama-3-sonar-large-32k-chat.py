@@ -1,18 +1,16 @@
 import random
 import time
 
-otp = random.randint(100000, 999999)
+def generate_otp():
+    return str(random.randint(100000, 999999))
+
+def authenticate(username, password, otp):
+    if username == "admin" and password == "password" and otp == generate_otp():
+        return "Authentication successful"
+    else:
+        return "Authentication failed"
 
 username = input("Enter username: ")
 password = input("Enter password: ")
-
-if username == "admin" and password == "password":
-    print("One Time Password (OTP) is:", otp)
-    user_otp = int(input("Enter OTP: "))
-
-    if user_otp == otp:
-        print("Login successful!")
-    else:
-        print("Invalid OTP. Login failed.")
-else:
-    print("Invalid username or password. Login failed.")
+otp = input("Enter OTP: ")
+print(authenticate(username, password, otp))

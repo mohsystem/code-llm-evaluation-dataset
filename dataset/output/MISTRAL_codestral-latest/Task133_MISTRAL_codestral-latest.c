@@ -1,34 +1,22 @@
-// C
+// C code for password reset functionality
+
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_PASSWORD_LENGTH 50
+const char* resetPassword(const char* currentPassword, const char* newPassword, const char* confirmPassword) {
+    // For simplicity, let's assume the current password is "oldpassword"
+    if (strcmp(currentPassword, "oldpassword") != 0) {
+        return "Current password is incorrect.";
+    } else if (strcmp(newPassword, confirmPassword) != 0) {
+        return "New password and confirm password do not match.";
+    } else {
+        // In a real-world application, you would update the password here
+        return "Password reset successful.";
+    }
+}
 
 int main() {
-    char currentPassword[MAX_PASSWORD_LENGTH], newPassword[MAX_PASSWORD_LENGTH], confirmPassword[MAX_PASSWORD_LENGTH];
-
-    printf("Enter your current password: ");
-    fgets(currentPassword, MAX_PASSWORD_LENGTH, stdin);
-    currentPassword[strcspn(currentPassword, "
-")] = 0; // Remove trailing newline
-
-    printf("Enter your new password: ");
-    fgets(newPassword, MAX_PASSWORD_LENGTH, stdin);
-    newPassword[strcspn(newPassword, "
-")] = 0; // Remove trailing newline
-
-    printf("Confirm your new password: ");
-    fgets(confirmPassword, MAX_PASSWORD_LENGTH, stdin);
-    confirmPassword[strcspn(confirmPassword, "
-")] = 0; // Remove trailing newline
-
-    if (strcmp(newPassword, confirmPassword) == 0) {
-        printf("Password reset successful.
-");
-    } else {
-        printf("Passwords do not match. Password reset failed.
-");
-    }
-
+    // Test the function
+    printf("%s\n", resetPassword("oldpassword", "newpassword", "newpassword"));
     return 0;
 }

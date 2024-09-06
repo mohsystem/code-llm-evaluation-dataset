@@ -2,54 +2,48 @@
 #include <stdlib.h>
 
 typedef struct {
-    int* small;
-    int* large;
-    int smallSize;
-    int largeSize;
+    int* nums;
+    int size;
 } MedianFinder;
-
-int cmp(const void* a, const void* b) {
-    return (*(int*)b - *(int*)a);
-}
 
 MedianFinder* medianFinderCreate() {
     MedianFinder* obj = (MedianFinder*)malloc(sizeof(MedianFinder));
-    obj->small = (int*)malloc(10000 * sizeof(int));
-    obj->large = (int*)malloc(10000 * sizeof(int));
-    obj->smallSize = 0;
-    obj->largeSize = 0;
+    obj->nums = NULL;
+    obj->size = 0;
     return obj;
 }
 
 void addNum(MedianFinder* obj, int num) {
-    obj->small[obj->smallSize++] = num;
-    qsort(obj->small, obj->smallSize, sizeof(int), cmp);
-    
-    if (obj->smallSize > obj->largeSize + 1) {
-        obj->large[obj->largeSize++] = obj->small[--obj->smallSize];
-        qsort(obj->large, obj->largeSize, sizeof(int), cmp);
+    obj->nums = (int*)realloc(obj->nums, (obj->size + 1) * sizeof(int));
+    int i = obj->size - 1;
+    while (i >= 0 && obj->nums[i] > num) {
+        obj->nums[i + 1] = obj->nums[i];
+        i--;
     }
+    obj->nums[i + 1] = num;
+    obj->size++;
 }
 
 double findMedian(MedianFinder* obj) {
-    if (obj->smallSize > obj->largeSize) {
-        return obj->small[0];
+    if (obj->size % 2 == 1) {
+        return obj->nums[obj->size / 2];
     } else {
-        return (obj->small[0] + obj->large[0]) / 2.0;
+        return (obj->nums[obj->size / 2 - 1] + obj->nums[obj->size / 2]) / 2.0;
     }
+}
+
+void medianFinderFree(MedianFinder* obj) {
+    free(obj->nums);
+    free(obj);
 }
 
 int main() {
     MedianFinder* medianFinder = medianFinderCreate();
     addNum(medianFinder, 1);
     addNum(medianFinder, 2);
-    printf("%lf
-", findMedian(medianFinder)); // Output: 1.5
+    printf("%.1f\n", findMedian(medianFinder)); // 1.5
     addNum(medianFinder, 3);
-    printf("%lf
-", findMedian(medianFinder)); // Output: 2.0
-    free(medianFinder->small);
-    free(medianFinder->large);
-    free(medianFinder);
+    printf("%.1f\n", findMedian(medianFinder)); // 2.0
+    medianFinderFree(medianFinder);
     return 0;
 }

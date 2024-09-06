@@ -1,53 +1,58 @@
 #include <iostream>
 #include <vector>
-#include <unordered_map>
-#include <queue>
+using namespace std;
 
 class TreeNode {
 public:
-    int value;
-    std::vector<TreeNode*> children;
+    int val;
+    vector<TreeNode*> children;
 
-    TreeNode(int val) : value(val) {}
+    TreeNode(int val) {
+        this->val = val;
+    }
 };
 
-std::unordered_map<int, TreeNode*> buildTree(const std::vector<std::pair<int, int>>& edges) {
-    std::unordered_map<int, TreeNode*> nodes;
-    for (const auto& edge : edges) {
-        int parent = edge.first, child = edge.second;
-        if (nodes.find(parent) == nodes.end()) nodes[parent] = new TreeNode(parent);
-        if (nodes.find(child) == nodes.end()) nodes[child] = new TreeNode(child);
-        nodes[parent]->children.push_back(nodes[child]);
+TreeNode* reorientTree(TreeNode* node) {
+    TreeNode* root = new TreeNode(node->val);
+    for (TreeNode* child : node->children) {
+        TreeNode* childNode = reorientTree(child);
+        root->children.push_back(childNode);
     }
-    return nodes;
+    return root;
 }
 
-void reorientTree(TreeNode* node, TreeNode* parent) {
-    if (parent) {
-        auto it = std::remove(node->children.begin(), node->children.end(), parent);
-        node->children.erase(it, node->children.end());
-        node->children.push_back(parent);
-    }
-    for (auto child : node->children) {
-        reorientTree(child, node);
-    }
-}
-
-void printTree(TreeNode* root, int level) {
-    if (!root) return;
-    std::cout << std::string(level * 2, ' ') << root->value << std::endl;
-    for (auto child : root->children) {
+void printTree(TreeNode* node, int level = 0) {
+    for (int i = 0; i < level * 2; i++) cout << " ";
+    cout << node->val << endl;
+    for (TreeNode* child : node->children) {
         printTree(child, level + 1);
     }
 }
 
 int main() {
-    std::vector<std::pair<int, int>> edges = {{0, 1}, {0, 2}, {0, 3}, {1, 4}, {1, 5}, {2, 6}, {2, 7}, {3, 8}, {3, 9}};
-    auto nodes = buildTree(edges);
-    auto root = nodes[0];
-    reorientTree(root, nullptr);
-    auto newRoot = nodes[6];
-    reorientTree(newRoot, nullptr);
-    printTree(newRoot, 0);
+    TreeNode* n0 = new TreeNode(0);
+    TreeNode* n1 = new TreeNode(1);
+    TreeNode* n2 = new TreeNode(2);
+    TreeNode* n3 = new TreeNode(3);
+    TreeNode* n4 = new TreeNode(4);
+    TreeNode* n5 = new TreeNode(5);
+    TreeNode* n6 = new TreeNode(6);
+    TreeNode* n7 = new TreeNode(7);
+    TreeNode* n8 = new TreeNode(8);
+    TreeNode* n9 = new TreeNode(9);
+
+    n0->children.push_back(n1);
+    n0->children.push_back(n2);
+    n0->children.push_back(n3);
+    n1->children.push_back(n4);
+    n1->children.push_back(n5);
+    n2->children.push_back(n6);
+    n2->children.push_back(n7);
+    n3->children.push_back(n8);
+    n3->children.push_back(n9);
+
+    TreeNode* newRoot = reorientTree(n6);
+    printTree(newRoot);
+
     return 0;
 }

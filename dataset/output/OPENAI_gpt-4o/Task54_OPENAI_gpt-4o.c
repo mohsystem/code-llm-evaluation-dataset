@@ -2,39 +2,40 @@
 #include <stdlib.h>
 #include <time.h>
 
+int generateOTP() {
+    return 100000 + rand() % 900000;
+}
+
+int verifyOTP(int userOTP, int actualOTP) {
+    return userOTP == actualOTP;
+}
+
 int main() {
-    char username[] = "user";
-    char password[] = "password";
-    char inputUsername[100], inputPassword[100];
-    int otp, inputOTP;
+    srand(time(NULL));
 
-    printf("Enter username:
-");
-    scanf("%s", inputUsername);
-    printf("Enter password:
-");
-    scanf("%s", inputPassword);
+    char username[50];
+    char password[50];
+    
+    printf("Enter username: ");
+    scanf("%s", username);
+    
+    printf("Enter password: ");
+    scanf("%s", password);
 
-    if (strcmp(username, inputUsername) == 0 && strcmp(password, inputPassword) == 0) {
-        // Generate OTP
-        srand(time(0));
-        otp = rand() % 1000000;
-        printf("Generated OTP: %06d
-", otp);
-        printf("Enter OTP:
-");
-        scanf("%d", &inputOTP);
-
-        if (inputOTP == otp) {
-            printf("Login Successful
-");
+    // Simulate verifying username and password
+    if (strcmp(username, "user") == 0 && strcmp(password, "pass") == 0) {
+        int otp = generateOTP();
+        printf("Your OTP is: %d\n", otp);
+        int userOTP;
+        printf("Enter the OTP you received: ");
+        scanf("%d", &userOTP);
+        if (verifyOTP(userOTP, otp)) {
+            printf("Login successful!\n");
         } else {
-            printf("Invalid OTP
-");
+            printf("Invalid OTP!\n");
         }
     } else {
-        printf("Invalid username or password
-");
+        printf("Invalid username or password!\n");
     }
 
     return 0;

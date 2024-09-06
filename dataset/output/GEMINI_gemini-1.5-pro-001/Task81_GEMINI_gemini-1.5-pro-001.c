@@ -1,55 +1,86 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <openssl/md5.h>
 #include <openssl/sha.h>
 
-int check_certificate_hash(const char* certificate_path, const char* expected_hash) {
-  FILE *fp = fopen(certificate_path, "rb");
-  if (fp == NULL) {
-    fprintf(stderr, "Error opening certificate file: %s
-", certificate_path);
-    return 0;
-  }
+// Function to calculate the hash of a file
+char* calculate_file_hash(const char* filename, const char* algorithm) {
+    FILE *fp = fopen(filename, "rb");
+    if (fp == NULL) {
+        fprintf(stderr, "Error opening file: %s\n", filename);
+        return NULL;
+    }
 
-  unsigned char buffer[4096];
-  size_t bytes_read;
-  SHA256_CTX sha256_ctx;
-  SHA256_Init(&sha256_ctx);
+    // Determine the hash algorithm to use
+    const EVP_MD *md;
+    if (strcmp(algorithm, "sha256") == 0) {
+        md = EVP_sha256();
+    } else if (strcmp(algorithm, "md5") == 0) {
+        md = EVP_md5();
+    } else {
+        fprintf(stderr, "Unsupported hash algorithm: %s\n", algorithm);
+        fclose(fp);
+        return NULL;
+    }
 
-  while ((bytes_read = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
-    SHA256_Update(&sha256_ctx, buffer, bytes_read);
-  }
+    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+    EVP_DigestInit_ex(ctx, md, NULL);
 
-  unsigned char calculated_hash[SHA256_DIGEST_LENGTH];
-  SHA256_Final(calculated_hash, &sha256_ctx);
+    unsigned char buffer[1024];
+    size_t bytes_read;
+    while ((bytes_read = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
+        EVP_DigestUpdate(ctx, buffer, bytes_read);
+    }
 
-  fclose(fp);
+    unsigned char hash[EVP_MAX_MD_SIZE];
+    unsigned int hash_len;
+    EVP_DigestFinal_ex(ctx, hash, &hash_len);
 
-  char calculated_hash_str[SHA256_DIGEST_LENGTH * 2 + 1];
-  for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-    sprintf(calculated_hash_str + (i * 2), "%02x", calculated_hash[i]);
-  }
+    EVP_MD_CTX_free(ctx);
+    fclose(fp);
 
-  return strcmp(calculated_hash_str, expected_hash) == 0;
+    // Convert the binary hash to a hexadecimal string
+    char *hash_string = (char*)malloc(hash_len * 2 + 1);
+    for (unsigned int i = 0; i < hash_len; ++i) {
+        sprintf(&hash_string[i * 2], "%02x", hash[i]);
+    }
+    hash_string[hash_len * 2] = '\0';
+
+    return hash_string;
+}
+
+// Function to verify the hash of a file against a known hash
+int verify_file_hash(const char* filename, const char* expected_hash, const char* algorithm) {
+    char *calculated_hash = calculate_file_hash(filename, algorithm);
+    if (calculated_hash == NULL) {
+        return 0; // Error calculating hash
+    }
+
+    int result = strcmp(calculated_hash, expected_hash) == 0;
+
+    free(calculated_hash);
+    return result;
 }
 
 int main() {
-  char certificate_file[256];
-  char expected_hash[65];
+    char filename[256];
+    char expected_hash[64];
+    char algorithm[16];
 
-  printf("Enter the path to the SSL certificate file: ");
-  scanf("%s", certificate_file);
+    printf("Enter the path to the SSL certificate: ");
+    scanf("%s", filename);
 
-  printf("Enter the expected SHA-256 hash: ");
-  scanf("%s", expected_hash);
+    printf("Enter the expected hash value: ");
+    scanf("%s", expected_hash);
 
-  if (check_certificate_hash(certificate_file, expected_hash)) {
-    printf("Certificate hash matches!
-");
-  } else {
-    printf("Certificate hash does not match.
-");
-  }
+    printf("Enter the hash algorithm used (e.g., sha256, md5): ");
+    scanf("%s", algorithm);
 
-  return 0;
+    if (verify_file_hash(filename, expected_hash, algorithm)) {
+        printf("Certificate hash matches!\n");
+    } else {
+        printf("Certificate hash does not match.\n");
+    }
+
+    return 0;
 }

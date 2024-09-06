@@ -7,15 +7,14 @@ private:
     int minutes;
 
 public:
-    Clock(int hours, int minutes) : minutes((hours * 60 + minutes) % 1440) {}
+    Clock(int hour, int minute) : minutes((hour * 60 + minute) % 1440) {}
 
-    std::string toString() const {
-        int hours = minutes / 60;
-        int mins = minutes % 60;
-        std::ostringstream oss;
-        oss << std::setfill(\'0\') << std::setw(2) << hours << ":"
-            << std::setfill(\'0\') << std::setw(2) << mins;
-        return oss.str();
+    friend std::ostream& operator<<(std::ostream& os, const Clock& clock) {
+        int hours = clock.minutes / 60;
+        int mins = clock.minutes % 60;
+        os << std::setfill('0') << std::setw(2) << hours << ":" 
+           << std::setfill('0') << std::setw(2) << mins;
+        return os;
     }
 
     bool operator==(const Clock& other) const {
@@ -34,13 +33,12 @@ public:
 };
 
 int main() {
-    Clock clock1(10, 30);
-    Clock clock2(10, 30);
-    std::cout << clock1.toString() << std::endl;  // 10:30
-    std::cout << (clock1 == clock2) << std::endl;  // 1
-    clock1.add(30);
-    std::cout << clock1.toString() << std::endl;  // 11:00
-    clock1.subtract(60);
-    std::cout << clock1.toString() << std::endl;  // 10:00
+    Clock clock(10, 30);
+    std::cout << clock << std::endl;  // 10:30
+    clock.add(60);
+    std::cout << clock << std::endl;  // 11:30
+    clock.subtract(90);
+    std::cout << clock << std::endl;  // 10:00
+    std::cout << (clock == Clock(10, 0)) << std::endl;  // 1 (true)
     return 0;
 }

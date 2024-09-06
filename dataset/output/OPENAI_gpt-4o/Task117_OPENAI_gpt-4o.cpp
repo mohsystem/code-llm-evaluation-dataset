@@ -1,40 +1,81 @@
 #include <iostream>
 #include <fstream>
-#include <filesystem>
+#include <vector>
+#include <zip.h>
 #include <archive.h>
 #include <archive_entry.h>
 
-void extract(const char *filename, const char *output_dir) {
-    struct archive *a;
-    struct archive *ext;
-    struct archive_entry *entry;
-    int flags = ARCHIVE_EXTRACT_TIME;
-    a = archive_read_new();
-    ext = archive_write_disk_new();
-    archive_read_support_format_zip(a);
-    archive_read_open_filename(a, filename, 10240);
-    while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
-        std::filesystem::create_directories(output_dir);
-        std::filesystem::path outpath = std::filesystem::path(output_dir) / archive_entry_pathname(entry);
-        archive_entry_set_pathname(entry, outpath.c_str());
-        archive_write_header(ext, entry);
-        const void *buff;
-        size_t size;
-        la_int64_t offset;
-        while (archive_read_data_block(a, &buff, &size, &offset) == ARCHIVE_OK) {
-            archive_write_data_block(ext, buff, size, offset);
-        }
-        archive_write_finish_entry(ext);
+void extract_zip(const std::string &file_path, const std::string &extract_to) {
+    int err = 0;
+    zip_t *archive = zip_open(file_path.c_str(), 0, &err);
+    if (!archive) {
+        std::cerr << "Failed to open ZIP archive\n";
+        return;
     }
-    archive_read_close(a);
-    archive_write_close(ext);
-    archive_read_free(a);
-    archive_write_free(ext);
+
+    zip_int64_t entries = zip_get_num_entries(archive, 0);
+    for (zip_int64_t i = 0; i < entries; ++i) {
+        struct zip_stat st;
+        zip_stat_index(archive, i, 0, &st);
+
+        std::string full_path = extract_to + "/" + st.name;
+        std::ofstream out_file(full_path, std::ios::binary);
+        struct zip_file *file = zip_fopen_index(archive, i, 0);
+        char buffer[8192];
+        zip_int64_t bytes_read;
+
+        while ((bytes_read = zip_fread(file, buffer, sizeof(buffer))) > 0)
+            out_file.write(buffer, bytes_read);
+
+        zip_fclose(file);
+        out_file.close();
+    }
+    zip_close(archive);
 }
 
-int main() {
-    const char *filename = "yourfile.tar";
-    const char *output_dir = "output_dir";
-    extract(filename, output_dir);
+void extract_tar(const std::string &file_path, const std::string &extract_to) {
+    struct archive *a = archive_read_new();
+    struct archive_entry *entry;
+
+    archive_read_support_format_tar(a);
+    int r = archive_read_open_filename(a, file_path.c_str(), 10240);
+    if (r != ARCHIVE_OK) {
+        std::cerr << "Failed to open TAR archive\n";
+        return;
+    }
+
+    while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
+        std::string full_path = extract_to + "/" + archive_entry_pathname(entry);
+        std::ofstream out_file(full_path, std::ios::binary);
+
+        const void *buff;
+        size_t size;
+        int64_t offset;
+
+        while (archive_read_data_block(a, &buff, &size, &offset) == ARCHIVE_OK) {
+            out_file.write(static_cast<const char *>(buff), size);
+        }
+        out_file.close();
+    }
+    archive_read_free(a);
+}
+
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        std::cerr << "Usage: " << argv[0] << " <archive_path> <extract_to>\n";
+        return 1;
+    }
+
+    std::string archive_path = argv[1];
+    std::string extract_to = argv[2];
+
+    if (archive_path.ends_with(".zip")) {
+        extract_zip(archive_path, extract_to);
+    } else if (archive_path.ends_with(".tar")) {
+        extract_tar(archive_path, extract_to);
+    } else {
+        std::cerr << "Unsupported file type\n";
+    }
+
     return 0;
 }

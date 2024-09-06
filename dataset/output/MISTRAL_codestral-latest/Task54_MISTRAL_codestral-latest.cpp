@@ -1,33 +1,36 @@
-// C++
 #include <iostream>
-#include <cstdlib>
-#include <ctime>
-#include <cstring>
+#include <random>
+#include <string>
 
-bool authenticate(const char *userInput, const char *password) {
-    // Implement your authentication logic here
-    // This is a placeholder, replace with your actual logic
-    return strcmp(userInput, "username") == 0 && strcmp(password, "password") == 0;
-}
-
-int generateOTP() {
-    srand(time(0));
-    return 100000 + rand() % 900000;
-}
-
-int main() {
-    const char *userInput = "user_input"; // replace with actual user input
-    const char *password = "password"; // replace with actual password
-
-    if (authenticate(userInput, password)) {
-        int otp = generateOTP();
-        std::cout << "Your One Time Password is: " << otp << std::endl;
-        // Send OTP to user's registered email or phone number
-        // Prompt user to enter OTP
-        // Verify OTP
-    } else {
-        std::cout << "Authentication failed." << std::endl;
+std::string generate_otp() {
+    const std::string CHARACTERS = "0123456789";
+    const int OTP_LENGTH = 6;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, CHARACTERS.size() - 1);
+    std::string otp;
+    for (int i = 0; i < OTP_LENGTH; i++) {
+        otp += CHARACTERS[dis(gen)];
     }
+    return otp;
+}
 
+std::string login(const std::string& username, const std::string& password, const std::string& otp) {
+    // Here you would normally check the username and password against a database
+    // For this example, we'll just assume they're correct
+    if (username == "user" && password == "password") {
+        if (otp == generate_otp()) {
+            return "Login successful";
+        } else {
+            return "Invalid OTP";
+        }
+    } else {
+        return "Invalid username or password";
+    }
+}
+
+// Example usage:
+int main() {
+    std::cout << login("user", "password", generate_otp()) << std::endl;
     return 0;
 }

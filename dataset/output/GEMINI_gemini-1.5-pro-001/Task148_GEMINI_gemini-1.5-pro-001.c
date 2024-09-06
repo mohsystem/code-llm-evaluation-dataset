@@ -4,40 +4,37 @@
 #define MAX_SIZE 100
 
 typedef struct {
+    int arr[MAX_SIZE];
     int top;
-    int items[MAX_SIZE];
 } Stack;
 
-void push(Stack *s, int item) {
-    if (s->top == MAX_SIZE - 1) {
-        printf("Stack Overflow
-");
+void push(Stack *stack, int item) {
+    if (stack->top == MAX_SIZE - 1) {
+        printf("Stack Overflow\n");
         return;
     }
-    s->top++;
-    s->items[s->top] = item;
+    stack->top++;
+    stack->arr[stack->top] = item;
 }
 
-int pop(Stack *s) {
-    if (s->top == -1) {
-        printf("Stack Underflow
-");
+int pop(Stack *stack) {
+    if (stack->top == -1) {
+        printf("Stack Underflow\n");
         return -1;
     }
-    int item = s->items[s->top];
-    s->top--;
+    int item = stack->arr[stack->top];
+    stack->top--;
     return item;
 }
 
-int peek(Stack *s) {
-    if (s->top == -1) {
-        printf("Stack is empty
-");
+int peek(Stack *stack) {
+    if (stack->top == -1) {
+        printf("Stack is empty\n");
         return -1;
     }
-    return s->items[s->top];
+    return stack->arr[stack->top];
 }
 
-int is_empty(Stack *s) {
-    return s->top == -1;
+int is_empty(Stack *stack) {
+    return stack->top == -1;
 }

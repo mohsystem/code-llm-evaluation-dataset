@@ -1,30 +1,35 @@
 #include <stdio.h>
-#include <string.h>
 #include <regex.h>
+#include <string.h>
 
-int main() {
-    char ipAddress[] = "192.168.1.1";
-    if (isValidIP(ipAddress)) {
-        printf("%s is a valid IP address.
-", ipAddress);
-    } else {
-        printf("%s is not a valid IP address.
-", ipAddress);
-    }
+int isValidIP(const char *ip) {
+  regex_t regex;
+  int reti;
+
+  reti = regcomp(&regex, "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$", REG_EXTENDED);
+  if (reti) {
+    fprintf(stderr, "Could not compile regex\n");
     return 0;
+  }
+
+  reti = regexec(&regex, ip, 0, NULL, 0);
+  regfree(&regex);
+
+  return reti == 0;
 }
 
-int isValidIP(char *ipAddress) {
-    regex_t regex;
-    int result;
-    char *pattern = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
+int main() {
+  char ipAddress[16];
 
-    result = regexec(&regex, ipAddress, 0, NULL, 0);
-    regfree(&regex);
+  printf("Enter an IP address: ");
+  fgets(ipAddress, sizeof(ipAddress), stdin);
+  ipAddress[strcspn(ipAddress, "\n")] = 0; // remove trailing newline
 
-    if (result == 0) {
-        return 1; // Valid IP address
-    } else {
-        return 0; // Invalid IP address
-    }
+  if (isValidIP(ipAddress)) {
+    printf("Valid IP address\n");
+  } else {
+    printf("Invalid IP address\n");
+  }
+
+  return 0;
 }

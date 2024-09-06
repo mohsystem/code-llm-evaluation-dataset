@@ -1,34 +1,28 @@
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 class UserSession {
-private:
-    int userId;
-    bool active;
+    std::string userId;
+    std::chrono::time_point<std::chrono::steady_clock> startTime;
 
 public:
-    UserSession(int userId) {
-        this->userId = userId;
-        this->active = true;
+    UserSession(const std::string& userId) : userId(userId), startTime(std::chrono::steady_clock::now()) {}
+
+    double getDuration() {
+        auto currentTime = std::chrono::steady_clock::now();
+        std::chrono::duration<double> duration = currentTime - startTime;
+        return duration.count();
     }
 
-    void endSession() {
-        this->active = false;
-    }
-
-    int getUserId() {
-        return this->userId;
-    }
-
-    bool isActive() {
-        return this->active;
+    std::string getUserId() {
+        return userId;
     }
 };
 
 int main() {
-    UserSession session(1);
-    std::cout << session.getUserId() << std::endl;
-    std::cout << (session.isActive() ? "true" : "false") << std::endl;
-    session.endSession();
-    std::cout << (session.isActive() ? "true" : "false") << std::endl;
+    UserSession session("User1");
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::cout << "CPP: Session duration for " << session.getUserId() << ": " << session.getDuration() << " seconds" << std::endl;
     return 0;
 }

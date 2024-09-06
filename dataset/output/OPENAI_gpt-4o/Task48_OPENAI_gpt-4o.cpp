@@ -1,61 +1,63 @@
-// C++
 #include <iostream>
-#include <string>
-#include <vector>
 #include <thread>
+#include <vector>
 #include <mutex>
+#include <algorithm>
+#include <string>
+#include <cstring>
 #include <unistd.h>
-#include <netinet/in.h>
+#include <arpa/inet.h>
 
-#define PORT 12345
-
-std::vector<int> client_sockets;
+std::vector<int> clients;
 std::mutex clients_mutex;
+
+void broadcast(const std::string& message, int sender) {
+    std::lock_guard<std::mutex> lock(clients_mutex);
+    for (int client : clients) {
+        if (client != sender) {
+            send(client, message.c_str(), message.size(), 0);
+        }
+    }
+}
 
 void handle_client(int client_socket) {
     char buffer[1024];
-    int len;
-
-    while ((len = read(client_socket, buffer, sizeof(buffer) - 1)) > 0) {
-        buffer[len] = '\0';
-        
-        std::lock_guard<std::mutex> guard(clients_mutex);
-        for (int sock : client_sockets) {
-            if (sock != client_socket) {
-                send(sock, buffer, len, 0);
-            }
+    while (true) {
+        int bytes_received = recv(client_socket, buffer, 1024, 0);
+        if (bytes_received <= 0) {
+            std::lock_guard<std::mutex> lock(clients_mutex);
+            clients.erase(std::remove(clients.begin(), clients.end(), client_socket), clients.end());
+            close(client_socket);
+            break;
+        } else {
+            buffer[bytes_received] = '\0';
+            std::string message(buffer);
+            broadcast(message, client_socket);
         }
     }
-
-    close(client_socket);
-    std::lock_guard<std::mutex> guard(clients_mutex);
-    client_sockets.erase(std::remove(client_sockets.begin(), client_sockets.end(), client_socket), client_sockets.end());
 }
 
 int main() {
-    int server_socket, client_socket;
-    sockaddr_in server_addr, client_addr;
-    socklen_t client_len = sizeof(client_addr);
+    int server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    sockaddr_in server_address;
+    server_address.sin_family = AF_INET;
+    server_address.sin_port = htons(5555);
+    server_address.sin_addr.s_addr = INADDR_ANY;
 
-    server_socket = socket(AF_INET, SOCK_STREAM, 0);
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
+    bind(server_socket, (sockaddr*)&server_address, sizeof(server_address));
+    listen(server_socket, 100);
 
-    bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr));
-    listen(server_socket, 10);
-
-    std::cout << "Chat server started..." << std::endl;
+    std::cout << "Server started..." << std::endl;
 
     while (true) {
-        client_socket = accept(server_socket, (struct sockaddr*)&client_addr, &client_len);
-        
-        std::lock_guard<std::mutex> guard(clients_mutex);
-        client_sockets.push_back(client_socket);
-
+        int client_socket = accept(server_socket, NULL, NULL);
+        {
+            std::lock_guard<std::mutex> lock(clients_mutex);
+            clients.push_back(client_socket);
+        }
+        std::cout << "Connection established." << std::endl;
         std::thread(handle_client, client_socket).detach();
     }
 
-    close(server_socket);
     return 0;
 }

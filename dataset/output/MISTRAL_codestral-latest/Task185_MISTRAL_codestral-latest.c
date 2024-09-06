@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
 double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2, int nums2Size) {
-    int* nums = malloc(sizeof(int) * (nums1Size + nums2Size));
+    int* nums = (int*)malloc((nums1Size + nums2Size) * sizeof(int));
     for (int i = 0; i < nums1Size; i++) {
         nums[i] = nums1[i];
     }
@@ -12,7 +12,7 @@ double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2, int nums2Si
     int n = nums1Size + nums2Size;
     double median;
     if (n % 2 == 0) {
-        median = (nums[n/2 - 1] + nums[n/2]) / 2.0;
+        median = (nums[n/2] + nums[n/2 - 1]) / 2.0;
     } else {
         median = nums[n/2];
     }

@@ -1,17 +1,20 @@
 #include <iostream>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
+#include <string>
+#include <tinyxml2.h>
+
+using namespace tinyxml2;
 
 int main() {
-    const char* xmlContent = "<root><child>value</child></root>";
-    xmlDocPtr doc = xmlReadMemory(xmlContent, strlen(xmlContent), "noname.xml", NULL, 0);
-    if (doc == NULL) {
+    const char* xml = R"(<root><child1>Content1</child1><child2><subchild1>Content2</subchild1></child2></root>)";
+
+    XMLDocument doc;
+    if (doc.Parse(xml) == XML_SUCCESS) {
+        XMLElement* root = doc.RootElement();
+        if (root) {
+            std::cout << root->Name() << std::endl;
+        }
+    } else {
         std::cerr << "Failed to parse XML" << std::endl;
-        return -1;
     }
-    xmlNodePtr root_element = xmlDocGetRootElement(doc);
-    std::cout << "Root element: " << root_element->name << std::endl;
-    xmlFreeDoc(doc);
-    xmlCleanupParser();
     return 0;
 }

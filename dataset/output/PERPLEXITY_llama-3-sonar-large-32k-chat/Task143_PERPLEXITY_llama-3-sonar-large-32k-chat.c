@@ -16,18 +16,16 @@ void sort_array(int arr[], int n) {
 int main() {
     int arr[] = {64, 34, 25, 12, 22, 11, 90};
     int n = sizeof(arr) / sizeof(arr[0]);
-    printf("Original array: ");
+    printf("Original array is: ");
     for (int i = 0; i < n; i++) {
         printf("%d ", arr[i]);
     }
-    printf("
-");
+    printf("\n");
     sort_array(arr, n);
-    printf("Sorted array: ");
+    printf("Sorted array is: ");
     for (int i = 0; i < n; i++) {
         printf("%d ", arr[i]);
     }
-    printf("
-");
+    printf("\n");
     return 0;
 }

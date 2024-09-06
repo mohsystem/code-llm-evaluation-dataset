@@ -7,7 +7,6 @@ int main() {
     printf("Enter the radius of the circle: ");
     scanf("%lf", &radius);
     area = M_PI * pow(radius, 2);
-    printf("The area of the circle is: %.2f\
-", area);
+    printf("The area of the circle is: %.2f\\n", area);
     return 0;
 }

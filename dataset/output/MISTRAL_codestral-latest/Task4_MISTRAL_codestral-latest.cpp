@@ -1,21 +1,9 @@
-#include <iostream>
-#include <unordered_set>
+#include <algorithm>
 #include <cctype>
+#include <string>
 
-bool isIsogram(const std::string& str) {
-    std::unordered_set<char> set;
-    for (char c : str) {
-        if (set.find(tolower(c)) != set.end()) {
-            return false;
-        }
-        set.insert(tolower(c));
-    }
-    return true;
-}
-
-int main() {
-    std::cout << isIsogram("Dermatoglyphics") << std::endl; // 1 (true)
-    std::cout << isIsogram("aba") << std::endl; // 0 (false)
-    std::cout << isIsogram("moOse") << std::endl; // 0 (false)
-    return 0;
+bool isIsogram(std::string str) {
+    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+    std::sort(str.begin(), str.end());
+    return std::unique(str.begin(), str.end()) == str.end();
 }

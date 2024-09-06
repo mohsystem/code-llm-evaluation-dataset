@@ -1,33 +1,42 @@
+// C++ code using Boost
+#include <boost/asio.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 #include <iostream>
 #include <string>
-#include <boost/asio.hpp>
 
-using namespace std;
 using namespace boost::asio;
-using namespace boost::asio::ip;
+using namespace boost::serialization;
 
-void doSomething() {
-    cout << "Doing something on the server..." << endl;
-}
+class MyService {
+public:
+    std::string getData() {
+        return "Hello from server!";
+    }
+
+    void setData(const std::string& data) {
+        std::cout << "Received data from client: " << data << std::endl;
+    }
+};
 
 int main() {
     io_service io;
-    tcp::acceptor acceptor(io, tcp::endpoint(tcp::v4(), 8080));
+    ip::tcp::acceptor acceptor(io, ip::tcp::endpoint(ip::tcp::v4(), 18861));
+    ip::tcp::socket socket(io);
 
-    tcp::socket socket(io);
     acceptor.accept(socket);
 
-    string message;
-    boost::system::error_code error;
-    socket.read_some(buffer(message), error);
+    boost::archive::text_iarchive ia(&socket);
+    boost::archive::text_oarchive oa(&socket);
 
-    if (!error) {
-        cout << message << endl;
-        doSomething();
-        boost::asio::write(socket, buffer("Hello from server"));
-        cout << "Hello message sent" << endl;
-    } else {
-        cout << "Error: " << error.message() << endl;
+    MyService service;
+    std::string data;
+
+    while (true) {
+        ia >> data;
+        service.setData(data);
+        oa << service.getData();
     }
 
     return 0;

@@ -29,16 +29,16 @@ int main() {
             if (num2 != 0) {
                 result = num1 / num2;
             } else {
-                printf("Error: Division by zero");
+                printf("Error: Division by zero\n");
                 return 0;
             }
             break;
         default:
-            printf("Error: Invalid operator");
+            printf("Error: Invalid operator\n");
             return 0;
     }
 
-    printf("Result: %.2lf", result);
+    printf("Result: %.2lf\n", result);
 
     return 0;
 }

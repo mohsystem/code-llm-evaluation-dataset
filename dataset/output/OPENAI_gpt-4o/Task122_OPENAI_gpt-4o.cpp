@@ -1,19 +1,27 @@
 #include <iostream>
-#include <unordered_map>
+#include <vector>
 #include <string>
 
-std::unordered_map<std::string, std::string> passwords;
+class User {
+public:
+    std::string username;
+    std::string password;
 
-void signup(const std::string& username, const std::string& password) {
-    passwords[username] = password;
-    std::cout << "Signup successful!" << std::endl;
+    User(std::string uname, std::string pass) : username(uname), password(pass) {}
+};
+
+std::vector<User> database;
+
+void signup(std::string username, std::string password) {
+    database.push_back(User(username, password));
+    std::cout << "User signed up successfully" << std::endl;
 }
 
 int main() {
     std::string username, password;
-    std::cout << "Enter Username: ";
+    std::cout << "Enter username: ";
     std::cin >> username;
-    std::cout << "Enter Password: ";
+    std::cout << "Enter password: ";
     std::cin >> password;
     signup(username, password);
     return 0;

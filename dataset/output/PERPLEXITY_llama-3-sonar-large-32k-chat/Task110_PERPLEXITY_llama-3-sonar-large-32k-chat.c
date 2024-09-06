@@ -1,39 +1,23 @@
+// C does not have built-in support for regular expressions, so we'll use a simple validation
 #include <stdio.h>
 #include <string.h>
-#include <regex.h>
+
+int validateUrl(const char* url) {
+    if (strstr(url, "http://") == url || strstr(url, "https://") == url || strstr(url, "ftp://") == url) {
+        return 1;
+    }
+    return 0;
+}
 
 int main() {
-    regex_t regex;
-    int reti;
-    char msgbuf[100];
-
-    /* Compile regular expression */
-    reti = regcomp(&regex, "^((https?|ftp|file)://)?(-\\w+\\.){1,}(com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|edu|co\\.uk|ac\\.uk|gov\\.uk|mil\\.uk|nhs\\.uk|police\\.uk|mod\\.uk|travel|local|me\\.uk|ltd\\.uk|plc\\.uk|net\\.uk|sch\\.uk)(:\\d+)?(/([\\w\\-\\.\\?\\,\\\\\\+&%*#=]*)?)?$", 0);
-    if (reti) {
-        fprintf(stderr, "Could not compile regex
-");
-        exit(1);
-    }
-
-    /* Get URL from user */
-    char url[1024];
+    char url[256];
     printf("Enter a URL: ");
-    fgets(url, 1024, stdin);
-    url[strcspn(url, "
-")] = 0; // remove newline character
-
-    /* Execute regular expression */
-    reti = regexec(&regex, url, 0, NULL, 0);
-    if (!reti) {
-        printf("URL is valid
-");
+    fgets(url, 256, stdin);
+    url[strcspn(url, "\n")] = 0; // remove newline character
+    if (validateUrl(url)) {
+        printf("URL is valid\n");
     } else {
-        printf("URL is not valid
-");
+        printf("URL is not valid\n");
     }
-
-    /* Free compiled regular expression */
-    regfree(&regex);
-
     return 0;
 }

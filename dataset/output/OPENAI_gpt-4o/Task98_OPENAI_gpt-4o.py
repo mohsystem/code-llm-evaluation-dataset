@@ -1,6 +1,7 @@
-input_val = input("Enter a number: ")
+result = None
 try:
-    number = int(input_val)
-    print("You entered:", number)
+    user_input = input("Enter a number: ")
+    result = int(user_input)
+    print("Converted Integer:", result)
 except ValueError:
-    print("Invalid input. Not an integer.")
+    print("Error: Not a valid integer")

@@ -20,10 +20,10 @@ private:
         do {
             new_name = "";
             for (int i = 0; i < 2; ++i) {
-                new_name += \'A\' + dis_letter(gen);
+                new_name += 'A' + dis_letter(gen);
             }
             for (int i = 0; i < 3; ++i) {
-                new_name += \'0\' + dis_digit(gen);
+                new_name += '0' + dis_digit(gen);
             }
         } while (used_names.find(new_name) != used_names.end());
         used_names.insert(new_name);

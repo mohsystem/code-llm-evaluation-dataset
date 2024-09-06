@@ -1,7 +1,6 @@
 import re
 
-with open("input.txt", "r") as file:
-    pattern = re.compile("^[0-9]+.*\\.$")
+with open('input.txt', 'r') as file:
     for line in file:
-        if pattern.match(line.strip()):
+        if re.match(r'^\d+.*\.$', line):
             print(line.strip())

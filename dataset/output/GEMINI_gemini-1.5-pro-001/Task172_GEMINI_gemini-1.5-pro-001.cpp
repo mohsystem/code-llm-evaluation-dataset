@@ -1,21 +1,16 @@
-#include <string>
-#include <unordered_set>
-
-using namespace std;
-
 class Solution {
 public:
     int distinctEchoSubstrings(string text) {
         int n = text.length();
-        unordered_set<string> seen;
+        unordered_set<string> s;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j <= n; j += 2) {
+            for (int j = i + 1; j <= n; j++) {
                 string sub = text.substr(i, j - i);
-                if (sub.substr(0, (j - i) / 2) == sub.substr((j - i) / 2)) {
-                    seen.insert(sub);
+                if (sub.length() % 2 == 0 && sub.substr(0, sub.length() / 2) == sub.substr(sub.length() / 2)) {
+                    s.insert(sub);
                 }
             }
         }
-        return seen.size();
+        return s.size();
     }
 };

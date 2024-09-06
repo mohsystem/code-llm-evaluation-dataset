@@ -1,12 +1,14 @@
-from SimpleXMLRPCServer import SimpleXMLRPCServer
+code here:
+from xmlrpc.server import SimpleXMLRPCServer
 
-class MyHandler:
-    def add(self, a, b):
-        return a + b
+def add(a, b):
+    return a + b
 
-    def echo(self, message):
-        return message
+def subtract(a, b):
+    return a - b
 
-server = SimpleXMLRPCServer(("localhost", 8080))
-server.register_instance(MyHandler())
+server = SimpleXMLRPCServer(("localhost", 8000))
+print("Listening on port 8000...")
+server.register_function(add, "add")
+server.register_function(subtract, "subtract")
 server.serve_forever()

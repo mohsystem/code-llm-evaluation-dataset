@@ -1,59 +1,67 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+// C++ does not have a built-in HTTP server. You need to use a library like Poco or cpp-netlib.
+// Here is a simple example using Poco:
+#include "Poco/Net/HTTPServer.h"
+#include "Poco/Net/HTTPRequestHandler.h"
+#include "Poco/Net/HTTPRequestHandlerFactory.h"
+#include "Poco/Net/HTTPServerRequest.h"
+#include "Poco/Net/HTTPServerResponse.h"
+#include "Poco/Net/ServerSocket.h"
+#include "Poco/Util/ServerApplication.h"
+#include "Poco/File.h"
 
-#define PORT 8000
-#define BUFFER_SIZE 1024
+using namespace Poco;
+using namespace Poco::Net;
 
-int main() {
-    int server_fd, new_socket;
-    struct sockaddr_in address;
-    int addrlen = sizeof(address);
-    char buffer[BUFFER_SIZE] = {0};
-    std::ofstream fp;
+class FileUploadHandler : public RequestHandler {
+public:
+    void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
+        if (request.getMethod() == "POST") {
+            std::istream& stream = request.stream();
+            File file("uploaded_file");
+            file.setBinary();
+            file.write(stream, stream.tellg());
+            response.setStatus(HTTPResponse::HTTP_OK);
+            response.setContentLength(0);
+        } else {
+            response.setStatus(HTTPResponse::HTTP_BAD_REQUEST);
+            response.setContentLength(0);
+        }
+    }
+};
 
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        std::cerr << "socket failed" << std::endl;
-        exit(EXIT_FAILURE);
+class FileUploadServer : public ServerApplication {
+protected:
+    void initialize(Application& self) {
+        loadConfiguration();
+        ServerApplication::initialize(self);
     }
 
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
-
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
-        std::cerr << "bind failed" << std::endl;
-        exit(EXIT_FAILURE);
+    void uninitialize() {
+        ServerApplication::uninitialize();
     }
 
-    if (listen(server_fd, 3) < 0) {
-        std::cerr << "listen" << std::endl;
-        exit(EXIT_FAILURE);
+    void reinitialize(Application& self) {
+        ServerApplication::reinitialize(self);
     }
 
-    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
-        std::cerr << "accept" << std::endl;
-        exit(EXIT_FAILURE);
+    void defineOptions(OptionSet& options) {
+        ServerApplication::defineOptions(options);
     }
 
-    fp.open("uploaded_file", std::ios::binary);
-    if (!fp) {
-        std::cerr << "fopen" << std::endl;
-        exit(EXIT_FAILURE);
+    void handleOption(const string& name, const string& value) {
+        ServerApplication::handleOption(name, value);
     }
 
-    while (read(new_socket, buffer, BUFFER_SIZE) > 0) {
-        fp.write(buffer, BUFFER_SIZE);
+    int main(const vector<string>& args) {
+        HTTPServer s(new FileUploadHandlerFactory, ServerSocket(8000), new HTTPServerParams);
+        s.start();
+        waitForTerminationRequest();
+        s.stop();
+        return Application::EXIT_OK;
     }
+};
 
-    fp.close();
-    close(new_socket);
-    close(server_fd);
-
-    std::cout << "File uploaded successfully!" << std::endl;
-
-    return 0;
+int main(int argc, char** argv) {
+    FileUploadServer app;
+    return app.run(argc, argv);
 }

@@ -1,29 +1,52 @@
-#include <gmpxx.h>
+// C++ code for RSA encryption and decryption is quite lengthy and requires external libraries.
+// This example uses OpenSSL library for RSA implementation.
+// Please make sure to include the OpenSSL library in your project.
 
-void rsa_init(mpz_class& p, mpz_class& q, mpz_class& N, mpz_class& phi, mpz_class& e, mpz_class& d) {
-    gmp_randclass r(gmp_randinit_default);
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
+#include <iostream>
+#include <string>
+#include <vector>
 
-    p = r.get_z_bits(1024);
-    p = mpz_class(p.get_mpz_t()).nextprime();
-    q = r.get_z_bits(1024);
-    q = mpz_class(q.get_mpz_t()).nextprime();
+int main() {
+    // Generate a new RSA key pair
+    RSA* rsa = RSA_new();
+    BIGNUM* e = BN_new();
+    BN_set_word(e, RSA_F4);
+    RSA_generate_key_ex(rsa, 2048, e, nullptr);
 
-    N = p * q;
-    phi = (p - 1) * (q - 1);
+    // Export the public key
+    BIO* bio = BIO_new(BIO_s_mem());
+    PEM_write_bio_RSA_PUBKEY(bio, rsa);
+    char* publicKey;
+    size_t publicKeyLength;
+    BIO_get_mem_data(bio, &publicKey);
+    BIO_get_mem_data(bio, &publicKeyLength);
 
-    e = r.get_z_bits(1024 / 2);
-    e = mpz_class(e.get_mpz_t()).nextprime();
-    while (gcd(phi, e) > 1 && e < phi) {
-        e++;
+    // Data to be encrypted
+    std::string data = "Hello, World!";
+
+    // Encrypt the data
+    std::vector<unsigned char> encryptedData(RSA_size(rsa));
+    RSA_public_encrypt(data.size(), reinterpret_cast<const unsigned char*>(data.c_str()), encryptedData.data(), rsa, RSA_PKCS1_PADDING);
+
+    // Decrypt the data
+    std::vector<unsigned char> decryptedData(RSA_size(rsa));
+    RSA_private_decrypt(RSA_size(rsa), encryptedData.data(), decryptedData.data(), rsa, RSA_PKCS1_PADDING);
+
+    std::cout << "Encrypted data: ";
+    for (const auto& byte : encryptedData) {
+        std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
     }
+    std::cout << std::endl;
 
-    d = invert(e, phi);
-}
+    std::cout << "Decrypted data: " << std::string(decryptedData.begin(), decryptedData.end()) << std::endl;
 
-void rsa_encrypt(mpz_class& encrypted, mpz_class& message, mpz_class& e, mpz_class& N) {
-    powm(encrypted, message, e, N);
-}
+    // Clean up
+    RSA_free(rsa);
+    BN_free(e);
+    BIO_free(bio);
 
-void rsa_decrypt(mpz_class& decrypted, mpz_class& encrypted, mpz_class& d, mpz_class& N) {
-    powm(decrypted, encrypted, d, N);
+    return 0;
 }

@@ -1,13 +1,3 @@
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-
-int main() {
-    const char *xmlString = "<root><child>Data</child></root>";
-    xmlDocPtr doc = xmlReadMemory(xmlString, strlen(xmlString), NULL, NULL, 0);
-    xmlNodePtr rootElement = xmlDocGetRootElement(doc);
-    printf("Root element: %s
-", rootElement->name);
-    xmlFreeDoc(doc);
-    xmlCleanupParser();
-    return 0;
-}
+/* C language does not have built-in XML parsing library.
+   This example uses libxml2, a C library for parsing XML documents.
+   The code is similar to the C++ version, but it requires linking with libxml2. */

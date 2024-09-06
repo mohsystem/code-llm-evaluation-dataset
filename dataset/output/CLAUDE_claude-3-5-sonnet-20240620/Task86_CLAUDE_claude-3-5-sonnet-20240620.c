@@ -4,19 +4,18 @@
 #include <string.h>
 #include <curl/curl.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
 size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
-    return fwrite(ptr, size, nmemb, stream);
+    size_t written = fwrite(ptr, size, nmemb, stream);
+    return written;
 }
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        printf("Usage: %s <URL>\
-", argv[0]);
-        return 1;
-    }
-
-    const char *url = argv[1];
-    const char *filename = "downloaded.exe";
+void download_file(const char* url, const char* filename) {
     CURL *curl;
     FILE *fp;
     CURLcode res;
@@ -30,16 +29,36 @@ int main(int argc, char *argv[]) {
         res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
         fclose(fp);
+    }
+}
 
-        if (res != CURLE_OK) {
-            fprintf(stderr, "Download failed: %s\
-", curl_easy_strerror(res));
-            return 1;
-        }
+int main() {
+    char url[1000];
+    char filename[256];
+    
+    printf("Enter the URL of the EXE file: ");
+    scanf("%999s", url);
+
+    const char* last_slash = strrchr(url, '/');
+    if (last_slash) {
+        strcpy(filename, last_slash + 1);
+    } else {
+        strcpy(filename, "downloaded.exe");
     }
 
-    // Execute the file
-    system(filename);
+    download_file(url, filename);
+
+    #ifdef _WIN32
+        ShellExecute(NULL, "open", filename, NULL, NULL, SW_SHOWNORMAL);
+    #else
+        char chmod_cmd[300];
+        sprintf(chmod_cmd, "chmod +x %s", filename);
+        system(chmod_cmd);
+
+        char exec_cmd[300];
+        sprintf(exec_cmd, "./%s", filename);
+        system(exec_cmd);
+    #endif
 
     return 0;
 }

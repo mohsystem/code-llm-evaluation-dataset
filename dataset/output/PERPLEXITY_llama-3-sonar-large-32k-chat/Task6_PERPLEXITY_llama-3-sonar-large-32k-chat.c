@@ -1,25 +1,16 @@
 #include <stdio.h>
 
 double findUniq(double arr[], int size) {
-    double a = arr[0];
-    double b = arr[1];
-    if (a == b) {
-        for (int i = 2; i < size; i++) {
-            if (arr[i] != a) return arr[i];
+    for (int i = 0; i < size; i++) {
+        int count = 0;
+        for (int j = 0; j < size; j++) {
+            if (arr[i] == arr[j]) {
+                count++;
+            }
         }
-    } else {
-        for (int i = 2; i < size; i++) {
-            if (arr[i] == a) return b;
-            if (arr[i] == b) return a;
+        if (count == 1) {
+            return arr[i];
         }
     }
-    return -1; // not found
-}
-
-int main() {
-    double arr[] = {1, 1, 1, 2, 1, 1};
-    int size = sizeof(arr) / sizeof(arr[0]);
-    printf("%f
-", findUniq(arr, size));
     return 0;
 }

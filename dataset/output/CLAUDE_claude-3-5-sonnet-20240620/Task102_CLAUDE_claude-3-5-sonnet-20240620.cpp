@@ -1,10 +1,10 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
+#include <iomanip>
 #include <openssl/sha.h>
-#include <mysql_driver.h>
-#include <mysql_connection.h>
-#include <cppconn/prepared_statement.h>
+#include <sqlite3.h>
 
 std::string hashPassword(const std::string& password) {
     unsigned char hash[SHA256_DIGEST_LENGTH];
@@ -15,50 +15,66 @@ std::string hashPassword(const std::string& password) {
 
     std::stringstream ss;
     for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        ss << std::hex << std::setw(2) << std::setfill(\'0\') << static_cast<int>(hash[i]);
+        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(hash[i]);
     }
     return ss.str();
 }
 
-void updatePasswordInDatabase(const std::string& username, const std::string& hashedPassword) {
-    try {
-        sql::mysql::MySQL_Driver* driver;
-        sql::Connection* con;
-        sql::PreparedStatement* pstmt;
+void updatePassword(const std::string& username, const std::string& newPassword) {
+    std::string hashedPassword = hashPassword(newPassword);
+    sqlite3* db;
+    char* errMsg = 0;
 
-        driver = sql::mysql::get_mysql_driver_instance();
-        con = driver->connect("tcp://127.0.0.1:3306", "your_username", "your_password");
-        con->setSchema("your_database");
-
-        pstmt = con->prepareStatement("UPDATE users SET password = ? WHERE username = ?");
-        pstmt->setString(1, hashedPassword);
-        pstmt->setString(2, username);
-
-        int rowsAffected = pstmt->executeUpdate();
-        if (rowsAffected > 0) {
-            std::cout << "Password updated successfully." << std::endl;
-        } else {
-            std::cout << "User not found." << std::endl;
-        }
-
-        delete pstmt;
-        delete con;
-    } catch (sql::SQLException& e) {
-        std::cout << "SQL Exception: " << e.what() << std::endl;
+    if (sqlite3_open("users.db", &db) != SQLITE_OK) {
+        std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+        return;
     }
+
+    std::string createTableSql = "CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password TEXT);";
+    if (sqlite3_exec(db, createTableSql.c_str(), 0, 0, &errMsg) != SQLITE_OK) {
+        std::cerr << "SQL error: " << errMsg << std::endl;
+        sqlite3_free(errMsg);
+    }
+
+    std::string updateSql = "UPDATE users SET password = ? WHERE username = ?;";
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(db, updateSql.c_str(), -1, &stmt, 0) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, hashedPassword.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 2, username.c_str(), -1, SQLITE_STATIC);
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            std::cerr << "Execution failed: " << sqlite3_errmsg(db) << std::endl;
+        }
+    } else {
+        std::cerr << "SQL error: " << sqlite3_errmsg(db) << std::endl;
+    }
+    sqlite3_finalize(stmt);
+
+    if (sqlite3_changes(db) == 0) {
+        std::string insertSql = "INSERT INTO users (username, password) VALUES (?, ?);";
+        if (sqlite3_prepare_v2(db, insertSql.c_str(), -1, &stmt, 0) == SQLITE_OK) {
+            sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_text(stmt, 2, hashedPassword.c_str(), -1, SQLITE_STATIC);
+            if (sqlite3_step(stmt) != SQLITE_DONE) {
+                std::cerr << "Execution failed: " << sqlite3_errmsg(db) << std::endl;
+            }
+        } else {
+            std::cerr << "SQL error: " << sqlite3_errmsg(db) << std::endl;
+        }
+        sqlite3_finalize(stmt);
+    }
+
+    sqlite3_close(db);
 }
 
 int main() {
-    std::string username, password;
-
+    std::string username, newPassword;
     std::cout << "Enter username: ";
     std::getline(std::cin, username);
-
     std::cout << "Enter new password: ";
-    std::getline(std::cin, password);
+    std::getline(std::cin, newPassword);
 
-    std::string hashedPassword = hashPassword(password);
-    updatePasswordInDatabase(username, hashedPassword);
+    updatePassword(username, newPassword);
+    std::cout << "Password updated successfully." << std::endl;
 
     return 0;
 }

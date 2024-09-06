@@ -1,21 +1,24 @@
-from Crypto.Util.number import getPrime, bytes_to_long, long_to_bytes
 from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
+import binascii
 
-def rsa_init():
-    p = getPrime(1024)
-    q = getPrime(1024)
-    N = p * q
-    phi = (p - 1) * (q - 1)
-    e = getPrime(1024 // 2)
-    while gcd(phi, e) > 1 and e < phi:
-        e = getPrime(1024 // 2)
-    d = pow(e, -1, phi)
-    return (N, e), (N, d)
+# Generate a new RSA key pair
+key = RSA.generate(2048)
 
-def rsa_encrypt(message, public_key):
-    N, e = public_key
-    return pow(bytes_to_long(message), e, N)
+# Export the public key
+public_key = key.publickey().exportKey()
 
-def rsa_decrypt(encrypted, private_key):
-    N, d = private_key
-    return long_to_bytes(pow(encrypted, d, N))
+# Create a cipher object using the public key
+cipher = PKCS1_OAEP.new(RSA.importKey(public_key))
+
+# Data to be encrypted
+data = "Hello, World!"
+
+# Encrypt the data
+encrypted_data = cipher.encrypt(data.encode())
+
+# Decrypt the data
+decrypted_data = key.decrypt(encrypted_data)
+
+print("Encrypted data:", binascii.hexlify(encrypted_data))
+print("Decrypted data:", decrypted_data.decode())

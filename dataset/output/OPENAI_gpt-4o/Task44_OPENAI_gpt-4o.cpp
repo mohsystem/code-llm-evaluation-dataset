@@ -1,19 +1,18 @@
 #include <iostream>
-
-int performOperation(int input);
+#include <limits>
 
 int main() {
-    int userInput;
-    std::cout << "Enter an integer: ";
-    if (std::cin >> userInput) {
-        int result = performOperation(userInput);
-        std::cout << "The result from C++ operation is: " << result << std::endl;
-    } else {
-        std::cout << "Invalid input." << std::endl;
+    std::cout << "Enter a number: ";
+    int number;
+    while (!(std::cin >> number)) {
+        std::cout << "Invalid input. Please enter a number." << std::endl;
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
-    return 0;
-}
+    std::cout << "You entered: " << number << std::endl;
 
-int performOperation(int input) {
-    return input * 2;
+    int squared = number * number;
+    std::cout << "Square of the number: " << squared << std::endl;
+
+    return 0;
 }

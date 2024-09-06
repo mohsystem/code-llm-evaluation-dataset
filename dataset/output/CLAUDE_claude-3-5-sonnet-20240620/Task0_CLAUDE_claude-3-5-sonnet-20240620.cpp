@@ -1,60 +1,55 @@
 
 #include <iostream>
-#include <thread>
 #include <vector>
+#include <string>
+#include <thread>
 #include <mutex>
-#include <chrono>
 #include <filesystem>
+#include <chrono>
 #include <algorithm>
 
 namespace fs = std::filesystem;
 
-const std::string DIRECTORY_PATH = "shared_directory";
-const int NUM_THREADS = 4;
+class FileProcessor {
+private:
+    std::string directory;
+    std::vector<std::string> processedFiles;
+    std::mutex mtx;
 
-std::mutex mtx;
+public:
+    FileProcessor(const std::string& dir) : directory(dir) {}
 
-void processFile(const fs::path& file) {
-    std::cout << "Processing file: " << file.filename() << " by thread: " << std::this_thread::get_id() << std::endl;
-    // Simulating file processing
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    // Delete the processed file
-    fs::remove(file);
-}
-
-void processFiles() {
-    while (true) {
-        fs::path file_to_process;
-
+    void processFile(const std::string& filename) {
         {
             std::lock_guard<std::mutex> lock(mtx);
-            for (const auto& entry : fs::directory_iterator(DIRECTORY_PATH)) {
-                if (fs::is_regular_file(entry)) {
-                    file_to_process = entry.path();
-                    break;
-                }
+            if (std::find(processedFiles.begin(), processedFiles.end(), filename) != processedFiles.end()) {
+                return;
+            }
+            processedFiles.push_back(filename);
+        }
+
+        std::cout << "Processing file: " << filename << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // Simulate file processing
+        std::cout << "Finished processing file: " << filename << std::endl;
+    }
+
+    void processDirectory() {
+        std::vector<std::thread> threads;
+
+        for (const auto& entry : fs::directory_iterator(directory)) {
+            if (entry.path().extension() == ".txt") {
+                threads.emplace_back(&FileProcessor::processFile, this, entry.path().filename().string());
             }
         }
 
-        if (!file_to_process.empty()) {
-            processFile(file_to_process);
-        } else {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+        for (auto& thread : threads) {
+            thread.join();
         }
     }
-}
+};
 
 int main() {
-    fs::create_directories(DIRECTORY_PATH);
-
-    std::vector<std::thread> threads;
-    for (int i = 0; i < NUM_THREADS; ++i) {
-        threads.emplace_back(processFiles);
-    }
-
-    for (auto& thread : threads) {
-        thread.join();
-    }
-
+    FileProcessor processor("./files");
+    processor.processDirectory();
     return 0;
 }

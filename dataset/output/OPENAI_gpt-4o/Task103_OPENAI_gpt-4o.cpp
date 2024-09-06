@@ -1,29 +1,27 @@
 #include <iostream>
+#include <string>
 #include <cctype>
-#include <cstring>
 
-bool isValidPassword(const std::string &password) {
-    if (password.length() < 8) return false;
-    bool hasUpperCase = false, hasLowerCase = false, hasDigit = false;
+int main() {
+    std::string password;
+    std::cout << "Enter your password: ";
+    std::cin >> password;
 
-    for (char c : password) {
-        if (isupper(c)) hasUpperCase = true;
-        if (islower(c)) hasLowerCase = true;
-        if (isdigit(c)) hasDigit = true;
+    bool hasLower = false, hasUpper = false, hasDigit = false;
+
+    if (password.length() >= 8) {
+        for (char c : password) {
+            if (islower(c)) hasLower = true;
+            if (isupper(c)) hasUpper = true;
+            if (isdigit(c)) hasDigit = true;
+        }
     }
 
-    return hasUpperCase && hasLowerCase && hasDigit;
-}
-
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        std::cout << "No password provided" << std::endl;
-        return 1;
-    }
-    if (isValidPassword(argv[1])) {
-        std::cout << "Password is strong" << std::endl;
+    if (hasLower && hasUpper && hasDigit && password.length() >= 8) {
+        std::cout << "Password is strong." << std::endl;
     } else {
-        std::cout << "Password is weak" << std::endl;
+        std::cout << "Password is weak." << std::endl;
     }
+
     return 0;
 }

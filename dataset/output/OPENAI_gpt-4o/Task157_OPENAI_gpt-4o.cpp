@@ -2,11 +2,11 @@
 
 int main() {
     // Allocate memory for an integer
-    int* myVar = new int(42);
-    std::cout << "C++: Value = " << *myVar << std::endl;
+    int* int_ptr = new int(10);
+    std::cout << "Value at allocated memory: " << *int_ptr << std::endl;
 
     // Deallocate memory
-    delete myVar;
+    delete int_ptr;
 
     return 0;
 }

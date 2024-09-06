@@ -6,53 +6,39 @@ typedef struct {
     int minutes;
 } Clock;
 
-Clock create_clock(int hours, int minutes) {
+Clock create_clock(int hour, int minute) {
     Clock clock;
-    clock.minutes = (hours * 60 + minutes) % 1440;
+    clock.minutes = (hour * 60 + minute) % 1440;
     return clock;
 }
 
-void to_string(Clock clock, char* buffer) {
+void print_clock(Clock clock) {
     int hours = clock.minutes / 60;
     int mins = clock.minutes % 60;
-    sprintf(buffer, "%02d:%02d", hours, mins);
+    printf("%02d:%02d\\n", hours, mins);
 }
 
-bool equals(Clock clock1, Clock clock2) {
+bool clocks_equal(Clock clock1, Clock clock2) {
     return clock1.minutes == clock2.minutes;
 }
 
-Clock add(Clock clock, int minutes) {
+Clock add_minutes(Clock clock, int minutes) {
     clock.minutes = (clock.minutes + minutes) % 1440;
     return clock;
 }
 
-Clock subtract(Clock clock, int minutes) {
+Clock subtract_minutes(Clock clock, int minutes) {
     clock.minutes = (clock.minutes - minutes + 1440) % 1440;
     return clock;
 }
 
 int main() {
-    Clock clock1 = create_clock(10, 30);
-    Clock clock2 = create_clock(10, 30);
-    char buffer[6];
-    
-    to_string(clock1, buffer);
-    printf("%s\
-", buffer);  // 10:30
-    
-    printf("%d\
-", equals(clock1, clock2));  // 1
-    
-    clock1 = add(clock1, 30);
-    to_string(clock1, buffer);
-    printf("%s\
-", buffer);  // 11:00
-    
-    clock1 = subtract(clock1, 60);
-    to_string(clock1, buffer);
-    printf("%s\
-", buffer);  // 10:00
-    
+    Clock clock = create_clock(10, 30);
+    print_clock(clock);  // 10:30
+    clock = add_minutes(clock, 60);
+    print_clock(clock);  // 11:30
+    clock = subtract_minutes(clock, 90);
+    print_clock(clock);  // 10:00
+    printf("%d\\n", clocks_equal(clock, create_clock(10, 0)));  // 1 (true)
     return 0;
 }

@@ -5,18 +5,23 @@ int compare(const void *a, const void *b) {
     return (*(int*)a - *(int*)b);
 }
 
-int queueTime(const int *customers, int customersLength, int n) {
-    if (customersLength == 0) return 0;
-    if (n >= customersLength) return customers[0];
+int queue_time(const int *customers, int customers_length, int n) {
+    int tills[n];
+    for (int i = 0; i < n; i++) {
+        tills[i] = 0;
+    }
     
-    int *tills = (int*)calloc(n, sizeof(int));
-    
-    for (int i = 0; i < customersLength; i++) {
+    for (int i = 0; i < customers_length; i++) {
         tills[0] += customers[i];
         qsort(tills, n, sizeof(int), compare);
     }
     
-    int maxTime = tills[n-1];
-    free(tills);
-    return maxTime;
+    int max_time = tills[0];
+    for (int i = 1; i < n; i++) {
+        if (tills[i] > max_time) {
+            max_time = tills[i];
+        }
+    }
+    
+    return max_time;
 }

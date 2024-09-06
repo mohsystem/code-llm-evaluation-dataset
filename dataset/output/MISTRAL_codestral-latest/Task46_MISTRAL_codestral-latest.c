@@ -1,42 +1,32 @@
-#include <mysql.h>
+// C code using SQLite C library
 #include <stdio.h>
+#include <sqlite3.h>
 
-int main() {
-    MYSQL *conn;
-    MYSQL_RES *res;
-    MYSQL_ROW row;
+int main(int argc, char* argv[]) {
+    sqlite3 *db;
+    char *zErrMsg = 0;
+    int rc;
+    char *sql;
 
-    char name[50], email[50], password[50];
+    rc = sqlite3_open("user_database.db", &db);
 
-    printf("Enter name: ");
-    scanf("%s", name);
-
-    printf("Enter email: ");
-    scanf("%s", email);
-
-    printf("Enter password: ");
-    scanf("%s", password);
-
-    char query[200];
-    sprintf(query, "INSERT INTO users (name, email, password) VALUES ('%s', '%s', '%s')", name, email, password);
-
-    conn = mysql_init(NULL);
-
-    if (!mysql_real_connect(conn, "localhost", "username", "password", "mydb", 0, NULL, 0)) {
-        fprintf(stderr, "%s
-", mysql_error(conn));
-        mysql_close(conn);
-        exit(1);
+    if(rc) {
+        fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+        return(0);
+    } else {
+        fprintf(stdout, "Opened database successfully\n");
     }
 
-    if (mysql_query(conn, query)) {
-        fprintf(stderr, "%s
-", mysql_error(conn));
-        mysql_close(conn);
-        exit(1);
+    sql = "INSERT INTO users(name, email, password) VALUES('John Doe', 'johndoe@example.com', 'password123');";
+
+    rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
+
+    if(rc != SQLITE_OK) {
+        fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    } else {
+        fprintf(stdout, "Records created successfully\n");
     }
-
-    mysql_close(conn);
-
+    sqlite3_close(db);
     return 0;
 }

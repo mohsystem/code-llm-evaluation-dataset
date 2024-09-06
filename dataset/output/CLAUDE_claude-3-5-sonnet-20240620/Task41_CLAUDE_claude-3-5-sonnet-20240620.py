@@ -1,11 +1,16 @@
 
-def process_string(s):
-    return s.upper()
+import sys
+
+def process_input(user_input):
+    # Process the input (example: print it back)
+    print(f"Processed input: {user_input}")
 
 def main():
-    user_input = input("Enter a string: ")
-    processed = process_string(user_input)
-    print(f"Processed string: {processed}")
+    # Get input from user with a maximum length
+    user_input = input("Enter a string (max 100 characters): ")[:100]
+    
+    # Process the input
+    process_input(user_input)
 
 if __name__ == "__main__":
     main()

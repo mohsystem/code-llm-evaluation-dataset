@@ -1,21 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
-void generateSessionIdC(char *sessionID, int length) {
-    const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for (int i = 0; i < length; i++) {
-        int key = rand() % (int)(sizeof(charset) - 1);
-        sessionID[i] = charset[key];
+void generateSessionID(char* sessionID) {
+    const char characters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    size_t characters_len = strlen(characters);
+    for (int i = 0; i < 16; i++) {
+        sessionID[i] = characters[rand() % characters_len];
     }
-    sessionID[length] = '\0';
+    sessionID[16] = '\0';
 }
 
 int main() {
-    char sessionID[17];
     srand(time(0));
-    generateSessionIdC(sessionID, 16);
-    printf("C Session ID: %s
-", sessionID);
+    char sessionID[17];
+    generateSessionID(sessionID);
+    printf("C generated session ID: %s\n", sessionID);
     return 0;
 }

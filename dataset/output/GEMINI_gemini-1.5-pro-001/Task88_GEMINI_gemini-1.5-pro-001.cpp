@@ -2,51 +2,40 @@
 #include <fstream>
 #include <string>
 #include <random>
-#include <ctime>
+#include <filesystem> // Requires C++17 or later
 
-std::string generate_random_string(size_t length) {
-  const std::string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  std::random_device rd;
-  std::mt19937 generator(rd());
-  std::uniform_int_distribution<size_t> distribution(0, characters.size() - 1);
+std::string createTempFileWithUnicode() {
+    try {
+        // Create a temporary file
+        std::string tempFilePath = std::filesystem::temp_directory_path().string() + "/temp_" + std::to_string(rand()) + ".txt";
+        std::ofstream tempFile(tempFilePath, std::ios::out | std::ios::binary);
 
-  std::string random_string;
-  random_string.reserve(length);
+        // Generate a random string
+        std::random_device rd;
+        std::mt19937 generator(rd());
+        std::uniform_int_distribution<char> distribution('a', 'z');
+        std::string randomString(10, ' '); // Create a string of length 10
+        for (char& c : randomString) {
+            c = distribution(generator);
+        }
 
-  for (size_t i = 0; i < length; ++i) {
-    random_string += characters[distribution(generator)];
-  }
+        // Write the string to the file (already in Unicode)
+        tempFile << randomString;
+        tempFile.close();
 
-  return random_string;
-}
+        return tempFilePath;
 
-std::string to_unicode(const std::string& str) {
-  std::string result;
-  for (char c : str) {
-    result += "\\u" + std::hex + std::setw(4) + std::setfill('0') + static_cast<int>(c);
-  }
-  return result;
+    } catch (const std::exception& e) {
+        std::cerr << "An error occurred: " << e.what() << std::endl;
+        return "";
+    }
 }
 
 int main() {
-  // Create a temporary file
-  std::string filename = std::tmp_namespaced_path("/tmp/tempfile-XXXXXX");
-  std::ofstream temp_file(filename);
-  if (!temp_file.is_open()) {
-    std::cerr << "Failed to create temporary file." << std::endl;
-    return 1;
-  }
+    std::string tempFilePath = createTempFileWithUnicode();
+    if (!tempFilePath.empty()) {
+        std::cout << "Temporary file created at: " << tempFilePath << std::endl;
+    }
 
-  // Generate random string and convert to Unicode
-  std::string random_str = generate_random_string(10);
-  std::string unicode_str = to_unicode(random_str);
-
-  // Write to file
-  temp_file << unicode_str;
-
-  // Close file and print filename
-  temp_file.close();
-  std::cout << filename << std::endl;
-  
-  return 0;
+    return 0;
 }

@@ -7,29 +7,14 @@ class Solution:
             mid = len(enum) // 2
             left = merge_sort(enum[:mid])
             right = merge_sort(enum[mid:])
-            return merge(left, right)
-        
-        def merge(left, right):
-            merged = []
-            i, j = 0, 0
-            while i < len(left) and j < len(right):
-                if left[i][1] <= right[j][1]:
-                    merged.append(left[i])
-                    counts[left[i][0]] += j
-                    i += 1
+            for i in range(len(enum) - 1, -1, -1):
+                if not right or (left and left[-1][1] > right[-1][1]):
+                    result[left[-1][0]] += len(right)
+                    enum[i] = left.pop()
                 else:
-                    merged.append(right[j])
-                    j += 1
-            while i < len(left):
-                merged.append(left[i])
-                counts[left[i][0]] += j
-                i += 1
-            while j < len(right):
-                merged.append(right[j])
-                j += 1
-            return merged
+                    enum[i] = right.pop()
+            return enum
         
-        counts = [0] * len(nums)
-        enum = list(enumerate(nums))
-        merge_sort(enum)
-        return counts
+        result = [0] * len(nums)
+        merge_sort(list(enumerate(nums)))
+        return result

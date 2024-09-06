@@ -1,67 +1,79 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
-bool contains(char** seen, int seenSize, char* sub) {
-    for (int i = 0; i < seenSize; i++) {
-        if (strcmp(seen[i], sub) == 0) {
-            return true;
+typedef struct Node {
+    char* str;
+    struct Node* next;
+} Node;
+
+Node* createNode(char* str) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->str = strdup(str);
+    node->next = NULL;
+    return node;
+}
+
+int find(Node* head, char* str) {
+    Node* current = head;
+    while (current != NULL) {
+        if (strcmp(current->str, str) == 0) {
+            return 1;
         }
+        current = current->next;
     }
-    return false;
+    return 0;
 }
 
-void addToSeen(char*** seen, int* seenSize, char* sub) {
-    (*seen)[*seenSize] = (char*)malloc((strlen(sub) + 1) * sizeof(char));
-    strcpy((*seen)[*seenSize], sub);
-    (*seenSize)++;
+void insert(Node** head, char* str) {
+    Node* new_node = createNode(str);
+    new_node->next = *head;
+    *head = new_node;
 }
 
-int distinctConcatenations(const char* text) {
-    int length = strlen(text);
-    char** seen = (char**)malloc(length * sizeof(char*));
-    int seenSize = 0;
+int distinctAASubstrings(char* text) {
+    int n = strlen(text);
+    Node* distinctSubstrings = NULL;
+    int count = 0;
 
-    for (int i = 0; i < length; i++) {
-        for (int j = i + 1; j <= length; j++) {
-            int subLen = j - i;
-            char* sub = (char*)malloc((subLen + 1) * sizeof(char));
-            strncpy(sub, text + i, subLen);
-            sub[subLen] = '\0';
-
-            if (subLen % 2 == 0) {
-                int halfLen = subLen / 2;
-                char* firstHalf = (char*)malloc((halfLen + 1) * sizeof(char));
-                char* secondHalf = (char*)malloc((halfLen + 1) * sizeof(char));
-                strncpy(firstHalf, sub, halfLen);
-                firstHalf[halfLen] = '\0';
-                strncpy(secondHalf, sub + halfLen, halfLen);
-                secondHalf[halfLen] = '\0';
-
-                if (strcmp(firstHalf, secondHalf) == 0 && !contains(seen, seenSize, sub)) {
-                    addToSeen(&seen, &seenSize, sub);
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; j += 2) {
+            int len = (j + 1 - i) / 2;
+            char a[len + 1];
+            char b[len + 1];
+            strncpy(a, text + i, len);
+            a[len] = '\0';
+            strncpy(b, text + i + len, len);
+            b[len] = '\0';
+            if (strcmp(a, b) == 0) {
+                char* substr = (char*)malloc((j - i + 2) * sizeof(char));
+                strncpy(substr, text + i, j - i + 1);
+                substr[j - i + 1] = '\0';
+                if (!find(distinctSubstrings, substr)) {
+                    insert(&distinctSubstrings, substr);
+                    count++;
                 }
-
-                free(firstHalf);
-                free(secondHalf);
             }
-            free(sub);
         }
     }
 
-    for (int i = 0; i < seenSize; i++) {
-        free(seen[i]);
+    Node* current = distinctSubstrings;
+    while (current != NULL) {
+        Node* next = current->next;
+        free(current->str);
+        free(current);
+        current = next;
     }
-    free(seen);
 
-    return seenSize;
+    return count;
 }
 
 int main() {
-    printf("%d
-", distinctConcatenations("abcabcabc")); // Output: 3
-    printf("%d
-", distinctConcatenations("leetcodeleetcode")); // Output: 2
+    char text1[] = "abcabcabc";
+    printf("%d\n", distinctAASubstrings(text1));
+
+    char text2[] = "leetcodeleetcode";
+    printf("%d\n", distinctAASubstrings(text2));
+
     return 0;
 }

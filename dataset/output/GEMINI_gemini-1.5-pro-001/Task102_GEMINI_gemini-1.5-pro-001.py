@@ -1,32 +1,25 @@
 import hashlib
-import mysql.connector
+import sqlite3
 
 def hash_password(password):
+    """Hashes the given password using SHA-256."""
     return hashlib.sha256(password.encode()).hexdigest()
 
-def update_password(username, hashed_password):
+def update_password(username, new_password):
+    """Updates the password for the given username in the database."""
+    hashed_password = hash_password(new_password)
     try:
-        mydb = mysql.connector.connect(
-            host="localhost",
-            user="your_database_user",
-            password="your_database_password",
-            database="your_database_name"
-        )
-        cursor = mydb.cursor()
-        sql = "UPDATE users SET password = %s WHERE username = %s"
-        val = (hashed_password, username)
-        cursor.execute(sql, val)
-        mydb.commit()
-        print("Password updated successfully.")
-    except Exception as e:
-        print(f"Error updating password: {e}")
+        conn = sqlite3.connect('users.db')
+        cursor = conn.cursor()
+        cursor.execute("UPDATE user SET password = ? WHERE username = ?", (hashed_password, username))
+        conn.commit()
+        print("Password updated successfully!")
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
     finally:
-        if mydb.is_connected():
-            cursor.close()
-            mydb.close()
+        conn.close()
 
 if __name__ == "__main__":
     username = input("Enter username: ")
     new_password = input("Enter new password: ")
-    hashed_password = hash_password(new_password)
-    update_password(username, hashed_password)
+    update_password(username, new_password)

@@ -1,23 +1,14 @@
 
-#include <stdio.h>
-#include <string.h>
 #include <stdbool.h>
+#include <string.h>
 
-bool solution(const char* str, const char* ending) {
-    int str_len = strlen(str);
-    int ending_len = strlen(ending);
+bool solution(const char *string, const char *ending)
+{
+    int str_len = strlen(string);
+    int end_len = strlen(ending);
     
-    if (ending_len > str_len) {
+    if (end_len > str_len)
         return false;
-    }
     
-    return strcmp(str + str_len - ending_len, ending) == 0;
-}
-
-int main() {
-    printf("%s\
-", solution("abc", "bc") ? "true" : "false"); // true
-    printf("%s\
-", solution("abc", "d") ? "true" : "false"); // false
-    return 0;
+    return strcmp(string + str_len - end_len, ending) == 0;
 }

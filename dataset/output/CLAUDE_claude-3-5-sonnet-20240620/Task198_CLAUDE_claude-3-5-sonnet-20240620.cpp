@@ -23,15 +23,18 @@ int main() {
     int n;
     std::cout << "Enter the number of times to call rand10(): ";
     std::cin >> n;
+
     std::vector<int> result;
     for (int i = 0; i < n; i++) {
         result.push_back(rand10());
     }
+
     std::cout << "[";
     for (int i = 0; i < n; i++) {
         std::cout << result[i];
         if (i < n - 1) std::cout << ",";
     }
     std::cout << "]" << std::endl;
+
     return 0;
 }

@@ -1,21 +1,25 @@
-#include <libxml/parser.h>
+// C++ does not have a built-in XML parsing library, so we'll use the Xerces-C++ library
+// This code assumes you have the Xerces-C++ library installed and linked
+
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/util/PlatformUtils.hpp>
+
 #include <iostream>
 
 int main() {
-    xmlInitParser();
-    xmlDoc *doc = htmlReadMemory("<root><person><name>John</name><age>30</age></person></root>", 44, NULL);
-    if (doc == NULL) {
-        std::cerr << "Could not parse document" << std::endl;
+    try {
+        xercesc::XMLPlatformUtils::Initialize();
+        XercesDOMParser* parser = new XercesDOMParser();
+        parser->parse("xml_string.xml"); // replace with your XML string
+        xercesc::DOMDocument* doc = parser->adoptDocument();
+        xercesc::DOMElement* root = doc->getDocumentElement();
+        std::cout << root->getTagName() << std::endl;
+        delete parser;
+        xercesc::XMLPlatformUtils::Terminate();
+    } catch (const xercesc::XMLException& e) {
+        std::cerr << "Error: " << e.getMessage() << std::endl;
         return 1;
     }
-    xmlNode *root_element = xmlDocGetRootElement(doc);
-    if (root_element == NULL) {
-        std::cerr << "empty document" << std::endl;
-        xmlFreeDoc(doc);
-        return 1;
-    }
-    std::cout << "Root Element: " << root_element->name << std::endl;
-    xmlFreeDoc(doc);
-    xmlCleanupParser();
     return 0;
 }

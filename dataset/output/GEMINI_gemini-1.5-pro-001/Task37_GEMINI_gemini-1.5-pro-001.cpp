@@ -1,28 +1,39 @@
 #include <iostream>
-#include <mysql++.h>
+#include <sqlite3.h>
 
 using namespace std;
 
 int main() {
-    try {
-        mysqlx::Session session("localhost", 3306, "your_username", "your_password", "your_database_name");
-        string username;
+    sqlite3 *db;
+    char *zErrMsg = 0;
+    int rc;
 
-        cout << "Enter username: ";
-        cin >> username;
-
-        auto result = session.sql("SELECT * FROM users WHERE username = ?").bind(username).execute();
-
-        for (auto row : result) {
-            cout << "Username: " << row[0] << endl;
-            cout << "Email: " << row[1] << endl;
-            // Retrieve other user information as needed
-        }
-
-    } catch (const mysqlx::Error &err) {
-        cerr << "Error: " << err << endl;
+    rc = sqlite3_open("your_database.db", &db);
+    if (rc) {
+        cerr << "Can't open database: " << sqlite3_errmsg(db) << endl;
         return 1;
     }
 
+    string username;
+    cout << "Enter username: ";
+    cin >> username;
+
+    string sql = "SELECT * FROM users WHERE username='" + username + "'";
+    const char* query = sql.c_str();
+
+    rc = sqlite3_exec(db, query, [](void *data, int argc, char **argv, char **azColName) -> int {
+        for (int i = 0; i < argc; i++) {
+            cout << azColName[i] << ": " << argv[i] ? argv[i] : "NULL" << endl;
+        }
+        cout << endl;
+        return 0;
+    }, nullptr, &zErrMsg);
+
+    if (rc != SQLITE_OK) {
+        cerr << "SQL error: " << zErrMsg << endl;
+        sqlite3_free(zErrMsg);
+    } 
+
+    sqlite3_close(db);
     return 0;
 }

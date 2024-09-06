@@ -1,25 +1,24 @@
 #include <stdio.h>
-#include <string.h>
 #include <ctype.h>
+#include <string.h>
 
 char* toJadenCase(char* phrase) {
-    if (phrase == NULL || phrase[0] == '\0') return NULL;
+    if (phrase == NULL || strlen(phrase) == 0) return NULL;
+    char* result = malloc(strlen(phrase) + 1);
     char* p = phrase;
+    char* q = result;
     while (*p != '\0') {
-        if (p == phrase || *(p-1) == ' ') {
-            *p = toupper((unsigned char)*p);
-        } else {
-            *p = tolower((unsigned char)*p);
-        }
+        *q = toupper(*p);
         p++;
+        q++;
+        while (*p != ' ' && *p != '\0') {
+            *q = tolower(*p);
+            p++;
+            q++;
+        }
+        *q = ' ';
+        q++;
     }
-    return phrase;
-}
-
-int main() {
-    char phrase[] = "How can mirrors be real if our eyes aren't real";
-    char* jadenCase = toJadenCase(phrase);
-    printf("%s
-", jadenCase);
-    return 0;
+    *(q - 1) = '\0';
+    return result;
 }

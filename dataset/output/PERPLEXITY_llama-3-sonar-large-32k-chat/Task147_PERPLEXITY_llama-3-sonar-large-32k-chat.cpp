@@ -10,10 +10,10 @@ int find_kth_largest(int nums[], int n, int k) {
 
 int main() {
     int n, k;
-    cout << "Enter the number of elements in the array: ";
+    cout << "Enter the number of elements: ";
     cin >> n;
     int nums[n];
-    cout << "Enter the array of integers (space separated): ";
+    cout << "Enter the array of integers: ";
     for (int i = 0; i < n; i++) {
         cin >> nums[i];
     }

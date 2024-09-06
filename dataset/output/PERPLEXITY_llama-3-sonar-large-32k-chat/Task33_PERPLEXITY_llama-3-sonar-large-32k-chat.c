@@ -1,24 +1,25 @@
-#include <stdio.h>
+#include <stdlib.h>
 
-int queueTime(int customers[], int n, int size) {
-    int tills[n];
-    for (int i = 0; i < n; i++) {
-        tills[i] = 0;
+int queueTime(int* customers, int customersSize, int n) {
+    if (customersSize == 0) {
+        return 0;
     }
-    for (int i = 0; i < size; i++) {
-        int minIndex = 0;
+    int* tills = (int*) calloc(n, sizeof(int));
+    for (int i = 0; i < customersSize; i++) {
+        int minTill = 0;
         for (int j = 1; j < n; j++) {
-            if (tills[j] < tills[minIndex]) {
-                minIndex = j;
+            if (tills[j] < tills[minTill]) {
+                minTill = j;
             }
         }
-        tills[minIndex] += customers[i];
+        tills[minTill] += customers[i];
     }
-    int maxTime = 0;
-    for (int i = 0; i < n; i++) {
+    int maxTime = tills[0];
+    for (int i = 1; i < n; i++) {
         if (tills[i] > maxTime) {
             maxTime = tills[i];
         }
     }
+    free(tills);
     return maxTime;
 }

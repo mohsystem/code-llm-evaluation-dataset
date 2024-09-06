@@ -3,19 +3,17 @@
 #include <stdlib.h>
 #include <time.h>
 
-int binarySearch(int arr[], int left, int right, int target) {
+int binary_search(int arr[], int left, int right, int target) {
     while (left <= right) {
         int mid = left + (right - left) / 2;
-
-        if (arr[mid] == target)
+        if (arr[mid] == target) {
             return mid;
-
-        if (arr[mid] < target)
+        } else if (arr[mid] < target) {
             left = mid + 1;
-        else
+        } else {
             right = mid - 1;
+        }
     }
-
     return -1;
 }
 
@@ -24,32 +22,24 @@ int main() {
     int n = sizeof(arr) / sizeof(arr[0]);
     int target = 13;
 
-    clock_t start = clock();
-    int result = binarySearch(arr, 0, n - 1, target);
-    clock_t end = clock();
+    clock_t start_time = clock();
+    int result = binary_search(arr, 0, n - 1, target);
+    clock_t end_time = clock();
 
-    double executionTime = ((double) (end - start)) / CLOCKS_PER_SEC;
+    double execution_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
 
-    FILE *tempFile = tmpfile();
-    if (tempFile != NULL) {
-        fprintf(tempFile, "Execution time: %f seconds", executionTime);
-        fseek(tempFile, 0, SEEK_SET);
-        char buffer[100];
-        fgets(buffer, sizeof(buffer), tempFile);
-        printf("Execution time written to temporary file: %s\
-", buffer);
-        fclose(tempFile);
-    } else {
-        printf("Failed to create temporary file\
-");
+    char temp_filename[] = "execution_time_XXXXXX";
+    int fd = mkstemp(temp_filename);
+    if (fd != -1) {
+        FILE* temp_file = fdopen(fd, "w");
+        if (temp_file != NULL) {
+            fprintf(temp_file, "Execution time: %.6f seconds", execution_time);
+            fclose(temp_file);
+            printf("Execution time written to: %s\\n", temp_filename);
+        }
     }
 
-    if (result != -1)
-        printf("Element found at index: %d\
-", result);
-    else
-        printf("Element not found\
-");
+    printf("Result: %d\\n", result);
 
     return 0;
 }

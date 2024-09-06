@@ -1,20 +1,29 @@
 #include <iostream>
 
-#include <cpp-httplib/httplib.h>
+#include <pistache/endpoint.h>
+#include <pistache/router.h>
 
-using namespace std;
-using namespace httplib;
+using namespace Pistache;
 
-int main(void) {
-  Server svr;
+class MyHandler : public Http::Handler {
+public:
+    HTTP_PROTOTYPE(MyHandler)
 
-  svr.Get("/api/data", [](const Request& req, Response& res) {
-    res.set_header("Access-Control-Allow-Origin", "*");
-    res.set_content("{\"name\": \"John Doe\", \"age\": 30}", "application/json");
-  });
+    void onRequest(const Http::Request& request, Http::ResponseWriter response) override {
+        if (request.resource() == "/api/data") {
+            response.headers().add<Http::Header::AccessControlAllowOrigin>("*");
+            response.send(Http::Code::Ok, "{\"name\": \"John Doe\", \"age\": 30}");
+        } else {
+            response.send(Http::Code::Not_Found);
+        }
+    }
+};
 
-  cout << "Server started at http://localhost:8080" << endl;
-  svr.listen("localhost", 8080);
-
-  return 0;
+int main() {
+    Address addr(Ipv4::any(), Port(9080));
+    auto opts = Http::Endpoint::options().threads(1);
+    Http::Endpoint server(addr);
+    server.init(opts);
+    server.setHandler(Http::make_handler<MyHandler>());
+    server.serve();
 }

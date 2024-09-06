@@ -1,22 +1,24 @@
 // C++
 #include <iostream>
-#include <string>
+#include <cctype>
 
-std::string encrypt(std::string message, int key) {
-    for (char &c : message) {
-        c += key;
+std::string encrypt(const std::string& message, int key) {
+    std::string cipher;
+    for (char character : message) {
+        if (std::isalpha(character)) {
+            char shifted = std::isupper(character) ? 'A' : 'a';
+            cipher += (char) ((character - shifted + key) % 26 + shifted);
+        } else {
+            cipher += character;
+        }
     }
-    return message;
+    return cipher;
 }
 
 int main() {
-    std::string message;
-    int key;
-    std::cout << "Enter the message: ";
-    std::getline(std::cin, message);
-    std::cout << "Enter the secret key: ";
-    std::cin >> key;
+    std::string message = "HELLO WORLD";
+    int key = 3;
     std::string encryptedMessage = encrypt(message, key);
-    std::cout << "Encrypted message: " << encryptedMessage << std::endl;
+    std::cout << encryptedMessage << std::endl;
     return 0;
 }

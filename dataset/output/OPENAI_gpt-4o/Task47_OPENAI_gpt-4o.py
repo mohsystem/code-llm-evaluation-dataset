@@ -1,21 +1,33 @@
-import sqlite3
 import requests
+import sqlite3
 from bs4 import BeautifulSoup
 
-def scrape(url, db_conn):
+# Function to scrape data from a given URL
+def scrape_data(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
-    data = [p.text for p in soup.select('p')]
+    data = []
 
-    with db_conn:
-        db_conn.execute('CREATE TABLE IF NOT EXISTS data (info TEXT)')
-        db_conn.executemany('INSERT INTO data (info) VALUES (?)', [(d,) for d in data])
+    # This example assumes you're scraping list items (li) from the webpage
+    for item in soup.find_all('li'):
+        data.append(item.text)
 
-def main():
-    url = 'https://example.com'
-    db_conn = sqlite3.connect('sample.db')
-    scrape(url, db_conn)
-    db_conn.close()
+    return data
 
-if __name__ == '__main__':
-    main()
+# Function to store data in a local SQLite database
+def store_data(db_name, data):
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS scraped_data (content TEXT)''')
+
+    for item in data:
+        c.execute("INSERT INTO scraped_data (content) VALUES (?)", (item,))
+
+    conn.commit()
+    conn.close()
+
+# Example
+url = 'https://example.com'
+db_name = 'scraped_data.db'
+data = scrape_data(url)
+store_data(db_name, data)

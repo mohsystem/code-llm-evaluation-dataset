@@ -1,19 +1,16 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <sys/stat.h>
 
 int main() {
     FILE *file = fopen("script.sh", "w");
     if (file == NULL) {
-        printf("Error opening file!
-");
         return 1;
     }
-    fprintf(file, "#!/bin/bash
-");
-    fprintf(file, "echo Hello, World!");
+
+    fputs("#!/bin/bash\n\necho 'Hello, World!'", file);
     fclose(file);
-    system("chmod +x script.sh");
-    printf("script.sh created and made executable.
-");
+
+    chmod("script.sh", S_IRWXU);
+
     return 0;
 }

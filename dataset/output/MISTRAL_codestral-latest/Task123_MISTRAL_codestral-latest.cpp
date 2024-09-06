@@ -2,23 +2,25 @@
 #include <iostream>
 
 class Session {
-private:
-    int userId;
-    bool isActive;
+    private:
+        int userId;
+        bool isActive;
 
-public:
-    Session(int userId) : userId(userId), isActive(true) {}
+    public:
+        Session(int userId) {
+            this->userId = userId;
+            this->isActive = true;
+        }
 
-    void endSession() {
-        isActive = false;
-    }
+        void endSession() {
+            this->isActive = false;
+        }
 };
 
-// Usage
+// Example usage:
 int main() {
     Session userSession(123);
-    std::cout << userSession.isActive << std::endl;  // 1 (true)
+    // ... user interacts with the system ...
     userSession.endSession();
-    std::cout << userSession.isActive << std::endl;  // 0 (false)
     return 0;
 }

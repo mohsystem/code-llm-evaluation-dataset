@@ -1,27 +1,20 @@
-#include <iostream>
-#include <pqxx/pqxx>
+// C++ does not have a native library for PostgreSQL connection in standard library.
+// Need external libraries like libpqxx to connect to PostgreSQL
+/*
+#include <pqxx/pqxx> 
 
-pqxx::connection* createConnection() {
-    pqxx::connection* conn = nullptr;
+pqxx::connection get_postgres_connection() {
     try {
-        conn = new pqxx::connection("dbname=mydatabase user=myuser password=mypassword hostaddr=127.0.0.1 port=5432");
-        if (conn->is_open()) {
-            std::cout << "C++: Connection established successfully." << std::endl;
-        } else {
-            std::cout << "C++: Connection failed." << std::endl;
-            delete conn;
-            conn = nullptr;
-        }
+        pqxx::connection connection("dbname=your_database user=your_username password=your_password hostaddr=your_host port=your_port");
+        return connection;
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
+        exit(1);
     }
-    return conn;
 }
 
 int main() {
-    pqxx::connection* conn = createConnection();
-    if (conn) {
-        delete conn;
-    }
+    pqxx::connection connection = get_postgres_connection();
     return 0;
 }
+*/

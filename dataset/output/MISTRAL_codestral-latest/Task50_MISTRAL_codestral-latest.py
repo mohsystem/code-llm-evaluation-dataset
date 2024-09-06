@@ -1,20 +1,24 @@
-# Python
-import socket
+# Python code using Flask framework
+from flask import Flask, request
+from werkzeug.utils import secure_filename
+import os
 
-def main():
-    server_socket = socket.socket()
-    server_socket.bind(('0.0.0.0', 1234))
-    server_socket.listen(2)
-    conn, addr = server_socket.accept()
+app = Flask(__name__)
 
-    with open('uploadedFile.txt', 'wb') as f:
-        while True:
-            data = conn.recv(1024)
-            if not data:
-                break
-            f.write(data)
+UPLOAD_FOLDER = '/path/to/upload/folder'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-    print('File transfer successful.')
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return 'No file part'
+    file = request.files['file']
+    if file.filename == '':
+        return 'No selected file'
+    if file:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return 'File uploaded successfully'
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    app.run(debug=True)

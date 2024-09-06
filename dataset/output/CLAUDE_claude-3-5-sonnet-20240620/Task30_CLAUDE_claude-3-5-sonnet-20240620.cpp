@@ -2,21 +2,20 @@
 #include <iostream>
 #include <string>
 #include <set>
+#include <algorithm>
 
-using namespace std;
-
-string longest(const string& s1, const string& s2) {
-    set<char> charSet;
-    for (char c : s1) charSet.insert(c);
-    for (char c : s2) charSet.insert(c);
-    
-    string result;
-    for (char c : charSet) result += c;
+std::string longest(const std::string &s1, const std::string &s2) {
+    std::set<char> chars;
+    for (char c : s1 + s2) {
+        chars.insert(c);
+    }
+    std::string result(chars.begin(), chars.end());
+    std::sort(result.begin(), result.end());
     return result;
 }
 
 int main() {
-    cout << longest("xyaabbbccccdefww", "xxxxyyyyabklmopq") << endl;
-    cout << longest("abcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrstuvwxyz") << endl;
+    std::cout << longest("xyaabbbccccdefww", "xxxxyyyyabklmopq") << std::endl;
+    std::cout << longest("abcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrstuvwxyz") << std::endl;
     return 0;
 }

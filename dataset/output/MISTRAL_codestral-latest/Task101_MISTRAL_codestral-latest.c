@@ -1,23 +1,16 @@
+// C
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
 
 int main() {
-    FILE *file = fopen("script.sh", "w");
-    if (file) {
-        printf("File created: script.sh
-");
-        fclose(file);
-        if (chmod("script.sh", S_IRWXU) == 0) {
-            printf("File is now executable
-");
-        } else {
-            printf("Failed to make file executable
-");
-        }
+    FILE *fp;
+    fp = fopen("script.sh", "w");
+    if (fp != NULL) {
+        fprintf(fp, "#!/bin/bash\necho \"Hello, World!\"");
+        fclose(fp);
+        system("chmod +x script.sh");
     } else {
-        printf("Failed to create file
-");
+        printf("Unable to open file");
     }
     return 0;
 }

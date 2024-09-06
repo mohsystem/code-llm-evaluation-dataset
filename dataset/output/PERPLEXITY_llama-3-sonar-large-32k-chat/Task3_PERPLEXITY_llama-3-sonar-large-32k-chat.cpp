@@ -1,17 +1,18 @@
-#include <cctype>
 #include <iostream>
 #include <string>
+#include <cctype>
 
-bool check(const std::string &sentence) {
-    bool alphabet[26] = {false};
-    for (char c : sentence) {
-        c = tolower(c);
-        if (c >= 'a' && c <= 'z') {
-            alphabet[c - 'a'] = true;
+bool isPangram(const std::string& s) {
+    std::string alphabet = "abcdefghijklmnopqrstuvwxyz";
+    for (char c : alphabet) {
+        bool found = false;
+        for (char sc : s) {
+            if (std::tolower(sc) == c) {
+                found = true;
+                break;
+            }
         }
-    }
-    for (bool b : alphabet) {
-        if (!b) {
+        if (!found) {
             return false;
         }
     }
@@ -19,7 +20,7 @@ bool check(const std::string &sentence) {
 }
 
 int main() {
-    std::cout << std::boolalpha << check("The quick brown fox jumps over the lazy dog") << std::endl; // true
-    std::cout << std::boolalpha << check("Hello World") << std::endl; // false
+    std::cout << std::boolalpha << isPangram("The quick brown fox jumps over the lazy dog") << std::endl;  // true
+    std::cout << std::boolalpha << isPangram("Hello World") << std::endl;  // false
     return 0;
 }

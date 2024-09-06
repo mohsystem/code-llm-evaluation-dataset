@@ -1,15 +1,14 @@
-def main():
-    input_str = "HelloWorld"
-    shift = 3
-    encrypted = []
-    
-    for char in input_str:
-        if char.isalpha():
-            base = 'a' if char.islower() else 'A'
-            encrypted.append(chr((ord(char) - ord(base) + shift) % 26 + ord(base)))
+def encrypt(text):
+    result = ""
+    for char in text:
+        if char.isupper():
+            result += chr((ord(char) + 1 - 65) % 26 + 65)
+        elif char.islower():
+            result += chr((ord(char) + 1 - 97) % 26 + 97)
         else:
-            encrypted.append(char)
-    
-    print("Python:", ''.join(encrypted))
-    
-main()
+            result += char
+    return result
+
+input_text = "HelloWorld"
+encrypted_text = encrypt(input_text)
+print(encrypted_text)

@@ -2,101 +2,110 @@
 #include <stdlib.h>
 #include <string.h>
 #include <curl/curl.h>
+#include <regex.h>
 
-#define USER_AGENT "Mozilla/5.0"
-
-struct MemoryStruct {
-  char *memory;
-  size_t size;
-};
-
-static size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp) {
-  size_t realsize = size * nmemb;
-  struct MemoryStruct *mem = (struct MemoryStruct *)userp;
-
-  char *ptr = realloc(mem->memory, mem->size + realsize + 1);
-  if (ptr == NULL) {
-    fprintf(stderr, "Not enough memory (realloc returned NULL)
-");
-    return 0; 
-  }
-
-  mem->memory = ptr;
-  memcpy(&(mem->memory[mem->size]), contents, realsize);
-  mem->size += realsize;
-  mem->memory[mem->size] = 0;
-
-  return realsize;
+// Callback function for cURL to write data to a string
+size_t write_callback(void *contents, size_t size, size_t nmemb, char **buffer) {
+    size_t newLength = size * nmemb;
+    *buffer = (char *)realloc(*buffer, strlen(*buffer) + newLength + 1);
+    if (*buffer == NULL) {
+        fprintf(stderr, "Error: realloc failed\n");
+        return 0;
+    }
+    memcpy(*buffer + strlen(*buffer), contents, newLength);
+    (*buffer)[strlen(*buffer) + newLength] = '\0';
+    return newLength;
 }
 
-char *get_page_title(const char *url) {
-  CURL *curl_handle;
-  CURLcode res;
-  struct MemoryStruct chunk;
+// Function to extract title from HTML
+char *extract_title(const char *html) {
+    regex_t regex;
+    regmatch_t match[2];
+    char *title = NULL;
+    int reti;
 
-  chunk.memory = malloc(1);
-  chunk.size = 0; 
+    // Compile regular expression
+    reti = regcomp(&regex, "<title>(.*?)</title>", REG_ICASE | REG_EXTENDED);
+    if (reti) {
+        fprintf(stderr, "Error: Could not compile regex\n");
+        return NULL;
+    }
 
-  curl_global_init(CURL_GLOBAL_ALL);
-  curl_handle = curl_easy_init();
-  curl_easy_setopt(curl_handle, CURLOPT_URL, url);
-  curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, USER_AGENT);
-  curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_callback);
-  curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
-  curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L); 
-  res = curl_easy_perform(curl_handle);
+    // Execute regular expression
+    reti = regexec(&regex, html, 2, match, 0);
+    if (!reti) {
+        // Extract matched substring
+        int start = match[1].rm_so;
+        int end = match[1].rm_eo;
+        int title_len = end - start;
+        title = (char *)malloc(title_len + 1);
+        if (title == NULL) {
+            fprintf(stderr, "Error: malloc failed\n");
+            regfree(&regex);
+            return NULL;
+        }
+        strncpy(title, html + start, title_len);
+        title[title_len] = '\0';
+    } else if (reti != REG_NOMATCH) {
+        char msgbuf[100];
+        regerror(reti, &regex, msgbuf, sizeof(msgbuf));
+        fprintf(stderr, "Error: Regex match failed: %s\n", msgbuf);
+    }
 
-  if (res != CURLE_OK) {
-    fprintf(stderr, "curl_easy_perform() failed: %s
-", curl_easy_strerror(res));
-    curl_easy_cleanup(curl_handle);
-    free(chunk.memory);
-    return NULL;
-  }
-
-  char *title_start = strstr(chunk.memory, "<title>");
-  if (title_start == NULL) {
-    free(chunk.memory);
-    curl_easy_cleanup(curl_handle);
-    return NULL;
-  }
-  title_start += 7;
-
-  char *title_end = strstr(title_start, "</title>");
-  if (title_end == NULL) {
-    free(chunk.memory);
-    curl_easy_cleanup(curl_handle);
-    return NULL;
-  }
-
-  size_t title_len = title_end - title_start;
-  char *title = malloc(title_len + 1);
-  strncpy(title, title_start, title_len);
-  title[title_len] = '\0';
-
-  curl_easy_cleanup(curl_handle);
-  free(chunk.memory);
-
-  return title;
+    regfree(&regex);
+    return title;
 }
 
-int main(int argc, char **argv) {
-  if (argc != 2) {
-    fprintf(stderr, "Usage: %s <url>
-", argv[0]);
-    return 1;
-  }
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <url>\n", argv[0]);
+        return 1;
+    }
 
-  char *title = get_page_title(argv[1]);
+    const char *url = argv[1];
+    CURL *curl;
+    CURLcode res;
+    char *buffer = NULL;
+    size_t buffer_len = 0;
+    char *title = NULL;
 
-  if (title != NULL) {
-    printf("%s
-", title);
-    free(title);
-  } else {
-    printf("Title not found.
-");
-  }
+    // Initialize cURL
+    curl = curl_easy_init();
+    if (curl) {
+        // Set URL
+        curl_easy_setopt(curl, CURLOPT_URL, url);
 
-  return 0;
+        // Set write callback function and data
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
+
+        // Perform HTTP request
+        res = curl_easy_perform(curl);
+
+        // Check for errors
+        if (res != CURLE_OK) {
+            fprintf(stderr, "Error: curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        } else {
+            // Extract title from HTML
+            title = extract_title(buffer);
+            if (title != NULL) {
+                printf("%s\n", title);
+                free(title);
+            } else {
+                fprintf(stderr, "Error: Could not extract title from HTML\n");
+            }
+        }
+
+        // Clean up cURL
+        curl_easy_cleanup(curl);
+
+        // Free buffer
+        if (buffer != NULL) {
+            free(buffer);
+        }
+    } else {
+        fprintf(stderr, "Error: Could not initialize cURL\n");
+    }
+
+    return 0;
 }

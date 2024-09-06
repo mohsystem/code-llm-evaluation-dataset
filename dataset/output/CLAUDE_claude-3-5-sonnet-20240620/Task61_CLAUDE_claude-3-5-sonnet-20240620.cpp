@@ -1,21 +1,22 @@
 
 #include <iostream>
 #include <string>
-#include <tinyxml2.h>
+#include <pugixml.hpp>
 
-using namespace tinyxml2;
-
-XMLElement* parseXMLString(const std::string& xmlString) {
-    XMLDocument doc;
-    doc.Parse(xmlString.c_str());
-    return doc.RootElement();
+std::string get_root_element(const std::string& xml_string) {
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_string(xml_string.c_str());
+    
+    if (result) {
+        pugi::xml_node root = doc.document_element();
+        return root.name();
+    } else {
+        return "Error parsing XML";
+    }
 }
 
 int main() {
-    std::string xmlString = "<root><child1>Value1</child1><child2>Value2</child2></root>";
-    XMLElement* rootElement = parseXMLString(xmlString);
-    if (rootElement != nullptr) {
-        std::cout << "Root element: " << rootElement->Name() << std::endl;
-    }
+    std::string xml_str = "<root><child1>Content</child1><child2 attr=\\"value\\"/></root>";
+    std::cout << get_root_element(xml_str) << std::endl;
     return 0;
 }

@@ -1,20 +1,18 @@
 import socket
-import os
 
-def retrieve_file(filename):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_address = ('localhost', 8080)
-    sock.connect(server_address)
-    sock.sendall(filename.encode())
-    data = sock.recv(1024)
-    if data:
-        f = open(filename, 'wb')
-        f.write(data)
-        f.close()
-        print("File retrieved successfully")
-    else:
+def retrieve_file(file_name):
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect(("localhost", 12345))
+    client_socket.send(file_name.encode())
+    response = client_socket.recv(1024)
+    if response.decode() == "File not found":
         print("File not found on the server")
-    sock.close()
+    else:
+        with open(file_name, "wb") as f:
+            while response:
+                f.write(response)
+                response = client_socket.recv(1024)
+    client_socket.close()
 
-filename = input("Enter the filename: ")
-retrieve_file(filename)
+file_name = input("Enter the file name: ")
+retrieve_file(file_name)

@@ -1,28 +1,25 @@
 #include <stdio.h>
 #include <string.h>
 
-int authenticate(char *username, char *password) {
-    // Check if the provided username and password match a predefined set
-    char validUsername[] = "user";
-    char validPassword[] = "password";
-    return (strcmp(username, validUsername) == 0) && (strcmp(password, validPassword) == 0);
-}
+// Note: This C example uses a simplified approach for demonstration purposes.
+//       In a real-world scenario, you would use more secure data structures
+//       and authentication mechanisms.
 
 int main() {
-    // Get user credentials
-    char username[100], password[100];
+    char username[50], password[50];
+    char stored_username[50] = "user1";
+    char stored_password[50] = "password123";
+
     printf("Username: ");
     scanf("%s", username);
+
     printf("Password: ");
     scanf("%s", password);
 
-    // Authenticate user
-    if (authenticate(username, password)) {
-        printf("Authentication successful. Welcome!
-");
+    if (strcmp(username, stored_username) == 0 && strcmp(password, stored_password) == 0) {
+        printf("Authentication successful. Welcome, %s!\n", username);
     } else {
-        printf("Authentication failed. Invalid username or password.
-");
+        printf("Authentication failed. Invalid username or password.\n");
     }
 
     return 0;

@@ -1,33 +1,40 @@
 #include <stdio.h>
 #include <string.h>
 
-void reverseWords(char* str) {
-    char* token = strtok(str, " ");
+void reverse(char* str) {
+    int start = 0;
+    int end = strlen(str) - 1;
+    while (start < end) {
+        char temp = str[start];
+        str[start] = str[end];
+        str[end] = temp;
+        start++;
+        end--;
+    }
+}
+
+char* reverseWords(char* s) {
+    char* token = strtok(s, " ");
+    char* result = malloc(strlen(s) + 1);
+    result[0] = '\0';
     while (token != NULL) {
         if (strlen(token) >= 5) {
-            int start = 0;
-            int end = strlen(token) - 1;
-            while (start < end) {
-                char temp = token[start];
-                token[start] = token[end];
-                token[end] = temp;
-                start++;
-                end--;
-            }
+            reverse(token);
         }
-        printf("%s ", token);
+        strcat(result, token);
+        strcat(result, " ");
         token = strtok(NULL, " ");
     }
-    printf("
-");
+    result[strlen(result) - 1] = '\0';
+    return result;
 }
 
 int main() {
-    char str1[] = "Hey fellow warriors";
-    char str2[] = "This is a test";
-    char str3[] = "This is another test";
-    reverseWords(str1);
-    reverseWords(str2);
-    reverseWords(str3);
+    char s1[] = "Hey fellow warriors";
+    char s2[] = "This is a test";
+    char s3[] = "This is another test";
+    printf("%s\n", reverseWords(s1));
+    printf("%s\n", reverseWords(s2));
+    printf("%s\n", reverseWords(s3));
     return 0;
 }

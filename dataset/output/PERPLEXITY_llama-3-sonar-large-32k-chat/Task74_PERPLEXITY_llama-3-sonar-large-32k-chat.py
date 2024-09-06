@@ -1,20 +1,19 @@
 import psycopg2
 
-def get_connection():
+def create_connection():
+    conn = None
     try:
         conn = psycopg2.connect(
-            host="localhost",
-            port="5432",
-            database="mydb",
+            dbname="database_name",
             user="username",
-            password="password"
+            password="password",
+            host="localhost",
+            port="5432"
         )
         return conn
-    except psycopg2.Error as e:
-        print(f"Connection to database failed: {e}")
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
 
-if __name__ == "__main__":
-    conn = get_connection()
-    if conn:
-        print("Connected to the database.")
-        conn.close()
+conn = create_connection()
+if conn is not None:
+    conn.close()

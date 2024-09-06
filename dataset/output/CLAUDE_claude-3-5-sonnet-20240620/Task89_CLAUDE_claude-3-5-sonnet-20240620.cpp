@@ -3,37 +3,37 @@
 #include <fstream>
 #include <string>
 
-int main() {
-    std::string storedPassword, enteredPassword;
-    bool match = true;
+bool checkPassword(const std::string& storedPassword, const std::string& enteredPassword) {
+    if (storedPassword.length() != enteredPassword.length()) {
+        return false;
+    }
+    for (size_t i = 0; i < storedPassword.length(); i++) {
+        if (storedPassword[i] != enteredPassword[i]) {
+            return false;
+        }
+    }
+    return true;
+}
 
+int main() {
+    std::string storedPassword;
     std::ifstream file("password.txt");
-    if (!file.is_open()) {
+    if (file.is_open()) {
+        std::getline(file, storedPassword);
+        file.close();
+    } else {
         std::cout << "Password file not found." << std::endl;
         return 1;
     }
 
-    std::getline(file, storedPassword);
-    file.close();
-
-    std::cout << "Enter password: ";
+    std::string enteredPassword;
+    std::cout << "Enter your password: ";
     std::getline(std::cin, enteredPassword);
 
-    if (storedPassword.length() != enteredPassword.length()) {
-        match = false;
-    } else {
-        for (size_t i = 0; i < storedPassword.length(); i++) {
-            if (storedPassword[i] != enteredPassword[i]) {
-                match = false;
-                break;
-            }
-        }
-    }
-
-    if (match) {
+    if (checkPassword(storedPassword, enteredPassword)) {
         std::cout << "Password correct!" << std::endl;
     } else {
-        std::cout << "Password incorrect!" << std::endl;
+        std::cout << "Password incorrect." << std::endl;
     }
 
     return 0;

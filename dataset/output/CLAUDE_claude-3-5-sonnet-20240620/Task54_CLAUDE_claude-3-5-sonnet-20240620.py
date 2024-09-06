@@ -1,31 +1,32 @@
 
 import random
-
-users = {}
-otps = {}
+import string
+import time
 
 def generate_otp():
-    return f"{random.randint(0, 999999):06d}"
+    return ''.join(random.choices(string.digits, k=6))
 
-# Register a user
-username = input("Register - Enter username: ")
-password = input("Enter password: ")
-users[username] = password
-
-# Login
-login_username = input("Login - Enter username: ")
-login_password = input("Enter password: ")
-
-if login_username in users and users[login_username] == login_password:
-    otp = generate_otp()
-    otps[login_username] = otp
+def send_otp(otp):
     print(f"OTP sent: {otp}")
 
-    entered_otp = input("Enter OTP: ")
+def verify_otp(user_otp, generated_otp):
+    return user_otp == generated_otp
 
-    if otps[login_username] == entered_otp:
-        print("Login successful!")
+def login():
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+    
+    if username == "user" and password == "password":
+        otp = generate_otp()
+        send_otp(otp)
+        
+        user_otp = input("Enter OTP: ")
+        if verify_otp(user_otp, otp):
+            print("Login successful!")
+        else:
+            print("Invalid OTP. Login failed.")
     else:
-        print("Invalid OTP. Login failed.")
-else:
-    print("Invalid username or password.")
+        print("Invalid username or password.")
+
+if __name__ == "__main__":
+    login()

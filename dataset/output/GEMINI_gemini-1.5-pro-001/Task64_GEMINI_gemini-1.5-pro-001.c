@@ -2,87 +2,72 @@
 #include <stdlib.h>
 #include <string.h>
 #include <curl/curl.h>
+// You need to include a JSON parsing library for C
+// Example using the "cJSON" library:
+#include "cJSON.h" 
 
-// Structure to hold the downloaded data
-struct MemoryStruct {
-  char *memory;
-  size_t size;
-};
-
-// Callback function to write downloaded data to the memory struct
-static size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp) {
-  size_t realsize = size * nmemb;
-  struct MemoryStruct *mem = (struct MemoryStruct *)userp;
-
-  // Reallocate memory if needed
-  char *ptr = realloc(mem->memory, mem->size + realsize + 1);
-  if (ptr == NULL) {
-    fprintf(stderr, "Not enough memory (realloc returned NULL)
-");
-    return 0; // Indicate failure to libcurl
-  }
-
-  mem->memory = ptr;
-  memcpy(&(mem->memory[mem->size]), contents, realsize);
-  mem->size += realsize;
-  mem->memory[mem->size] = 0; // Null-terminate the string
-
-  return realsize;
+// Callback function for cURL to write data to a string
+size_t writeCallback(void* contents, size_t size, size_t nmemb, void* userp) {
+    size_t totalSize = size * nmemb;
+    char** buffer = (char**)userp;
+    *buffer = (char*)realloc(*buffer, strlen(*buffer) + totalSize + 1);
+    if (*buffer == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return 0;
+    }
+    memcpy(*buffer + strlen(*buffer), contents, totalSize);
+    (*buffer)[strlen(*buffer) + totalSize] = '\0';
+    return totalSize;
 }
 
 // Function to fetch JSON from a URL
-char *fetch_json(const char *url) {
-  CURL *curl;
-  CURLcode res;
-  struct MemoryStruct chunk;
+cJSON* getJsonFromUrl(const char* url) {
+    CURL* curl = curl_easy_init();
+    char* responseBuffer = NULL;
+    cJSON* json = NULL;
 
-  // Initialize curl
-  curl = curl_easy_init();
-  if (curl) {
-    // Set up the curl request
-    chunk.memory = malloc(1); // Will be grown as needed
-    chunk.size = 0; 
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseBuffer);
 
-    curl_easy_setopt(curl, CURLOPT_URL, url);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+        CURLcode res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
 
-    // Perform the request
-    res = curl_easy_perform(curl);
-
-    // Check for errors
-    if (res != CURLE_OK) {
-      fprintf(stderr, "curl_easy_perform() failed: %s
-", curl_easy_strerror(res));
-      curl_easy_cleanup(curl);
-      free(chunk.memory);
-      return NULL;
+        if (res == CURLE_OK) {
+            json = cJSON_Parse(responseBuffer);
+            if (json == NULL) {
+                const char* errorPtr = cJSON_GetErrorPtr();
+                if (errorPtr != NULL) {
+                    fprintf(stderr, "JSON parsing error before: [%s]\n", errorPtr);
+                }
+            }
+        } else {
+            fprintf(stderr, "Error fetching URL: %s\n", curl_easy_strerror(res));
+        }
+        free(responseBuffer);
+        return json;
+    } else {
+        fprintf(stderr, "Error initializing cURL\n");
+        return NULL;
     }
-
-    // Cleanup
-    curl_easy_cleanup(curl);
-
-    return chunk.memory;
-  } else {
-    fprintf(stderr, "Failed to initialize libcurl
-");
-    return NULL;
-  }
 }
 
-int main(int argc, char *argv[]) {
-  if (argc != 2) {
-    fprintf(stderr, "Usage: %s <url>
-", argv[0]);
-    return 1;
-  }
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <url>\n", argv[0]);
+        return 1;
+    }
 
-  char *json_data = fetch_json(argv[1]);
-  if (json_data) {
-    printf("%s
-", json_data);
-    free(json_data);
-  }
+    const char* url = argv[1];
+    cJSON* jsonData = getJsonFromUrl(url);
 
-  return 0;
+    if (jsonData != NULL) {
+        char* jsonString = cJSON_Print(jsonData);
+        printf("%s\n", jsonString);
+        cJSON_Delete(jsonData);
+        free(jsonString);
+    }
+
+    return 0;
 }

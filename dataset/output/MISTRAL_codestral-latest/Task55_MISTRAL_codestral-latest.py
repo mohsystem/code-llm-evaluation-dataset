@@ -1,13 +1,14 @@
 import re
 
+def validate_email(email):
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if re.match(pattern, email):
+        return True
+    else:
+        return False
+
 email = input("Enter your email: ")
-
-email_regex = "^[a-zA-Z0-9_+&*-]+(?:\\." +
-              "[a-zA-Z0-9_+&*-]+)*@" +
-              "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
-              "A-Z]{2,7}$"
-
-if re.match(email_regex, email):
-    print("Valid email address")
+if validate_email(email):
+    print("Email is valid")
 else:
-    print("Invalid email address")
+    print("Email is invalid")

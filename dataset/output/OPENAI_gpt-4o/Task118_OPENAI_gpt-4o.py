@@ -1,12 +1,15 @@
 import re
 
-def is_valid_ip(ip):
-    pattern = re.compile(r"^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\."
-                         r"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\."
-                         r"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\."
-                         r"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
-    return bool(pattern.match(ip))
+def validate_ip(ip):
+    pattern = r'^(\d{1,3}\.){3}\d{1,3}$'
+    if not re.match(pattern, ip):
+        return False
+    parts = ip.split('.')
+    for part in parts:
+        if int(part) < 0 or int(part) > 255:
+            return False
+    return True
 
-if __name__ == "__main__":
-    print(is_valid_ip("192.168.0.1"))  # True
-    print(is_valid_ip("256.256.256.256"))  # False
+ips = ["192.168.1.1", "256.256.256.256", "123.045.067.089"]
+validated_ips = [ip for ip in ips if validate_ip(ip)]
+print("Validated IPs:", validated_ips)

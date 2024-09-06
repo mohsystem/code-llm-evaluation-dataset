@@ -1,19 +1,14 @@
-# Python
-def encrypt(text, s):
-    result = ""
-
-    for i in range(len(text)):
-        char = text[i]
-
-        if (char.isupper()):
-            result += chr((ord(char) + s - 65) % 26 + 65)
+def encrypt_string(input_string, key):
+    encrypted_string = ""
+    for char in input_string:
+        if char.isalpha():
+            ascii_offset = 65 if char.isupper() else 97
+            encrypted_string += chr((ord(char) - ascii_offset + key) % 26 + ascii_offset)
         else:
-            result += chr((ord(char) + s - 97) % 26 + 97)
+            encrypted_string += char
+    return encrypted_string
 
-    return result
-
-text = "HELLO"
-s = 4
-print("Text : " + text)
-print("Shift : " + str(s))
-print("Cipher: " + encrypt(text, s))
+input_string = "HELLO WORLD"
+key = 3
+encrypted_string = encrypt_string(input_string, key)
+print(encrypted_string)

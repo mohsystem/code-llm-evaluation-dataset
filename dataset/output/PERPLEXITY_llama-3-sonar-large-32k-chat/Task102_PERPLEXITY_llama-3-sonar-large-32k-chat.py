@@ -1,25 +1,17 @@
-import getpass
 import hashlib
-import mysql.connector
+import sqlite3
 
 def hash_password(password):
-    # Simple hashing example, in real-world scenarios use a secure hashing algorithm like bcrypt
-    return hashlib.sha256(password.encode()).hexdigest()
+    sha_signature = hashlib.sha256(password.encode()).hexdigest()
+    return sha_signature
+
+def update_password(username, new_password):
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    c.execute("UPDATE users SET password = ? WHERE username = ?", (hash_password(new_password), username))
+    conn.commit()
+    conn.close()
 
 username = input("Enter username: ")
-password = getpass.getpass("Enter new password: ")
-hashed_password = hash_password(password)
-
-cnx = mysql.connector.connect(user='root', password='password',
-                              host='127.0.0.1',
-                              database='mydb')
-cursor = cnx.cursor()
-
-query = "UPDATE users SET password = %s WHERE username = %s"
-cursor.execute(query, (hashed_password, username))
-
-cnx.commit()
-print("Password updated successfully!")
-
-cursor.close()
-cnx.close()
+new_password = input("Enter new password: ")
+update_password(username, new_password)

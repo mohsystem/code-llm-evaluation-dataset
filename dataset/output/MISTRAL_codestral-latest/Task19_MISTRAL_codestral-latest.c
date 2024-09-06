@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
+#include <ctype.h>
 
 void reverse(char* str, int length) {
     int start = 0;
@@ -14,21 +14,28 @@ void reverse(char* str, int length) {
     }
 }
 
-char* spinWords(const char* sentence) {
-    char* result = malloc(strlen(sentence) + 1);
-    strcpy(result, sentence);
-    char* token = strtok(result, " ");
-    int index = 0;
-    while (token != NULL) {
-        if (strlen(token) >= 5) {
-            reverse(token, strlen(token));
+void spinWords(const char *sentence) {
+    char result[1000] = "";
+    char word[100] = "";
+    int wordIndex = 0;
+    int resultIndex = 0;
+
+    for (int i = 0; i <= strlen(sentence); i++) {
+        if (sentence[i] == ' ' || sentence[i] == '\0') {
+            if (wordIndex >= 5) {
+                reverse(word, wordIndex);
+            }
+            for (int j = 0; j < wordIndex; j++) {
+                result[resultIndex++] = word[j];
+            }
+            if (sentence[i] == ' ') {
+                result[resultIndex++] = ' ';
+            }
+            wordIndex = 0;
+        } else {
+            word[wordIndex++] = sentence[i];
         }
-        if (index > 0) {
-            strcat(result, " ");
-        }
-        strcat(result, token);
-        token = strtok(NULL, " ");
-        index++;
     }
-    return result;
+
+    printf("%s", result);
 }

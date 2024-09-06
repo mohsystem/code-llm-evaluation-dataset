@@ -2,41 +2,40 @@
 #include <vector>
 
 class Stack {
+private:
     std::vector<int> stack;
-
 public:
     void push(int item) {
         stack.push_back(item);
     }
 
     int pop() {
-        if (!isEmpty()) {
+        if (!is_empty()) {
             int item = stack.back();
             stack.pop_back();
             return item;
         }
-        return -1;  // Return -1 if stack is empty
+        return -1; // Assuming -1 is returned when stack is empty
     }
 
     int peek() {
-        if (!isEmpty()) {
+        if (!is_empty()) {
             return stack.back();
         }
-        return -1;  // Return -1 if stack is empty
+        return -1; // Assuming -1 is returned when stack is empty
     }
 
-    bool isEmpty() {
+    bool is_empty() {
         return stack.empty();
     }
 };
 
 int main() {
-    Stack s;
-    s.push(10);
-    s.push(20);
-    std::cout << s.peek() << std::endl;  // Output: 20
-    std::cout << s.pop() << std::endl;   // Output: 20
-    std::cout << s.pop() << std::endl;   // Output: 10
-    std::cout << s.isEmpty() << std::endl;  // Output: 1 (true)
+    Stack stack;
+    stack.push(1);
+    stack.push(2);
+    stack.push(3);
+    std::cout << stack.pop() << std::endl;  // Output: 3
+    std::cout << stack.peek() << std::endl;  // Output: 2
     return 0;
 }

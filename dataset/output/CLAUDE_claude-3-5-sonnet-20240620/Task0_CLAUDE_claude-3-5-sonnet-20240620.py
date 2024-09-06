@@ -1,41 +1,32 @@
 
 import os
-import time
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
 
-DIRECTORY_PATH = "shared_directory"
-NUM_THREADS = 4
+class FileProcessor:
+    def __init__(self, directory):
+        self.directory = directory
+        self.processed_files = set()
+        self.lock = threading.Lock()
 
-def process_file(file_path):
-    print(f"Processing file: {os.path.basename(file_path)} by thread: {threading.current_thread().name}")
-    # Simulating file processing
-    time.sleep(2)
-    # Delete the processed file
-    os.remove(file_path)
+    def process_file(self, filename):
+        with self.lock:
+            if filename in self.processed_files:
+                return
+            self.processed_files.add(filename)
 
-def process_files():
-    while True:
-        with threading.Lock():
-            files = [f for f in os.listdir(DIRECTORY_PATH) if os.path.isfile(os.path.join(DIRECTORY_PATH, f))]
-            if files:
-                file_to_process = os.path.join(DIRECTORY_PATH, files[0])
-            else:
-                file_to_process = None
+        filepath = os.path.join(self.directory, filename)
+        print(f"Processing file: {filename}")
+        time.sleep(1)  # Simulate file processing
+        print(f"Finished processing file: {filename}")
 
-        if file_to_process:
-            process_file(file_to_process)
-        else:
-            time.sleep(1)
-
-def main():
-    os.makedirs(DIRECTORY_PATH, exist_ok=True)
-
-    with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
-        futures = [executor.submit(process_files) for _ in range(NUM_THREADS)]
-
-        for future in futures:
-            future.result()
+    def process_directory(self):
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            for filename in os.listdir(self.directory):
+                if filename.endswith(".txt"):
+                    executor.submit(self.process_file, filename)
 
 if __name__ == "__main__":
-    main()
+    processor = FileProcessor("./files")
+    processor.process_directory()

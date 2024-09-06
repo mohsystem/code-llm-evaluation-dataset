@@ -1,47 +1,52 @@
+// C
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_LEN 100
+#define MAX_LINE_LENGTH 256
 
-typedef struct {
-    char key[MAX_LEN];
-    char value[MAX_LEN];
-} Record;
-
-int compare(const void *a, const void *b) {
-    return strcmp(((Record *)a)->key, ((Record *)b)->key);
+int compare(const void* a, const void* b) {
+    return strcmp(*(const char**)a, *(const char**)b);
 }
 
-int main() {
-    FILE *file = fopen("file.txt", "r");
+char** readAndSortFile(const char* filePath, int* numRecords) {
+    FILE* file = fopen(filePath, "r");
     if (file == NULL) {
-        perror("Error opening file");
-        return 1;
+        perror("Unable to open file");
+        return NULL;
     }
 
-    Record records[100];
-    int count = 0;
-    char line[MAX_LEN * 2];
+    char** records = NULL;
+    char line[MAX_LINE_LENGTH];
+    int capacity = 0;
 
-    while (fgets(line, sizeof(line), file)) {
-        char *key = strtok(line, "=");
-        char *value = strtok(NULL, "=");
-        if (key != NULL && value != NULL) {
-            strncpy(records[count].key, key, MAX_LEN);
-            strncpy(records[count].value, value, MAX_LEN);
-            count++;
+    while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
+        if (*numRecords >= capacity) {
+            capacity = (capacity == 0) ? 1 : capacity * 2;
+            records = (char**)realloc(records, capacity * sizeof(char*));
         }
+        records[*numRecords] = strdup(line);
+        (*numRecords)++;
     }
 
     fclose(file);
 
-    qsort(records, count, sizeof(Record), compare);
+    qsort(records, *numRecords, sizeof(char*), compare);
 
-    for (int i = 0; i < count; i++) {
-        printf("%s=%s
-", records[i].key, records[i].value);
+    return records;
+}
+
+int main() {
+    int numRecords = 0;
+    char** sortedRecords = readAndSortFile("path_to_your_file.txt", &numRecords);
+
+    for (int i = 0; i < numRecords; i++) {
+        printf("%s", sortedRecords[i]);
+        free(sortedRecords[i]);
     }
+
+    free(sortedRecords);
 
     return 0;
 }

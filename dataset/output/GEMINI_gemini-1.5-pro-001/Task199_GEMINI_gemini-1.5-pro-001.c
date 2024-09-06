@@ -5,31 +5,26 @@ typedef struct {
 } Clock;
 
 Clock create_clock(int hour, int minute) {
-    Clock clock;
-    clock.minutes = ((minute + hour * 60) % (24 * 60) + (24 * 60)) % (24 * 60);
-    return clock;
+    Clock c;
+    c.minutes = (minute + hour * 60) % (24 * 60);
+    if (c.minutes < 0) {
+        c.minutes += 24 * 60;
+    }
+    return c;
 }
 
-int get_hour(Clock clock) {
-    return clock.minutes / 60;
+void print_clock(Clock c) {
+    printf("%02d:%02d", c.minutes / 60, c.minutes % 60);
 }
 
-int get_minute(Clock clock) {
-    return clock.minutes % 60;
+int are_equal(Clock c1, Clock c2) {
+    return c1.minutes == c2.minutes;
 }
 
-Clock add(Clock clock, int minutes) {
-    return create_clock(0, (clock.minutes + minutes) % (24 * 60));
+Clock add_minutes(Clock c, int minutes) {
+    return create_clock(0, c.minutes + minutes);
 }
 
-Clock subtract(Clock clock, int minutes) {
-    return add(clock, -minutes);
-}
-
-void print_clock(Clock clock) {
-    printf("%02d:%02d", get_hour(clock), get_minute(clock));
-}
-
-int is_equal(Clock clock1, Clock clock2) {
-    return clock1.minutes == clock2.minutes;
+Clock subtract_minutes(Clock c, int minutes) {
+    return create_clock(0, c.minutes - minutes);
 }

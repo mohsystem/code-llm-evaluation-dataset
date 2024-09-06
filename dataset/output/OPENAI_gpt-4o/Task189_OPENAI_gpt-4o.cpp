@@ -1,47 +1,50 @@
 #include <iostream>
-#include <thread>
 #include <functional>
-#include <semaphore.h>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
 using namespace std;
 
 class ZeroEvenOdd {
 private:
     int n;
-    sem_t zeroSem, evenSem, oddSem;
-
+    int state;
+    mutex mtx;
+    condition_variable cv;
 public:
-    ZeroEvenOdd(int n) : n(n) {
-        sem_init(&zeroSem, 0, 1);
-        sem_init(&evenSem, 0, 0);
-        sem_init(&oddSem, 0, 0);
+    ZeroEvenOdd(int n) {
+        this->n = n;
+        state = 0;
     }
 
     void zero(function<void(int)> printNumber) {
-        for (int i = 0; i < n; ++i) {
-            sem_wait(&zeroSem);
+        for (int i = 1; i <= n; i++) {
+            unique_lock<mutex> lk(mtx);
+            cv.wait(lk, [&]{ return state == 0; });
             printNumber(0);
-            if (i % 2 == 0) {
-                sem_post(&oddSem);
-            } else {
-                sem_post(&evenSem);
-            }
+            state = (i % 2 == 1) ? 1 : 2;
+            cv.notify_all();
         }
     }
 
     void even(function<void(int)> printNumber) {
         for (int i = 2; i <= n; i += 2) {
-            sem_wait(&evenSem);
+            unique_lock<mutex> lk(mtx);
+            cv.wait(lk, [&]{ return state == 2; });
             printNumber(i);
-            sem_post(&zeroSem);
+            state = 0;
+            cv.notify_all();
         }
     }
 
     void odd(function<void(int)> printNumber) {
         for (int i = 1; i <= n; i += 2) {
-            sem_wait(&oddSem);
+            unique_lock<mutex> lk(mtx);
+            cv.wait(lk, [&]{ return state == 1; });
             printNumber(i);
-            sem_post(&zeroSem);
+            state = 0;
+            cv.notify_all();
         }
     }
 };
@@ -51,11 +54,11 @@ void printNumber(int x) {
 }
 
 int main() {
-    ZeroEvenOdd zeo(5);
+    ZeroEvenOdd zeroEvenOdd(5);
 
-    thread threadA(&ZeroEvenOdd::zero, &zeo, printNumber);
-    thread threadB(&ZeroEvenOdd::even, &zeo, printNumber);
-    thread threadC(&ZeroEvenOdd::odd, &zeo, printNumber);
+    thread threadA(&ZeroEvenOdd::zero, &zeroEvenOdd, printNumber);
+    thread threadB(&ZeroEvenOdd::even, &zeroEvenOdd, printNumber);
+    thread threadC(&ZeroEvenOdd::odd, &zeroEvenOdd, printNumber);
 
     threadA.join();
     threadB.join();

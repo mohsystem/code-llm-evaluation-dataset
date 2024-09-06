@@ -1,14 +1,14 @@
 # Python
-class CryptoKeyManager:
-    def __init__(self):
-        self.keys = {}
+from cryptography.fernet import Fernet
 
-    def add_key(self, key_name, key_value):
-        self.keys[key_name] = key_value
+def generate_key():
+    return Fernet.generate_key()
 
-    def get_key(self, key_name):
-        return self.keys.get(key_name, None)
+def save_key(key, filename):
+    with open(filename, 'wb') as key_file:
+        key_file.write(key)
 
-    def remove_key(self, key_name):
-        if key_name in self.keys:
-            del self.keys[key_name]
+def load_key(filename):
+    with open(filename, 'rb') as key_file:
+        key = key_file.read()
+    return key

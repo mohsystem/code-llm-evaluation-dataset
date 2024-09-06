@@ -2,27 +2,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <json-c/json.h>
+#include "cJSON.h"
 
-json_object* parse_json(const char* json_string) {
-    json_object* root = json_tokener_parse(json_string);
-    if (root == NULL) {
-        fprintf(stderr, "Failed to parse JSON\
-");
-        return NULL;
-    }
-    return root;
+cJSON* parse_json_and_get_root(const char* json_string) {
+    return cJSON_Parse(json_string);
 }
 
 int main() {
-    const char* json_string = "{\\"name\\":\\"John\\",\\"age\\":30,\\"city\\":\\"New York\\"}";
-    json_object* root_element = parse_json(json_string);
+    const char* json_string = "{\\"name\\": \\"John\\", \\"age\\": 30, \\"city\\": \\"New York\\"}";
+    cJSON* root_element = parse_json_and_get_root(json_string);
     
     if (root_element != NULL) {
-        printf("Root element: %s\
-", json_object_to_json_string(root_element));
-        json_object_put(root_element);
+        char* printed_json = cJSON_Print(root_element);
+        printf("%s\\n", printed_json);
+        free(printed_json);
+        cJSON_Delete(root_element);
+    } else {
+        printf("Failed to parse JSON\\n");
     }
-    
+
     return 0;
 }

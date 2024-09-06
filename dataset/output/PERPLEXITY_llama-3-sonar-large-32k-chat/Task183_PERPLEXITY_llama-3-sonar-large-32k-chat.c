@@ -18,7 +18,6 @@ int largestProduct(const char* inputStr, int span) {
 int main() {
     const char* inputStr = "63915";
     int span = 3;
-    printf("%d
-", largestProduct(inputStr, span));
+    printf("%d\n", largestProduct(inputStr, span));
     return 0;
 }

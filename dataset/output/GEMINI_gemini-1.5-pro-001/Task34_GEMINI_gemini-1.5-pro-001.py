@@ -1,11 +1,5 @@
-def is_narcissistic(number):
-    if number < 0:
-        return False
-    original_number = number
-    sum = 0
-    digits = len(str(number))
-    while number > 0:
-        digit = number % 10
-        sum += digit ** digits
-        number //= 10
-    return sum == original_number
+def narcissistic(value):
+    str_value = str(value)
+    num_digits = len(str_value)
+    total = sum(int(digit) ** num_digits for digit in str_value)
+    return total == value

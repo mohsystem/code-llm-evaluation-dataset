@@ -1,10 +1,27 @@
 #include <iostream>
-#include <cstring>
+#include <cstdlib>
 
-void run_CPP(int bufferSize, char input[]) {
-    char buffer[10] = {0};
-    std::cout << "Enter input (C++): ";
-    std::cin.getline(input, bufferSize);
-    strncpy(buffer, input, bufferSize - 1);
-    std::cout << "Buffer contents (C++): " << buffer << std::endl;
+extern "C" {
+    void add_char(char c);
+    void print_buffer();
+}
+
+void add_char(char c);
+void print_buffer();
+
+int main() {
+    const int buffer_size = 10;
+    std::cout << "Enter characters to fill the buffer:" << std::endl;
+
+    for (int i = 0; i < buffer_size; ++i) {
+        std::cout << "Enter a character: ";
+        char ch;
+        std::cin >> ch;
+        add_char(ch);
+    }
+
+    std::cout << "Buffer contents:" << std::endl;
+    print_buffer();
+
+    return 0;
 }

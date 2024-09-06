@@ -1,29 +1,18 @@
 class Solution {
 public:
     string longestDupSubstring(string s) {
-        int lo = 1, hi = s.length();
-        string ans = "";
-        while (lo <= hi) {
-            int mid = lo + (hi - lo) / 2;
-            string tmp = search(s, mid);
-            if (tmp != "") {
-                ans = tmp;
-                lo = mid + 1;
-            } else {
-                hi = mid - 1;
+        int n = s.size();
+        string longest = "";
+        for (int len = n / 2; len >= 1; len--) {
+            for (int i = 0; i <= n - len; i++) {
+                string substr = s.substr(i, len);
+                size_t first = s.find(substr);
+                size_t last = s.rfind(substr);
+                if (first != last && substr.size() > longest.size()) {
+                    longest = substr;
+                }
             }
         }
-        return ans;
-    }
-
-    string search(string s, int L) {
-        unordered_set<string> seen;
-        for (int i = 0; i <= s.length() - L; i++) {
-            string tmp = s.substr(i, L);
-            if (!seen.insert(tmp).second) {
-                return tmp;
-            }
-        }
-        return "";
+        return longest;
     }
 };

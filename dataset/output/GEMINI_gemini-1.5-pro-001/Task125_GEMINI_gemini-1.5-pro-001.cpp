@@ -1,20 +1,28 @@
 #include <iostream>
+#include <unordered_map>
+#include <vector>
 #include <string>
 
 using namespace std;
 
 int main() {
-    string userInput;
+    unordered_map<string, vector<string>> roles = {
+        {"admin", {"resource1", "resource2", "resource3"}},
+        {"editor", {"resource2", "resource3"}},
+        {"viewer", {"resource3"}}
+    };
 
-    cout << "Enter your choice: ";
-    cin >> userInput;
+    string userRole;
+    cout << "Enter your role (admin, editor, viewer): ";
+    cin >> userRole;
 
-    if (userInput == "option1") {
-        cout << "Accessing resource 1..." << endl;
-    } else if (userInput == "option2") {
-        cout << "Accessing resource 2..." << endl;
+    if (roles.find(userRole) != roles.end()) {
+        cout << "Available resources for " << userRole << ":" << endl;
+        for (const string& resource : roles[userRole]) {
+            cout << resource << endl;
+        }
     } else {
-        cout << "Invalid choice." << endl;
+        cout << "Invalid role." << endl;
     }
 
     return 0;

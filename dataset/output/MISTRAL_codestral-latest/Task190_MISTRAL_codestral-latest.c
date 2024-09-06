@@ -1,39 +1,48 @@
+// C
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define MAX_LINE_LENGTH 1024
-#define MAX_WORD_LENGTH 64
+#define MAX_WORD_LENGTH 100
 #define MAX_WORDS_PER_LINE 100
 
 int main() {
     FILE *file = fopen("file.txt", "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        return 1;
+    }
+
     char lines[MAX_WORDS_PER_LINE][MAX_LINE_LENGTH];
-    int line_count = 0;
-    int word_count = 0;
+    char *words[MAX_WORDS_PER_LINE][MAX_WORDS_PER_LINE];
+    int num_lines = 0, num_words = 0;
 
-    while (fgets(lines[line_count], MAX_LINE_LENGTH, file)) {
-        char *token = strtok(lines[line_count], " ");
-        word_count = 0;
+    while (fgets(lines[num_lines], MAX_LINE_LENGTH, file)) {
+        char *token = strtok(lines[num_lines], " ");
+        int word_index = 0;
         while (token != NULL) {
-            word_count++;
+            words[num_lines][word_index] = strdup(token);
             token = strtok(NULL, " ");
+            word_index++;
         }
-        line_count++;
+        num_words = word_index;
+        num_lines++;
     }
-
-    for (int i = 0; i < word_count; i++) {
-        for (int j = 0; j < line_count; j++) {
-            char *token = strtok(j == 0 ? lines[j] : NULL, " ");
-            for (int k = 0; k < i; k++) {
-                token = strtok(NULL, " ");
-            }
-            printf("%s ", token);
-        }
-        printf("
-");
-    }
-
     fclose(file);
+
+    for (int i = 0; i < num_words; i++) {
+        for (int j = 0; j < num_lines; j++) {
+            printf("%s ", words[j][i]);
+        }
+        printf("\n");
+    }
+
+    for (int i = 0; i < num_lines; i++) {
+        for (int j = 0; j < num_words; j++) {
+            free(words[i][j]);
+        }
+    }
+
     return 0;
 }

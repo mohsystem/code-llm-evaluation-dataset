@@ -1,67 +1,72 @@
 #include <iostream>
 #include <vector>
+#include <string>
 #include <cstdlib>
-#include <ctime>
+#include <algorithm>
+
+using namespace std;
 
 class Master {
-public:
-    Master(const std::string& secret) : secret(secret), guess_count(0) {}
+private:
+    string secret;
 
-    int guess(const std::string& word) {
+public:
+    int guess_count;
+
+    Master(string sec) : secret(sec), guess_count(0) {}
+
+    int guess(string word) {
         guess_count++;
-        if (std::find(words.begin(), words.end(), word) == words.end()) {
+        if (find(words.begin(), words.end(), word) == words.end()) {
             return -1;
         }
         int matches = 0;
-        for (size_t i = 0; i < secret.size(); ++i) {
+        for (int i = 0; i < secret.size(); i++) {
             if (secret[i] == word[i]) {
                 matches++;
             }
         }
         return matches;
     }
-private:
-    std::string secret;
-    int guess_count;
 };
 
-int match(const std::string& word1, const std::string& word2) {
-    int matches = 0;
-    for (size_t i = 0; i < word1.size(); ++i) {
-        if (word1[i] == word2[i]) {
-            matches++;
+int match_count(string w1, string w2) {
+    int count = 0;
+    for (int i = 0; i < w1.size(); i++) {
+        if (w1[i] == w2[i]) {
+            count++;
         }
     }
-    return matches;
+    return count;
 }
 
-void findSecretWord(std::vector<std::string>& words, Master& master, int allowedGuesses) {
-    int attempts = 0;
-    srand(time(0));
-    while (attempts < allowedGuesses) {
-        std::string guess_word = words[rand() % words.size()];
-        int matches = master.guess(guess_word);
+void findSecretWord(vector<string>& words, Master& master, int allowedGuesses) {
+    for (int i = 0; i < allowedGuesses; i++) {
+        string guessWord = words[rand() % words.size()];
+        int matches = master.guess(guessWord);
+
         if (matches == 6) {
-            std::cout << "You guessed the secret word correctly." << std::endl;
+            cout << "You guessed the secret word correctly." << endl;
             return;
         }
-        std::vector<std::string> filtered_words;
-        for (const auto& word : words) {
-            if (match(word, guess_word) == matches) {
-                filtered_words.push_back(word);
+
+        vector<string> newWords;
+        for (string word : words) {
+            if (match_count(word, guessWord) == matches) {
+                newWords.push_back(word);
             }
         }
-        words = filtered_words;
-        attempts++;
+        words = newWords;
     }
-    std::cout << "Either you took too many guesses, or you did not find the secret word." << std::endl;
+    cout << "Either you took too many guesses, or you did not find the secret word." << endl;
 }
 
 int main() {
-    std::string secret = "hamada";
-    std::vector<std::string> words = {"hamada", "khaled"};
+    string secret = "acckzz";
+    vector<string> words = {"acckzz", "ccbazz", "eiowzz", "abcczz"};
     int allowedGuesses = 10;
     Master master(secret);
     findSecretWord(words, master, allowedGuesses);
+
     return 0;
 }

@@ -1,21 +1,28 @@
 
-str1 = "Hello"
-str2 = "World"
+def string_operations():
+    # String copy
+    original = "Hello, World!"
+    copied = original[:]
+    print(f"Original: {original}")
+    print(f"Copied: {copied}")
 
-# Copy
-copy = str1[:]
+    # String concatenation
+    str1 = "Python "
+    str2 = "is awesome!"
+    concatenated = str1 + str2
+    print(f"Concatenated: {concatenated}")
 
-# Concatenate
-concat = str1 + " " + str2
+    # String manipulation
+    text = "   Python Programming   "
+    stripped = text.strip()
+    upper = text.upper()
+    lower = text.lower()
+    replaced = text.replace("Python", "Java")
+    
+    print(f"Stripped: '{stripped}'")
+    print(f"Uppercase: {upper}")
+    print(f"Lowercase: {lower}")
+    print(f"Replaced: {replaced}")
 
-# Manipulate
-upper = concat.upper()
-sub = concat[:5]
-replace = concat.replace(\'o\', \'0\')
-
-print(f"Original: {str1}, {str2}")
-print(f"Copy: {copy}")
-print(f"Concatenated: {concat}")
-print(f"Uppercase: {upper}")
-print(f"Substring: {sub}")
-print(f"Replaced: {replace}")
+if __name__ == "__main__":
+    string_operations()

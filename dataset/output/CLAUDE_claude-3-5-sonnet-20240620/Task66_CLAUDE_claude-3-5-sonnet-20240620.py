@@ -1,30 +1,30 @@
 
 import subprocess
+import shlex
 import re
 
-def validate_command(command):
-    # Check if command is empty
-    if not command:
+def validate_command(cmd):
+    # Basic validation: no empty command, no dangerous commands
+    if not cmd.strip() or re.search(r'(rm|sudo|mv|cp|chmod|chown)', cmd):
         return False
-    
-    # Check for semicolons, pipes, or redirections
-    if re.search(r\'[;|><]\', command):
-        return False
-    
     return True
 
-def main():
-    command = input("Enter a bash command: ")
-
-    if validate_command(command):
-        try:
-            result = subprocess.run([\'bash\', \'-c\', command], capture_output=True, text=True, check=True)
-            print(result.stdout)
-        except subprocess.CalledProcessError as e:
-            print(f"Command execution failed: {e}")
-            print(f"Error output: {e.stderr}")
-    else:
-        print("Invalid command format or content.")
+def execute_command(cmd):
+    try:
+        result = subprocess.run(shlex.split(cmd), capture_output=True, text=True, timeout=10)
+        return result.stdout if result.returncode == 0 else result.stderr
+    except subprocess.TimeoutExpired:
+        return "Command execution timed out"
+    except Exception as e:
+        return f"Error executing command: {str(e)}"
 
 if __name__ == "__main__":
-    main()
+    while True:
+        user_input = input("Enter a bash command (or 'exit' to quit): ")
+        if user_input.lower() == 'exit':
+            break
+        if validate_command(user_input):
+            output = execute_command(user_input)
+            print("Output:", output)
+        else:
+            print("Invalid or potentially dangerous command. Please try again.")

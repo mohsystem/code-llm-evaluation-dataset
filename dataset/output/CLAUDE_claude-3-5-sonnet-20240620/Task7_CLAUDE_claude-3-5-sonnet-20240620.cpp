@@ -1,161 +1,138 @@
 
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <vector>
+#include <thread>
+#include <fstream>
+#include <sstream>
 #include <cstring>
-#include <unistd.h>
-#include <arpa/inet.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <nlohmann/json.hpp>
 
-#define PORT 5000
+using json = nlohmann::json;
 
-struct User {
-    std::string username;
-    std::string password;
-};
+class Server {
+private:
+    int serverSocket;
+    std::vector<int> clients;
 
-std::vector<User> users;
-
-void load_users() {
-    std::ifstream file("users.txt");
-    std::string line;
-    while (std::getline(file, line)) {
-        size_t pos = line.find(\':\');
-        if (pos != std::string::npos) {
-            User user;
-            user.username = line.substr(0, pos);
-            user.password = line.substr(pos + 1);
-            users.push_back(user);
-        }
-    }
-}
-
-bool authenticate(const std::string& username, const std::string& password) {
-    for (const auto& user : users) {
-        if (user.username == username && user.password == password) {
-            return true;
-        }
-    }
-    return false;
-}
-
-void handle_client(int client_socket) {
-    char buffer[1024] = {0};
-    read(client_socket, buffer, 1024);
-
-    std::string request(buffer);
-    size_t pos1 = request.find(\'|\');
-    size_t pos2 = request.find(\'|\', pos1 + 1);
-
-    if (pos1 != std::string::npos && pos2 != std::string::npos) {
-        std::string command = request.substr(0, pos1);
-        std::string username = request.substr(pos1 + 1, pos2 - pos1 - 1);
-        std::string password = request.substr(pos2 + 1);
-
-        if (command == "LOGIN") {
-            if (authenticate(username, password)) {
-                send(client_socket, "LOGIN_SUCCESS", strlen("LOGIN_SUCCESS"), 0);
-            } else {
-                send(client_socket, "LOGIN_FAILED", strlen("LOGIN_FAILED"), 0);
+    json authenticate(const std::string& username, const std::string& password) {
+        std::ifstream file("users.txt");
+        std::string line;
+        while (std::getline(file, line)) {
+            std::istringstream iss(line);
+            std::string storedUsername, storedPassword;
+            if (std::getline(iss, storedUsername, ':') && std::getline(iss, storedPassword)) {
+                if (username == storedUsername && password == storedPassword) {
+                    return {{"status", "success"}, {"message", "Login successful"}};
+                }
             }
         }
+        return {{"status", "failure"}, {"message", "Invalid credentials"}};
     }
 
-    close(client_socket);
-}
+    void handleClient(int clientSocket) {
+        char buffer[1024] = {0};
+        while (true) {
+            memset(buffer, 0, sizeof(buffer));
+            int valread = read(clientSocket, buffer, 1024);
+            if (valread <= 0) break;
 
-int main() {
-    load_users();
-
-    int server_fd, new_socket;
-    struct sockaddr_in address;
-    int addrlen = sizeof(address);
-
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        perror("socket failed");
-        exit(EXIT_FAILURE);
-    }
-
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
-
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
-        perror("bind failed");
-        exit(EXIT_FAILURE);
-    }
-
-    if (listen(server_fd, 3) < 0) {
-        perror("listen");
-        exit(EXIT_FAILURE);
-    }
-
-    std::cout << "Server started on port " << PORT << std::endl;
-
-    while (true) {
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
-            perror("accept");
-            exit(EXIT_FAILURE);
+            json request = json::parse(buffer);
+            if (request["action"] == "login") {
+                json response = authenticate(request["username"], request["password"]);
+                std::string responseStr = response.dump();
+                send(clientSocket, responseStr.c_str(), responseStr.length(), 0);
+            }
         }
-
-        handle_client(new_socket);
+        close(clientSocket);
     }
 
-    return 0;
-}
+public:
+    Server(int port) {
+        serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+        sockaddr_in address;
+        address.sin_family = AF_INET;
+        address.sin_addr.s_addr = INADDR_ANY;
+        address.sin_port = htons(port);
 
-// Client code
-#include <iostream>
-#include <string>
-#include <cstring>
-#include <unistd.h>
-#include <arpa/inet.h>
+        bind(serverSocket, (struct sockaddr *)&address, sizeof(address));
+        listen(serverSocket, 3);
+    }
 
-#define PORT 5000
+    void start() {
+        std::cout << "Server listening on port 5000" << std::endl;
+        while (true) {
+            sockaddr_in clientAddr;
+            socklen_t clientAddrLen = sizeof(clientAddr);
+            int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientAddrLen);
+            clients.push_back(clientSocket);
+            std::thread(&Server::handleClient, this, clientSocket).detach();
+        }
+    }
+};
+
+class Client {
+private:
+    int clientSocket;
+
+public:
+    void connect(const std::string& ip, int port) {
+        clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+        sockaddr_in serverAddr;
+        serverAddr.sin_family = AF_INET;
+        serverAddr.sin_port = htons(port);
+        inet_pton(AF_INET, ip.c_str(), &serverAddr.sin_addr);
+
+        ::connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr));
+    }
+
+    void login() {
+        std::string username, password;
+        std::cout << "Enter username: ";
+        std::cin >> username;
+        std::cout << "Enter password: ";
+        std::cin >> password;
+
+        json request = {
+            {"action", "login"},
+            {"username", username},
+            {"password", password}
+        };
+
+        std::string requestStr = request.dump();
+        send(clientSocket, requestStr.c_str(), requestStr.length(), 0);
+
+        char buffer[1024] = {0};
+        read(clientSocket, buffer, 1024);
+        json response = json::parse(buffer);
+        std::cout << response["message"] << std::endl;
+    }
+
+    void disconnect() {
+        close(clientSocket);
+    }
+};
 
 int main() {
-    int sock = 0;
-    struct sockaddr_in serv_addr;
-    char buffer[1024] = {0};
-    std::string username, password;
+    std::string choice;
+    std::cout << "Enter 's' for server, 'c' for client: ";
+    std::cin >> choice;
 
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        std::cout << "\
- Socket creation error \
-";
-        return -1;
+    if (choice == "s") {
+        Server server(5000);
+        server.start();
+    } else if (choice == "c") {
+        Client client;
+        client.connect("127.0.0.1", 5000);
+        client.login();
+        client.disconnect();
+    } else {
+        std::cout << "Invalid choice" << std::endl;
     }
-
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(PORT);
-
-    if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0) {
-        std::cout << "\
-Invalid address/ Address not supported \
-";
-        return -1;
-    }
-
-    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-        std::cout << "\
-Connection Failed \
-";
-        return -1;
-    }
-
-    std::cout << "Enter username: ";
-    std::getline(std::cin, username);
-
-    std::cout << "Enter password: ";
-    std::getline(std::cin, password);
-
-    std::string request = "LOGIN|" + username + "|" + password;
-    send(sock, request.c_str(), request.length(), 0);
-    
-    memset(buffer, 0, sizeof(buffer));
-    read(sock, buffer, 1024);
-    std::cout << "Server response: " << buffer << std::endl;
 
     return 0;
 }

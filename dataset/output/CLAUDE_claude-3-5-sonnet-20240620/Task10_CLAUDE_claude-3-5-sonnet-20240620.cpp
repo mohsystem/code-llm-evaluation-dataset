@@ -1,10 +1,7 @@
 
-#include <iostream>
-#include <algorithm>
-
 class Solution {
 public:
-    static int getSum(int a, int b) {
+    int getSum(int a, int b) {
         if (a == b) {
             return a;
         }
@@ -17,13 +14,3 @@ public:
         return sum;
     }
 };
-
-int main() {
-    std::cout << Solution::getSum(1, 0) << std::endl;
-    std::cout << Solution::getSum(1, 2) << std::endl;
-    std::cout << Solution::getSum(0, 1) << std::endl;
-    std::cout << Solution::getSum(1, 1) << std::endl;
-    std::cout << Solution::getSum(-1, 0) << std::endl;
-    std::cout << Solution::getSum(-1, 2) << std::endl;
-    return 0;
-}

@@ -4,36 +4,33 @@
 
 using namespace std;
 
-bool isValidAdminPassword(const string& password);
+bool isPasswordValid(const string& password) {
+    if (password.length() < 8) {
+        return false;
+    }
+    bool hasUpper = false, hasLower = false, hasDigit = false;
+    for (char ch : password) {
+        if (isupper(ch)) {
+            hasUpper = true;
+        } else if (islower(ch)) {
+            hasLower = true;
+        } else if (isdigit(ch)) {
+            hasDigit = true;
+        }
+    }
+    return hasUpper && hasLower && hasDigit;
+}
 
 int main() {
     string password;
-    cout << "Enter password: ";
-    getline(cin, password);
+    cout << "Enter the password: ";
+    cin >> password;
 
-    if (isValidAdminPassword(password)) {
+    if (isPasswordValid(password)) {
         cout << "Valid password" << endl;
     } else {
         cout << "Invalid password" << endl;
     }
-    return 0;
-}
 
-bool isValidAdminPassword(const string& password) {
-    bool hasUpper = false, hasLower = false, hasDigit = false, hasSpecial = false;
-    if (password.length() < 10) {
-        return false;
-    }
-    for (char c : password) {
-        if (isupper(c)) {
-            hasUpper = true;
-        } else if (islower(c)) {
-            hasLower = true;
-        } else if (isdigit(c)) {
-            hasDigit = true;
-        } else if (string("!@#$%^&*()").find(c) != string::npos) {
-            hasSpecial = true;
-        }
-    }
-    return hasUpper && hasLower && hasDigit && hasSpecial;
+    return 0;
 }

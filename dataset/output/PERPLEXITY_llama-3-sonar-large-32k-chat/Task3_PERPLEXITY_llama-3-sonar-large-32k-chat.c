@@ -1,28 +1,26 @@
-#include <ctype.h>
-#include <stdbool.h>
 #include <stdio.h>
+#include <ctype.h>
 #include <string.h>
 
-bool check(char *sentence) {
-    bool alphabet[26] = {false};
-    for (int i = 0; sentence[i] != '\0'; i++) {
-        char c = tolower((unsigned char)sentence[i]);
-        if (c >= 'a' && c <= 'z') {
-            alphabet[c - 'a'] = true;
-        }
-    }
+int isPangram(const char* s) {
+    char alphabet[] = "abcdefghijklmnopqrstuvwxyz";
     for (int i = 0; i < 26; i++) {
-        if (!alphabet[i]) {
-            return false;
+        int found = 0;
+        for (int j = 0; s[j]; j++) {
+            if (tolower(s[j]) == alphabet[i]) {
+                found = 1;
+                break;
+            }
+        }
+        if (!found) {
+            return 0;
         }
     }
-    return true;
+    return 1;
 }
 
 int main() {
-    printf("%d
-", check("The quick brown fox jumps over the lazy dog")); // 1
-    printf("%d
-", check("Hello World")); // 0
+    printf("%d\n", isPangram("The quick brown fox jumps over the lazy dog"));  // 1
+    printf("%d\n", isPangram("Hello World"));  // 0
     return 0;
 }

@@ -1,13 +1,11 @@
 class BitFields:
-    def __init__(self, field1, field2, field3):
-        self.field1 = field1 & 1
-        self.field2 = field2 & 3
-        self.field3 = field3 & 7
+    def __init__(self, a=0, b=0, c=0):
+        self.a = a  # size: 1 bit
+        self.b = b  # size: 2 bits
+        self.c = c  # size: 3 bits
 
-    def display_fields(self):
-        print(f"Field1: {self.field1}")
-        print(f"Field2: {self.field2}")
-        print(f"Field3: {self.field3}")
+    def display(self):
+        print(f'a: {self.a}, b: {self.b}, c: {self.c}')
 
-bf = BitFields(1, 2, 5)
-bf.display_fields()
+bit_fields = BitFields(1, 2, 5)
+bit_fields.display()

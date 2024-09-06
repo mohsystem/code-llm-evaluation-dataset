@@ -1,29 +1,24 @@
 #include <iostream>
-#include <unordered_map>
 #include <vector>
+using namespace std;
 
-std::vector<int> twoSum(std::vector<int>& nums, int target) {
-    std::unordered_map<int, int> map;
-    for (int i = 0; i < nums.size(); ++i) {
-        int complement = target - nums[i];
-        if (map.find(complement) != map.end()) {
-            return {map[complement], i};
+vector<int> twoSum(vector<int>& numbers, int target) {
+    for (int i = 0; i < numbers.size(); i++) {
+        for (int j = i + 1; j < numbers.size(); j++) {
+            if (numbers[i] + numbers[j] == target) {
+                return { i, j };
+            }
         }
-        map[nums[i]] = i;
     }
-    throw std::invalid_argument("No two sum solution");
+    return {};
 }
 
 int main() {
-    std::vector<int> nums1 = {1, 2, 3};
-    std::vector<int> result1 = twoSum(nums1, 4);
-    std::cout << "[" << result1[0] << ", " << result1[1] << "]
-";
-
-    std::vector<int> nums2 = {3, 2, 4};
-    std::vector<int> result2 = twoSum(nums2, 6);
-    std::cout << "[" << result2[0] << ", " << result2[1] << "]
-";
+    vector<int> result = twoSum({1, 2, 3}, 4);
+    cout << "{" << result[0] << ", " << result[1] << "}" << endl;
+    
+    result = twoSum({3, 2, 4}, 6);
+    cout << "{" << result[0] << ", " << result[1] << "}" << endl;
 
     return 0;
 }

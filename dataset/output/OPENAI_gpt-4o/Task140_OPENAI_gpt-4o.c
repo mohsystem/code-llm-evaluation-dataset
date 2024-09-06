@@ -1,45 +1,35 @@
 #include <stdio.h>
 
+double calculate(double a, double b, char operator) {
+    switch (operator) {
+        case '+':
+            return a + b;
+        case '-':
+            return a - b;
+        case '*':
+            return a * b;
+        case '/':
+            return a / b;
+        default:
+            printf("Invalid operator\n");
+            return 0;
+    }
+}
+
 int main() {
-    double x, y;
-    char op;
+    double a, b;
+    char operator;
 
     printf("Enter first number: ");
-    scanf("%lf", &x);
+    scanf("%lf", &a);
 
     printf("Enter second number: ");
-    scanf("%lf", &y);
+    scanf("%lf", &b);
 
     printf("Enter operator (+, -, *, /): ");
-    scanf(" %c", &op);
+    scanf(" %c", &operator);  // note the space before %c to consume the newline
 
-    switch (op) {
-        case '+':
-            printf("Result: %lf
-", x + y);
-            break;
-        case '-':
-            printf("Result: %lf
-", x - y);
-            break;
-        case '*':
-            printf("Result: %lf
-", x * y);
-            break;
-        case '/':
-            if (y != 0) {
-                printf("Result: %lf
-", x / y);
-            } else {
-                printf("Cannot divide by zero
-");
-            }
-            break;
-        default:
-            printf("Invalid operator
-");
-            break;
-    }
+    printf("Result: %lf\n", calculate(a, b, operator));
 
     return 0;
 }

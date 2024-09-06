@@ -1,15 +1,11 @@
 
-/**
- * *********************************************************************
- * // This is the MountainArray\'s API interface.
- * // You should not implement it, or speculate about its implementation
- * *********************************************************************
- *
- * int get(MountainArray *, int index);
- * int length(MountainArray *);
- */
+// This is the MountainArray's API interface.
+// You should not implement it, or speculate about its implementation
+struct MountainArray;
+int get(struct MountainArray *, int index);
+int length(struct MountainArray *);
 
-int findInMountainArray(int target, MountainArray* mountainArr) {
+int findInMountainArray(int target, struct MountainArray* mountainArr) {
     int length = length(mountainArr);
     
     // Find peak element

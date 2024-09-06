@@ -1,8 +1,7 @@
 #include <iostream>
 #include <string>
 #include <set>
-#include <ctime>
-#include <cstdlib>
+#include <random>
 
 class Robot {
 private:
@@ -15,14 +14,15 @@ public:
     }
 
     std::string generateName() {
-        std::srand(static_cast<unsigned int>(std::time(nullptr)));
+        std::random_device rd;
+        std::mt19937 mt(rd());
+        std::uniform_int_distribution<int> dist(0, 25);
         while (true) {
             std::string name;
-            name += 'A' + std::rand() % 26;
-            name += 'A' + std::rand() % 26;
-            name += std::to_string(std::rand() % 900 + 100);
-            if (usedNames.find(name) == usedNames.end()) {
-                usedNames.insert(name);
+            name += 'A' + dist(mt);
+            name += 'A' + dist(mt);
+            name += std::to_string(mt() % 1000);
+            if (usedNames.insert(name).second) {
                 return name;
             }
         }
@@ -31,18 +31,6 @@ public:
     void reset() {
         this->name = generateName();
     }
-
-    std::string getName() {
-        return this->name;
-    }
 };
 
 std::set<std::string> Robot::usedNames;
-
-int main() {
-    Robot robot;
-    std::cout << robot.getName() << std::endl;
-    robot.reset();
-    std::cout << robot.getName() << std::endl;
-    return 0;
-}

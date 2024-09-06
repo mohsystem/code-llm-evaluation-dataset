@@ -1,27 +1,31 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 
-void longest(char *s1, char *s2) {
+char *longest(char *s1, char *s2) {
     int count[26] = {0};
-    int i;
-    for (i = 0; i < strlen(s1); i++) {
+    char *result = (char*)malloc(sizeof(char) * 27);
+    int i, j = 0;
+
+    for(i = 0; i < strlen(s1); i++) {
         count[s1[i] - 'a'] = 1;
     }
-    for (i = 0; i < strlen(s2); i++) {
+
+    for(i = 0; i < strlen(s2); i++) {
         count[s2[i] - 'a'] = 1;
     }
-    for (i = 0; i < 26; i++) {
-        if (count[i] == 1) {
-            printf("%c", i + 'a');
+
+    for(i = 0; i < 26; i++) {
+        if(count[i] == 1) {
+            result[j++] = 'a' + i;
         }
     }
-    printf("
-");
+
+    result[j] = '\0';
+    return result;
 }
 
 int main() {
-    longest("xyaabbbccccdefww", "xxxxyyyyabklmopq");
-    longest("abcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrstuvwxyz");
+    printf("%s", longest("xyaabbbccccdefww", "xxxxyyyyabklmopq"));
     return 0;
 }

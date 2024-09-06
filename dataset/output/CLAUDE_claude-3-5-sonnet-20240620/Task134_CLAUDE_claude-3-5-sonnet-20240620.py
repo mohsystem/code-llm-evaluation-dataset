@@ -10,8 +10,7 @@ def save_key(key, filename):
         key_file.write(key)
 
 def load_key(filename):
-    with open(filename, "rb") as key_file:
-        return key_file.read()
+    return open(filename, "rb").read()
 
 def encrypt_message(message, key):
     f = Fernet(key)
@@ -30,7 +29,7 @@ def main():
     else:
         key = load_key(key_file)
     
-    message = "Hello, this is a secret message!"
+    message = "Hello, World!"
     encrypted = encrypt_message(message, key)
     decrypted = decrypt_message(encrypted, key)
     

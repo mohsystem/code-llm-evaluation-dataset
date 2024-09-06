@@ -12,15 +12,14 @@ def binary_search(arr, low, high, x):
     else:
         return -1
 
-arr = [2, 3, 4, 10, 40]
+arr = sorted([12, 3, 4, 10, 1, 90])
 x = 10
-start = time.time()
-result = binary_search(arr, 0, len(arr) - 1, x)
-end = time.time()
-execution_time = (end - start) * 10**9
-with open("execution_time.txt", "w") as text_file:
-    text_file.write("Execution time: {} nanoseconds".format(execution_time))
-if result != -1:
-    print("Element is present at index", str(result))
-else:
-    print("Element is not present in array")
+
+start_time = time.time()
+result = binary_search(arr, 0, len(arr)-1, x)
+end_time = time.time()
+
+execution_time = end_time - start_time
+
+with open('execution_time.txt', 'w') as f:
+    f.write(str(execution_time))

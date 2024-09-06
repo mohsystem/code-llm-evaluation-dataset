@@ -1,6 +1,5 @@
-def build_tower(n_floors):
+def tower_builder(n_floors):
     tower = []
     for i in range(n_floors):
-        floor = " " * (n_floors - i - 1) + "*" * (2 * i + 1) + " " * (n_floors - i - 1)
-        tower.append(floor)
+        tower.append(' ' * (n_floors - i - 1) + '*' * (2 * i + 1) + ' ' * (n_floors - i - 1))
     return tower

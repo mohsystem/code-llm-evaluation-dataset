@@ -1,18 +1,15 @@
 import sys
+import os
 
-def main():
-    if len(sys.argv) < 2:
-        print("Please provide a filename as a command line argument.")
-        return
-
+if len(sys.argv) != 2:
+    print("Usage: python <file.py> <filename>")
+else:
     filename = sys.argv[1]
-
-    try:
-        with open(filename, 'r') as file:
-            for line in file:
-                print(line, end='')
-    except FileNotFoundError:
-        print(f"Invalid or non-existent file: {filename}")
-
-if __name__ == "__main__":
-    main()
+    if not os.path.exists(filename):
+        print("File does not exist")
+    else:
+        try:
+            with open(filename, 'r') as file:
+                print(file.read())
+        except Exception as e:
+            print(f"Error reading file: {e}")

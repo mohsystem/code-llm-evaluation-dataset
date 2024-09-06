@@ -1,17 +1,19 @@
 #include <iostream>
 #include <regex>
 
-bool isValidURL(const std::string &url) {
-    const std::regex urlPattern("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
-    return std::regex_match(url, urlPattern);
+bool validateURL(const std::string& url) {
+    const std::regex pattern("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+    return std::regex_match(url, pattern);
 }
 
 int main() {
-    std::string url = "http://www.example.com";
-    if (isValidURL(url)) {
-        std::cout << "URL is valid" << std::endl;
+    std::string url;
+    std::cout << "Enter a URL: ";
+    std::getline(std::cin, url);
+    if (validateURL(url)) {
+        std::cout << "Valid URL\n";
     } else {
-        std::cout << "URL is not valid" << std::endl;
+        std::cout << "Invalid URL\n";
     }
     return 0;
 }

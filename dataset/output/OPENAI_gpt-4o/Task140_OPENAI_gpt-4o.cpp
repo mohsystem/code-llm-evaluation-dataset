@@ -1,39 +1,37 @@
 #include <iostream>
 
-int main() {
-    double x, y;
-    char op;
+using namespace std;
 
-    std::cout << "Enter first number: ";
-    std::cin >> x;
-
-    std::cout << "Enter second number: ";
-    std::cin >> y;
-
-    std::cout << "Enter operator (+, -, *, /): ";
-    std::cin >> op;
-
-    switch (op) {
+double calculate(double a, double b, char operator) {
+    switch (operator) {
         case '+':
-            std::cout << "Result: " << x + y << std::endl;
-            break;
+            return a + b;
         case '-':
-            std::cout << "Result: " << x - y << std::endl;
-            break;
+            return a - b;
         case '*':
-            std::cout << "Result: " << x * y << std::endl;
-            break;
+            return a * b;
         case '/':
-            if (y != 0) {
-                std::cout << "Result: " << x / y << std::endl;
-            } else {
-                std::cout << "Cannot divide by zero" << std::endl;
-            }
-            break;
+            return a / b;
         default:
-            std::cout << "Invalid operator" << std::endl;
-            break;
+            cout << "Invalid operator" << endl;
+            return 0;
     }
+}
+
+int main() {
+    double a, b;
+    char operator;
+
+    cout << "Enter first number: ";
+    cin >> a;
+
+    cout << "Enter second number: ";
+    cin >> b;
+
+    cout << "Enter operator (+, -, *, /): ";
+    cin >> operator;
+
+    cout << "Result: " << calculate(a, b, operator) << endl;
 
     return 0;
 }

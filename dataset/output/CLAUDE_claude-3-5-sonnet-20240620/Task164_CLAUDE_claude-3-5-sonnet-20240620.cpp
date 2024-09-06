@@ -4,17 +4,15 @@
 #include <algorithm>
 #include <string>
 
-std::vector<std::string> lastNameLenSort(std::vector<std::string> names) {
+std::vector<std::string> lastNameLensort(std::vector<std::string> names) {
     std::sort(names.begin(), names.end(), [](const std::string& a, const std::string& b) {
-        auto aLastSpace = a.find_last_of(\' \');
-        auto bLastSpace = b.find_last_of(\' \');
-        std::string aLastName = a.substr(aLastSpace + 1);
-        std::string bLastName = b.substr(bLastSpace + 1);
+        auto aLast = a.substr(a.find_last_of(' ') + 1);
+        auto bLast = b.substr(b.find_last_of(' ') + 1);
         
-        if (aLastName.length() != bLastName.length()) {
-            return aLastName.length() < bLastName.length();
+        if (aLast.length() != bLast.length()) {
+            return aLast.length() < bLast.length();
         }
-        return aLastName < bLastName;
+        return aLast < bLast;
     });
     return names;
 }
@@ -28,7 +26,7 @@ int main() {
         "Melissa Hoffman"
     };
     
-    auto sorted = lastNameLenSort(names);
+    auto sorted = lastNameLensort(names);
     
     for (const auto& name : sorted) {
         std::cout << name << std::endl;

@@ -1,16 +1,23 @@
+#include <stdio.h>
 #include <stdlib.h>
 
-int *two_sum(int *nums, int numsSize, int target, int *returnSize) {
-  *returnSize = 2;
-  int *result = (int *)malloc(*returnSize * sizeof(int));
-  for (int i = 0; i < numsSize; i++) {
-    for (int j = i + 1; j < numsSize; j++) {
-      if (nums[i] + nums[j] == target) {
-        result[0] = i;
-        result[1] = j;
-        return result;
-      }
+// Structure to represent a tuple of two integers
+typedef struct {
+    int index1;
+    int index2;
+} Tuple;
+
+// Function to find two numbers in an array that add up to a target
+Tuple two_sum(int numbers[], int size, int target) {
+    Tuple result = {-1, -1}; 
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = i + 1; j < size; j++) {
+            if (numbers[i] + numbers[j] == target) {
+                result.index1 = i;
+                result.index2 = j;
+                return result;
+            }
+        }
     }
-  }
-  return NULL;
+    return result;
 }

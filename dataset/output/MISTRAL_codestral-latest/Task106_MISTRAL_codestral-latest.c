@@ -1,34 +1,50 @@
-#include <gmp.h>
+// C code for RSA encryption and decryption is quite lengthy and requires external libraries.
+// This example uses OpenSSL library for RSA implementation.
+// Please make sure to include the OpenSSL library in your project.
 
-void rsa_init(mpz_t p, mpz_t q, mpz_t N, mpz_t phi, mpz_t e, mpz_t d) {
-    gmp_randstate_t state;
-    gmp_randinit_default(state);
+// The C language does not have built-in support for strings, so working with encrypted data can be more complex.
+// This example only demonstrates the key generation and encryption/decryption process.
+// It does not include the conversion of data to/from strings.
 
-    mpz_urandomb(p, state, 1024);
-    mpz_nextprime(p, p);
-    mpz_urandomb(q, state, 1024);
-    mpz_nextprime(q, q);
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-    mpz_mul(N, p, q);
-    mpz_sub_ui(p, p, 1);
-    mpz_sub_ui(q, q, 1);
-    mpz_mul(phi, p, q);
+int main() {
+    // Generate a new RSA key pair
+    RSA* rsa = RSA_new();
+    BIGNUM* e = BN_new();
+    BN_set_word(e, RSA_F4);
+    RSA_generate_key_ex(rsa, 2048, e, nullptr);
 
-    mpz_urandomb(e, state, 1024 / 2);
-    mpz_nextprime(e, e);
-    while (mpz_gcd_ui(phi, mpz_get_ui(e)) > 1 && mpz_cmp(e, phi) < 0) {
-        mpz_add_ui(e, e, 1);
-    }
+    // Export the public key
+    BIO* bio = BIO_new(BIO_s_mem());
+    PEM_write_bio_RSA_PUBKEY(bio, rsa);
+    char* publicKey;
+    size_t publicKeyLength;
+    BIO_get_mem_data(bio, &publicKey);
+    BIO_get_mem_data(bio, &publicKeyLength);
 
-    mpz_invert(d, e, phi);
+    // Data to be encrypted
+    unsigned char data[] = "Hello, World!";
+    size_t dataLength = sizeof(data) - 1;
 
-    gmp_randclear(state);
-}
+    // Encrypt the data
+    unsigned char* encryptedData = malloc(RSA_size(rsa));
+    RSA_public_encrypt(dataLength, data, encryptedData, rsa, RSA_PKCS1_PADDING);
 
-void rsa_encrypt(mpz_t encrypted, mpz_t message, mpz_t e, mpz_t N) {
-    mpz_powm(encrypted, message, e, N);
-}
+    // Decrypt the data
+    unsigned char* decryptedData = malloc(RSA_size(rsa));
+    RSA_private_decrypt(RSA_size(rsa), encryptedData, decryptedData, rsa, RSA_PKCS1_PADDING);
 
-void rsa_decrypt(mpz_t decrypted, mpz_t encrypted, mpz_t d, mpz_t N) {
-    mpz_powm(decrypted, encrypted, d, N);
+    // Clean up
+    RSA_free(rsa);
+    BN_free(e);
+    BIO_free(bio);
+    free(encryptedData);
+    free(decryptedData);
+
+    return 0;
 }

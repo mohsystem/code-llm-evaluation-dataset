@@ -8,14 +8,16 @@ db = SQLAlchemy(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # Add other fields as needed
+    name = db.Column(db.String(50))
+    email = db.Column(db.String(120))
 
-@app.route('/api/users', methods=['POST'])
-def create_user():
-    user = User(**request.json)
+@app.route('/user', methods=['POST'])
+def add_user():
+    user = User(name=request.json['name'], email=request.json['email'])
     db.session.add(user)
     db.session.commit()
-    return {'id': user.id}, 201
+    return 'User added successfully'
 
 if __name__ == '__main__':
+    db.create_all()
     app.run(debug=True)

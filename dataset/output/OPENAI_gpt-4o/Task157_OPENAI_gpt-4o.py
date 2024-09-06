@@ -1,8 +1,12 @@
 import ctypes
 
-# Allocate memory for an integer 
-my_var = ctypes.c_int(42)
-print(f"Python: Value = {my_var.value}")
+def main():
+    # Allocate memory for an integer
+    int_ptr = ctypes.pointer(ctypes.c_int(10))
+    print(f"Value at allocated memory: {int_ptr.contents.value}")
+    
+    # Deallocate memory
+    del int_ptr
 
-# Deallocate memory
-del my_var
+if __name__ == "__main__":
+    main()

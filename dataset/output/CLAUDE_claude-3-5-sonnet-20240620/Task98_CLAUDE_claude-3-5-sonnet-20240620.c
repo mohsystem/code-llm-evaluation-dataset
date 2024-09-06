@@ -1,23 +1,26 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define MAX_INPUT_LENGTH 100
 
 int main() {
-    char input[100];
+    char userInput[MAX_INPUT_LENGTH];
     char *endptr;
     
     printf("Enter a number: ");
-    fgets(input, sizeof(input), stdin);
+    fgets(userInput, sizeof(userInput), stdin);
     
-    long number = strtol(input, &endptr, 10);
+    // Remove newline character if present
+    userInput[strcspn(userInput, "\\n")] = 0;
     
-    if (*endptr != \'\
-\' && *endptr != \'\\0\') {
-        printf("Invalid input. Not a valid integer.\
-");
+    long number = strtol(userInput, &endptr, 10);
+    
+    if (*endptr == '\\0') {
+        printf("Successfully converted to integer: %ld\\n", number);
     } else {
-        printf("Converted integer: %ld\
-", number);
+        printf("Invalid input. Please enter a valid integer.\\n");
     }
     
     return 0;

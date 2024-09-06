@@ -1,16 +1,13 @@
-#include <string>
 #include <vector>
-
+#include <string>
 using namespace std;
-
-string oddOrEven(vector<int> array) {
-    int sum = 0;
-    for (int i = 0; i < array.size(); i++) {
-        sum += array[i];
+class Solution {
+public:
+    string oddOrEven(vector<int> arr) {
+      int sum = 0;
+      for(int i : arr) {
+        sum += i;
+      }
+      return (sum % 2 == 0) ? "even" : "odd";
     }
-    if (sum % 2 == 0) {
-        return "even";
-    } else {
-        return "odd";
-    }
-}
+};

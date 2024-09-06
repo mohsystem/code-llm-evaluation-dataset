@@ -1,34 +1,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct TreeNode {
-    int val;
-    struct TreeNode *left, *right;
-} TreeNode;
+struct Node {
+    int key;
+    struct Node* left, * right;
+};
 
-TreeNode* createNode(int val) {
-    TreeNode* newNode = (TreeNode*)malloc(sizeof(TreeNode));
-    newNode->val = val;
-    newNode->left = newNode->right = NULL;
-    return newNode;
+struct Node* newNode(int item) {
+    struct Node* temp = (struct Node*)malloc(sizeof(struct Node));
+    temp->key = item;
+    temp->left = temp->right = NULL;
+    return temp;
 }
 
-void preorderTraversal(TreeNode* root) {
-    if (root) {
-        printf("%d ", root->val);
-        preorderTraversal(root->left);
-        preorderTraversal(root->right);
-    }
+void inorder(struct Node* node) {
+    if (node == NULL)
+        return;
+    
+    inorder(node->left);
+    printf("%d ", node->key);
+    inorder(node->right);
 }
 
 int main() {
-    TreeNode* root = createNode(1);
-    root->left = createNode(2);
-    root->right = createNode(3);
-    root->left->left = createNode(4);
-    root->left->right = createNode(5);
+    struct Node* root = newNode(1);
+    root->left = newNode(2);
+    root->right = newNode(3);
+    root->left->left = newNode(4);
+    root->left->right = newNode(5);
 
-    preorderTraversal(root);  // Output: 1 2 4 5 3
+    printf("Inorder traversal of binary tree is ");
+    inorder(root);
 
     return 0;
 }

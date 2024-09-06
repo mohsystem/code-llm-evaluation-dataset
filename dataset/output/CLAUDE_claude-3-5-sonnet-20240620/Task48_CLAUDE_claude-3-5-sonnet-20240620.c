@@ -5,12 +5,11 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <pthread.h>
 
 #define MAX_CLIENTS 10
 #define BUFFER_SIZE 1024
-#define PORT 5000
+#define PORT 5555
 
 int clients[MAX_CLIENTS];
 int client_count = 0;
@@ -30,130 +29,84 @@ void broadcast(char *message, int sender_sd) {
 void *handle_client(void *arg) {
     int client_sd = *(int*)arg;
     char buffer[BUFFER_SIZE];
-    
+
     while (1) {
         int bytes_received = recv(client_sd, buffer, BUFFER_SIZE, 0);
         if (bytes_received <= 0) {
-            pthread_mutex_lock(&clients_mutex);
-            for (int i = 0; i < client_count; i++) {
-                if (clients[i] == client_sd) {
-                    for (int j = i; j < client_count - 1; j++) {
-                        clients[j] = clients[j+1];
-                    }
-                    client_count--;
-                    break;
-                }
-            }
-            pthread_mutex_unlock(&clients_mutex);
-            close(client_sd);
-            free(arg);
-            return NULL;
+            break;
         }
-        buffer[bytes_received] = \'\\0\';
+        buffer[bytes_received] = '\\0';
+        printf("Received: %s\\n", buffer);
         broadcast(buffer, client_sd);
     }
+
+    pthread_mutex_lock(&clients_mutex);
+    for (int i = 0; i < client_count; i++) {
+        if (clients[i] == client_sd) {
+            for (int j = i; j < client_count - 1; j++) {
+                clients[j] = clients[j+1];
+            }
+            client_count--;
+            break;
+        }
+    }
+    pthread_mutex_unlock(&clients_mutex);
+
+    close(client_sd);
+    free(arg);
+    return NULL;
 }
 
 int main() {
     int server_sd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_sd == -1) {
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
     struct sockaddr_in server_addr;
-    
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(PORT);
-    
-    bind(server_sd, (struct sockaddr*)&server_addr, sizeof(server_addr));
-    listen(server_sd, 10);
-    
-    printf("Chat Server is running...\
-");
-    
+
+    if (bind(server_sd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
+        perror("Bind failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (listen(server_sd, 5) == -1) {
+        perror("Listen failed");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Server is listening on port %d\\n", PORT);
+
     while (1) {
+        struct sockaddr_in client_addr;
+        socklen_t client_len = sizeof(client_addr);
         int *client_sd = malloc(sizeof(int));
-        *client_sd = accept(server_sd, NULL, NULL);
-        
+        *client_sd = accept(server_sd, (struct sockaddr*)&client_addr, &client_len);
+
+        if (*client_sd == -1) {
+            perror("Accept failed");
+            free(client_sd);
+            continue;
+        }
+
         pthread_mutex_lock(&clients_mutex);
         if (client_count < MAX_CLIENTS) {
             clients[client_count++] = *client_sd;
             pthread_t thread;
-            pthread_create(&thread, NULL, handle_client, client_sd);
+            pthread_create(&thread, NULL, handle_client, (void*)client_sd);
             pthread_detach(thread);
         } else {
-            printf("Max clients reached. Rejecting new connection.\
-");
+            printf("Max clients reached. Connection rejected.\\n");
             close(*client_sd);
             free(client_sd);
         }
         pthread_mutex_unlock(&clients_mutex);
     }
-    
-    return 0;
-}
 
-// Chat Client
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <pthread.h>
-
-#define BUFFER_SIZE 1024
-#define SERVER_IP "127.0.0.1"
-#define SERVER_PORT 5000
-
-void *receive_messages(void *socket_desc) {
-    int sock = *(int*)socket_desc;
-    char buffer[BUFFER_SIZE];
-    int read_size;
-    
-    while ((read_size = recv(sock, buffer, BUFFER_SIZE, 0)) > 0) {
-        buffer[read_size] = \'\\0\';
-        printf("%s", buffer);
-    }
-    
-    if (read_size == 0) {
-        printf("Server disconnected\
-");
-    } else if (read_size == -1) {
-        perror("recv failed");
-    }
-    
-    return NULL;
-}
-
-int main() {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in server_addr;
-    
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
-    server_addr.sin_port = htons(SERVER_PORT);
-    
-    if (connect(sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        perror("Connect failed");
-        return 1;
-    }
-    
-    printf("Connected to server\
-");
-    
-    pthread_t recv_thread;
-    if (pthread_create(&recv_thread, NULL, receive_messages, (void*)&sock) < 0) {
-        perror("Could not create thread");
-        return 1;
-    }
-    
-    char message[BUFFER_SIZE];
-    while (fgets(message, BUFFER_SIZE, stdin) != NULL) {
-        if (send(sock, message, strlen(message), 0) < 0) {
-            perror("Send failed");
-            return 1;
-        }
-    }
-    
-    close(sock);
+    close(server_sd);
     return 0;
 }

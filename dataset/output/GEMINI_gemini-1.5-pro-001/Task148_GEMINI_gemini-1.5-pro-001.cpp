@@ -15,9 +15,9 @@ public:
 
     T pop() {
         if (!is_empty()) {
-            T lastItem = items.back();
+            T item = items.back();
             items.pop_back();
-            return lastItem;
+            return item;
         } else {
             throw runtime_error("Stack is empty");
         }

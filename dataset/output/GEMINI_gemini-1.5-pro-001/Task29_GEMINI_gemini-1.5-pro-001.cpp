@@ -1,12 +1,14 @@
 #include <vector>
+#include <unordered_map>
 
 std::vector<int> two_sum(const std::vector<int>& numbers, int target) {
-  for (size_t i = 0; i < numbers.size(); i++) {
-    for (size_t j = i + 1; j < numbers.size(); j++) {
-      if (numbers[i] + numbers[j] == target) {
-        return {static_cast<int>(i), static_cast<int>(j)};
-      }
+    std::unordered_map<int, int> nums;
+    for (int i = 0; i < numbers.size(); ++i) {
+        int complement = target - numbers[i];
+        if (nums.count(complement)) {
+            return {nums[complement], i};
+        }
+        nums[numbers[i]] = i;
     }
-  }
-  return {};
+    return {}; 
 }

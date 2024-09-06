@@ -1,17 +1,18 @@
 #include <iostream>
 #include <cstdlib>
 #include <csignal>
-#include <sys/types.h>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 2) {
-        std::cout << "Usage: " << argv[0] << " <PID>" << std::endl;
+        std::cout << "Usage: terminate_process <PID>" << std::endl;
         return 1;
     }
-    pid_t pid = std::atoi(argv[1]);
-    if (std::kill(pid, SIGTERM) == -1) {
-        std::perror("kill");
+
+    int pid = std::atoi(argv[1]);
+    if (kill(pid, SIGKILL) == -1) {
+        std::cout << "Error: unable to terminate process" << std::endl;
         return 1;
     }
+
     return 0;
 }

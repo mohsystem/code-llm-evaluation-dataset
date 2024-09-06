@@ -2,10 +2,10 @@
 #include <iostream>
 #include <unordered_map>
 #include <chrono>
-#include <thread>
 #include <ctime>
-#include <iomanip>
-#include <sstream>
+#include <string>
+#include <algorithm>
+#include <random>
 
 class Session {
 public:
@@ -22,12 +22,17 @@ public:
 
 private:
     std::string generateUUID() {
-        static int counter = 0;
-        std::stringstream ss;
-        auto now = std::chrono::system_clock::now();
-        auto now_c = std::chrono::system_clock::to_time_t(now);
-        ss << std::put_time(std::localtime(&now_c), "%Y%m%d%H%M%S") << "-" << ++counter;
-        return ss.str();
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        static std::uniform_int_distribution<> dis(0, 15);
+        static const char* digits = "0123456789abcdef";
+
+        std::string uuid(36, '-');
+        for (int i = 0; i < 36; i++) {
+            if (i == 8 || i == 13 || i == 18 || i == 23) continue;
+            uuid[i] = digits[dis(gen)];
+        }
+        return uuid;
     }
 };
 
@@ -49,7 +54,7 @@ public:
         auto it = sessions.find(sessionId);
         if (it != sessions.end()) {
             auto now = std::chrono::system_clock::now();
-            if (std::chrono::duration_cast<std::chrono::seconds>(now - it->second.lastActivity) > sessionTimeout) {
+            if (now - it->second.lastActivity > sessionTimeout) {
                 destroySession(sessionId);
                 return nullptr;
             }
@@ -66,7 +71,7 @@ public:
     void cleanupExpiredSessions() {
         auto now = std::chrono::system_clock::now();
         for (auto it = sessions.begin(); it != sessions.end();) {
-            if (std::chrono::duration_cast<std::chrono::seconds>(now - it->second.lastActivity) > sessionTimeout) {
+            if (now - it->second.lastActivity > sessionTimeout) {
                 it = sessions.erase(it);
             } else {
                 ++it;

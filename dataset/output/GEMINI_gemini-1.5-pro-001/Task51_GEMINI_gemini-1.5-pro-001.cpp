@@ -1,23 +1,29 @@
 #include <iostream>
 #include <string>
 
-std::string encrypt(const std::string& message);
+using namespace std;
 
-int main() {
-    std::string message;
-    std::cout << "Enter a string to encrypt: ";
-    std::getline(std::cin, message);
-
-    std::string encryptedMessage = encrypt(message);
-    std::cout << "Encrypted message: " << encryptedMessage << std::endl;
-
-    return 0;
+string encrypt(string text, int key) {
+    string result = "";
+    for (char ch : text) {
+        if (isalpha(ch)) {
+            char start = islower(ch) ? 'a' : 'A';
+            char shiftedChar = (char)((ch - start + key) % 26 + start);
+            result += shiftedChar;
+        } else if (isdigit(ch)) {
+            char shiftedChar = (char)(((ch - '0' + key) % 10) + '0');
+            result += shiftedChar;
+        } else {
+            result += ch;
+        }
+    }
+    return result;
 }
 
-std::string encrypt(const std::string& message) {
-    std::string encrypted = "";
-    for (char c : message) {
-        encrypted += (char)(c + 3); // Simple Caesar cipher with a shift of 3
-    }
-    return encrypted;
+int main() {
+    string inputString = "Hello, world 123!";
+    int encryptionKey = 3;
+    string encryptedString = encrypt(inputString, encryptionKey);
+    cout << "Encrypted: " << encryptedString << endl;
+    return 0;
 }

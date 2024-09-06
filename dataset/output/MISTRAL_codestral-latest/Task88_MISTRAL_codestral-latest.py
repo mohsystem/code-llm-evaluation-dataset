@@ -1,13 +1,23 @@
-# Python
 import os
 import random
 import string
+import tempfile
 
-def generate_random_string(length):
-    letters = string.ascii_letters + string.digits
-    return ''.join(random.choice(letters) for i in range(length))
+def create_temp_file():
+    # Create a temporary file
+    temp = tempfile.NamedTemporaryFile(delete=False, mode='w', encoding='utf-8')
 
-random_string = generate_random_string(10)
-with open("temp.txt", "w", encoding="utf-8") as temp_file:
-    temp_file.write(random_string)
-print(os.path.abspath("temp.txt"))
+    # Generate a random string
+    random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+
+    # Convert the string to Unicode
+    unicode_string = ''.join([format(ord(c), '04x') for c in random_string])
+
+    # Write the Unicode string to the file
+    temp.write(unicode_string)
+    temp.close()
+
+    # Return the path of the temporary file
+    return temp.name
+
+print(create_temp_file())

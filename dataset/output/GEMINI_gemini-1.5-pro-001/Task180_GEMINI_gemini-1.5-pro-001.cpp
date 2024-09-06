@@ -3,34 +3,35 @@
 
 using namespace std;
 
-vector<int> reparent_tree(const vector<int>& parent, int new_root) {
-  int n = parent.size();
-  vector<vector<int>> children(n);
-  for (int i = 0; i < n; ++i) {
-    if (parent[i] != -1) {
-      children[parent[i]].push_back(i);
-    }
-  }
-  vector<int> new_parent(n, -1);
-  function<void(int, int)> dfs = [&](int node, int prev) {
-    new_parent[node] = prev;
-    for (int child : children[node]) {
-      if (child != prev) {
-        dfs(child, node);
+vector<int> reparentTree(const vector<int>& parentOf, int root) {
+  int n = parentOf.size();
+  vector<int> newParentOf(n, -1);
+  vector<bool> visited(n, false);
+
+  function<void(int)> dfs = [&](int node) {
+    visited[node] = true;
+    for (int child = 0; child < n; ++child) {
+      if (parentOf[child] == node && !visited[child]) {
+        newParentOf[child] = node;
+        dfs(child);
       }
     }
+    if (node != root) {
+      newParentOf[node] = parentOf[node];
+    }
   };
-  dfs(new_root, -1);
-  return new_parent;
+
+  dfs(root);
+  return newParentOf;
 }
 
 int main() {
-  vector<int> parent = {0, 0, 0, 1, 1, 2, 2};
-  int new_root = 2;
-  vector<int> new_parent = reparent_tree(parent, new_root);
-  for (int p : new_parent) {
+  vector<int> parentOf = {-1, 0, 0, 0, 1, 1, 2, 2, 3, 3};
+  int newRoot = 6;
+  vector<int> newParentOf = reparentTree(parentOf, newRoot);
+  for (int p : newParentOf) {
     cout << p << " ";
   }
-  cout << endl;
+  cout << endl;  // Output: 2 0 6 0 1 1 -1 2 3 3
   return 0;
 }

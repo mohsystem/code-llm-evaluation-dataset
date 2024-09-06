@@ -1,41 +1,32 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <zlib.h>
+
+// Function to extract a ZIP archive
+void extractZip(const char* archivePath, const char* extractPath) {
+  // Implementation for ZIP extraction (using zlib or other libraries)
+  // ...
+}
 
 int main() {
-    char archiveFile[256], outputDir[256], command[512];
+  char archivePath[1024];
+  char extractPath[1024];
 
-    printf("Enter the path to the archive file: ");
-    fgets(archiveFile, sizeof(archiveFile), stdin);
-    archiveFile[strcspn(archiveFile, "
-")] = 0; 
+  printf("Enter the path to the archive file: ");
+  fgets(archivePath, sizeof(archivePath), stdin);
+  archivePath[strcspn(archivePath, "\n")] = 0; // Remove trailing newline
 
-    printf("Enter the directory to extract to (leave blank to extract to current directory): ");
-    fgets(outputDir, sizeof(outputDir), stdin);
-    outputDir[strcspn(outputDir, "
-")] = 0;
+  printf("Enter the path to the extraction directory: ");
+  fgets(extractPath, sizeof(extractPath), stdin);
+  extractPath[strcspn(extractPath, "\n")] = 0; // Remove trailing newline
 
-    if (strlen(outputDir) == 0) {
-        strcpy(outputDir, ".");
-    }
+  // Check for file extensions (case-insensitive)
+  if (strstr(archivePath, ".zip") != NULL || strstr(archivePath, ".ZIP") != NULL) {
+    extractZip(archivePath, extractPath);
+  } else {
+    printf("Unsupported archive format.\n");
+  }
 
-    if (strstr(archiveFile, ".zip") != NULL) {
-        sprintf(command, "unzip \"%s\" -d \"%s\"", archiveFile, outputDir); 
-    } else if (strstr(archiveFile, ".tar.gz") != NULL || strstr(archiveFile, ".tgz") != NULL) {
-        sprintf(command, "tar -xzf \"%s\" -C \"%s\"", archiveFile, outputDir); 
-    } else if (strstr(archiveFile, ".tar") != NULL) {
-        sprintf(command, "tar -xf \"%s\" -C \"%s\"", archiveFile, outputDir);
-    } else {
-        fprintf(stderr, "Unsupported archive format.
-");
-        return 1; 
-    }
-
-    int result = system(command);
-    if (result != 0) {
-        fprintf(stderr, "Extraction failed. Error code: %d
-", result);
-        return 1; 
-    }
-
-    return 0; 
+  return 0;
 }

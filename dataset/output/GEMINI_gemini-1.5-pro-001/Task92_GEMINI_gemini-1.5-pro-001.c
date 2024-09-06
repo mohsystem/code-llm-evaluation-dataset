@@ -2,37 +2,35 @@
 #include <pthread.h>
 
 int currentCounter = 0;
-int maxCounter;
-pthread_mutex_t mutex;
+const int maxCounter = 5;
+pthread_mutex_t mtx;
 
-void *accessResource(void *arg) {
-    int threadId = *((int *)arg);
+void* access_resource(void* thread_id) {
     if (currentCounter <= maxCounter) {
-        pthread_mutex_lock(&mutex);
-        if (currentCounter <= maxCounter) {
+        pthread_mutex_lock(&mtx);
+        if (currentCounter < maxCounter) {
             currentCounter++;
-            printf("Thread %d is accessing currentCounter: %d
-", threadId, currentCounter);
+            printf("Thread %d is accessing currentCounter: %d\n", *((int*)thread_id), currentCounter);
         }
-        pthread_mutex_unlock(&mutex);
+        pthread_mutex_unlock(&mtx);
     }
     pthread_exit(NULL);
 }
 
 int main() {
-    maxCounter = 5;
-    pthread_t thread1, thread2;
-    int threadId1 = 1, threadId2 = 2;
+    pthread_t threads[10];
+    int thread_ids[10];
+    pthread_mutex_init(&mtx, NULL);
 
-    pthread_mutex_init(&mutex, NULL);
+    for (int i = 0; i < 10; i++) {
+        thread_ids[i] = i;
+        pthread_create(&threads[i], NULL, access_resource, (void*)&thread_ids[i]);
+    }
 
-    pthread_create(&thread1, NULL, accessResource, (void *)&threadId1);
-    pthread_create(&thread2, NULL, accessResource, (void *)&threadId2);
+    for (int i = 0; i < 10; i++) {
+        pthread_join(threads[i], NULL);
+    }
 
-    pthread_join(thread1, NULL);
-    pthread_join(thread2, NULL);
-
-    pthread_mutex_destroy(&mutex);
-
+    pthread_mutex_destroy(&mtx);
     return 0;
 }

@@ -1,3 +1,13 @@
+#include <stdio.h>
+
 int getSum(int a, int b) {
-  return (a == b) ? a : (a + b) * (abs(a - b) + 1) / 2;
+    if (a == b) {
+        return a;
+    } else {
+        int sum = 0;
+        for (int i = (a < b ? a : b); i <= (a > b ? a : b); i++) {
+            sum += i;
+        }
+        return sum;
+    }
 }

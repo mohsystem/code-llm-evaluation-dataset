@@ -2,24 +2,24 @@
 #include <stdlib.h>
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <file_path>
-", argv[0]);
-        return 1;
-    }
+  if (argc < 2) {
+    fprintf(stderr, "Error: Please provide the file path as a command-line argument.\n");
+    return 1;
+  }
 
-    FILE *file = fopen(argv[1], "r");
-    if (file == NULL) {
-        fprintf(stderr, "Error opening file: %s
-", argv[1]);
-        return 1;
-    }
+  char *file_path = argv[1];
+  FILE *fp = fopen(file_path, "r");
 
-    int c;
-    while ((c = fgetc(file)) != EOF) {
-        putchar(c);
-    }
+  if (fp == NULL) {
+    fprintf(stderr, "Error: Unable to open file: %s\n", file_path);
+    return 1;
+  }
 
-    fclose(file);
-    return 0;
+  int c;
+  while ((c = fgetc(fp)) != EOF) {
+    putchar(c);
+  }
+
+  fclose(fp);
+  return 0;
 }

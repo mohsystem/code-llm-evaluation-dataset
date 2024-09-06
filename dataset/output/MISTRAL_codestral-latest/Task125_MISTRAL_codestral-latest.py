@@ -9,6 +9,6 @@ resources = {
 user_input = input('Enter a key to access a resource: ')
 
 if user_input in resources:
-    print('Access granted to:', resources[user_input])
+    print(f'Access granted to: {resources[user_input]}')
 else:
-    print('Access denied.')
+    print('Access denied. Invalid key.')

@@ -4,53 +4,55 @@
 
 #define MAX_LINE_LENGTH 1024
 
-// Structure to represent a key-value pair
-struct KeyValue {
+// Structure to store key-value pairs
+struct KeyValuePair {
     char key[MAX_LINE_LENGTH];
     char value[MAX_LINE_LENGTH];
 };
 
-// Function to compare key-value pairs based on keys
-int compareKeyValues(const void* a, const void* b) {
-    return strcmp(((struct KeyValue*)a)->key, ((struct KeyValue*)b)->key);
+// Comparison function for qsort, comparing keys
+int compareByKey(const void* a, const void* b) {
+    return strcmp(((struct KeyValuePair*)a)->key, ((struct KeyValuePair*)b)->key);
 }
 
 int main(int argc, char* argv[]) {
-    // Check if filename argument is provided
-    if (argc < 2) {
-        fprintf(stderr, "Usage: %s <filename>
-", argv[0]);
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
         return 1;
     }
 
-    char* filename = argv[1];
-    FILE* fp = fopen(filename, "r");
-
-    if (fp == NULL) {
-        fprintf(stderr, "Error opening file: %s
-", filename);
-        return 1;
-    }
-
-    struct KeyValue keyValues[MAX_LINE_LENGTH];
+    char* filePath = argv[1];
+    struct KeyValuePair keyValuePairs[MAX_LINE_LENGTH];
     int count = 0;
-    char line[MAX_LINE_LENGTH];
 
     // Read key-value pairs from the file
-    while (fgets(line, sizeof(line), fp) != NULL) {
-        // Assuming key and value are separated by a space " "
-        sscanf(line, "%s %s", keyValues[count].key, keyValues[count].value);
-        count++;
+    FILE* file = fopen(filePath, "r");
+    if (file == NULL) {
+        fprintf(stderr, "Error opening file: %s\n", filePath);
+        return 1;
     }
-    fclose(fp);
+
+    char line[MAX_LINE_LENGTH];
+    while (fgets(line, sizeof(line), file) != NULL) {
+        char* token = strtok(line, " ");
+        if (token != NULL) {
+            strcpy(keyValuePairs[count].key, token);
+
+            token = strtok(NULL, "\n");
+            if (token != NULL) {
+                strcpy(keyValuePairs[count].value, token);
+                count++;
+            }
+        }
+    }
+    fclose(file);
 
     // Sort the key-value pairs based on keys
-    qsort(keyValues, count, sizeof(struct KeyValue), compareKeyValues);
+    qsort(keyValuePairs, count, sizeof(struct KeyValuePair), compareByKey);
 
-    // Print sorted key-value pairs
+    // Print the sorted key-value pairs
     for (int i = 0; i < count; i++) {
-        printf("%s %s
-", keyValues[i].key, keyValues[i].value);
+        printf("%s %s\n", keyValuePairs[i].key, keyValuePairs[i].value);
     }
 
     return 0;

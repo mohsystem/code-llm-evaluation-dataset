@@ -4,6 +4,7 @@
 #include <queue>
 #include <limits>
 #include <unordered_map>
+#include <string>
 
 using namespace std;
 
@@ -50,11 +51,10 @@ int main() {
     };
 
     string start_node = "A";
-    auto shortest_paths = dijkstra(graph, start_node);
+    unordered_map<string, int> shortest_paths = dijkstra(graph, start_node);
 
-    cout << "Shortest paths from " << start_node << endl;
     for (const auto& path : shortest_paths) {
-        cout << "To " << path.first << ": " << path.second << endl;
+        cout << path.first << ": " << path.second << endl;
     }
 
     return 0;

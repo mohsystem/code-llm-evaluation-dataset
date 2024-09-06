@@ -1,10 +1,8 @@
-def pos_neg_sort(arr):
+def posNegSort(arr):
     pos = sorted([x for x in arr if x > 0])
-    neg = [x for x in arr if x <= 0]
-    result = []
-    for num in arr:
-        if num > 0:
-            result.append(pos.pop(0))
-        else:
-            result.append(num)
-    return result
+    pos_i = 0
+    for i in range(len(arr)):
+        if arr[i] > 0:
+            arr[i] = pos[pos_i]
+            pos_i += 1
+    return arr

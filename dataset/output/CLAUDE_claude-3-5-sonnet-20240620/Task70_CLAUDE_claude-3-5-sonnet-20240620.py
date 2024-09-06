@@ -1,17 +1,19 @@
 
 import sys
 
-def read_file_content(file_path):
+def read_file(file_path):
     try:
-        with open(file_path, \'r\') as file:
+        with open(file_path, 'r') as file:
             content = file.read()
             print(content)
-    except IOError as e:
-        print(f"Error reading file: {e}")
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+    except IOError:
+        print(f"Error: Unable to read file '{file_path}'.")
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print(f"Usage: python {sys.argv[0]} <file_path>")
+        print("Usage: python script.py <file_path>")
     else:
         file_path = sys.argv[1]
-        read_file_content(file_path)
+        read_file(file_path)

@@ -1,4 +1,4 @@
 import uuid
-
-sessionId = uuid.uuid4()
-print("Session ID:", sessionId)
+def generate_session_id():
+    return str(uuid.uuid4())
+print(generate_session_id())

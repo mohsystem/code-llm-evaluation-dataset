@@ -29,17 +29,13 @@ class HashTable:
                 return item[1]
         return None
 
-def main():
+# Example usage
+if __name__ == "__main__":
     ht = HashTable(10)
     ht.insert("apple", 5)
     ht.insert("banana", 7)
     ht.insert("orange", 3)
 
-    print(ht.search("apple"))  # Output: 5
-    print(ht.search("grape"))  # Output: None
-
+    print(ht.search("banana"))  # Output: 7
     ht.delete("banana")
     print(ht.search("banana"))  # Output: None
-
-if __name__ == "__main__":
-    main()

@@ -4,68 +4,36 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
-int main(int argc, char **argv) {
-    if (argc != 3) {
-        fprintf(stderr, "Usage: %s <hostname> <port>
-", argv[0]);
-        return 1;
-    }
-
-    const char *hostname = argv[1];
-    int port = atoi(argv[2]);
-
-    SSL_CTX *ctx;
-    SSL *ssl;
-    BIO *bio;
-
-    SSL_library_init();
+int main() {
+    OpenSSL_add_all_algorithms();
     SSL_load_error_strings();
-    ctx = SSL_CTX_new(TLS_client_method());
+
+    SSL_CTX *ctx = SSL_CTX_new(TLS_client_method());
     if (!ctx) {
-        fprintf(stderr, "Error creating SSL context
-");
+        fprintf(stderr, "Error creating SSL context\n");
         return 1;
     }
 
-    ssl = SSL_new(ctx);
-    if (!ssl) {
-        fprintf(stderr, "Error creating SSL object
-");
-        SSL_CTX_free(ctx);
-        return 1;
-    }
-
-    bio = BIO_new_connect(hostname);
-    if (!bio) {
-        fprintf(stderr, "Error creating BIO object
-");
-        SSL_free(ssl);
-        SSL_CTX_free(ctx);
-        return 1;
-    }
-
-    BIO_set_conn_port(bio, port);
+    SSL *ssl = SSL_new(ctx);
+    BIO *bio = BIO_new_ssl_connect(ctx);
+    BIO_set_conn_hostname(bio, "www.google.com:443");
     SSL_set_bio(ssl, bio, bio);
 
     if (SSL_connect(ssl) <= 0) {
-        fprintf(stderr, "Error establishing SSL connection
-");
+        fprintf(stderr, "Error establishing SSL connection\n");
         ERR_print_errors_fp(stderr);
         SSL_free(ssl);
         SSL_CTX_free(ctx);
-        BIO_free_all(bio);
         return 1;
     }
 
-    printf("Secure connection established:
-");
-    printf("SSL Session ID: %s
-", SSL_SESSION_get_id(SSL_get_session(ssl)));
+    printf("Connected to %s\n", SSL_get_peer_certificate(ssl)->subject_name);
+    printf("SSL/TLS version: %s\n", SSL_get_version(ssl));
+    printf("Cipher suite: %s\n", SSL_get_cipher(ssl));
 
     SSL_shutdown(ssl);
     SSL_free(ssl);
     SSL_CTX_free(ctx);
-    BIO_free_all(bio);
 
     return 0;
 }

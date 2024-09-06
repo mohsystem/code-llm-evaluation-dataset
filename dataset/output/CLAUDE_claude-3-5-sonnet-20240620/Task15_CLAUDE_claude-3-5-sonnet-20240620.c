@@ -5,30 +5,37 @@
 
 char** towerBuilder(int nFloors) {
     char** tower = (char**)malloc(nFloors * sizeof(char*));
-    int width = 2 * nFloors - 1;
-    
     for (int i = 0; i < nFloors; i++) {
-        tower[i] = (char*)malloc((width + 1) * sizeof(char));
-        memset(tower[i], \' \', width);
-        for (int j = nFloors - i - 1; j < nFloors + i; j++) {
-            tower[i][j] = \'*\';
-        }
-        tower[i][width] = \'\\0\';
+        tower[i] = (char*)malloc((2 * nFloors + 1) * sizeof(char));
+        int spaces = nFloors - i - 1;
+        int stars = 2 * i + 1;
+        
+        memset(tower[i], ' ', spaces);
+        memset(tower[i] + spaces, '*', stars);
+        memset(tower[i] + spaces + stars, ' ', spaces);
+        tower[i][2 * nFloors - 1] = '\\0';
     }
-    
     return tower;
 }
 
 int main() {
-    int nFloors = 6;
+    int nFloors = 3;
     char** tower = towerBuilder(nFloors);
-    
     for (int i = 0; i < nFloors; i++) {
-        printf("%s\
-", tower[i]);
+        printf("%s\\n", tower[i]);
         free(tower[i]);
     }
     free(tower);
-    
+
+    printf("\\n");
+
+    nFloors = 6;
+    tower = towerBuilder(nFloors);
+    for (int i = 0; i < nFloors; i++) {
+        printf("%s\\n", tower[i]);
+        free(tower[i]);
+    }
+    free(tower);
+
     return 0;
 }

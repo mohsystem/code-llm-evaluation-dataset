@@ -9,7 +9,7 @@ class SinglyLinkedList:
 
     def insert(self, data):
         new_node = Node(data)
-        if self.head is None:
+        if not self.head:
             self.head = new_node
         else:
             current = self.head
@@ -17,45 +17,34 @@ class SinglyLinkedList:
                 current = current.next
             current.next = new_node
 
-    def delete(self, key):
+    def delete(self, data):
         current = self.head
         prev = None
-
-        while current and current.data != key:
+        while current and current.data != data:
             prev = current
             current = current.next
-
-        if current is None:
-            return
-
-        if prev is None:
+        if not current:
+            return False
+        if not prev:
             self.head = current.next
         else:
             prev.next = current.next
+        return True
 
-    def search(self, key):
+    def search(self, data):
         current = self.head
         while current:
-            if current.data == key:
+            if current.data == data:
                 return True
             current = current.next
         return False
 
-    def display(self):
-        nodes = []
-        current = self.head
-        while current:
-            nodes.append(current.data)
-            current = current.next
-        print("LinkedList:", nodes)
-
+# Example Usage
 if __name__ == "__main__":
     sll = SinglyLinkedList()
     sll.insert(1)
     sll.insert(2)
     sll.insert(3)
-    sll.display()
+    print(sll.search(2))  # True
     sll.delete(2)
-    sll.display()
-    print(sll.search(3))
-    print(sll.search(2))
+    print(sll.search(2))  # False

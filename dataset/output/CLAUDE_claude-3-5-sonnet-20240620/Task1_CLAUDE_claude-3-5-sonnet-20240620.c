@@ -1,18 +1,10 @@
 
-#include <stdio.h>
+#include <stddef.h>
 
-int countPassengers(int stops[][2], int size) {
+int number(const int busStops[][2], size_t n) {
     int passengers = 0;
-    for (int i = 0; i < size; i++) {
-        passengers += stops[i][0] - stops[i][1];
+    for (size_t i = 0; i < n; i++) {
+        passengers += busStops[i][0] - busStops[i][1];
     }
     return passengers;
-}
-
-int main() {
-    int stops[][2] = {{10, 0}, {3, 5}, {2, 5}};
-    int size = sizeof(stops) / sizeof(stops[0]);
-    printf("%d\
-", countPassengers(stops, size));  // Output: 5
-    return 0;
 }

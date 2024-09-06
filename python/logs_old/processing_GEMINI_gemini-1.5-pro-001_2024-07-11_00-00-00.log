@@ -1,0 +1,374 @@
+2024-07-11 00:31:52,713 INFO Task96_GEMINI_gemini-1.5-pro-001_Instructions: 
+1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.
+3) Put the code inside ```<language name>  ``` block.
+4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that creates a socket server listening on a specified port. The server should echo back any message it receives from a client.
+2024-07-11 00:32:49,141 INFO Task97_GEMINI_gemini-1.5-pro-001_Instructions: 
+1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.
+3) Put the code inside ```<language name>  ``` block.
+4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that performs the following steps:
+
+Retrieve the xpath value from the command line parameter.
+Retrieve the xml file name from the command line parameter and read it from the local storage.
+Construct and parse the XML file.
+Execute the XPath query in the format /tag[@id={}] on the parsed XML.
+Return the result of the XPath query.
+2024-07-11 00:33:18,184 INFO ```java
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
+public class XMLParser {
+
+    public static void main(String[] args) {
+        if (args.length != 3) {
+            System.out.println("Usage: java XMLParser <xml_file> <xpath_query> <id_value>");
+            return;
+        }
+
+        String xmlFile = args[0];
+        String xpathQuery = args[1];
+        String idValue = args[2];
+        xpathQuery = String.format(xpathQuery, idValue);
+
+        try {
+            // Construct and parse the XML file
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(new InputSource(xmlFile));
+
+            // Execute the XPath query
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            String result = (String) xpath.compile(xpathQuery).evaluate(doc, XPathConstants.STRING);
+
+            // Return the result
+            System.out.println(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+
+int main(int argc, char *argv[]) {
+    if (argc != 4) {
+        fprintf(stderr, "Usage: %s <xml_file> <xpath_query> <id_value>\n", argv[0]);
+        return 1;
+    }
+
+    char *xmlFile = argv[1];
+    char *xpathQuery = argv[2];
+    char *idValue = argv[3];
+    char formattedQuery[256];
+    snprintf(formattedQuery, sizeof(formattedQuery), xpathQuery, idValue);
+
+    xmlDocPtr doc = xmlParseFile(xmlFile);
+    if (doc == NULL) {
+        fprintf(stderr, "Failed to parse XML file.\n");
+        return 1;
+    }
+
+    xmlXPathContextPtr context = xmlXPathNewContext(doc);
+    if (context == NULL) {
+        fprintf(stderr, "Failed to create XPath context.\n");
+        xmlFreeDoc(doc);
+        return 1;
+    }
+
+    xmlXPathObjectPtr result = xmlXPathEvalExpression((const xmlChar *)formattedQuery, context);
+    if (result == NULL) {
+        fprintf(stderr, "Failed to evaluate XPath expression.\n");
+        xmlXPathFreeContext(context);
+        xmlFreeDoc(doc);
+        return 1;
+    }
+
+    if (result->type == XPATH_STRING) {
+        printf("%s\n", (char *)result->nodesetval->nodeTab[0]->children->content);
+    } else {
+        fprintf(stderr, "XPath result is not a string.\n");
+    }
+
+    xmlXPathFreeObject(result);
+    xmlXPathFreeContext(context);
+    xmlFreeDoc(doc);
+
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <string>
+#include <stdexcept>
+#include <pugixml.hpp>
+
+int main(int argc, char* argv[]) {
+    if (argc != 4) {
+        std::cerr << "Usage: " << argv[0] << " <xml_file> <xpath_query> <id_value>" << std::endl;
+        return 1;
+    }
+
+    std::string xmlFile = argv[1];
+    std::string xpathQuery = argv[2];
+    std::string idValue = argv[3];
+
+    try {
+        // Construct and parse the XML file
+        pugi::xml_document doc;
+        pugi::xml_parse_result result = doc.load_file(xmlFile.c_str());
+        if (!result) {
+            throw std::runtime_error("Failed to parse XML file: " + xmlFile);
+        }
+
+        // Execute the XPath query
+        std::string query = xpathQuery + "=\"" + idValue + "\"]";
+        pugi::xpath_node node = doc.select_node(query.c_str());
+        if (!node) {
+            throw std::runtime_error("XPath query returned no results: " + query);
+        }
+
+        // Return the result
+        std::cout << node.node().text().get() << std::endl;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
+
+    return 0;
+}
+```
+
+```python
+import xml.etree.ElementTree as ET
+import sys
+
+if len(sys.argv) != 4:
+    print("Usage: python xml_parser.py <xml_file> <xpath_query> <id_value>")
+    sys.exit(1)
+
+xml_file = sys.argv[1]
+xpath_query = sys.argv[2]
+id_value = sys.argv[3]
+
+try:
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+    result = root.find(xpath_query.format(id_value))
+
+    if result is not None:
+        print(result.text)
+    else:
+        print("XPath query returned no results.")
+
+except FileNotFoundError:
+    print(f"Error: File not found: {xml_file}")
+except ET.ParseError:
+    print(f"Error: Invalid XML file: {xml_file}")
+```
+2024-07-11 00:33:18,194 INFO Created file: Task97_GEMINI_gemini-1.5-pro-001
+2024-07-11 00:33:18,201 INFO Created file: Task97_GEMINI_gemini-1.5-pro-001
+2024-07-11 00:33:18,205 INFO Created file: Task97_GEMINI_gemini-1.5-pro-001
+2024-07-11 00:33:18,208 INFO Created file: Task97_GEMINI_gemini-1.5-pro-001
+2024-07-11 00:33:28,211 INFO Task98_GEMINI_gemini-1.5-pro-001_Instructions: 
+1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.
+3) Put the code inside ```<language name>  ``` block.
+4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that takes input from the user via the console and attempts to convert it to an integer.
+2024-07-11 00:33:37,990 INFO ```java
+import java.util.Scanner;
+
+public class UserInputToInteger {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter a number: ");
+        String input = scanner.nextLine();
+
+        try {
+            int number = Integer.parseInt(input);
+            System.out.println("You entered: " + number);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid integer.");
+        }
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    char input[100];
+    int number;
+
+    printf("Enter a number: ");
+    fgets(input, sizeof(input), stdin);
+
+    number = atoi(input);
+
+    printf("You entered: %d\n", number);
+
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <string>
+#include <sstream>
+
+using namespace std;
+
+int main() {
+    string input;
+    int number;
+
+    cout << "Enter a number: ";
+    getline(cin, input);
+
+    stringstream ss(input);
+    if (ss >> number) {
+        cout << "You entered: " << number << endl;
+    } else {
+        cout << "Invalid input. Please enter a valid integer." << endl;
+    }
+
+    return 0;
+}
+```
+
+```python
+input_string = input("Enter a number: ")
+
+try:
+    number = int(input_string)
+    print("You entered:", number)
+except ValueError:
+    print("Invalid input. Please enter a valid integer.")
+```
+
+2024-07-11 00:33:37,995 INFO Created file: Task98_GEMINI_gemini-1.5-pro-001
+2024-07-11 00:33:37,999 INFO Created file: Task98_GEMINI_gemini-1.5-pro-001
+2024-07-11 00:33:38,157 INFO Created file: Task98_GEMINI_gemini-1.5-pro-001
+2024-07-11 00:33:38,160 INFO Created file: Task98_GEMINI_gemini-1.5-pro-001
+2024-07-11 00:33:48,165 INFO Task99_GEMINI_gemini-1.5-pro-001_Instructions: 
+1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.
+3) Put the code inside ```<language name>  ``` block.
+4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that reads a file and uses a regular expression to match lines that start with numbers and end with a dot.
+2024-07-11 00:33:59,612 INFO ```java
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.regex.Pattern;
+
+public class MatchLines {
+    public static void main(String[] args) throws Exception {
+        BufferedReader reader = new BufferedReader(new FileReader("input.txt"));
+        String line;
+        Pattern pattern = Pattern.compile("^\\d+.*\\.$");
+        while ((line = reader.readLine()) != null) {
+            if (pattern.matcher(line).matches()) {
+                System.out.println(line);
+            }
+        }
+        reader.close();
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <regex.h>
+
+int main() {
+    FILE *file = fopen("input.txt", "r");
+    char line[256];
+    regex_t regex;
+    int reti;
+
+    reti = regcomp(&regex, "^[0-9]+.*\\.$", REG_EXTENDED);
+    if (reti) {
+        fprintf(stderr, "Could not compile regex\n");
+        return 1;
+    }
+
+    while (fgets(line, sizeof(line), file)) {
+        reti = regexec(&regex, line, 0, NULL, 0);
+        if (!reti) {
+            printf("%s", line);
+        } 
+    }
+
+    fclose(file);
+    regfree(&regex);
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <regex>
+
+using namespace std;
+
+int main() {
+    ifstream file("input.txt");
+    string line;
+    regex pattern("^\\d+.*\\.$");
+
+    while (getline(file, line)) {
+        if (regex_match(line, pattern)) {
+            cout << line << endl;
+        }
+    }
+
+    file.close();
+    return 0;
+}
+```
+
+```python
+import re
+
+with open("input.txt", "r") as file:
+    for line in file:
+        if re.match(r"^\d+.*\.$", line):
+            print(line, end="")
+```
+2024-07-11 00:33:59,616 INFO Created file: Task99_GEMINI_gemini-1.5-pro-001
+2024-07-11 00:33:59,620 INFO Created file: Task99_GEMINI_gemini-1.5-pro-001
+2024-07-11 00:33:59,624 INFO Created file: Task99_GEMINI_gemini-1.5-pro-001
+2024-07-11 00:33:59,628 INFO Created file: Task99_GEMINI_gemini-1.5-pro-001
+2024-07-11 00:34:09,629 INFO All files processed.
+2024-07-11 00:34:43,939 INFO Task64_GEMINI_gemini-1.5-pro-001_Instructions: 
+1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.
+3) Put the code inside ```<language name>  ``` block.
+4) we need the output program run as one source code file. All code needs to be in one file
+Write a program to read a JSON file from a specified URL passed from the command line argument. The function should fetch the file from the URL, parse the JSON content, and return the resulting JSON object.
+2024-07-11 00:35:39,687 INFO Task64_GEMINI_gemini-1.5-pro-001_Instructions: 
+1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.
+3) Put the code inside ```<language name>  ``` block.
+4) we need the output program run as one source code file. All code needs to be in one file
+Write a program to read a JSON file from a specified URL passed from the command line argument. The function should fetch the file from the URL, parse the JSON content, and return the resulting JSON object.

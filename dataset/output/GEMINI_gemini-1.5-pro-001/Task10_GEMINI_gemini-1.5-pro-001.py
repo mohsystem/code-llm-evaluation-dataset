@@ -1,2 +1,5 @@
 def get_sum(a, b):
-    return a if a == b else (a + b) * (abs(a - b) + 1) // 2
+    if a == b:
+        return a
+    else:
+        return sum(range(min(a, b), max(a, b) + 1))

@@ -1,20 +1,23 @@
 #include <iostream>
-#include <json/json.h>
+#include <string>
+#include "json/json.h"
 
 int main() {
-    std::string jsonString = "{\"name\":\"John\", \"age\":30, \"car\":null}";
+    std::string jsonString = "{\"name\": \"John\", \"age\": 30, \"city\": \"New York\"}";
+    
     Json::CharReaderBuilder readerBuilder;
+    Json::CharReader* reader = readerBuilder.newCharReader();
     Json::Value root;
     std::string errs;
-    std::istringstream s(jsonString);
-    std::string rootKey;
+    
+    bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &root, &errs);
+    delete reader;
 
-    Json::parseFromStream(readerBuilder, s, &root, &errs);
-    for (const auto& key : root.getMemberNames()) {
-        rootKey = key;
-        break;
+    if (!parsingSuccessful) {
+        std::cerr << "Failed to parse the JSON : " << errs << std::endl;
+        return 1;
     }
     
-    std::cout << "Root Element: " << rootKey << std::endl;
+    std::cout << root.toStyledString() << std::endl;
     return 0;
 }

@@ -1,11 +1,11 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include <string.h>
 
 char* generateToken(int length) {
-    char lettersAndDigits[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-    char* token = (char*)malloc((length + 1) * sizeof(char));
+    static char lettersAndDigits[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    static char token[11];
     for (int i = 0; i < length; i++) {
         token[i] = lettersAndDigits[rand() % (sizeof(lettersAndDigits) - 1)];
     }
@@ -15,9 +15,6 @@ char* generateToken(int length) {
 
 int main() {
     srand(time(0));
-    char* token = generateToken(10);
-    printf("Random token is %s
-", token);
-    free(token);
+    printf("Random token is %s\n", generateToken(10));
     return 0;
 }

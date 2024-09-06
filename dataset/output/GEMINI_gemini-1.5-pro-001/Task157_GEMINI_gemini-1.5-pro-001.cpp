@@ -2,13 +2,13 @@
 
 int main() {
     // Allocate memory
-    int* array = new int[1024];
+    int* ptr = new int;
 
-    // Use memory (example)
-    array[0] = 10;
+    // Use the allocated memory (optional)
+    *ptr = 10;
 
     // Deallocate memory
-    delete[] array;
+    delete ptr;
 
     return 0;
 }

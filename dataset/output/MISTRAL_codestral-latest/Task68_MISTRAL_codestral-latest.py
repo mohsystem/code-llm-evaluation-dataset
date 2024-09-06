@@ -1,26 +1,33 @@
-import sys
-from ldap3 import Server, Connection, ALL
+import ldap
 
-if len(sys.argv) != 3:
-    print(f"Usage: {sys.argv[0]} <dc> <username>")
-    sys.exit(1)
+def get_user_info(dc, username):
+    ldap_server = "ldap://localhost"
+    base_dn = f"dc={dc},dc=com"
+    search_filter = f"(uid={username})"
 
-dc = sys.argv[1]
-username = sys.argv[2]
+    try:
+        ldap_conn = ldap.initialize(ldap_server)
+        ldap_conn.protocol_version = ldap.VERSION3
+        ldap_conn.simple_bind_s()
 
-ldap_server = Server('localhost', port=389)
-conn = Connection(ldap_server)
+        result = ldap_conn.search_s(base_dn, ldap.SCOPE_SUBTREE, search_filter)
+        return result
+    except ldap.LDAPError as e:
+        print(f"Error: {e}")
+    finally:
+        ldap_conn.unbind()
 
-search_base = f'dc={dc}'
-search_filter = f'(uid={username})'
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 3:
+        print("Usage: python script.py <dc> <username>")
+        sys.exit(1)
 
-conn.search(search_base, search_filter, attributes=ALL)
+    dc = sys.argv[1]
+    username = sys.argv[2]
 
-if len(conn.entries) > 0:
-    print("User information:")
-    for attribute in conn.entries[0].entry_attributes_as_dict:
-        print(f"{attribute}: {conn.entries[0][attribute].values}")
-else:
-    print("User not found.")
-
-conn.unbind()
+    user_info = get_user_info(dc, username)
+    if user_info:
+        print(user_info)
+    else:
+        print("User not found.")

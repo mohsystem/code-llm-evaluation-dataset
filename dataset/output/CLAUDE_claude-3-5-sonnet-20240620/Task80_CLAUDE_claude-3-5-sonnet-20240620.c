@@ -5,78 +5,73 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
+#include <netdb.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
-int create_ssl_socket(const char* host, int port) {
-    int sock = -1;
-    struct sockaddr_in6 addr;
+SSL* create_ssl_ipv6_socket(const char* host, int port) {
+    int sock;
+    struct addrinfo hints, *res, *p;
+    char port_str[6];
     SSL_CTX *ctx;
     SSL *ssl;
 
-    // Initialize OpenSSL
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET6;
+    hints.ai_socktype = SOCK_STREAM;
+
+    snprintf(port_str, sizeof(port_str), "%d", port);
+
+    if (getaddrinfo(host, port_str, &hints, &res) != 0) {
+        perror("getaddrinfo");
+        return NULL;
+    }
+
+    for (p = res; p != NULL; p = p->ai_next) {
+        sock = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+        if (sock == -1) continue;
+
+        if (connect(sock, p->ai_addr, p->ai_addrlen) != -1) break;
+
+        close(sock);
+    }
+
+    freeaddrinfo(res);
+
+    if (p == NULL) {
+        fprintf(stderr, "Failed to connect\\n");
+        return NULL;
+    }
+
     SSL_library_init();
     OpenSSL_add_all_algorithms();
     SSL_load_error_strings();
 
-    // Create SSL context
     ctx = SSL_CTX_new(TLS_client_method());
-    if (!ctx) {
+    if (ctx == NULL) {
         ERR_print_errors_fp(stderr);
-        return -1;
+        return NULL;
     }
 
-    // Create socket
-    sock = socket(AF_INET6, SOCK_STREAM, 0);
-    if (sock < 0) {
-        perror("Socket creation failed");
-        SSL_CTX_free(ctx);
-        return -1;
-    }
-
-    // Set up server address
-    memset(&addr, 0, sizeof(addr));
-    addr.sin6_family = AF_INET6;
-    addr.sin6_port = htons(port);
-    if (inet_pton(AF_INET6, host, &addr.sin6_addr) <= 0) {
-        perror("Invalid address");
-        close(sock);
-        SSL_CTX_free(ctx);
-        return -1;
-    }
-
-    // Connect to server
-    if (connect(sock, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
-        perror("Connection failed");
-        close(sock);
-        SSL_CTX_free(ctx);
-        return -1;
-    }
-
-    // Create SSL connection
     ssl = SSL_new(ctx);
     SSL_set_fd(ssl, sock);
-    if (SSL_connect(ssl) <= 0) {
+
+    if (SSL_connect(ssl) == -1) {
         ERR_print_errors_fp(stderr);
-        SSL_free(ssl);
-        close(sock);
-        SSL_CTX_free(ctx);
-        return -1;
+        return NULL;
     }
 
-    printf("SSL connection established\
-");
-    
-    // Clean up (in a real application, you\'d return the SSL object and clean up later)
-    SSL_free(ssl);
-    close(sock);
-    SSL_CTX_free(ctx);
-
-    return 0;
+    return ssl;
 }
 
 int main() {
-    create_ssl_socket("2001:db8::1", 443);
+    const char* host = "example.com";
+    int port = 443;
+    SSL* ssl = create_ssl_ipv6_socket(host, port);
+    if (ssl) {
+        // Use the SSL connection here
+        SSL_shutdown(ssl);
+        SSL_free(ssl);
+    }
     return 0;
 }

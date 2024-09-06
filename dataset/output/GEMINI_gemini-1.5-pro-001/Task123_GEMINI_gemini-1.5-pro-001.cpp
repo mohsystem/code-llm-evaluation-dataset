@@ -8,68 +8,69 @@ using namespace std;
 class Session {
 public:
     string username;
-    time_t loginTime;
+    string session_id;
+    time_t created_at;
 
     Session(string username) {
         this->username = username;
-        this->loginTime = time(nullptr);
+        this->created_at = time(0);
     }
 
-    string getSessionData() {
-        string data = "Username: " + this->username + ", Login Time: " + ctime(&(this->loginTime));
-        data.pop_back(); // remove trailing newline from ctime
-        return data;
+    void createSession() {
+        // In a real application, generate a unique session ID
+        this->session_id = "session_" + username;
+    }
+
+    bool isValid() {
+        // In a real application, check for session expiry
+        return true;
     }
 };
 
-unordered_map<string, Session*> sessions;
+class SessionManager {
+public:
+    unordered_map<string, Session*> sessions;
 
-void createSession(string username) {
-    sessions[username] = new Session(username);
-    cout << "Session created for " << username << endl;
-}
-
-void getSession(string username) {
-    if (sessions.find(username) != sessions.end()) {
-        cout << sessions[username]->getSessionData() << endl;
-    } else {
-        cout << "Session not found for " << username << endl;
+    string createSession(string username) {
+        Session* session = new Session(username);
+        session->createSession();
+        sessions[session->session_id] = session;
+        return session->session_id;
     }
-}
 
-void deleteSession(string username) {
-    if (sessions.find(username) != sessions.end()) {
-        delete sessions[username];
-        sessions.erase(username);
-        cout << "Session deleted for " << username << endl;
-    } else {
-        cout << "Session not found for " << username << endl;
+    Session* getSession(string session_id) {
+        if (sessions.find(session_id) != sessions.end()) {
+            return sessions[session_id];
+        }
+        return nullptr;
     }
-}
+
+    void deleteSession(string session_id) {
+        if (sessions.find(session_id) != sessions.end()) {
+            delete sessions[session_id];
+            sessions.erase(session_id);
+        }
+    }
+};
 
 int main() {
-    string action, username;
-    while (true) {
-        cout << "Enter action (create/get/delete/exit): ";
-        cin >> action;
-        if (action == "exit") {
-            break;
-        }
-        cout << "Enter username: ";
-        cin >> username;
-        if (action == "create") {
-            createSession(username);
-        } else if (action == "get") {
-            getSession(username);
-        } else if (action == "delete") {
-            deleteSession(username);
-        } else {
-            cout << "Invalid action" << endl;
-        }
+    SessionManager session_manager;
+
+    // Create a new session
+    string session_id = session_manager.createSession("user1");
+    cout << "Session created for user1 with ID: " << session_id << endl;
+
+    // Get the session
+    Session* session = session_manager.getSession(session_id);
+    if (session != nullptr && session->isValid()) {
+        cout << "Session is valid for user: " << session->username << endl;
+    } else {
+        cout << "Session is not valid" << endl;
     }
-    // Clean up allocated memory before exiting
-    for (auto& session : sessions) {
-        delete session.second;
-    }
+
+    // Delete the session
+    session_manager.deleteSession(session_id);
+    cout << "Session with ID " << session_id << " deleted" << endl;
+
     return 0;
 }

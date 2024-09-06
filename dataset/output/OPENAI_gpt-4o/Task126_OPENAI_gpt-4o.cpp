@@ -1,28 +1,24 @@
 #include <iostream>
 #include <string>
 
-int main() {
-    std::string input;
-    std::cout << "Enter user role (admin/user/guest): ";
-    std::getline(std::cin, input);
+using namespace std;
 
-    for (char &c : input) {
-        c = tolower(c);
-    }
-
-    if (input == "admin") {
-        std::cout << "Redirecting to admin page...
-";
-    } else if (input == "user") {
-        std::cout << "Redirecting to user page...
-";
-    } else if (input == "guest") {
-        std::cout << "Redirecting to guest page...
-";
+void redirect(const string &input) {
+    if (input == "home") {
+        cout << "Redirect to Home Page" << endl;
+    } else if (input == "about") {
+        cout << "Redirect to About Page" << endl;
+    } else if (input == "contact") {
+        cout << "Redirect to Contact Page" << endl;
     } else {
-        std::cout << "Invalid role!
-";
+        cout << "Page not found" << endl;
     }
+}
 
+int main() {
+    string input;
+    cout << "Enter page to redirect to (home/about/contact): ";
+    cin >> input;
+    redirect(input);
     return 0;
 }

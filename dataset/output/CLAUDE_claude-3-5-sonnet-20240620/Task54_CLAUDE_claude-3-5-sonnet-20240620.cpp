@@ -1,71 +1,48 @@
 
 #include <iostream>
 #include <string>
-#include <unordered_map>
 #include <random>
-#include <iomanip>
+#include <chrono>
 
-class TwoFactorAuth {
-private:
-    std::unordered_map<std::string, std::string> users;
-    std::unordered_map<std::string, std::string> otps;
-    std::random_device rd;
-    std::mt19937 gen;
-
-public:
-    TwoFactorAuth() : gen(rd()) {}
-
-    void registerUser(const std::string& username, const std::string& password) {
-        users[username] = password;
+std::string generateOTP() {
+    const std::string DIGITS = "0123456789";
+    const int OTP_LENGTH = 6;
+    std::string otp;
+    
+    std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
+    std::uniform_int_distribution<int> dist(0, DIGITS.length() - 1);
+    
+    for (int i = 0; i < OTP_LENGTH; ++i) {
+        otp += DIGITS[dist(rng)];
     }
+    return otp;
+}
 
-    bool login(const std::string& username, const std::string& password) {
-        if (users.find(username) != users.end() && users[username] == password) {
-            std::string otp = generateOTP();
-            otps[username] = otp;
-            std::cout << "OTP sent: " << otp << std::endl;
-            return true;
-        }
-        return false;
-    }
+void sendOTP(const std::string& otp) {
+    std::cout << "OTP sent: " << otp << std::endl;
+}
 
-    bool verifyOTP(const std::string& username, const std::string& enteredOTP) {
-        if (otps.find(username) != otps.end() && otps[username] == enteredOTP) {
-            otps.erase(username);
-            return true;
-        }
-        return false;
-    }
+bool verifyOTP(const std::string& userOTP, const std::string& generatedOTP) {
+    return userOTP == generatedOTP;
+}
 
-private:
-    std::string generateOTP() {
-        std::uniform_int_distribution<> dis(0, 999999);
-        return std::to_string(dis(gen));
-    }
-};
-
-int main() {
-    TwoFactorAuth auth;
-    std::string username, password, otp;
-
-    // Register a user
-    std::cout << "Register - Enter username: ";
+void login() {
+    std::string username, password;
+    
+    std::cout << "Enter username: ";
     std::cin >> username;
     std::cout << "Enter password: ";
     std::cin >> password;
-    auth.registerUser(username, password);
-
-    // Login
-    std::cout << "Login - Enter username: ";
-    std::cin >> username;
-    std::cout << "Enter password: ";
-    std::cin >> password;
-
-    if (auth.login(username, password)) {
+    
+    if (username == "user" && password == "password") {
+        std::string otp = generateOTP();
+        sendOTP(otp);
+        
+        std::string userOTP;
         std::cout << "Enter OTP: ";
-        std::cin >> otp;
-
-        if (auth.verifyOTP(username, otp)) {
+        std::cin >> userOTP;
+        
+        if (verifyOTP(userOTP, otp)) {
             std::cout << "Login successful!" << std::endl;
         } else {
             std::cout << "Invalid OTP. Login failed." << std::endl;
@@ -73,6 +50,9 @@ int main() {
     } else {
         std::cout << "Invalid username or password." << std::endl;
     }
+}
 
+int main() {
+    login();
     return 0;
 }

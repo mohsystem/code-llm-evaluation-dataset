@@ -1,24 +1,21 @@
 #include <iostream>
 #include <cmath>
 #include <string>
+using namespace std;
 
-int digPow(int n, int p) {
-    std::string numStr = std::to_string(n);
+int dig_pow(int n, int p) {
+    string digits = to_string(n);
     int sum = 0;
-    for (size_t i = 0; i < numStr.length(); i++) {
-        sum += std::pow(numStr[i] - '0', p + i);
+    for (size_t i = 0; i < digits.length(); i++) {
+        sum += pow(digits[i] - '0', p + i);
     }
-    if (sum % n == 0) {
-        return sum / n;
-    } else {
-        return -1;
-    }
+    return sum % n == 0 ? sum / n : -1;
 }
 
 int main() {
-    std::cout << digPow(89, 1) << std::endl;       // Output: 1
-    std::cout << digPow(92, 1) << std::endl;       // Output: -1
-    std::cout << digPow(695, 2) << std::endl;      // Output: 2
-    std::cout << digPow(46288, 3) << std::endl;    // Output: 51
+    cout << dig_pow(89, 1) << endl;     // Output: 1
+    cout << dig_pow(92, 1) << endl;     // Output: -1
+    cout << dig_pow(695, 2) << endl;    // Output: 2
+    cout << dig_pow(46288, 3) << endl;  // Output: 51
     return 0;
 }

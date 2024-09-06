@@ -1,20 +1,27 @@
-def knapsack(W, wt, val, n):
-    K = [[0 for w in range(W + 1)] for i in range(n + 1)]
-    
+def knapsack(capacity, weights, values):
+    n = len(values)
+    dp = [[0 for _ in range(capacity + 1)] for _ in range(n + 1)]
+
     for i in range(n + 1):
-        for w in range(W + 1):
+        for w in range(capacity + 1):
             if i == 0 or w == 0:
-                K[i][w] = 0
-            elif wt[i-1] <= w:
-                K[i][w] = max(val[i-1] + K[i-1][w-wt[i-1]],  K[i-1][w])
+                dp[i][w] = 0
+            elif weights[i - 1] <= w:
+                dp[i][w] = max(values[i - 1] + dp[i - 1][w - weights[i - 1]], dp[i - 1][w])
             else:
-                K[i][w] = K[i-1][w]
- 
-    return K[n][W]
+                dp[i][w] = dp[i - 1][w]
 
-W = int(input("Enter the capacity of the knapsack: "))
+    return dp[n][capacity]
+
+capacity = int(input("Enter the capacity of the knapsack: "))
 n = int(input("Enter the number of items: "))
-val = list(map(int, input("Enter the values of the items: ").split()))
-wt = list(map(int, input("Enter the weights of the items: ").split()))
+weights = []
+values = []
+for i in range(n):
+    weight = int(input(f"Enter the weight of item {i + 1}: "))
+    value = int(input(f"Enter the value of item {i + 1}: "))
+    weights.append(weight)
+    values.append(value)
 
-print("Maximum value that can be put into the knapsack: ", knapsack(W, wt, val, n))
+max_value = knapsack(capacity, weights, values)
+print("Maximum value that can be put into the knapsack:", max_value)

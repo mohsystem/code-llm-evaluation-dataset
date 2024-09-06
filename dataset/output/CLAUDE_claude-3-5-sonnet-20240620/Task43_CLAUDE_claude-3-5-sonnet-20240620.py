@@ -1,82 +1,49 @@
 
-import socket
-import threading
+import os
 import time
-import secrets
-import base64
+from flask import Flask, request, session, jsonify
+from werkzeug.security import generate_password_hash, check_password_hash
 
-class Session:
-    def __init__(self, username):
-        self.id = self.generate_session_id()
-        self.username = username
-        self.creation_time = time.time()
-        self.last_access_time = self.creation_time
+app = Flask(__name__)
+app.secret_key = os.urandom(24)
+app.config['PERMANENT_SESSION_LIFETIME'] = 1800  # 30 minutes
 
-    def generate_session_id(self):
-        return base64.urlsafe_b64encode(secrets.token_bytes(16)).decode(\'utf-8\')
+users = {}
 
-class SessionManager:
-    def __init__(self):
-        self.sessions = {}
-        self.SESSION_TIMEOUT = 1800  # 30 minutes in seconds
+@app.route('/register', methods=['POST'])
+def register():
+    username = request.json.get('username')
+    password = request.json.get('password')
+    if username in users:
+        return jsonify({"error": "Username already exists"}), 400
+    users[username] = generate_password_hash(password)
+    return jsonify({"message": "User registered successfully"}), 201
 
-    def create_session(self, username):
-        session = Session(username)
-        self.sessions[session.id] = session
-        return session.id
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.json.get('username')
+    password = request.json.get('password')
+    if username not in users or not check_password_hash(users[username], password):
+        return jsonify({"error": "Invalid credentials"}), 401
+    session['username'] = username
+    session['login_time'] = time.time()
+    return jsonify({"message": "Logged in successfully"}), 200
 
-    def validate_session(self, session_id):
-        session = self.sessions.get(session_id)
-        if session:
-            current_time = time.time()
-            if current_time - session.last_access_time <= self.SESSION_TIMEOUT:
-                session.last_access_time = current_time
-                return True
-            else:
-                self.terminate_session(session_id)
-        return False
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('username', None)
+    session.pop('login_time', None)
+    return jsonify({"message": "Logged out successfully"}), 200
 
-    def terminate_session(self, session_id):
-        self.sessions.pop(session_id, None)
+@app.route('/protected', methods=['GET'])
+def protected():
+    if 'username' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+    if time.time() - session['login_time'] > app.config['PERMANENT_SESSION_LIFETIME'].total_seconds():
+        session.pop('username', None)
+        session.pop('login_time', None)
+        return jsonify({"error": "Session expired"}), 401
+    return jsonify({"message": f"Hello, {session['username']}!"}), 200
 
-def handle_client(client_socket, session_manager):
-    request = client_socket.recv(1024).decode(\'utf-8\').strip()
-    parts = request.split(\' \')
-    action = parts[0]
-
-    if action == \'LOGIN\':
-        username = parts[1]
-        session_id = session_manager.create_session(username)
-        response = f"Session created: {session_id}"
-    elif action == \'VALIDATE\':
-        session_id = parts[1]
-        is_valid = session_manager.validate_session(session_id)
-        response = f"Session valid: {is_valid}"
-    elif action == \'LOGOUT\':
-        session_id = parts[1]
-        session_manager.terminate_session(session_id)
-        response = "Session terminated"
-    else:
-        response = "Invalid action"
-
-    client_socket.send(response.encode(\'utf-8\'))
-    client_socket.close()
-
-def main():
-    session_manager = SessionManager()
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind((\'0.0.0.0\', 8080))
-    server.listen(5)
-
-    print("Server started on port 8080")
-
-    while True:
-        client_sock, address = server.accept()
-        client_handler = threading.Thread(
-            target=handle_client,
-            args=(client_sock, session_manager)
-        )
-        client_handler.start()
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    app.run(debug=True)

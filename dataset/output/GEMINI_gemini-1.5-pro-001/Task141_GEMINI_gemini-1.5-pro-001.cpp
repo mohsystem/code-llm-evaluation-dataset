@@ -5,10 +5,12 @@
 using namespace std;
 
 int main() {
-  string inputString;
-  cout << "Enter a string: ";
-  getline(cin, inputString);
-  reverse(inputString.begin(), inputString.end());
-  cout << inputString << endl;
-  return 0;
+    string str;
+    cout << "Enter a string: ";
+    getline(cin, str);
+
+    reverse(str.begin(), str.end());
+
+    cout << str << endl;
+    return 0;
 }

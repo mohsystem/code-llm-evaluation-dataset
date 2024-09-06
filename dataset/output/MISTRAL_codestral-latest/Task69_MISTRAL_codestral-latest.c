@@ -1,19 +1,18 @@
-// C
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc > 1) {
-        if (remove(argv[1]) == 0) {
-            printf("File deleted successfully
-");
+        const char* filePath = argv[1];
+
+        if (remove(filePath) == 0) {
+            printf("File %s has been deleted.\n", filePath);
         } else {
-            printf("Unable to delete the file
-");
+            printf("Failed to delete the file.\n");
         }
     } else {
-        printf("Please provide a file path as an argument
-");
+        printf("Please provide the file path as a command line argument.\n");
     }
+
     return 0;
 }

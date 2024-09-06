@@ -18,7 +18,7 @@ int main() {
     if (resources.find(userInput) != resources.end()) {
         std::cout << "Access granted to: " << resources[userInput] << std::endl;
     } else {
-        std::cout << "Access denied." << std::endl;
+        std::cout << "Access denied. Invalid key." << std::endl;
     }
 
     return 0;

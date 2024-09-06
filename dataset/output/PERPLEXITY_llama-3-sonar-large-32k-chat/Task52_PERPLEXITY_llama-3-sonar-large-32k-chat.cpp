@@ -1,43 +1,65 @@
+// C++ code
 #include <fstream>
 #include <iostream>
 
-#define BLOCK_SIZE 16
+std::string caesarEncrypt(const std::string& text, int shift) {
+    std::string result;
 
-void encrypt(const char* fileToEncrypt, const char* encryptedFile) {
-    std::ifstream fis(fileToEncrypt, std::ios::binary);
-    std::ofstream fos(encryptedFile, std::ios::binary);
-    char buffer[BLOCK_SIZE];
-    while (fis.read(buffer, BLOCK_SIZE)) {
-        for (int i = 0; i < BLOCK_SIZE; i++) {
-            buffer[i] ^= 0x17; // simple XOR encryption
+    for (char c : text) {
+        if (isalpha(c)) {
+            char base = isupper(c) ? 'A' : 'a';
+            result += (char) ((c - base + shift) % 26 + base);
+        } else {
+            result += c;
         }
-        fos.write(buffer, BLOCK_SIZE);
     }
-    fis.close();
-    fos.close();
+
+    return result;
 }
 
-void decrypt(const char* encryptedFile, const char* decryptedFile) {
-    std::ifstream fis(encryptedFile, std::ios::binary);
-    std::ofstream fos(decryptedFile, std::ios::binary);
-    char buffer[BLOCK_SIZE];
-    while (fis.read(buffer, BLOCK_SIZE)) {
-        for (int i = 0; i < BLOCK_SIZE; i++) {
-            buffer[i] ^= 0x17; // simple XOR decryption
+std::string caesarDecrypt(const std::string& text, int shift) {
+    std::string result;
+
+    for (char c : text) {
+        if (isalpha(c)) {
+            char base = isupper(c) ? 'A' : 'a';
+            result += (char) ((c - base - shift) % 26 + base);
+        } else {
+            result += c;
         }
-        fos.write(buffer, BLOCK_SIZE);
     }
-    fis.close();
-    fos.close();
+
+    return result;
+}
+
+void encryptFile(const std::string& filePath, int shift) {
+    std::ifstream file(filePath);
+    std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    file.close();
+
+    std::string encryptedText = caesarEncrypt(text, shift);
+
+    std::ofstream writer(filePath);
+    writer << encryptedText;
+    writer.close();
+}
+
+void decryptFile(const std::string& filePath, int shift) {
+    std::ifstream file(filePath);
+    std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    file.close();
+
+    std::string decryptedText = caesarDecrypt(text, shift);
+
+    std::ofstream writer(filePath);
+    writer << decryptedText;
+    writer.close();
 }
 
 int main() {
-    const char* fileToEncrypt = "input.txt";
-    const char* encryptedFile = "encrypted.txt";
-    const char* decryptedFile = "decrypted.txt";
-
-    encrypt(fileToEncrypt, encryptedFile);
-    decrypt(encryptedFile, decryptedFile);
-
+    std::string filePath = "example.txt";
+    int shift = 3;
+    encryptFile(filePath, shift);
+    decryptFile(filePath, shift);
     return 0;
 }

@@ -15,19 +15,27 @@ char* accum(const char* s) {
             result[index++] = tolower(s[i]);
         }
         if (i < len - 1) {
-            result[index++] = \'-\';
+            result[index++] = '-';
         }
     }
-    result[index] = \'\\0\';
+    result[index] = '\\0';
     return result;
 }
 
 int main() {
-    printf("%s\
-", accum("abcd"));
-    printf("%s\
-", accum("RqaEzty"));
-    printf("%s\
-", accum("cwAt"));
+    char* result;
+
+    result = accum("abcd");
+    printf("%s\\n", result);
+    free(result);
+
+    result = accum("RqaEzty");
+    printf("%s\\n", result);
+    free(result);
+
+    result = accum("cwAt");
+    printf("%s\\n", result);
+    free(result);
+
     return 0;
 }

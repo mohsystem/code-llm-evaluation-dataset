@@ -1,24 +1,23 @@
-extern "C" {
-    #include <stdlib.h>
-    
-    int find_kth_largest(int arr[], int n, int k);
-}
-
 #include <iostream>
+#include <vector>
+#include <queue>
+
 using namespace std;
 
-int main() {
-    int n, k;
-    cin >> n;
-    int *arr = new int[n];
-    for (int i = 0; i < n; ++i) {
-        cin >> arr[i];
+int findKthLargest(vector<int>& nums, int k) {
+    priority_queue<int, vector<int>, greater<int>> pq;
+    for (int num : nums) {
+        pq.push(num);
+        if (pq.size() > k) {
+            pq.pop();
+        }
     }
-    cin >> k;
-    
-    int result = find_kth_largest(arr, n, k);
-    cout << result << endl;
-    
-    delete[] arr;
+    return pq.top();
+}
+
+int main() {
+    vector<int> nums = {3, 2, 1, 5, 6, 4};
+    int k = 2;
+    cout << findKthLargest(nums, k) << endl;
     return 0;
 }

@@ -1,16 +1,19 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
+#include <string>
 
-void match_lines(const std::string& file_name) {
-    std::ifstream file(file_name);
+int main() {
+    std::string filename = "input.txt";
+    std::ifstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "Failed to open the file." << std::endl;
-        return;
+        std::cerr << "Unable to open file: " << filename << std::endl;
+        return 1;
     }
 
-    std::regex pattern(R"(^[0-9].*\.$)");
+    std::regex pattern("^\\d.*\\.$");
     std::string line;
+    
     while (std::getline(file, line)) {
         if (std::regex_match(line, pattern)) {
             std::cout << line << std::endl;
@@ -18,10 +21,5 @@ void match_lines(const std::string& file_name) {
     }
 
     file.close();
-}
-
-int main() {
-    const std::string file_name = "input.txt";
-    match_lines(file_name);
     return 0;
 }

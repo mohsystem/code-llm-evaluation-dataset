@@ -1,7 +1,4 @@
 import os
-
-with open("script.sh", "w") as file:
-    file.write("#!/bin/bash
-echo 'Hello World'
-")
-os.system("chmod +x script.sh")
+with open("script.sh", "w") as f:
+    f.write("#!/bin/bash\necho 'Hello World!'")
+os.chmod("script.sh", 0o755)

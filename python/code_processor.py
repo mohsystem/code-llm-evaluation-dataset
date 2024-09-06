@@ -9,7 +9,26 @@ class CodeProcessor:
         self.output_directory = output_directory
         self.output_filename = output_filename
 
-    def process_sections(self, ):
+    def replace_newlines(self, code):
+        """Replace \n not within quotes with an actual newline character."""
+        pattern = re.compile(r'''
+            (["'])            # Match a quote (group 1)
+            (                 # Start of group 2
+                (?:\\\1|.)*?  # Non-greedy match any character including escaped quotes
+            )                 # End of group 2
+            \1                # Match the same quote (group 1)
+            |                 # OR
+            (\\n)             # Match \n not within quotes (group 3)
+        ''', re.VERBOSE)
+
+        def replace_match(match):
+            if match.group(3):
+                return '\n'  # Replace \n not in quotes with a newline character
+            return match.group(0)  # Keep the quoted part as it is
+
+        return pattern.sub(replace_match, code)
+
+    def process_sections(self):
         # Split the completion_content into sections based on language
         sections = re.split(r'```', self.completion_content)
 
@@ -18,7 +37,7 @@ class CodeProcessor:
             if not section.strip():
                 continue
 
-            keywords = ["python", "cpp", "java",  "Python", "CPP", "Java", "C++", "c++", "c", "C",]
+            keywords = ["python", "cpp", "java", "Python", "CPP", "Java", "C++", "c++", "c", "C"]
             language = None
 
             # Check if text starts with any keyword from the list
@@ -35,6 +54,7 @@ class CodeProcessor:
                                 .replace('C', 'c')
                                 )
                     break
+
             if language is not None:
                 code = section.strip()  # Remove leading/trailing whitespace
 
@@ -43,8 +63,38 @@ class CodeProcessor:
                 output_filename = f"{file_name}.{language}"
                 output_path = os.path.join(self.output_directory, output_filename)
 
+                formatted_code = self.replace_newlines(code)
                 with open(output_path, 'w', encoding="utf-8") as output_file:
-                    output_file.write(code.replace(r'\n', '\n'))
+                    output_file.write(formatted_code)
 
-                print(f"Created file: {file_name}")
-                self.logger.info(f"Created file: {file_name}")
+                print(f"Created file: {output_filename}")
+                self.logger.info(f"Created file: {output_filename}")
+
+
+# Example usage:
+if __name__ == "__main__":
+    import logging
+
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
+    completion_content = """
+    ```python
+    print("Hello, world!\\n")
+    def foo():
+        return "bar\\n"
+    ```
+
+    ```cpp
+    #include <iostream>
+    int main() {
+        std::cout << "Hello, world!\\n";
+        return 0;
+    }
+    ```
+    """
+    output_directory = "./output"
+    output_filename = "output_file"
+
+    processor = CodeProcessor(logger, completion_content, output_directory, output_filename)
+    processor.process_sections()

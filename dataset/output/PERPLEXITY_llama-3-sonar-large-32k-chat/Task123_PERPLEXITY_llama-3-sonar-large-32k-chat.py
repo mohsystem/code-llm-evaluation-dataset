@@ -1,44 +1,24 @@
-class UserSession:
-    def __init__(self, username):
-        self.username = username
-        self.logged_in = False
+class SessionManager:
+    def __init__(self):
+        self.sessions = {}
 
-    def login(self):
-        self.logged_in = True
-        print(f"{self.username} has logged in.")
+    def create_session(self, user_id, username):
+        self.sessions[user_id] = username
+        print(f"Session created for user {username} with ID {user_id}")
 
-    def logout(self):
-        self.logged_in = False
-        print(f"{self.username} has logged out.")
+    def get_username(self, user_id):
+        return self.sessions.get(user_id)
 
-def main():
-    sessions = {}
-    while True:
-        print("1. Create session")
-        print("2. Login")
-        print("3. Logout")
-        print("4. Exit")
-        choice = input("Choose an option: ")
-        if choice == "1":
-            username = input("Enter username: ")
-            sessions[username] = UserSession(username)
-            print(f"Session created for {username}.")
-        elif choice == "2":
-            username = input("Enter username: ")
-            if username in sessions:
-                sessions[username].login()
-            else:
-                print("Session not found.")
-        elif choice == "3":
-            username = input("Enter username: ")
-            if username in sessions:
-                sessions[username].logout()
-            else:
-                print("Session not found.")
-        elif choice == "4":
-            break
+    def delete_session(self, user_id):
+        if user_id in self.sessions:
+            del self.sessions[user_id]
+            print(f"Session deleted for user ID {user_id}")
         else:
-            print("Invalid option. Please try again.")
+            print(f"No session found for user ID {user_id}")
 
-if __name__ == "__main__":
-    main()
+# Example usage
+manager = SessionManager()
+manager.create_session(1, "John")
+manager.create_session(2, "Alice")
+print(manager.get_username(1))  # Output: John
+manager.delete_session(2)

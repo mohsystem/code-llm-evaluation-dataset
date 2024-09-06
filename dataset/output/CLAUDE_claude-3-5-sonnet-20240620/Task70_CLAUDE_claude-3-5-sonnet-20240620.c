@@ -2,27 +2,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        printf("Usage: %s <file_path>\
-", argv[0]);
-        return 1;
-    }
+#define MAX_LINE_LENGTH 1000
 
-    const char *filePath = argv[1];
-    FILE *file = fopen(filePath, "r");
-
+void readFile(const char* filePath) {
+    FILE* file = fopen(filePath, "r");
     if (file == NULL) {
-        printf("Error opening file: %s\
-", filePath);
-        return 1;
+        printf("Error opening file: %s\\n", filePath);
+        return;
     }
 
-    char buffer[1024];
-    while (fgets(buffer, sizeof(buffer), file) != NULL) {
-        printf("%s", buffer);
+    char line[MAX_LINE_LENGTH];
+    while (fgets(line, sizeof(line), file) != NULL) {
+        printf("%s", line);
     }
 
     fclose(file);
+}
+
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        printf("Usage: %s <file_path>\\n", argv[0]);
+        return 1;
+    }
+
+    const char* filePath = argv[1];
+    readFile(filePath);
+
     return 0;
 }

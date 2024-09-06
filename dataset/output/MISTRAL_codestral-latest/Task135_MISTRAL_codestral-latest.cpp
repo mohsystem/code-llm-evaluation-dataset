@@ -1,41 +1,19 @@
-// C++ example using the Pistache library for HTTP
-#include <pistache/http.h>
-#include <pistache/endpoint.h>
-#include <random>
-#include <base64.h>
+// This is a simplified example and doesn't include error handling or session management
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
 
-using namespace Pistache;
-using namespace Pistache::Http;
+namespace beast = boost::beast;
+namespace http = beast::http;
 
-class CSRFProtectionHandler : public Http::Handler {
-public:
-    HTTP_PROTOTYPE(CSRFProtectionHandler)
-
-    void onRequest(const Http::Request& req, Http::ResponseWriter response) override {
-        if (req.method() == Http::Method::Post) {
-            auto session = req.cookies().get("session");
-            if (session) {
-                auto token = session->value();
-                auto formToken = req.post().get("_csrf_token").get();
-                if (token == formToken) {
-                    // Process the funds transfer
-                } else {
-                    response.send(Http::Code::Forbidden);
-                }
-            } else {
-                response.send(Http::Code::Forbidden);
-            }
-        } else if (req.method() == Http::Method::Get) {
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<> dis(0, 255);
-            std::string token(24, 0);
-            for (auto& c : token) {
-                c = dis(gen);
-            }
-            auto base64Token = base64_encode(reinterpret_cast<const unsigned char*>(token.data()), token.length());
-            response.cookies().add(Http::Cookie("session", base64Token));
-            // Render the form with the CSRF token
+void handle_request(http::request<http::string_body>&& req) {
+    if (req.method() == http::verb::post && req.target() == "/transfer") {
+        auto it = req.find(http::field::cookie);
+        if (it != req.end() && it->value() == "csrf_token=expected_token") {
+            // Process the request
+            // ...
+        } else {
+            // Send a bad request response
+            // ...
         }
     }
-};
+}

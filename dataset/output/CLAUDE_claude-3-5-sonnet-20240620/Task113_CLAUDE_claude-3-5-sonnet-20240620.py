@@ -1,12 +1,10 @@
 
-result = ""
-
-print("Enter strings to concatenate (type \'done\' to finish):")
-
+strings = []
 while True:
-    input_string = input()
-    if input_string.lower() == \'done\':
+    s = input("Enter a string (or press Enter to finish): ")
+    if s == "":
         break
-    result += input_string
+    strings.append(s)
 
+result = " ".join(strings)
 print("Concatenated string:", result)

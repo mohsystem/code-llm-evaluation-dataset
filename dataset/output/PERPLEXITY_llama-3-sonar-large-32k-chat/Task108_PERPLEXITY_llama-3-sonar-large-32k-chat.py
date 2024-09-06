@@ -1,19 +1,20 @@
-import socket
+# Python code using RPyC
+import rpyc
 
-def doSomething():
-    print("Doing something on the server...")
+class MyService(rpyc.Service):
+    def on_connect(self, conn):
+        print("Client connected")
 
-def main():
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(("localhost", 8080))
-    server_socket.listen(1)
+    def on_disconnect(self, conn):
+        print("Client disconnected")
 
-    connection, address = server_socket.accept()
-    message = connection.recv(1024).decode()
-    print(message)
-    doSomething()
-    connection.send("Hello from server".encode())
-    print("Hello message sent")
+    def exposed_get_data(self):
+        return "Hello from server!"
+
+    def exposed_set_data(self, data):
+        print("Received data from client:", data)
 
 if __name__ == "__main__":
-    main()
+    from rpyc.utils.server import ThreadedServer
+    t = ThreadedServer(MyService, port=18861)
+    t.start()

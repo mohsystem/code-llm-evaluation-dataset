@@ -1,53 +1,15 @@
+// C++ has built-in support for IPv6 sockets
 #include <iostream>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netdb.h>
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 
-SSL* createSSLClientSocket(const char* host, int port) {
-    SSL_CTX* ctx;
-    SSL* ssl;
-    int sockfd;
-    struct sockaddr_in6 serv_addr;
-    struct addrinfo hints, *res;
+boost::asio::ssl::stream<boost::asio::ip::tcp::socket> createSSLClientSocket(boost::asio::io_context& io_context, const std::string& host, const std::string& port) {
+    boost::asio::ip::tcp::resolver resolver(io_context);
+    boost::asio::ssl::context ctx(boost::asio::ssl::context::tlsv12_client);
+    boost::asio::ssl::stream<boost::asio::ip::tcp::socket> socket(io_context, ctx);
 
-    SSL_library_init();
-    OpenSSL_add_all_algorithms();
-    SSL_load_error_strings();
-    ctx = SSL_CTX_new(SSLv23_client_method());
-    if (ctx == NULL) {
-        ERR_print_errors_fp(stderr);
-        return NULL;
-    }
+    boost::asio::connect(socket.lowest_layer(), resolver.resolve(host, port));
+    socket.handshake(boost::asio::ssl::stream_base::client);
 
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET6;
-    hints.ai_socktype = SOCK_STREAM;
-    if (getaddrinfo(host, NULL, &hints, &res) != 0) {
-        perror("getaddrinfo");
-        return NULL;
-    }
-
-    sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-    if (sockfd < 0) {
-        perror("socket");
-        return NULL;
-    }
-
-    serv_addr = *(struct sockaddr_in6*)res->ai_addr;
-    serv_addr.sin6_port = htons(port);
-    if (connect(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
-        perror("connect");
-        return NULL;
-    }
-
-    ssl = SSL_new(ctx);
-    SSL_set_fd(ssl, sockfd);
-    if (SSL_connect(ssl) != 1) {
-        ERR_print_errors_fp(stderr);
-        return NULL;
-    }
-
-    return ssl;
+    return socket;
 }

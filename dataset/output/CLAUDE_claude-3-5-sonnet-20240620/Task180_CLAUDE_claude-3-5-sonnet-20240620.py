@@ -1,31 +1,28 @@
 
 class Node:
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, data):
+        self.data = data
         self.children = []
 
-def reparent(root, new_root_value):
-    def find_node(node, value):
-        if node.value == value:
+def reparent(root, new_root_data):
+    def find_node(node, data):
+        if node.data == data:
             return node
         for child in node.children:
-            result = find_node(child, value)
+            result = find_node(child, data)
             if result:
                 return result
         return None
 
     def reparent_helper(node, parent):
-        new_children = []
-        for child in node.children:
-            if child != parent:
-                new_children.append(child)
         if parent:
-            new_children.append(parent)
-        node.children = new_children
-        for child in node.children:
-            reparent_helper(child, node)
+            node.children = [child for child in node.children if child != parent]
+            node.children.append(parent)
+        for child in list(node.children):
+            if child != parent:
+                reparent_helper(child, node)
 
-    new_root = find_node(root, new_root_value)
+    new_root = find_node(root, new_root_data)
     if not new_root:
         return root
 
@@ -33,7 +30,7 @@ def reparent(root, new_root_value):
     return new_root
 
 def print_tree(node, level=0):
-    print("  " * level + str(node.value))
+    print("  " * level + str(node.data))
     for child in node.children:
         print_tree(child, level + 1)
 
@@ -48,6 +45,5 @@ print("Original tree:")
 print_tree(root)
 
 new_root = reparent(root, 6)
-print("\
-Reparented tree with 6 as root:")
+print("\\nReparented tree with 6 as root:")
 print_tree(new_root)

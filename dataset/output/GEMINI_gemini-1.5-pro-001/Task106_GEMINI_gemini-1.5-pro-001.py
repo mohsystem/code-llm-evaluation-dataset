@@ -1,26 +1,47 @@
-from Crypto.PublicKey import RSA
-from Crypto.Cipher import PKCS1_OAEP
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
 
-def generate_keypair(key_size):
-    key = RSA.generate(key_size)
-    private_key = key.export_key()
-    public_key = key.publickey().export_key()
+
+def generate_keys():
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=2048,
+        backend=default_backend()
+    )
+    public_key = private_key.public_key()
     return private_key, public_key
 
-def encrypt(public_key, message):
-    cipher = PKCS1_OAEP.new(RSA.importKey(public_key))
-    ciphertext = cipher.encrypt(message.encode())
+
+def encrypt(message, public_key):
+    ciphertext = public_key.encrypt(
+        message,
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
+    )
     return ciphertext
 
-def decrypt(private_key, ciphertext):
-    cipher = PKCS1_OAEP.new(RSA.importKey(private_key))
-    plaintext = cipher.decrypt(ciphertext)
-    return plaintext.decode()
+
+def decrypt(ciphertext, private_key):
+    plaintext = private_key.decrypt(
+        ciphertext,
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
+    )
+    return plaintext
+
 
 if __name__ == "__main__":
-    private_key, public_key = generate_keypair(2048)
-    message = "Hello, RSA!"
-    ciphertext = encrypt(public_key, message)
-    plaintext = decrypt(private_key, ciphertext)
+    private_key, public_key = generate_keys()
+    message = b"This is a secret message"
+    ciphertext = encrypt(message, public_key)
+    plaintext = decrypt(ciphertext, private_key)
     print(f"Ciphertext: {ciphertext.hex()}")
     print(f"Plaintext: {plaintext}")

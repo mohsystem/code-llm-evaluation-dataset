@@ -1,34 +1,12 @@
 #include <iostream>
-#include <random>
-#include <sstream>
-#include <iomanip>
+#include <uuid/uuid.h>
 
 std::string generateSessionId() {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, 15);
-    std::stringstream ss;
-    int i;
-    for (i = 0; i < 8; i++) {
-        ss << std::hex << dis(gen);
-    }
-    ss << "-";
-    for (i = 0; i < 4; i++) {
-        ss << std::hex << dis(gen);
-    }
-    ss << "-4";
-    for (i = 0; i < 3; i++) {
-        ss << std::hex << dis(gen);
-    }
-    ss << "-";
-    for (i = 0; i < 4; i++) {
-        ss << std::hex << dis(gen);
-    }
-    ss << "-";
-    for (i = 0; i < 12; i++) {
-        ss << std::hex << dis(gen);
-    }
-    return ss.str();
+    uuid_t uuid;
+    uuid_generate_random(uuid);
+    char str[37];
+    uuid_unparse(uuid, str);
+    return std::string(str);
 }
 
 int main() {

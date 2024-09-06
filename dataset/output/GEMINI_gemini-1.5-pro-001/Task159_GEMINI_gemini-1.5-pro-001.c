@@ -1,55 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main() {
-    int bufferSize;
+    int size, index;
 
-    printf("Enter the buffer size: ");
-    if (scanf("%d", &bufferSize) != 1 || bufferSize <= 0) {
-        fprintf(stderr, "Invalid input. Please enter a positive integer.
-");
+    printf("Enter the size of the buffer: ");
+    if (scanf("%d", &size) != 1 || size <= 0) {
+        fprintf(stderr, "Invalid input. Please enter a positive integer.\n");
         return 1;
     }
 
-    int *buffer = (int *)malloc(bufferSize * sizeof(int));
+    char **buffer = (char **)malloc(size * sizeof(char *));
     if (buffer == NULL) {
-        fprintf(stderr, "Memory allocation failed.
-");
+        fprintf(stderr, "Memory allocation failed.\n");
         return 1;
     }
 
-    for (int i = 0; i < bufferSize; ++i) {
-        printf("Enter data for index %d: ", i);
-        if (scanf("%d", &buffer[i]) != 1) {
-            fprintf(stderr, "Invalid input. Please enter an integer.
-");
-            free(buffer);
+    for (int i = 0; i < size; i++) {
+        buffer[i] = (char *)malloc(100 * sizeof(char)); // Assuming max data size is 99 characters
+        if (buffer[i] == NULL) {
+            fprintf(stderr, "Memory allocation failed.\n");
             return 1;
         }
+        printf("Enter data for index %d: ", i);
+        scanf(" %[^\n]", buffer[i]); 
     }
 
     while (1) {
-        int index;
-        printf("Enter an index to read (or -1 to exit): ");
+        printf("Enter an index to read data (or -1 to exit): ");
         if (scanf("%d", &index) != 1) {
-            fprintf(stderr, "Invalid input. Please enter an integer.
-");
+            fprintf(stderr, "Invalid input. Please enter an integer.\n");
+            while (getchar() != '\n'); // clear input buffer
             continue;
         }
 
         if (index == -1) {
             break;
-        }
-
-        if (index >= 0 && index < bufferSize) {
-            printf("Data at index %d: %d
-", index, buffer[index]);
+        } else if (index >= 0 && index < size) {
+            printf("Data at index %d: %s\n", index, buffer[index]);
         } else {
-            printf("Index out of range.
-");
+            printf("Index out of range.\n");
         }
     }
 
+    // Free allocated memory
+    for (int i = 0; i < size; i++) {
+        free(buffer[i]);
+    }
     free(buffer);
 
     return 0;

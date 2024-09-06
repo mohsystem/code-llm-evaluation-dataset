@@ -1,7 +1,6 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include <time.h>
 
 typedef struct {
     double radius;
@@ -34,3 +33,10 @@ double* solutionRandPoint(Solution* obj, int* retSize) {
 void solutionFree(Solution* obj) {
     free(obj);
 }
+
+/**
+ * Your Solution struct will be instantiated and called as such:
+ * Solution* obj = solutionCreate(radius, x_center, y_center);
+ * double* param_1 = solutionRandPoint(obj, retSize);
+ * solutionFree(obj);
+*/

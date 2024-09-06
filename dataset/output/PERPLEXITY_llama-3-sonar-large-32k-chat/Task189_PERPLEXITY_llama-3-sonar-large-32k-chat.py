@@ -5,42 +5,31 @@ class ZeroEvenOdd:
         self.n = n
         self.lock = threading.Lock()
         self.cond = threading.Condition(self.lock)
-        self.zero_turn = True
-        self.even_turn = False
-        self.odd_turn = False
-        self.count = 0
+        self.state = 0
 
-    def zero(self, printNumber: 'Callable[[int], None]') -> None:
+    def zero(self, printNumber):
         for _ in range(self.n * 2):
             with self.cond:
-                while not self.zero_turn:
+                while self.state % 3 != 0:
                     self.cond.wait()
                 printNumber(0)
-                self.count += 1
-                if self.count % 2 == 0:
-                    self.zero_turn = False
-                    self.even_turn = True
-                else:
-                    self.zero_turn = False
-                    self.odd_turn = True
+                self.state += 1
                 self.cond.notify_all()
 
-    def even(self, printNumber: 'Callable[[int], None]') -> None:
+    def even(self, printNumber):
         for i in range(2, self.n * 2 + 1, 2):
             with self.cond:
-                while not self.even_turn:
+                while self.state % 3 != 1:
                     self.cond.wait()
                 printNumber(i)
-                self.even_turn = False
-                self.zero_turn = True
+                self.state += 1
                 self.cond.notify_all()
 
-    def odd(self, printNumber: 'Callable[[int], None]') -> None:
+    def odd(self, printNumber):
         for i in range(1, self.n * 2, 2):
             with self.cond:
-                while not self.odd_turn:
+                while self.state % 3 != 2:
                     self.cond.wait()
                 printNumber(i)
-                self.odd_turn = False
-                self.zero_turn = True
+                self.state += 1
                 self.cond.notify_all()

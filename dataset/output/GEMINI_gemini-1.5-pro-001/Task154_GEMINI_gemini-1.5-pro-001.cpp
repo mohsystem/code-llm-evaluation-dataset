@@ -1,8 +1,8 @@
 #include <iostream>
+#include <vector>
 #include <stack>
 #include <unordered_map>
 #include <unordered_set>
-#include <vector>
 
 using namespace std;
 
@@ -17,7 +17,9 @@ void depthFirstSearch(const unordered_map<char, vector<char>>& graph, char start
         if (visited.find(node) == visited.end()) {
             visited.insert(node);
             cout << node << " "; // Process the node here
-            for (int i = graph.at(node).size() - 1; i >= 0; i--) {
+
+            // Push unvisited neighbors onto the stack
+            for (int i = graph.at(node).size() - 1; i >= 0; --i) {
                 char neighbor = graph.at(node)[i];
                 if (visited.find(neighbor) == visited.end()) {
                     stack.push(neighbor);

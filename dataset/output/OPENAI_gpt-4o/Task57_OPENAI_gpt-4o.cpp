@@ -1,16 +1,14 @@
 #include <iostream>
-
-long factorial(int n) {
-    if (n == 0 || n == 1) {
-        return 1;
-    }
-    return n * factorial(n - 1);
-}
+using namespace std;
 
 int main() {
     int number;
-    std::cout << "Enter a number:" << std::endl;
-    std::cin >> number;
-    std::cout << "Factorial: " << factorial(number) << std::endl;
+    cout << "Enter a number: ";
+    cin >> number;
+    long long factorial = 1;
+    for (int i = 1; i <= number; i++) {
+        factorial *= i;
+    }
+    cout << "The factorial of " << number << " is " << factorial << endl;
     return 0;
 }

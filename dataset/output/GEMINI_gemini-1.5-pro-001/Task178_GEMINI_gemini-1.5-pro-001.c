@@ -3,79 +3,87 @@
 #include <limits.h>
 
 typedef struct {
+    int *arr;
     int front;
     int rear;
     int size;
-    int capacity;
-    int *array;
 } Deque;
 
 Deque *createDeque(int capacity) {
-    Deque *deque = (Deque *)malloc(sizeof(Deque));
-    deque->capacity = capacity;
-    deque->front = deque->size = 0;
-    deque->rear = capacity - 1;
-    deque->array = (int *)malloc(deque->capacity * sizeof(int));
-    return deque;
+    Deque *dq = (Deque *)malloc(sizeof(Deque));
+    dq->arr = (int *)malloc(sizeof(int) * capacity);
+    dq->front = -1;
+    dq->rear = -1;
+    dq->size = capacity;
+    return dq;
 }
 
-int isEmpty(Deque *deque) {
-    return (deque->size == 0);
+int isEmpty(Deque *dq) {
+    return dq->front == -1;
 }
 
-int isFull(Deque *deque) {
-    return (deque->size == deque->capacity);
+int isFull(Deque *dq) {
+    return ((dq->rear + 1) % dq->size == dq->front);
 }
 
-void insertRear(Deque *deque, int item) {
-    if (isFull(deque)) {
+void insertRear(Deque *dq, int item) {
+    if (isFull(dq)) {
         return;
     }
-    deque->rear = (deque->rear + 1) % deque->capacity;
-    deque->array[deque->rear] = item;
-    deque->size = deque->size + 1;
+    if (isEmpty(dq)) {
+        dq->front = 0;
+        dq->rear = 0;
+    } else {
+        dq->rear = (dq->rear + 1) % dq->size;
+    }
+    dq->arr[dq->rear] = item;
 }
 
-void deleteFront(Deque *deque) {
-    if (isEmpty(deque)) {
+void deleteFront(Deque *dq) {
+    if (isEmpty(dq)) {
         return;
     }
-    deque->front = (deque->front + 1) % deque->capacity;
-    deque->size = deque->size - 1;
+    if (dq->front == dq->rear) {
+        dq->front = -1;
+        dq->rear = -1;
+    } else {
+        dq->front = (dq->front + 1) % dq->size;
+    }
 }
 
-int getFront(Deque *deque) {
-    if (isEmpty(deque)) {
-        return INT_MIN;
+int getFront(Deque *dq) {
+    if (isEmpty(dq)) {
+        return -1; 
     }
-    return deque->array[deque->front];
+    return dq->arr[dq->front];
 }
 
-int getRear(Deque *deque) {
-    if (isEmpty(deque)) {
-        return INT_MIN;
+int getRear(Deque *dq) {
+    if (isEmpty(dq)) {
+        return -1; 
     }
-    return deque->array[deque->rear];
+    return dq->arr[dq->rear];
 }
 
 int shortestSubarray(int* nums, int numsSize, int k) {
-    int n = numsSize;
-    long long preSum[n + 1];
+    long long preSum[numsSize + 1];
     preSum[0] = 0;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < numsSize; i++) {
         preSum[i + 1] = preSum[i] + nums[i];
     }
     int res = INT_MAX;
-    Deque *queue = createDeque(n + 1);
-    for (int i = 0; i < n + 1; i++) {
-        while (!isEmpty(queue) && preSum[i] - preSum[getFront(queue)] >= k) {
-            res = (res < i - getFront(queue)) ? res : (i - getFront(queue));
-            deleteFront(queue);
+    Deque *q = createDeque(numsSize + 1);
+    for (int i = 0; i <= numsSize; i++) {
+        while (!isEmpty(q) && preSum[i] - preSum[getFront(q)] >= k) {
+            res = (res < i - getFront(q)) ? res : (i - getFront(q));
+            deleteFront(q);
         }
-        while (!isEmpty(queue) && preSum[i] <= preSum[getRear(queue)]) {
-            deleteRear(queue);
+        while (!isEmpty(q) && preSum[i] <= preSum[getRear(q)]) {
+            deleteRear(q);
         }
-        insertRear(queue, i);
+        insertRear(q, i);
     }
+    free(q->arr);
+    free(q);
     return (res == INT_MAX) ? -1 : res;
 }

@@ -1,38 +1,26 @@
 #include <stdio.h>
-#include <stdbool.h>
+#include <time.h>
+#include <unistd.h>
 
-typedef struct {
-    int userId;
-    bool active;
+typedef struct UserSession {
+    char userId[50];
+    time_t startTime;
 } UserSession;
 
-UserSession createUserSession(int userId) {
+UserSession create_session(const char *userId) {
     UserSession session;
-    session.userId = userId;
-    session.active = true;
+    snprintf(session.userId, sizeof(session.userId), "%s", userId);
+    session.startTime = time(NULL);
     return session;
 }
 
-void endSession(UserSession *session) {
-    session->active = false;
-}
-
-int getUserId(UserSession *session) {
-    return session->userId;
-}
-
-bool isActive(UserSession *session) {
-    return session->active;
+double get_duration(UserSession *session) {
+    return difftime(time(NULL), session->startTime);
 }
 
 int main() {
-    UserSession session = createUserSession(1);
-    printf("%d
-", getUserId(&session));
-    printf("%s
-", isActive(&session) ? "true" : "false");
-    endSession(&session);
-    printf("%s
-", isActive(&session) ? "true" : "false");
+    UserSession session = create_session("User1");
+    sleep(2);
+    printf("C: Session duration for %s: %.2f seconds\n", session.userId, get_duration(&session));
     return 0;
 }

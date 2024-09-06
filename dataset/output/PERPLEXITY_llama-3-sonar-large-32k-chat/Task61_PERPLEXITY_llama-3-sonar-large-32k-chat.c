@@ -1,23 +1,25 @@
+// C does not have a built-in XML parsing library, so we'll use the libxml2 library
+// This code assumes you have the libxml2 library installed and linked
+
 #include <libxml/parser.h>
+#include <libxml/tree.h>
+
 #include <stdio.h>
 
 int main() {
     xmlInitParser();
-    xmlDoc *doc = htmlReadMemory("<root><person><name>John</name><age>30</age></person></root>", 44, NULL);
+    xmlDoc *doc = xmlReadMemory("<root><person><name>John</name><age>30</age></person></root>", 44, NULL);
     if (doc == NULL) {
-        fprintf(stderr, "Could not parse document
-");
+        fprintf(stderr, "Failed to parse XML\n");
         return 1;
     }
-    xmlNode *root_element = xmlDocGetRootElement(doc);
-    if (root_element == NULL) {
-        fprintf(stderr, "empty document
-");
+    xmlNode *root = xmlDocGetRootElement(doc);
+    if (root == NULL) {
+        fprintf(stderr, "Failed to get root element\n");
         xmlFreeDoc(doc);
         return 1;
     }
-    printf("Root Element: %s
-", root_element->name);
+    printf("%s\n", root->name);
     xmlFreeDoc(doc);
     xmlCleanupParser();
     return 0;

@@ -16,16 +16,16 @@ int main() {
     cin >> operator_;
     
     switch(operator_) {
-        case \'+\':
+        case '+':
             result = num1 + num2;
             break;
-        case \'-\':
+        case '-':
             result = num1 - num2;
             break;
-        case \'*\':
+        case '*':
             result = num1 * num2;
             break;
-        case \'/\':
+        case '/':
             if(num2 != 0) {
                 result = num1 / num2;
             } else {
@@ -39,5 +39,6 @@ int main() {
     }
     
     cout << "Result: " << result << endl;
+    
     return 0;
 }

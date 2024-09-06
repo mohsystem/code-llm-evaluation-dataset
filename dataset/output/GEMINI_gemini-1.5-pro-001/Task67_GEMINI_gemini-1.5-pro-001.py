@@ -1,42 +1,34 @@
+import sqlite3
 import sys
-import mysql.connector
 
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: python get_customer_info.py <customerusername>")
-        return
+def get_customer_info(customerusername):
+    conn = sqlite3.connect('your_database.db')  # Replace 'your_database.db'
+    cursor = conn.cursor()
 
-    customer_username = sys.argv[1]
+    cursor.execute("SELECT * FROM customer WHERE customerusername=?", (customerusername,))
+    customer_data = cursor.fetchone()
 
-    db_config = {
-        "host": "localhost",
-        "user": "your_username",
-        "password": "your_password",
-        "database": "your_database_name"
-    }
+    conn.close()
 
-    try:
-        conn = mysql.connector.connect(**db_config)
-        cursor = conn.cursor(dictionary=True)
-
-        query = "SELECT * FROM customer WHERE customerusername = %s"
-        cursor.execute(query, (customer_username,))
-        customer = cursor.fetchone()
-
-        if customer:
-            print("Customer Information:")
-            print(f"Username: {customer['customerusername']}")
-            print(f"First Name: {customer['firstname']}")
-            print(f"Last Name: {customer['lastname']}")
-            print(f"Email: {customer['email']}")
-        else:
-            print("Customer not found.")
-
-        cursor.close()
-        conn.close()
-
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
+    if customer_data:
+        customer_info = {
+            'customerusername': customer_data[0],
+            'customerfirstname': customer_data[1],
+            # Add other fields as needed
+        }
+        return customer_info
+    else:
+        return None
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <customerusername>")
+        sys.exit(1)
+
+    customerusername = sys.argv[1]
+    customer_info = get_customer_info(customerusername)
+
+    if customer_info:
+        print(customer_info)
+    else:
+        print(f"No customer found with username: {customerusername}")

@@ -1,14 +1,12 @@
 #include <iostream>
 #include <vector>
+#include <string>
 #include <algorithm>
 
-using namespace std;
-
-bool checkFlush(vector<string> table, vector<string> hand) {
+bool checkFlush(std::vector<std::string> table, std::vector<std::string> hand) {
     int suits[4] = {0};
-    for (string card : table) {
-        char suit = card.back();
-        switch (suit) {
+    for (const auto& card : table) {
+        switch (card.back()) {
             case 'S':
                 suits[0]++;
                 break;
@@ -23,9 +21,8 @@ bool checkFlush(vector<string> table, vector<string> hand) {
                 break;
         }
     }
-    for (string card : hand) {
-        char suit = card.back();
-        switch (suit) {
+    for (const auto& card : hand) {
+        switch (card.back()) {
             case 'S':
                 suits[0]++;
                 break;
@@ -40,8 +37,8 @@ bool checkFlush(vector<string> table, vector<string> hand) {
                 break;
         }
     }
-    for (int count : suits) {
-        if (count >= 5) {
+    for (int suit : suits) {
+        if (suit >= 5) {
             return true;
         }
     }
@@ -49,8 +46,8 @@ bool checkFlush(vector<string> table, vector<string> hand) {
 }
 
 int main() {
-    vector<string> table = {"A_S", "J_H", "7_D", "8_D", "10_D"};
-    vector<string> hand = {"J_D", "3_D"};
-    cout << (checkFlush(table, hand) ? "true" : "false") << endl;
+    std::vector<std::string> table = {"A_S", "J_H", "7_D", "8_D", "10_D"};
+    std::vector<std::string> hand = {"J_D", "3_D"};
+    std::cout << std::boolalpha << checkFlush(table, hand) << std::endl;
     return 0;
 }

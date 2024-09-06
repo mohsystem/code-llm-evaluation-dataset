@@ -1,36 +1,35 @@
-#include <stdio.h>
 #include <regex.h>
+#include <stdio.h>
 
-int isValidIP(const char *ip) {
+int validate_ip(const char *ip) {
     regex_t regex;
-    int ret;
-    const char *pattern = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\."
-                          "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\."
-                          "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\."
-                          "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+    int reti;
 
-    ret = regcomp(&regex, pattern, REG_EXTENDED);
-    if (ret) {
-        fprintf(stderr, "Could not compile regex
-");
+    const char *pattern = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+
+    reti = regcomp(&regex, pattern, REG_EXTENDED);
+    if (reti) {
+        fprintf(stderr, "Could not compile regex\n");
         return 0;
     }
 
-    ret = regexec(&regex, ip, 0, NULL, 0);
-    regfree(&regex);
+    reti = regexec(&regex, ip, 0, NULL, 0);
+    if (!reti) {
+        return 1;  // true
+    } else if (reti == REG_NOMATCH) {
+        return 0;  // false
+    } else {
+        char msgbuf[100];
+        regerror(reti, &regex, msgbuf, sizeof(msgbuf));
+        fprintf(stderr, "Regex match failed: %s\n", msgbuf);
+        return 0;
+    }
 
-    return !ret;
+    regfree(&regex);
 }
 
 int main() {
-    const char *ip = "192.168.1.1";
-    if (isValidIP(ip)) {
-        printf("%s is a valid IP address.
-", ip);
-    } else {
-        printf("%s is not a valid IP address.
-", ip);
-    }
-
+    printf("%d\n", validate_ip("192.168.1.1"));  // 1 (true)
+    printf("%d\n", validate_ip("256.168.1.1"));  // 0 (false)
     return 0;
 }

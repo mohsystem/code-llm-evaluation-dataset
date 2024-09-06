@@ -1,48 +1,50 @@
 #include <iostream>
 #include <string>
 #include <random>
-#include <ctime>
+#include <chrono>
 
-using namespace std;
+// Note: Sending emails from C++ requires external libraries. 
+//       This example focuses on OTP generation and verification.
 
-// Simulated authentication function (replace with actual database check)
-bool authenticate(const string& username, const string& password) {
-    return username == "user" && password == "password";
-}
+std::string generateOTP(int length = 6) {
+    std::string digits = "0123456789";
+    std::random_device rd;
+    std::mt19937 generator(rd());
+    std::uniform_int_distribution<> distribution(0, digits.size() - 1);
 
-// Generate a random 6-digit OTP
-int generateOTP() {
-    random_device rd;
-    mt19937 generator(rd());
-    uniform_int_distribution<int> distribution(100000, 999999);
-    return distribution(generator);
+    std::string otp;
+    for (int i = 0; i < length; ++i) {
+        otp += digits[distribution(generator)];
+    }
+    return otp;
 }
 
 int main() {
-    string username, password;
-    int otp, enteredOtp;
+    std::string username, password;
 
-    cout << "Enter username: ";
-    cin >> username;
+    std::cout << "Username: ";
+    std::cin >> username;
+    std::cout << "Password: ";
+    std::cin >> password;
 
-    cout << "Enter password: ";
-    cin >> password;
+    // Simulate user authentication (replace with your actual authentication logic)
+    if (username == "user" && password == "password") {
+        std::string otp = generateOTP();
 
-    // Simulated user authentication
-    if (authenticate(username, password)) {
-        otp = generateOTP();
-        cout << "One-Time Password: " << otp << endl;
+        // In a real application, send the OTP via email or SMS here.
+        std::cout << "OTP: " << otp << std::endl; // Displaying for demo purposes
 
-        cout << "Enter OTP: ";
-        cin >> enteredOtp;
+        std::string enteredOTP;
+        std::cout << "Enter OTP: ";
+        std::cin >> enteredOTP;
 
-        if (enteredOtp == otp) {
-            cout << "Two-factor authentication successful. Access granted!" << endl;
+        if (enteredOTP == otp) {
+            std::cout << "Two-factor authentication successful. Logged in!" << std::endl;
         } else {
-            cout << "Incorrect OTP. Access denied!" << endl;
+            std::cout << "Incorrect OTP. Access denied." << std::endl;
         }
     } else {
-        cout << "Invalid username or password. Access denied!" << endl;
+        std::cout << "Invalid username or password." << std::endl;
     }
 
     return 0;

@@ -4,29 +4,29 @@
 
 int validateIP(char *ip) {
     char *token = strtok(ip, ".");
-    int i, num;
-    for (i = 0; i < 4; i++) {
-        if (token == NULL) return 0;
-        num = atoi(token);
-        if (num < 0 || num > 255) return 0;
+    int count = 0;
+    while (token != NULL) {
+        count++;
+        int num = atoi(token);
+        if (num > 255 || num < 0) {
+            return 0;
+        }
         token = strtok(NULL, ".");
     }
-    if (token != NULL) return 0;
+    if (count != 4) {
+        return 0;
+    }
     return 1;
 }
 
 int main() {
     char ip[16];
     printf("Enter an IP address: ");
-    fgets(ip, 16, stdin);
-    ip[strcspn(ip, "
-")] = 0; // remove newline character
+    scanf("%15s", ip);
     if (validateIP(ip)) {
-        printf("IP address is valid
-");
+        printf("IP address is valid\n");
     } else {
-        printf("IP address is not valid
-");
+        printf("IP address is not valid\n");
     }
     return 0;
 }

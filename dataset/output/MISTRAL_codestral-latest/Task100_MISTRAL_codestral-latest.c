@@ -1,44 +1,28 @@
 #include <stdio.h>
 #include <regex.h>
-#include <string.h>
 
-#define MAX_LINE_LENGTH 256
+int main(int argc, char* argv[]) {
+    const char* pattern = argv[1];
+    const char* fileName = argv[2];
 
-int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        fprintf(stderr, "Usage: %s <pattern> <filename>
-", argv[0]);
-        return 1;
-    }
+    FILE* file = fopen(fileName, "r");
+    if (file != NULL) {
+        regex_t regexPattern;
+        regcomp(&regexPattern, pattern, REG_EXTENDED);
 
-    const char *pattern = argv[1];
-    const char *filename = argv[2];
-
-    regex_t regex;
-    int ret = regcomp(&regex, pattern, REG_EXTENDED);
-    if (ret) {
-        fprintf(stderr, "Could not compile regex
-");
-        return 1;
-    }
-
-    FILE *file = fopen(filename, "r");
-    if (!file) {
-        perror("Error opening file");
-        regfree(&regex);
-        return 1;
-    }
-
-    char line[MAX_LINE_LENGTH];
-    while (fgets(line, MAX_LINE_LENGTH, file)) {
-        ret = regexec(&regex, line, 0, NULL, 0);
-        if (!ret) {
-            printf("Match found: %s", line);
+        char line[256];
+        while (fgets(line, sizeof(line), file)) {
+            regmatch_t match;
+            if (regexec(&regexPattern, line, 1, &match, 0) == 0) {
+                printf("%.*s\n", match.rm_eo - match.rm_so, line + match.rm_so);
+            }
         }
-    }
 
-    fclose(file);
-    regfree(&regex);
+        fclose(file);
+        regfree(&regexPattern);
+    } else {
+        printf("File not found: %s\n", fileName);
+    }
 
     return 0;
 }

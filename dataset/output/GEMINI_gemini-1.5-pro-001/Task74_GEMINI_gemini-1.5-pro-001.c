@@ -1,28 +1,23 @@
+/* This code requires libpq, the PostgreSQL C client library.
+   Install it on your system using the package manager and 
+   link it during compilation. Example for GCC:
+   gcc your_program.c -lpq -o your_program
+*/
+
 #include <stdio.h>
 #include <libpq-fe.h>
 
-PGconn* connectToDatabase(const char* conninfo) {
-    PGconn* conn = PQconnectdb(conninfo);
+PGconn* connect_to_postgres(const char *host, const char *database, 
+                          const char *user, const char *password) {
+    PGconn *conn = NULL;
 
-    if (PQstatus(conn) == CONNECTION_OK) {
-        return conn;
-    } else {
-        fprintf(stderr, "Connection to database failed: %s
-", PQerrorMessage(conn));
+    conn = PQsetdbLogin(host, NULL, NULL, NULL, database, user, password);
+
+    if (PQstatus(conn) != CONNECTION_OK) {
+        fprintf(stderr, "Connection to database failed: %s\n", PQerrorMessage(conn));
         PQfinish(conn);
         return NULL;
     }
-}
 
-int main() {
-    const char* conninfo = "host=localhost port=5432 dbname=your_database_name user=your_username password=your_password";
-
-    PGconn* conn = connectToDatabase(conninfo);
-
-    if (conn != NULL) {
-        PQfinish(conn);
-        return 0;
-    } else {
-        return 1;
-    }
+    return conn;
 }

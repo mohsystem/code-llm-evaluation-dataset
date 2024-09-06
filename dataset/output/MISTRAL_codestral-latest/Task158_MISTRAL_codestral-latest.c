@@ -7,15 +7,11 @@ int main() {
     printf("Enter data for OS command: ");
     fgets(userInput, sizeof(userInput), stdin);
 
-    // Remove newline character from user input
-    if (userInput[strlen(userInput) - 1] == '
-') {
-        userInput[strlen(userInput) - 1] = '\0';
-    }
+    // Construct the OS command
+    char command[200];
+    sprintf(command, "your_command_here %s", userInput);
 
-    // Run OS command with user input
-    char command[150];
-    sprintf(command, "your_command %s", userInput);
+    // Execute the command
     system(command);
 
     return 0;

@@ -1,17 +1,23 @@
-def get_valid_input(prompt):
+def get_user_input(prompt):
     while True:
         try:
-            return int(input(prompt))
-        except ValueError:
-            print("Invalid input. Please enter a valid number.")
+            return input(prompt)
+        except EOFError:
+            print("Invalid input. Please try again.")
 
-num1 = get_valid_input("Enter first number: ")
-num2 = get_valid_input("Enter second number: ")
+def validate_input(input_str):
+    if not input_str.isalpha():
+        raise ValueError("Input should only contain alphabets")
 
-print("Sum:", num1 + num2)
-print("Difference:", num1 - num2)
-print("Product:", num1 * num2)
-if num2 != 0:
-    print("Quotient:", num1 / num2)
-else:
-    print("Cannot divide by zero.")
+def main():
+    input_str = get_user_input("Enter a string: ")
+    try:
+        validate_input(input_str)
+        print("Input is valid")
+        print("Upper case: ", input_str.upper())
+        print("Lower case: ", input_str.lower())
+    except ValueError as e:
+        print("Error: ", str(e))
+
+if __name__ == "__main__":
+    main()

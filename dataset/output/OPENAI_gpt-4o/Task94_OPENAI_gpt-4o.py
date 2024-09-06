@@ -1,11 +1,20 @@
+import sys
+
+def read_file(filename):
+    with open(filename, 'r') as file:
+        records = [line.strip().split('=') for line in file]
+    records.sort()
+    return records
+
 def main():
-    with open("records.txt") as file:
-        lines = file.readlines()
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <filename>")
+        return
     
-    lines.sort()
-    
-    for line in lines:
-        print(line.strip())
+    filename = sys.argv[1]
+    records = read_file(filename)
+    for key, value in records:
+        print(f"{key} = {value}")
 
 if __name__ == "__main__":
     main()

@@ -1,7 +1,5 @@
 import random
 
-def generate_random_token(length):
-    token = ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=length))
-    return token
-
-print(generate_random_token(10))
+# Generate a random number between 1 and 100
+random_number = random.randint(1, 100)
+print(random_number)

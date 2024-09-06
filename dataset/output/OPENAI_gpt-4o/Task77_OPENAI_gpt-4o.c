@@ -1,60 +1,37 @@
+#include <curl/curl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libftp.h>
 
-int main(int argc, char **argv) {
-    if (argc < 5) {
-        printf("Usage: %s <hostname> <username> <password> <remoteFilePath>
-", argv[0]);
-        return 1;
-    }
+size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+    return fwrite(ptr, size, nmemb, stream);
+}
 
+int main(int argc, char *argv[]) {
     char *hostname = argv[1];
     char *username = argv[2];
     char *password = argv[3];
-    char *remoteFilePath = argv[4];
-    char *localFilePath = strrchr(remoteFilePath, '/') + 1;
+    char *filename = argv[4];
 
-    ftp_client *client = ftp_client_create();
-    if (!client) {
-        printf("Unable to create FTP client.
-");
-        return 1;
+    CURL *curl;
+    FILE *fp;
+    CURLcode res;
+    char ftp_url[256];
+
+    snprintf(ftp_url, sizeof(ftp_url), "ftp://%s/%s", hostname, filename);
+
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+    if (curl) {
+        fp = fopen(filename, "wb");
+        curl_easy_setopt(curl, CURLOPT_URL, ftp_url);
+        curl_easy_setopt(curl, CURLOPT_USERPWD, strcat(strcat(username, ":"), password));
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        fclose(fp);
     }
-
-    if (ftp_connect(client, hostname, 21) != 0) {
-        printf("Unable to connect to server.
-");
-        return 1;
-    }
-
-    if (ftp_login(client, username, password) != 0) {
-        printf("Login failed.
-");
-        return 1;
-    }
-
-    FILE *localFile = fopen(localFilePath, "wb");
-    if (!localFile) {
-        printf("Unable to open local file for writing.
-");
-        return 1;
-    }
-
-    if (ftp_retrieve(client, remoteFilePath, localFile) != 0) {
-        printf("File download failed.
-");
-        fclose(localFile);
-        return 1;
-    }
-
-    printf("File has been downloaded successfully.
-");
-    fclose(localFile);
-
-    ftp_disconnect(client);
-    ftp_client_destroy(client);
-
+    curl_global_cleanup();
     return 0;
 }

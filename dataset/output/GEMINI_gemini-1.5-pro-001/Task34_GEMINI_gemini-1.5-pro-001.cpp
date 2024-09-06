@@ -1,19 +1,13 @@
 #include <cmath>
+#include <string>
 
-class Solution {
-public:
-    static bool isNarcissistic(int number) {
-        if (number < 0) {
-            return false;
-        }
-        int originalNumber = number;
-        int sum = 0;
-        int digits = std::to_string(number).length();
-        while (number > 0) {
-            int digit = number % 10;
-            sum += std::pow(digit, digits);
-            number /= 10;
-        }
-        return sum == originalNumber;
-    }
-};
+bool narcissistic(int value) {
+  std::string strValue = std::to_string(value);
+  int numDigits = strValue.length();
+  int total = 0;
+  for (int i = 0; i < numDigits; ++i) {
+    int digit = strValue[i] - '0';
+    total += std::pow(digit, numDigits);
+  }
+  return total == value;
+}

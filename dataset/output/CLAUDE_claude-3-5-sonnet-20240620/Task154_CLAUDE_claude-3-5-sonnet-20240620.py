@@ -1,24 +1,25 @@
 
+from collections import defaultdict
+
 class Graph:
     def __init__(self):
-        self.graph = {}
+        self.graph = defaultdict(list)
 
     def add_edge(self, u, v):
-        if u not in self.graph:
-            self.graph[u] = []
         self.graph[u].append(v)
 
-def dfs(graph, start, visited=None):
-    if visited is None:
+    def dfs_util(self, v, visited):
+        visited.add(v)
+        print(v, end=' ')
+
+        for neighbour in self.graph[v]:
+            if neighbour not in visited:
+                self.dfs_util(neighbour, visited)
+
+    def dfs(self, v):
         visited = set()
-    visited.add(start)
-    print(start, end=\' \')
+        self.dfs_util(v, visited)
 
-    for neighbor in graph.graph.get(start, []):
-        if neighbor not in visited:
-            dfs(graph, neighbor, visited)
-
-# Example usage
 if __name__ == "__main__":
     g = Graph()
     g.add_edge(0, 1)
@@ -29,4 +30,4 @@ if __name__ == "__main__":
     g.add_edge(3, 3)
 
     print("Depth First Traversal (starting from vertex 2):")
-    dfs(g, 2)
+    g.dfs(2)

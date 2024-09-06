@@ -1,4 +1,5 @@
 import time
+import tempfile
 
 def binary_search(arr, x):
     l = 0
@@ -16,17 +17,10 @@ def binary_search(arr, x):
 arr = [2, 3, 4, 10, 40]
 x = 10
 
-start_time = time.time_ns()
+start_time = time.time()
 result = binary_search(arr, x)
-end_time = time.time_ns()
-
+end_time = time.time()
 execution_time = end_time - start_time
 
-with open("execution_time.txt", "w") as file:
-    file.write(f"Execution time in nanoseconds: {execution_time}
-")
-
-if result == -1:
-    print("Element not present")
-else:
-    print(f"Element found at index {result}")
+with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+    temp_file.write(f"Execution time: {execution_time}".encode())

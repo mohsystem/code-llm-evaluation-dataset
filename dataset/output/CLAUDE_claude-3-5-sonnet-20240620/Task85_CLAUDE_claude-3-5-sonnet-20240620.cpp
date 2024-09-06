@@ -4,31 +4,23 @@
 #include <random>
 #include <chrono>
 
-class RandomStringGenerator {
-private:
-    static const std::string ALPHABET;
-    static std::mt19937 rng;
+std::string generate_random_string(int length) {
+    const std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    std::string result;
+    result.reserve(length);
 
-public:
-    static std::string generateRandomString(int length) {
-        std::uniform_int_distribution<int> dist(0, ALPHABET.length() - 1);
-        std::string result;
-        result.reserve(length);
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(seed);
+    std::uniform_int_distribution<> distribution(0, characters.length() - 1);
 
-        for (int i = 0; i < length; ++i) {
-            result += ALPHABET[dist(rng)];
-        }
-
-        return result;
+    for (int i = 0; i < length; ++i) {
+        result += characters[distribution(generator)];
     }
-};
 
-const std::string RandomStringGenerator::ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-std::mt19937 RandomStringGenerator::rng(std::chrono::steady_clock::now().time_since_epoch().count());
+    return result;
+}
 
 int main() {
-    int length = 10;
-    std::string randomString = RandomStringGenerator::generateRandomString(length);
-    std::cout << "Random string: " << randomString << std::endl;
+    std::cout << generate_random_string(10) << std::endl;
     return 0;
 }

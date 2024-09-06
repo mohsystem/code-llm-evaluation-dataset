@@ -1,12 +1,11 @@
 #include <iostream>
-#include <algorithm>
-using namespace std;
+#include <algorithm> 
+#include <string>
 
 int main() {
-    string str;
-    cout << "Enter a string: ";
-    cin >> str;
-    reverse(str.begin(), str.end());
-    cout << "Reversed string (C++): " << str << endl;
+    std::string input_str;
+    std::cin >> input_str;
+    std::reverse(input_str.begin(), input_str.end());
+    std::cout << input_str << std::endl;
     return 0;
 }

@@ -2,16 +2,17 @@
 #include <regex>
 
 int main() {
-    std::string input;
-    std::regex pattern("^[a-zA-Z0-9]*$");
+    std::string user_input;
+    std::cout << "Enter something: ";
+    std::getline(std::cin, user_input);
 
-    std::cout << "Enter a string in C++:" << std::endl;
-    std::getline(std::cin, input);
-    if (std::regex_match(input, pattern)) {
-        std::cout << "Valid C++ Input" << std::endl;
+    std::regex pattern("^[a-zA-Z0-9_]+$");
+    
+    if (std::regex_match(user_input, pattern)) {
+        std::cout << "Valid input" << std::endl;
     } else {
-        std::cout << "Invalid C++ Input" << std::endl;
+        std::cout << "Invalid input" << std::endl;
     }
-
+    
     return 0;
 }

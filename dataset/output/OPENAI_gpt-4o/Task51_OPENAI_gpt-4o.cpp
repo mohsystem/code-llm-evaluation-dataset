@@ -1,22 +1,25 @@
 #include <iostream>
 #include <string>
+using namespace std;
 
-int main() {
-    std::string input = "HelloWorld";
-    int shift = 3;
-    std::string encrypted;
+string encrypt(string text) {
+    string result = "";
     
-    for (char c : input) {
-        if (std::isalpha(c)) {
-            char base = std::islower(c) ? 'a' : 'A';
-            encrypted += (c - base + shift) % 26 + base;
+    for (char &ch : text) {
+        if (isupper(ch)) {
+            result += char((ch + 1 - 'A') % 26 + 'A');
+        } else if (islower(ch)) {
+            result += char((ch + 1 - 'a') % 26 + 'a');
         } else {
-            encrypted += c;
+            result += ch;
         }
     }
-    
-    std::cout << "C++: " << encrypted << std::endl;
-    
+    return result;
+}
+
+int main() {
+    string inputText = "HelloWorld";
+    string encryptedText = encrypt(inputText);
+    cout << encryptedText << endl;
     return 0;
 }
-main();

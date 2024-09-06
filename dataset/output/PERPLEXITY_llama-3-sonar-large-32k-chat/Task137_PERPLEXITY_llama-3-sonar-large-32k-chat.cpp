@@ -4,10 +4,10 @@
 #include <string>
 
 int main() {
-    std::map<std::string, std::map<std::string, double>> productTable;
-    productTable["apple"] = {{"price", 1.00}, {"stock", 100.0}};
-    productTable["banana"] = {{"price", 0.50}, {"stock", 200.0}};
-    productTable["orange"] = {{"price", 1.50}, {"stock", 50.0}};
+    std::map<std::string, std::map<std::string, int>> productTable;
+    productTable["apple"] = {{"price", 10}, {"stock", 100}};
+    productTable["banana"] = {{"price", 5}, {"stock", 200}};
+    productTable["orange"] = {{"price", 15}, {"stock", 50}};
 
     std::string productName;
     std::cout << "Enter product name: ";

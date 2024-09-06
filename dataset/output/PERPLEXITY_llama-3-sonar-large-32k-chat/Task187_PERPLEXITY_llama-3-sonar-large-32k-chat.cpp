@@ -1,36 +1,39 @@
+#include <condition_variable>
+#include <mutex>
+
 class H2O {
 private:
     int hydrogenCount = 0;
     int oxygenCount = 0;
-    std::mutex lock;
-    std::condition_variable cv;
+    std::mutex hydrogenMutex;
+    std::mutex oxygenMutex;
+    std::condition_variable hydrogenCond;
+    std::condition_variable oxygenCond;
 
 public:
-    void hydrogen(function<void()> releaseHydrogen) {
-        std::unique_lock<std::mutex> lk(lock);
+    void hydrogen(std::function<void()> releaseHydrogen) {
+        std::unique_lock<std::mutex> lock(hydrogenMutex);
         hydrogenCount++;
-        if (hydrogenCount == 2) {
-            cv.notify_all();
-        } else {
-            cv.wait(lk);
+        while (hydrogenCount < 2 || oxygenCount < 1) {
+            hydrogenCond.wait(lock);
         }
-        lk.unlock();
         releaseHydrogen();
-        lk.lock();
         hydrogenCount--;
+        if (hydrogenCount == 0) {
+            oxygenCond.notify_all();
+        }
     }
 
-    void oxygen(function<void()> releaseOxygen) {
-        std::unique_lock<std::mutex> lk(lock);
+    void oxygen(std::function<void()> releaseOxygen) {
+        std::unique_lock<std::mutex> lock(oxygenMutex);
         oxygenCount++;
-        if (oxygenCount == 1) {
-            cv.notify_all();
-        } else {
-            cv.wait(lk);
+        while (oxygenCount < 1 || hydrogenCount < 2) {
+            oxygenCond.wait(lock);
         }
-        lk.unlock();
         releaseOxygen();
-        lk.lock();
         oxygenCount--;
+        if (oxygenCount == 0) {
+            hydrogenCond.notify_all();
+        }
     }
 };

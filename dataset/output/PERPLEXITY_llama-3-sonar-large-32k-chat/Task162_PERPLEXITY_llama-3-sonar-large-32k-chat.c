@@ -1,101 +1,93 @@
+// C does not support priority queue and unordered map out of the box, so we will use a simple array and a linear search to implement Dijkstra's algorithm.
+
 #include <stdio.h>
-#include <stdlib.h>
 #include <limits.h>
 
 #define MAX_NODES 100
+#define MAX_EDGES 1000
 
 typedef struct {
-    char node;
-    int weight;
-    struct Node* next;
+    char name;
+    int distance;
 } Node;
 
 typedef struct {
-    Node* head;
-} Graph;
+    char from;
+    char to;
+    int weight;
+} Edge;
 
-Graph graph[MAX_NODES];
-int distances[MAX_NODES];
+Edge edges[MAX_EDGES];
+int edgeCount = 0;
+
+Node nodes[MAX_NODES];
+int nodeCount = 0;
+
+void addNode(char name) {
+    nodes[nodeCount].name = name;
+    nodes[nodeCount].distance = INT_MAX;
+    nodeCount++;
+}
+
+void addEdge(char from, char to, int weight) {
+    edges[edgeCount].from = from;
+    edges[edgeCount].to = to;
+    edges[edgeCount].weight = weight;
+    edgeCount++;
+}
 
 void dijkstra(char start) {
-    for (int i = 0; i < MAX_NODES; i++) {
-        distances[i] = INT_MAX;
-    }
-    distances[start - 'A'] = 0;
-    Node* pq[MAX_NODES];
-    int pq_size = 0;
-    pq[pq_size++] = (Node*)malloc(sizeof(Node));
-    pq[pq_size - 1]->node = start;
-    pq[pq_size - 1]->weight = 0;
-    pq[pq_size - 1]->next = NULL;
-    while (pq_size > 0) {
-        Node* current = pq[--pq_size];
-        Node* neighbor = graph[current->node - 'A'].head;
-        while (neighbor != NULL) {
-            if (current->weight + neighbor->weight < distances[neighbor->node - 'A']) {
-                distances[neighbor->node - 'A'] = current->weight + neighbor->weight;
-                Node* new_node = (Node*)malloc(sizeof(Node));
-                new_node->node = neighbor->node;
-                new_node->weight = distances[neighbor->node - 'A'];
-                new_node->next = NULL;
-                pq[pq_size++] = new_node;
-            }
-            neighbor = neighbor->next;
+    for (int i = 0; i < nodeCount; i++) {
+        if (nodes[i].name == start) {
+            nodes[i].distance = 0;
+            break;
         }
-        free(current);
+    }
+
+    for (int i = 0; i < nodeCount; i++) {
+        int minDistance = INT_MAX;
+        int minIndex = -1;
+        for (int j = 0; j < nodeCount; j++) {
+            if (nodes[j].distance < minDistance) {
+                minDistance = nodes[j].distance;
+                minIndex = j;
+            }
+        }
+
+        for (int j = 0; j < edgeCount; j++) {
+            if (edges[j].from == nodes[minIndex].name) {
+                int distance = nodes[minIndex].distance + edges[j].weight;
+                for (int k = 0; k < nodeCount; k++) {
+                    if (nodes[k].name == edges[j].to && distance < nodes[k].distance) {
+                        nodes[k].distance = distance;
+                    }
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < nodeCount; i++) {
+        printf("%c: %d\n", nodes[i].name, nodes[i].distance);
     }
 }
 
 int main() {
-    graph['A' - 'A'].head = (Node*)malloc(sizeof(Node));
-    graph['A' - 'A'].head->node = 'B';
-    graph['A' - 'A'].head->weight = 1;
-    graph['A' - 'A'].head->next = (Node*)malloc(sizeof(Node));
-    graph['A' - 'A'].head->next->node = 'C';
-    graph['A' - 'A'].head->next->weight = 4;
-    graph['A' - 'A'].head->next->next = NULL;
+    addNode('A');
+    addNode('B');
+    addNode('C');
+    addNode('D');
 
-    graph['B' - 'A'].head = (Node*)malloc(sizeof(Node));
-    graph['B' - 'A'].head->node = 'A';
-    graph['B' - 'A'].head->weight = 1;
-    graph['B' - 'A'].head->next = (Node*)malloc(sizeof(Node));
-    graph['B' - 'A'].head->next->node = 'C';
-    graph['B' - 'A'].head->next->weight = 2;
-    graph['B' - 'A'].head->next->next = (Node*)malloc(sizeof(Node));
-    graph['B' - 'A'].head->next->next->node = 'D';
-    graph['B' - 'A'].head->next->next->weight = 5;
-    graph['B' - 'A'].head->next->next->next = NULL;
+    addEdge('A', 'B', 1);
+    addEdge('A', 'C', 4);
+    addEdge('B', 'A', 1);
+    addEdge('B', 'C', 2);
+    addEdge('B', 'D', 5);
+    addEdge('C', 'A', 4);
+    addEdge('C', 'B', 2);
+    addEdge('C', 'D', 1);
+    addEdge('D', 'B', 5);
+    addEdge('D', 'C', 1);
 
-    graph['C' - 'A'].head = (Node*)malloc(sizeof(Node));
-    graph['C' - 'A'].head->node = 'A';
-    graph['C' - 'A'].head->weight = 4;
-    graph['C' - 'A'].head->next = (Node*)malloc(sizeof(Node));
-    graph['C' - 'A'].head->next->node = 'B';
-    graph['C' - 'A'].head->next->weight = 2;
-    graph['C' - 'A'].head->next->next = (Node*)malloc(sizeof(Node));
-    graph['C' - 'A'].head->next->next->node = 'D';
-    graph['C' - 'A'].head->next->next->weight = 1;
-    graph['C' - 'A'].head->next->next->next = NULL;
-
-    graph['D' - 'A'].head = (Node*)malloc(sizeof(Node));
-    graph['D' - 'A'].head->node = 'B';
-    graph['D' - 'A'].head->weight = 5;
-    graph['D' - 'A'].head->next = (Node*)malloc(sizeof(Node));
-    graph['D' - 'A'].head->next->node = 'C';
-    graph['D' - 'A'].head->next->weight = 1;
-    graph['D' - 'A'].head->next->next = NULL;
-
-    for (char c = 'A'; c <= 'D'; c++) {
-        distances[c - 'A'] = INT_MAX;
-    }
-
-    char startNode = 'A';
-    dijkstra(startNode);
-
-    for (char c = 'A'; c <= 'D'; c++) {
-        printf("%c: %d
-", c, distances[c - 'A']);
-    }
-
+    dijkstra('A');
     return 0;
 }

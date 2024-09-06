@@ -1,21 +1,27 @@
-def sort_key_value_file(file_path):
-  """Reads a file containing key-value pairs, sorts them by key, and prints the sorted pairs.
+import re
 
-  Args:
-    file_path: The path to the input file.
-  """
+def read_file_and_sort(file_path):
+    """Reads a file containing key-value pairs and sorts them by key.
 
-  key_value_pairs = {}
-  with open(file_path, 'r') as f:
-    for line in f:
-      key, value = line.strip().split(" ", 1)
-      key_value_pairs[key] = value
+    Args:
+        file_path (str): The path to the input file.
 
-  for key in sorted(key_value_pairs):
-    print(f"{key} {key_value_pairs[key]}")
+    Returns:
+        list: A list of sorted key-value pairs as tuples.
+    """
 
+    data = []
+    with open(file_path, 'r') as file:
+        for line in file:
+            match = re.match(r'(.+)=(.+)', line.strip())
+            if match:
+                key, value = match.groups()
+                data.append((key, value))
 
-if __name__ == "__main__":
-  # Replace "input.txt" with the actual input file name
-  input_file_path = "input.txt"
-  sort_key_value_file(input_file_path)
+    sorted_data = sorted(data, key=lambda item: item[0])
+    return sorted_data
+
+if __name__ == '__main__':
+    sorted_records = read_file_and_sort('input.txt')
+    for key, value in sorted_records:
+        print(f"{key}={value}")

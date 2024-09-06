@@ -5,30 +5,27 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 
-void executeXPathQuery(const char* filename, const char* xpathExpr) {
+void execute_xpath(const char* filename, const char* xpathExpr) {
     xmlDocPtr doc;
     xmlXPathContextPtr xpathCtx;
     xmlXPathObjectPtr xpathObj;
 
     doc = xmlParseFile(filename);
     if (doc == NULL) {
-        fprintf(stderr, "Error: unable to parse file \\"%s\\"\
-", filename);
+        fprintf(stderr, "Error: unable to parse file \\"%s\\"\\n", filename);
         return;
     }
 
     xpathCtx = xmlXPathNewContext(doc);
     if(xpathCtx == NULL) {
-        fprintf(stderr,"Error: unable to create new XPath context\
-");
+        fprintf(stderr,"Error: unable to create new XPath context\\n");
         xmlFreeDoc(doc);
         return;
     }
 
     xpathObj = xmlXPathEvalExpression((xmlChar*)xpathExpr, xpathCtx);
     if(xpathObj == NULL) {
-        fprintf(stderr,"Error: unable to evaluate xpath expression \\"%s\\"\
-", xpathExpr);
+        fprintf(stderr,"Error: unable to evaluate xpath expression \\"%s\\"\\n", xpathExpr);
         xmlXPathFreeContext(xpathCtx);
         xmlFreeDoc(doc);
         return;
@@ -38,10 +35,11 @@ void executeXPathQuery(const char* filename, const char* xpathExpr) {
     if (nodes) {
         for (int i = 0; i < nodes->nodeNr; i++) {
             xmlNodePtr cur = nodes->nodeTab[i];
-            xmlChar* content = xmlNodeGetContent(cur);
-            printf("%s\
-", content);
-            xmlFree(content);
+            if (cur->type == XML_ELEMENT_NODE) {
+                xmlChar* content = xmlNodeGetContent(cur);
+                printf("%s\\n", content);
+                xmlFree(content);
+            }
         }
     }
 
@@ -53,15 +51,14 @@ void executeXPathQuery(const char* filename, const char* xpathExpr) {
 
 int main(int argc, char **argv) {
     if (argc != 3) {
-        fprintf(stderr, "Usage: %s <xpath> <xml_file>\
-", argv[0]);
+        fprintf(stderr, "Usage: %s <xml_file> <xpath>\\n", argv[0]);
         return 1;
     }
 
-    const char* xpathExpr = argv[1];
-    const char* filename = argv[2];
+    const char* filename = argv[1];
+    const char* xpathExpr = argv[2];
 
-    executeXPathQuery(filename, xpathExpr);
+    execute_xpath(filename, xpathExpr);
 
     return 0;
 }

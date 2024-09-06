@@ -1,24 +1,9 @@
-#include <thread>
-#include <mutex>
-#include <dirent.h>
-#include <iostream>
+#include <vector>
 
-std::mutex mtx;
-
-void process_file(const char *filename) {
-    mtx.lock();
-    // Process the file here
-    mtx.unlock();
-}
-
-void process_files(const char *path) {
-    DIR *d;
-    struct dirent *dir;
-    d = opendir(path);
-    if (d) {
-        while ((dir = readdir(d)) != NULL) {
-            std::thread(process_file, dir->d_name).detach();
-        }
-        closedir(d);
+int countPassengers(std::vector<std::vector<int>> stops) {
+    int total = 0;
+    for (const auto& stop : stops) {
+        total += stop[0] - stop[1];
     }
+    return total;
 }

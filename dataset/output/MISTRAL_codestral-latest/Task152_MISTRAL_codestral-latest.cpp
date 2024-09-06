@@ -5,45 +5,35 @@
 
 class HashTable {
 private:
-    int size;
+    static const int SIZE = 10000;
     std::vector<std::list<std::pair<int, int>>> table;
 
     int hash(int key) {
-        return std::abs(key) % size;
+        return std::abs(key) % SIZE;
     }
 
 public:
-    HashTable() {
-        size = 10;
-        table.resize(size);
-    }
+    HashTable() : table(SIZE) {}
 
     void insert(int key, int value) {
-        int index = hash(key);
-        std::list<std::pair<int, int>>& bucket = table[index];
-        for (auto& entry : bucket) {
-            if (entry.first == key) {
-                entry.second = value;
-                return;
-            }
-        }
-        bucket.emplace_back(key, value);
+        int hashIndex = hash(key);
+        table[hashIndex].emplace_back(key, value);
     }
 
-    void delete_key(int key) {
-        int index = hash(key);
-        std::list<std::pair<int, int>>& bucket = table[index];
+    void deleteKey(int key) {
+        int hashIndex = hash(key);
+        auto& bucket = table[hashIndex];
         for (auto it = bucket.begin(); it != bucket.end(); it++) {
             if (it->first == key) {
                 bucket.erase(it);
-                return;
+                break;
             }
         }
     }
 
     int search(int key) {
-        int index = hash(key);
-        std::list<std::pair<int, int>>& bucket = table[index];
+        int hashIndex = hash(key);
+        auto& bucket = table[hashIndex];
         for (const auto& entry : bucket) {
             if (entry.first == key) {
                 return entry.second;

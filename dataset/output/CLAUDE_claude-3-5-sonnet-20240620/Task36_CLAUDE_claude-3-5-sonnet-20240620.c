@@ -2,27 +2,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_FILENAME 100
-#define MAX_LINE 1000
+#define MAX_LINE_LENGTH 1000
 
-int main() {
-    char filename[MAX_FILENAME];
-    char line[MAX_LINE];
-    FILE *file;
-
-    printf("Enter the file name: ");
-    fgets(filename, sizeof(filename), stdin);
-    filename[strcspn(filename, "\
-")] = 0;  // Remove newline
-
-    file = fopen(filename, "r");
-    if (file == NULL) {
-        printf("Error opening file.\
-");
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("Usage: %s <filename>\\n", argv[0]);
         return 1;
     }
 
-    while (fgets(line, sizeof(line), file)) {
+    const char *filename = argv[1];
+    FILE *file = fopen(filename, "r");
+
+    if (file == NULL) {
+        printf("Error: Unable to open file '%s'\\n", filename);
+        return 1;
+    }
+
+    char line[MAX_LINE_LENGTH];
+    while (fgets(line, sizeof(line), file) != NULL) {
         printf("%s", line);
     }
 

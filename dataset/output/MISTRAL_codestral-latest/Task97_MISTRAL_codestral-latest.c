@@ -1,62 +1,56 @@
+/*
+ * The C language does not have built-in support for XML parsing and XPath evaluation.
+ * This code snippet is a simplified example and does not cover all possible errors and edge cases.
+ * For a production-grade application, consider using a library such as libxml2 or TinyXML.
+ */
+
+#include <stdio.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 
 int main(int argc, char **argv) {
     if (argc != 3) {
-        printf("Usage: %s <xpath> <xmlfile>
-", argv[0]);
+        fprintf(stderr, "Usage: %s <xpath_value> <xml_file>\n", argv[0]);
         return 1;
     }
 
-    char *xpath = argv[1];
-    char *xmlFile = argv[2];
+    const char *xpath_value = argv[1];
+    const char *xml_file = argv[2];
 
-    xmlDocPtr doc;
-    xmlXPathContextPtr context;
-    xmlXPathObjectPtr result;
-
-    doc = xmlParseFile(xmlFile);
+    xmlDocPtr doc = xmlReadFile(xml_file, NULL, 0);
     if (doc == NULL) {
-        fprintf(stderr, "Document not parsed successfully. 
-");
+        fprintf(stderr, "Failed to parse %s\n", xml_file);
         return 1;
     }
 
-    context = xmlXPathNewContext(doc);
+    xmlXPathContextPtr context = xmlXPathNewContext(doc);
     if (context == NULL) {
-        fprintf(stderr, "Error in xmlXPathNewContext
-");
+        fprintf(stderr, "Error: unable to create new XPath context\n");
         xmlFreeDoc(doc);
         return 1;
     }
 
-    char expression[100];
-    sprintf(expression, "/tag[@id=%s]", xpath);
+    char expression[256];
+    snprintf(expression, sizeof(expression), "/tag[@id='%s']", xpath_value);
 
-    result = xmlXPathEvalExpression(BAD_CAST expression, context);
+    xmlXPathObjectPtr result = xmlXPathEvalExpression((xmlChar *)expression, context);
     if (result == NULL) {
-        fprintf(stderr, "Error in xmlXPathEvalExpression
-");
+        fprintf(stderr, "Error: unable to evaluate xpath expression\n");
         xmlXPathFreeContext(context);
         xmlFreeDoc(doc);
         return 1;
     }
 
-    if(xmlXPathNodeSetIsEmpty(result->nodesetval)){
-        xmlXPathFreeObject(result);
-        xmlXPathFreeContext(context);
-        xmlFreeDoc(doc);
-        fprintf(stderr, "No result
-");
-        return 1;
+    if (xmlXPathNodeSetIsEmpty(result->nodesetval)) {
+        printf("No result\n");
+    } else {
+        xmlNodeSetPtr nodeset = result->nodesetval;
+        for (int i = 0; i < nodeset->nodeNr; i++) {
+            xmlChar *keyword = xmlNodeListGetString(doc, nodeset->nodeTab[i]->xmlChildrenNode, 1);
+            printf("%s\n", keyword);
+            xmlFree(keyword);
+        }
     }
-
-    xmlNodeSetPtr nodeset = result->nodesetval;
-    xmlNodePtr cur = nodeset->nodeTab[0];
-    xmlChar *key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-    printf("Result: %s
-", key);
-    xmlFree(key);
 
     xmlXPathFreeObject(result);
     xmlXPathFreeContext(context);

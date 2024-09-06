@@ -1,45 +1,43 @@
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <openssl/aes.h>
 #include <openssl/rand.h>
 
-#define AES_BLOCK_SIZE 16
+void encrypt_data(const unsigned char *data, int data_len, const unsigned char *key, unsigned char *encrypted) {
+    // Create a static initialization vector (IV)
+    unsigned char iv[AES_BLOCK_SIZE];
+    memset(iv, 0, AES_BLOCK_SIZE);
 
-void pad_data(unsigned char *data, int len, int block_size) {
-    int padding = block_size - (len % block_size);
-    for (int i = 0; i < padding; i++) {
-        data[len + i] = padding;
-    }
+    // Initialize a cipher using AES in CBC mode with the static IV
+    AES_KEY aes_key;
+    AES_set_encrypt_key(key, 256, &aes_key);
+
+    // Pad the input data to match the block size required by the cipher
+    int padded_size = ((data_len + AES_BLOCK_SIZE - 1) / AES_BLOCK_SIZE) * AES_BLOCK_SIZE;
+    unsigned char padded_data[padded_size];
+    memcpy(padded_data, data, data_len);
+    memset(padded_data + data_len, 0, padded_size - data_len);
+
+    // Encrypt the padded data using the cipher
+    AES_cbc_encrypt(padded_data, encrypted, padded_size, &aes_key, iv, AES_ENCRYPT);
 }
 
 int main() {
-    unsigned char iv[AES_BLOCK_SIZE];
-    RAND_bytes(iv, AES_BLOCK_SIZE);
+    unsigned char key[32];
+    RAND_bytes(key, sizeof(key));
 
-    const char *key = "1234567890123456";
-    const char *data = "Hello, World!";
+    const char *data = "This is a secret message.";
     int data_len = strlen(data);
-    int padded_len = ((data_len + AES_BLOCK_SIZE - 1) / AES_BLOCK_SIZE) * AES_BLOCK_SIZE;
+    int padded_size = ((data_len + AES_BLOCK_SIZE - 1) / AES_BLOCK_SIZE) * AES_BLOCK_SIZE;
+    unsigned char encrypted[padded_size];
 
-    unsigned char *padded_data = malloc(padded_len);
-    memcpy(padded_data, data, data_len);
-    pad_data(padded_data, data_len, AES_BLOCK_SIZE);
+    encrypt_data((unsigned char *)data, data_len, key, encrypted);
 
-    unsigned char *encrypted_data = malloc(padded_len);
-    AES_KEY aes_key;
-    AES_set_encrypt_key((const unsigned char *)key, 128, &aes_key);
-    AES_cbc_encrypt(padded_data, encrypted_data, padded_len, &aes_key, iv, AES_ENCRYPT);
-
-    printf("Encrypted: ");
-    for (int i = 0; i < padded_len; i++) {
-        printf("%02x", encrypted_data[i]);
+    for (int i = 0; i < padded_size; i++) {
+        printf("%02x ", encrypted[i]);
     }
-    printf("\
-");
+    printf("\\n");
 
-    free(padded_data);
-    free(encrypted_data);
     return 0;
 }

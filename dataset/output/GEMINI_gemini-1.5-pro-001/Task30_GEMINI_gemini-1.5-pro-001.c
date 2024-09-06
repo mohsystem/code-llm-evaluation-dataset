@@ -2,42 +2,29 @@
 #include <stdlib.h>
 #include <string.h>
 
-char *longest(char *s1, char *s2) {
-    int seen[26] = {0};
-    char *result = malloc(27 * sizeof(char));
-    int len = 0;
-    for (int i = 0; s1[i] != '\0'; i++) {
-        int index = s1[i] - 'a';
-        if (!seen[index]) {
-            result[len++] = s1[i];
-            seen[index] = 1;
-        }
-    }
-    for (int i = 0; s2[i] != '\0'; i++) {
-        int index = s2[i] - 'a';
-        if (!seen[index]) {
-            result[len++] = s2[i];
-            seen[index] = 1;
-        }
-    }
-    result[len] = '\0';
-    // Bubble sort for simplicity
-    for (int i = 0; i < len - 1; i++) {
-        for (int j = 0; j < len - i - 1; j++) {
-            if (result[j] > result[j + 1]) {
-                char temp = result[j];
-                result[j] = result[j + 1];
-                result[j + 1] = temp;
-            }
-        }
-    }
-    return result;
+int cmpfunc(const void *a, const void *b) {
+    return (*(char *)a - *(char *)b);
 }
 
-int main() {
-    printf("%s
-", longest("xyaabbbccccdefww", "xxxxyyyyabklmopq"));
-    printf("%s
-", longest("abcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrstuvwxyz"));
-    return 0;
+char *longest(const char *s1, const char *s2) {
+    int char_seen[26] = {0};
+    int len1 = strlen(s1);
+    int len2 = strlen(s2);
+    char *result = malloc((len1 + len2 + 1) * sizeof(char));
+    int count = 0;
+    for (int i = 0; i < len1; i++) {
+        if (char_seen[s1[i] - 'a'] == 0) {
+            result[count++] = s1[i];
+            char_seen[s1[i] - 'a'] = 1;
+        }
+    }
+    for (int i = 0; i < len2; i++) {
+        if (char_seen[s2[i] - 'a'] == 0) {
+            result[count++] = s2[i];
+            char_seen[s2[i] - 'a'] = 1;
+        }
+    }
+    result[count] = '\0';
+    qsort(result, count, sizeof(char), cmpfunc);
+    return result;
 }

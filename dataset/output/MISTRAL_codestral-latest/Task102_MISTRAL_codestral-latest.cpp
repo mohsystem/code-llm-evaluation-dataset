@@ -1,49 +1,51 @@
-// C++
+// C++ code using SQLite C/C++ Library for database operations and OpenSSL for password hashing
+#include <sqlite3.h>
+#include <openssl/sha.h>
 #include <iostream>
 #include <string>
-#include <mysql/mysql.h>
-#include <openssl/sha.h>
 
-std::string hashPassword(const std::string &password) {
+void updatePassword(const std::string& username, const std::string& newPassword) {
+    sqlite3* DB;
+    int rc = sqlite3_open("user_database.db", &DB);
+
+    if (rc) {
+        std::cerr << "Can't open database: " << sqlite3_errmsg(DB) << std::endl;
+        return;
+    }
+
+    // Hash the new password
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
-    SHA256_Update(&sha256, password.c_str(), password.length());
+    SHA256_Update(&sha256, newPassword.c_str(), newPassword.length());
     SHA256_Final(hash, &sha256);
 
     std::string hashedPassword;
-    char buffer[3];
-    for(int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        sprintf(buffer, "%02x", hash[i]);
-        hashedPassword.append(buffer);
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        hashedPassword += std::to_string(hash[i]);
     }
-    return hashedPassword;
-}
 
-void updatePasswordInDatabase(MYSQL *conn, const std::string &username, const std::string &hashedPassword) {
-    std::string query = "UPDATE users SET password = '" + hashedPassword + "' WHERE username = '" + username + "'";
-    mysql_query(conn, query.c_str());
+    // Update the password in the database
+    std::string sql = "UPDATE users SET password = '" + hashedPassword + "' WHERE username = '" + username + "';";
+    char* errMsg = nullptr;
+    rc = sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errMsg);
+
+    if (rc != SQLITE_OK) {
+        std::cerr << "SQL error: " << errMsg << std::endl;
+        sqlite3_free(errMsg);
+    }
+
+    sqlite3_close(DB);
 }
 
 int main() {
-    MYSQL *conn = mysql_init(NULL);
-    if (!mysql_real_connect(conn, "localhost", "username", "password", "mydatabase", 0, NULL, 0)) {
-        std::cerr << mysql_error(conn) << std::endl;
-        exit(1);
-    }
-
-    std::string username, password;
-
-    std::cout << "Enter username: ";
+    std::string username, newPassword;
+    std::cout << "Enter your username: ";
     std::cin >> username;
+    std::cout << "Enter your new password: ";
+    std::cin >> newPassword;
 
-    std::cout << "Enter new password: ";
-    std::cin >> password;
+    updatePassword(username, newPassword);
 
-    std::string hashedPassword = hashPassword(password);
-
-    updatePasswordInDatabase(conn, username, hashedPassword);
-
-    mysql_close(conn);
     return 0;
 }

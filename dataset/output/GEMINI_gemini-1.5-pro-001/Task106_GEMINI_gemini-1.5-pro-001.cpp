@@ -1,65 +1,68 @@
 #include <iostream>
+#include <string>
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
 #include <openssl/err.h>
 
-#define KEY_LENGTH 2048
+using namespace std;
+
+// Function to generate RSA key pair
+void generateKeys(RSA* &rsa) {
+  BIGNUM *bne = BN_new();
+  BN_set_word(bne, RSA_F4);
+
+  rsa = RSA_new();
+  RSA_generate_key_ex(rsa, 2048, bne, NULL);
+  BN_free(bne);
+}
+
+// Function to encrypt a message
+string encrypt(const string &message, RSA *rsa) {
+  int encryptedLength = RSA_size(rsa);
+  unsigned char *encrypted = new unsigned char[encryptedLength];
+  int length = RSA_public_encrypt(message.length(), (const unsigned char*)message.c_str(), encrypted, rsa, RSA_PKCS1_OAEP_PADDING);
+  if (length == -1) {
+    cerr << "Error encrypting message: " << ERR_error_string(ERR_get_error(), NULL) << endl;
+    delete[] encrypted;
+    return "";
+  }
+  string encryptedMessage((char*)encrypted, length);
+  delete[] encrypted;
+  return encryptedMessage;
+}
+
+// Function to decrypt a message
+string decrypt(const string &encryptedMessage, RSA *rsa) {
+  int decryptedLength = RSA_size(rsa);
+  unsigned char *decrypted = new unsigned char[decryptedLength];
+  int length = RSA_private_decrypt(encryptedMessage.length(), (const unsigned char*)encryptedMessage.c_str(), decrypted, rsa, RSA_PKCS1_OAEP_PADDING);
+  if (length == -1) {
+    cerr << "Error decrypting message: " << ERR_error_string(ERR_get_error(), NULL) << endl;
+    delete[] decrypted;
+    return "";
+  }
+  string decryptedMessage((char*)decrypted, length);
+  delete[] decrypted;
+  return decryptedMessage;
+}
 
 int main() {
-    // Generate RSA key pair
-    RSA *keypair = RSA_generate_key(KEY_LENGTH, RSA_F4, nullptr, nullptr);
-    if (keypair == nullptr) {
-        std::cerr << "Failed to generate RSA key pair: " << ERR_error_string(ERR_get_error(), nullptr) << std::endl;
-        return 1;
-    }
+  // Generate RSA key pair
+  RSA *rsa = NULL;
+  generateKeys(rsa);
 
-    // Write private key to file
-    FILE *private_key_file = fopen("private.pem", "wb");
-    if (private_key_file == nullptr) {
-        std::cerr << "Failed to open private key file." << std::endl;
-        return 1;
-    }
-    PEM_write_RSAPrivateKey(private_key_file, keypair, nullptr, nullptr, 0, nullptr, nullptr);
-    fclose(private_key_file);
+  // Encrypt a message
+  string message = "This is a secret message";
+  string encryptedMessage = encrypt(message, rsa);
 
-    // Write public key to file
-    FILE *public_key_file = fopen("public.pem", "wb");
-    if (public_key_file == nullptr) {
-        std::cerr << "Failed to open public key file." << std::endl;
-        return 1;
-    }
-    PEM_write_RSAPublicKey(public_key_file, keypair);
-    fclose(public_key_file);
+  // Decrypt the message
+  string decryptedMessage = decrypt(encryptedMessage, rsa);
 
-    // Encrypt message
-    const std::string message = "Hello, RSA!";
-    int message_length = message.length();
-    unsigned char ciphertext[RSA_size(keypair)];
-    int ciphertext_length = RSA_public_encrypt(message_length, (const unsigned char *)message.c_str(), ciphertext, keypair, RSA_PKCS1_PADDING);
+  // Print the results
+  cout << "Original Message: " << message << endl;
+  cout << "Encrypted Message: " << encryptedMessage << endl;
+  cout << "Decrypted Message: " << decryptedMessage << endl;
 
-    if (ciphertext_length == -1) {
-        std::cerr << "Encryption failed: " << ERR_error_string(ERR_get_error(), nullptr) << std::endl;
-        return 1;
-    }
-
-    // Decrypt message
-    unsigned char decrypted[RSA_size(keypair)];
-    int decrypted_length = RSA_private_decrypt(ciphertext_length, ciphertext, decrypted, keypair, RSA_PKCS1_PADDING);
-
-    if (decrypted_length == -1) {
-        std::cerr << "Decryption failed: " << ERR_error_string(ERR_get_error(), nullptr) << std::endl;
-        return 1;
-    }
-
-    std::cout << "Ciphertext: ";
-    for (int i = 0; i < ciphertext_length; i++) {
-        std::cout << std::hex << (int)ciphertext[i];
-    }
-    std::cout << std::endl;
-
-    std::cout << "Plaintext: " << decrypted << std::endl;
-
-    RSA_free(keypair);
-
-    return 0;
+  RSA_free(rsa);
+  return 0;
 }

@@ -1,15 +1,14 @@
-import hashlib
+import getpass
 
-def get_hash(password):
-    return hashlib.sha256(password.encode()).hexdigest()
+def authenticate(username, password):
+    stored_username = "user"
+    stored_password = "pass"
+    return username == stored_username and password == stored_password
 
-def authenticate(input_password, stored_password_hash):
-    return get_hash(input_password) == stored_password_hash
+username = input("Enter username: ")
+password = getpass.getpass("Enter password: ")
 
-stored_password_hash = get_hash("securepassword")
-input_password = input("Enter your password: ")
-
-if authenticate(input_password, stored_password_hash):
-    print("Authentication successful.")
+if authenticate(username, password):
+    print("Access granted")
 else:
-    print("Authentication failed.")
+    print("Access denied")

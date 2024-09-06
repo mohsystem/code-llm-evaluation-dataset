@@ -1,36 +1,26 @@
+# Python (using Flask framework)
 from flask import Flask, request, session, render_template_string
-import uuid
-
 app = Flask(__name__)
 app.secret_key = 'secret_key_here'
 
-@app.route('/update', methods=['GET', 'POST'])
-def update_user_settings():
-    if request.method == 'GET':
-        csrf_token = str(uuid.uuid4())
-        session['csrf_token'] = csrf_token
-        html = '''
-            <html><body>
-            <form action="/update" method="post">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-            Username: <input type="text" name="username"><br>
-            Email: <input type="email" name="email"><br>
-            <input type="submit" value="Update">
-            </form>
-            </body></html>
-        '''
-        return render_template_string(html, csrf_token=csrf_token)
-    elif request.method == 'POST':
-        csrf_token = session.get('csrf_token')
-        token_from_request = request.form.get('csrf_token')
-        if csrf_token == token_from_request:
-            # Update user settings
-            username = request.form.get('username')
-            email = request.form.get('email')
-            # Update user settings logic here
-            return 'User settings updated successfully!'
-        else:
-            return 'CSRF token is invalid!', 403
+@app.route('/update_settings', methods=['GET', 'POST'])
+def update_settings():
+    if request.method == 'POST':
+        if 'csrf_token' not in session or session['csrf_token'] != request.form['csrf_token']:
+            return 'CSRF token is invalid'
+        # Update user settings here
+        return 'Settings updated successfully'
+    csrf_token = session['csrf_token'] = 'random_token_here'
+    return '''
+        <form action="" method="post">
+            <input type="hidden" name="csrf_token" value="{}">
+            <label>Username:</label>
+            <input type="text" name="username"><br><br>
+            <label>Email:</label>
+            <input type="email" name="email"><br><br>
+            <input type="submit" value="Update Settings">
+        </form>
+    '''.format(csrf_token)
 
 if __name__ == '__main__':
     app.run()

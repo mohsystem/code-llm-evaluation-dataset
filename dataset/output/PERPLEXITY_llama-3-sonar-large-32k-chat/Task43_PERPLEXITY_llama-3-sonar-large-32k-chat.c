@@ -1,45 +1,42 @@
+// C code using CGI and cookies (not recommended for web development)
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-
-typedef struct {
-    char id[256];
-    // other session data
-} Session;
-
-Session* sessions = NULL;
-int numSessions = 0;
-
-void createSession(const char* id) {
-    Session* newSession = (Session*) malloc(sizeof(Session));
-    strcpy(newSession->id, id);
-    sessions = (Session*) realloc(sessions, (numSessions + 1) * sizeof(Session));
-    sessions[numSessions++] = *newSession;
-}
-
-void terminateSession(const char* id) {
-    for (int i = 0; i < numSessions; i++) {
-        if (strcmp(sessions[i].id, id) == 0) {
-            sessions[i] = sessions[--numSessions];
-            sessions = (Session*) realloc(sessions, numSessions * sizeof(Session));
-            return;
-        }
-    }
-}
+#include <cgi/cgi.h>
 
 int main() {
-    // assume a web framework that provides the following functions
-    char* requestMethod = getRequestMethod();
-    char* requestId = getRequestParam("id");
-    char* requestAction = getRequestParam("action");
-
-    if (strcmp(requestMethod, "GET") == 0) {
-        if (strcmp(requestAction, "create") == 0) {
-            createSession(requestId(requestId));
-        } else if (strcmp(requestAction, "terminate") == 0) {
-            terminateSession(requestId);
+    cgi_request_t *req;
+    cgi_init_request(&req);
+    cgi_parse_request(req);
+    char *username, *password;
+    if (req->request_method == CGI_METHOD_POST) {
+        username = cgi_get_variable(req, "username");
+        password = cgi_get_variable(req, "password");
+        if (strcmp(username, "admin") == 0 && strcmp(password, "password") == 0) {
+            cgi_set_cookie(req, "username", username);
+            cgi_header_location(req, "home");
+            return 0;
         }
     }
-
+    char *path = cgi_get_path_info(req);
+    if (strcmp(path, "/login") == 0) {
+        printf("Content-type: text/html\r\n\r\n");
+        printf("<form action=\"\" method=\"post\">");
+        printf("Username: <input type=\"text\" name=\"username\"><br>");
+        printf("Password: <input type=\"password\" name=\"password\"><br>");
+        printf("<input type=\"submit\" value=\"Login\">");
+        printf("</form>");
+    } else if (strcmp(path, "/home") == 0) {
+        cgi_cookie_t *cookies = cgi_get_cookies(req);
+        for (int i = 0; i < cookies->count; i++) {
+            if (strcmp(cookies->cookies[i].name, "username") == 0) {
+                printf("Content-type: text/html\r\n\r\n");
+                printf("Welcome, %s", cookies->cookies[i].value);
+                break;
+            }
+        }
+    } else if (strcmp(path, "/logout") == 0) {
+        cgi_set_cookie(req, "username", "", 0);
+        cgi_header_location(req, "login");
+    }
     return 0;
 }

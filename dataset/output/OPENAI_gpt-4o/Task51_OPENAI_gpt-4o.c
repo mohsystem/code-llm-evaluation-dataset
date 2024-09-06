@@ -1,26 +1,24 @@
 #include <stdio.h>
 #include <ctype.h>
-#include <string.h>
 
-int main() {
-    char input[] = "HelloWorld";
-    int shift = 3;
-    char encrypted[sizeof(input)];
-    
-    for (int i = 0; i < strlen(input); i++) {
-        char c = input[i];
-        if (isalpha(c)) {
-            char base = islower(c) ? 'a' : 'A';
-            encrypted[i] = (c - base + shift) % 26 + base;
+void encrypt(char text[], char result[]) {
+    for (int i = 0; text[i] != '\0'; i++) {
+        if (isupper(text[i])) {
+            result[i] = (text[i] + 1 - 'A') % 26 + 'A';
+        } else if (islower(text[i])) {
+            result[i] = (text[i] + 1 - 'a') % 26 + 'a';
         } else {
-            encrypted[i] = c;
+            result[i] = text[i];
         }
     }
-    encrypted[strlen(input)] = '\0';
+}
+
+int main() {
+    char inputText[] = "HelloWorld";
+    char encryptedText[100];
     
-    printf("C: %s
-", encrypted);
+    encrypt(inputText, encryptedText);
+    printf("%s\n", encryptedText);
     
     return 0;
 }
-main();

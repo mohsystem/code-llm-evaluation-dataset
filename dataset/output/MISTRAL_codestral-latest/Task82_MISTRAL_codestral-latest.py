@@ -1,14 +1,12 @@
-# Python
 import hashlib
-import os
+import binascii
 
 def hash_password(password, salt):
-    hashed_password = hashlib.sha256(salt + password.encode()).hexdigest()
-    for i in range(10000):
-        hashed_password = hashlib.sha256(hashed_password.encode()).hexdigest()
-    return hashed_password
+    dk = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
+    return binascii.hexlify(dk)
 
-password = "your_password"
-salt = os.urandom(16)
+# Example usage:
+password = "my_password"
+salt = b'salt_'
 hashed_password = hash_password(password, salt)
 print(hashed_password)

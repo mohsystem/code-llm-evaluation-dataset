@@ -1,3 +1,4 @@
+// C++ code
 #include<iostream>
 using namespace std;
 
@@ -15,6 +16,6 @@ int main() {
     int values[] = {60, 100, 120};
     int weights[] = {10, 20, 30};
     int n = sizeof(values)/sizeof(values[0]);
-    cout<<knapsack(capacity, weights, values, n);
+    cout << knapsack(capacity, weights, values, n);
     return 0;
 }

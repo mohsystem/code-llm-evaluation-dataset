@@ -1,10 +1,10 @@
 def tweakLetters(txt, arr):
-  newTxt = ""
+  res = []
   for i in range(len(txt)):
     if arr[i] == 1:
-      newTxt += chr(ord(txt[i]) + 1)
+      res.append(chr(ord(txt[i])+1))
     elif arr[i] == -1:
-      newTxt += chr(ord(txt[i]) - 1)
+      res.append(chr(ord(txt[i])-1))
     else:
-      newTxt += txt[i]
-  return newTxt
+      res.append(txt[i])
+  return ''.join(res)

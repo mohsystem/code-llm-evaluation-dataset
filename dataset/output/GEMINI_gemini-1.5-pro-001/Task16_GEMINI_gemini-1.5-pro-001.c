@@ -2,21 +2,13 @@
 #include <string.h>
 #include <stdbool.h>
 
-bool solution(const char *str, const char *ending) {
-  int str_len = strlen(str);
-  int ending_len = strlen(ending);
+bool solution(const char *string, const char *ending) {
+    size_t string_len = strlen(string);
+    size_t ending_len = strlen(ending);
 
-  if (str_len < ending_len) {
-    return false;
-  }
+    if (string_len < ending_len) {
+        return false;
+    }
 
-  return strcmp(str + str_len - ending_len, ending) == 0;
-}
-
-int main() {
-  printf("%d
-", solution("abc", "bc")); // 1 (true)
-  printf("%d
-", solution("abc", "d")); // 0 (false)
-  return 0;
+    return (strcmp(string + string_len - ending_len, ending) == 0);
 }

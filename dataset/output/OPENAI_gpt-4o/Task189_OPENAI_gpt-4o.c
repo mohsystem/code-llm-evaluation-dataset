@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <pthread.h>
-#include <semaphore.h>
-
-typedef void (*printNumberFunc)(int);
 
 typedef struct {
     int n;
-    sem_t zeroSem, evenSem, oddSem;
+    int state;
+    pthread_mutex_t lock;
+    pthread_cond_t condition;
 } ZeroEvenOdd;
 
 void printNumber(int x) {
@@ -14,52 +13,58 @@ void printNumber(int x) {
 }
 
 void* zero(void* arg) {
-    ZeroEvenOdd* zeo = (ZeroEvenOdd*)arg;
-    for (int i = 0; i < zeo->n; i++) {
-        sem_wait(&zeo->zeroSem);
-        printNumber(0);
-        if (i % 2 == 0) {
-            sem_post(&zeo->oddSem);
-        } else {
-            sem_post(&zeo->evenSem);
+    ZeroEvenOdd* obj = (ZeroEvenOdd*)arg;
+    for (int i = 1; i <= obj->n; i++) {
+        pthread_mutex_lock(&obj->lock);
+        while (obj->state != 0) {
+            pthread_cond_wait(&obj->condition, &obj->lock);
         }
+        printNumber(0);
+        obj->state = (i % 2 == 1) ? 1 : 2;
+        pthread_cond_broadcast(&obj->condition);
+        pthread_mutex_unlock(&obj->lock);
     }
     return NULL;
 }
 
 void* even(void* arg) {
-    ZeroEvenOdd* zeo = (ZeroEvenOdd*)arg;
-    for (int i = 2; i <= zeo->n; i += 2) {
-        sem_wait(&zeo->evenSem);
+    ZeroEvenOdd* obj = (ZeroEvenOdd*)arg;
+    for (int i = 2; i <= obj->n; i += 2) {
+        pthread_mutex_lock(&obj->lock);
+        while (obj->state != 2) {
+            pthread_cond_wait(&obj->condition, &obj->lock);
+        }
         printNumber(i);
-        sem_post(&zeo->zeroSem);
+        obj->state = 0;
+        pthread_cond_broadcast(&obj->condition);
+        pthread_mutex_unlock(&obj->lock);
     }
     return NULL;
 }
 
 void* odd(void* arg) {
-    ZeroEvenOdd* zeo = (ZeroEvenOdd*)arg;
-    for (int i = 1; i <= zeo->n; i += 2) {
-        sem_wait(&zeo->oddSem);
+    ZeroEvenOdd* obj = (ZeroEvenOdd*)arg;
+    for (int i = 1; i <= obj->n; i += 2) {
+        pthread_mutex_lock(&obj->lock);
+        while (obj->state != 1) {
+            pthread_cond_wait(&obj->condition, &obj->lock);
+        }
         printNumber(i);
-        sem_post(&zeo->zeroSem);
+        obj->state = 0;
+        pthread_cond_broadcast(&obj->condition);
+        pthread_mutex_unlock(&obj->lock);
     }
     return NULL;
 }
 
 int main() {
-    ZeroEvenOdd zeo;
-    zeo.n = 5;
-
-    sem_init(&zeo.zeroSem, 0, 1);
-    sem_init(&zeo.evenSem, 0, 0);
-    sem_init(&zeo.oddSem, 0, 0);
+    int n = 5;
+    ZeroEvenOdd zeroEvenOdd = {n, 0, PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER};
 
     pthread_t threadA, threadB, threadC;
-
-    pthread_create(&threadA, NULL, zero, &zeo);
-    pthread_create(&threadB, NULL, even, &zeo);
-    pthread_create(&threadC, NULL, odd, &zeo);
+    pthread_create(&threadA, NULL, zero, &zeroEvenOdd);
+    pthread_create(&threadB, NULL, even, &zeroEvenOdd);
+    pthread_create(&threadC, NULL, odd, &zeroEvenOdd);
 
     pthread_join(threadA, NULL);
     pthread_join(threadB, NULL);

@@ -1,22 +1,19 @@
+code here:
 #include <stdio.h>
-#include <string.h>
 
 int main() {
-    char fileName[256];
+    char filename[100];
     printf("Enter file name: ");
-    fgets(fileName, 256, stdin);
-    fileName[strcspn(fileName, "
-")] = 0; // remove newline character
-    FILE *file = fopen(fileName, "r");
-    if (file == NULL) {
-        printf("Error reading file: %s
-", fileName);
-        return 1;
+    scanf("%99s", filename);
+    FILE *file = fopen(filename, "r");
+    if (file != NULL) {
+        char line[1000];
+        while (fgets(line, sizeof(line), file)) {
+            printf("%s", line);
+        }
+        fclose(file);
+    } else {
+        printf("Unable to open file");
     }
-    char line[256];
-    while (fgets(line, 256, file)) {
-        printf("%s", line);
-    }
-    fclose(file);
     return 0;
 }

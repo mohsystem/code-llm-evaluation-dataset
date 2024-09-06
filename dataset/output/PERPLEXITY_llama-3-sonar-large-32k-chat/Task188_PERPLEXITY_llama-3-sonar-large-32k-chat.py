@@ -4,21 +4,22 @@ class FooBar:
     def __init__(self, n):
         self.n = n
         self.lock = threading.Lock()
-        self.foo_lock = threading.Lock()
-        self.foo_lock.acquire()
+        self.foo_lock = True
 
-    def foo(self):
+    def foo(self, printFoo: 'Callable[[], None]') -> None:
         for i in range(self.n):
             with self.lock:
-                print("foo", end="")
-                self.foo_lock.release()
-                self.bar_lock = self.lock
+                while not self.foo_lock:
+                    self.lock.wait()
+                printFoo()
+                self.foo_lock = False
+                self.lock.notify_all()
 
-    def bar(self):
+    def bar(self, printBar: 'Callable[[], None]') -> None:
         for i in range(self.n):
-            self.foo_lock.acquire()
-            with self.bar_lock:
-                print("bar", end="")
-                self.foo_lock = threading.Lock()
-                self.foo_lock.acquire()
-                self.bar_lock = self.lock
+            with self.lock:
+                while self.foo_lock:
+                    self.lock.wait()
+                printBar()
+                self.foo_lock = True
+                self.lock.notify_all()

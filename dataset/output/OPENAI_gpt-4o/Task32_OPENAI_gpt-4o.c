@@ -3,9 +3,7 @@
 int calculateYears(double P, double I, double T, double D) {
     int years = 0;
     while (P < D) {
-        double interest = P * I;
-        double afterTax = interest - (interest * T);
-        P += afterTax;
+        P += P * I * (1 - T);
         years++;
     }
     return years;
@@ -16,8 +14,6 @@ int main() {
     double I = 0.05;
     double T = 0.18;
     double D = 1100.00;
-    int years = calculateYears(P, I, T, D);
-    printf("%d
-", years);
+    printf("%d\n", calculateYears(P, I, T, D));
     return 0;
 }

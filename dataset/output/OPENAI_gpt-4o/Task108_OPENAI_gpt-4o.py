@@ -1,29 +1,22 @@
-import socket
-import threading
-import pickle
+# Python Remote Object Manipulation Server (example)
+from xmlrpc.server import SimpleXMLRPCServer
 
-objects = {}
+class RemoteObject:
+    def __init__(self):
+        self.value = 0
 
-def handle_client(client_socket):
-    action = pickle.loads(client_socket.recv(4096))
-    key = pickle.loads(client_socket.recv(4096))
-    if action == "put":
-        value = pickle.loads(client_socket.recv(4096))
-        objects[key] = value
-        client_socket.send(pickle.dumps("Success"))
-    elif action == "get":
-        value = objects.get(key, None)
-        client_socket.send(pickle.dumps(value))
-    client_socket.close()
+    def set_value(self, value):
+        self.value = value
+        return f"Value set to {self.value}"
 
-def main():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(("0.0.0.0", 7896))
-    server.listen(5)
-    while True:
-        client_socket, addr = server.accept()
-        client_handler = threading.Thread(target=handle_client, args=(client_socket,))
-        client_handler.start()
+    def get_value(self):
+        return self.value
 
-if __name__ == "__main__":
-    main()
+server = SimpleXMLRPCServer(("localhost", 8000))
+obj = RemoteObject()
+
+server.register_function(obj.set_value, "set_value")
+server.register_function(obj.get_value, "get_value")
+
+print("Server is running...")
+server.serve_forever()

@@ -2,64 +2,73 @@
 #include <string>
 #include <openssl/aes.h>
 #include <openssl/evp.h>
-#include <openssl/bio.h>
-#include <openssl/buffer.h>
+#include <openssl/err.h>
 
 using namespace std;
 
+// Function to handle encryption errors
+void handleErrors(void) {
+  ERR_print_errors_fp(stderr);
+  abort();
+}
+
+// Function to encrypt data using AES-CBC with a static IV
+vector<unsigned char> encryptData(const unsigned char *plaintext, int plaintext_len,
+                                   const unsigned char *key, const unsigned char *iv) {
+  // Create and initialize cipher context
+  EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+  if (!ctx) handleErrors();
+
+  // Set cipher to AES-CBC
+  if (EVP_EncryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key, iv) != 1)
+    handleErrors();
+
+  // Output buffer for encrypted data
+  vector<unsigned char> ciphertext(plaintext_len + AES_BLOCK_SIZE);
+  int len;
+
+  // Encrypt the plaintext
+  if (EVP_EncryptUpdate(ctx, ciphertext.data(), &len, plaintext, plaintext_len) != 1)
+    handleErrors();
+  int ciphertext_len = len;
+
+  // Finalize encryption
+  if (EVP_EncryptFinal_ex(ctx, ciphertext.data() + len, &len) != 1)
+    handleErrors();
+  ciphertext_len += len;
+
+  // Resize ciphertext vector to actual size
+  ciphertext.resize(ciphertext_len);
+
+  // Clean up and return ciphertext
+  EVP_CIPHER_CTX_free(ctx);
+  return ciphertext;
+}
+
 int main() {
-    // Set key and IV (replace with your own secure values)
-    unsigned char key[AES_BLOCK_SIZE] = "YourSecretKeyHere"; 
-    unsigned char iv[AES_BLOCK_SIZE] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
+  // Static Initialization Vector (IV) - Must be 16 bytes
+  unsigned char iv[] = "ThisIsMyStaticIV";
 
-    // Input data
-    string plaintext = "This is some data to encrypt.";
+  // Encryption Key - Must be 16, 24, or 32 bytes
+  unsigned char key[] = "ThisIsMySecretKey";
 
-    // Padding
-    int plaintext_len = plaintext.length();
-    int padding_len = AES_BLOCK_SIZE - (plaintext_len % AES_BLOCK_SIZE);
-    plaintext.append(padding_len, (char)padding_len);
+  // Data to be encrypted
+  string data = "This is some secret data.";
+  cout << "Original Data: " << data << endl;
 
-    // Encrypt
-    EVP_CIPHER_CTX *ctx;
-    int len;
-    int ciphertext_len = 0;
-    unsigned char ciphertext[1024];
+  // Convert data to unsigned char array
+  unsigned char *plaintext = (unsigned char *)data.c_str();
+  int plaintext_len = data.size();
 
-    if(!(ctx = EVP_CIPHER_CTX_new())) 
-        return 1;
+  // Encrypt the data
+  vector<unsigned char> ciphertext = encryptData(plaintext, plaintext_len, key, iv);
 
-    if(1 != EVP_EncryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key, iv)) 
-        return 1;
+  // Print encrypted data in hexadecimal format
+  cout << "Encrypted Data (Hex): ";
+  for (unsigned char c : ciphertext) {
+    cout << hex << (int)c;
+  }
+  cout << endl;
 
-    if(1 != EVP_EncryptUpdate(ctx, ciphertext, &len, (unsigned char*)plaintext.c_str(), plaintext.length())) 
-        return 1;
-    ciphertext_len = len;
-
-    if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) 
-        return 1;
-    ciphertext_len += len;
-
-    EVP_CIPHER_CTX_free(ctx);
-
-    // Convert ciphertext to Base64
-    BIO *bio, *b64;
-    BUF_MEM *bufferPtr;
-
-    b64 = BIO_new(BIO_f_base64());
-    bio = BIO_new(BIO_s_mem());
-    bio = BIO_push(b64, bio);
-
-    BIO_write(bio, ciphertext, ciphertext_len);
-    BIO_flush(bio);
-    BIO_get_mem_ptr(bio, &bufferPtr);
-
-    string base64_ciphertext(bufferPtr->data, bufferPtr->length - 1); // Exclude newline
-
-    BIO_free_all(bio);
-
-    // Output Base64 encoded ciphertext
-    cout << base64_ciphertext << endl;
-
-    return 0;
+  return 0;
 }

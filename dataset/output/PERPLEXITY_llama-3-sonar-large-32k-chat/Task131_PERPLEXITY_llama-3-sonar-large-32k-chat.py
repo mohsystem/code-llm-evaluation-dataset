@@ -3,8 +3,8 @@ import pickle
 def deserialize_data(data):
     try:
         return pickle.loads(data)
-    except Exception as e:
-        print("Error deserializing data:", e)
+    except pickle.UnpicklingError as e:
+        print(f"Error deserializing data: {e}")
         return None
 
 data = input("Enter serialized data: ")

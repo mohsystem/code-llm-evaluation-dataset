@@ -1,15 +1,14 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 int main() {
     int num;
-    printf("Enter an integer: ");
-    if(scanf("%d", &num) != 1) {
-        printf("Invalid input. Please enter an integer.
-");
-        return 1;
+    printf("Enter a number: ");
+    if (scanf("%d", &num) != 1) {
+        printf("That's not a valid number!\n");
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
+    } else {
+        printf("You entered: %d\n", num);
     }
-    printf("You entered: %d
-", num);
     return 0;
 }

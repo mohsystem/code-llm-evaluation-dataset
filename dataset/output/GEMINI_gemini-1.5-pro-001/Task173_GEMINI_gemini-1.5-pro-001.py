@@ -1,20 +1,21 @@
 def longestDupSubstring(s):
     n = len(s)
-    sa = sorted(range(n), key=lambda i: s[i:])
-    lcp = [0] * n
-    for i in range(1, n):
-        lcp[i] = 0
-        while sa[i] + lcp[i] < n and sa[i - 1] + lcp[i] < n and s[sa[i] + lcp[i]] == s[sa[i - 1] + lcp[i]]:
-            lcp[i] += 1
-
-    start = 0
-    length = 0
-    for i in range(1, n):
-        if lcp[i] > length:
-            length = lcp[i]
-            start = sa[i]
-
-    if length > 0:
-        return s[start : start + length]
-    else:
+    def check(length):
+        seen = set()
+        for i in range(n - length + 1):
+            substring = s[i:i + length]
+            if substring in seen:
+                return substring
+            seen.add(substring)
         return ""
+    left, right = 1, n
+    result = ""
+    while left <= right:
+        mid = left + (right - left) // 2
+        substring = check(mid)
+        if substring:
+            result = substring
+            left = mid + 1
+        else:
+            right = mid - 1
+    return result

@@ -10,9 +10,9 @@ claude_model = ["CLAUDE", "claude-3-5-sonnet-20240620"] # https://docs.anthropic
 mistral_model = ["MISTRAL", "codestral-latest"]    # https://mistral.ai/technology/ # https://docs.mistral.ai/api/#operation/createFIMCompletion
 
 # Set the active integration
-active_integration = openai_model
+# active_integration = openai_model
 # active_integration = gemini_model
-# active_integration = perplexity_model
+active_integration = perplexity_model
 # active_integration = claude_model
 # active_integration = mistral_model
 

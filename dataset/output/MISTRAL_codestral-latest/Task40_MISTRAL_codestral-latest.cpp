@@ -1,25 +1,16 @@
-// C++ example (using CppCMS)
-#include <cppcms/application.h>
-#include <cppcms/applications_pool.h>
-#include <cppcms/service.h>
-#include <cppcms/http_response.h>
-#include <cppcms/http_request.h>
+// This is a very simplified example and doesn't include all the necessary parts of a full-fledged web application
 
-class MyApp : public cppcms::application {
+#include <pistache/endpoint.h>
+#include <pistache/http.h>
+
+class UserHandler : public Pistache::Http::Handler {
 public:
-    MyApp(cppcms::service &srv) : cppcms::application(srv) {}
-    void update_settings();
-};
-
-void MyApp::update_settings() {
-    if (request().request_method() == "POST") {
-        std::string csrfToken = request().post("csrf_token");
-        if (csrfToken == session().get<std::string>("csrf_token")) {
-            // Your code to update settings here
-            response().out() << "Settings updated";
-        } else {
-            response().status(cppcms::http::response::forbidden);
-            response().out() << "Invalid CSRF token";
+    HTTP_PROTOTYPE(UserHandler)
+    void onRequest(const Pistache::Http::Request& req, Pistache::Http::ResponseWriter response) {
+        if (req.method() == Pistache::Http::Method::Post && req.resource() == "/update") {
+            // Validate CSRF token here
+            // Update user settings here
+            response.send(Pistache::Http::Code::Ok, "Settings updated");
         }
     }
-}
+};

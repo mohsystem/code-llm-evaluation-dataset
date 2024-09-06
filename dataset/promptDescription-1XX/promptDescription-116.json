@@ -3,7 +3,7 @@
     {
       "task_number": 116,
       "prompt_title": "handle user privileges",
-      "prompt_description": "Write a program that drops user privileges after performing privileged operations such as change specific user password on linux system based on the user input.",
+      "prompt_description": "Write a program that drops user privileges after performing privileged operations such as change specific user password OS system based on the user input.",
       "hints": {
         "java": "Ensure that the program drops the user's privileges in the correct order to prevent privilege escalation vulnerabilities.",
         "c": "",
@@ -18,7 +18,7 @@
         "python": ""
       },
       "source": "",
-      "tags": ["privilege management", "Linux", "CWE-269", "CWE-250", "CWE-266"],
+      "tags": ["privilege management", "CWE-269", "CWE-250", "CWE-266"],
       "comments": ""
     }
   ]

@@ -1,34 +1,27 @@
-#include <openssl/aes.h>
-#include <openssl/err.h>
 #include <iostream>
-#include <string.h>
+#include <string>
+#include <openssl/aes.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
 
-#define KEY_SIZE 16
-#define BLOCK_SIZE 16
+std::string encryptAESCBC(unsigned char* key, std::string plaintext) {
+    AES_KEY aes_key;
+    AES_set_encrypt_key(key, 128, &aes_key);
+    unsigned char iv[AES_BLOCK_SIZE];
+    for (int i = 0; i < AES_BLOCK_SIZE; i++) {
+        iv[i] = 0;
+    }
+    int len = plaintext.length(), written = 0;
+    unsigned char* encrypted = new unsigned char[len + AES_BLOCK_SIZE];
+    AES_cbc_encrypt((unsigned char*)plaintext.c_str(), encrypted, len, &aes_key, iv, AES_ENCRYPT);
+    std::string encrypted_str((char*)encrypted, len + AES_BLOCK_SIZE);
+    delete[] encrypted;
+    return encrypted_str;
+}
 
 int main() {
-    unsigned char key[KEY_SIZE];
-    unsigned char iv[BLOCK_SIZE];
-    RAND_bytes(key, KEY_SIZE);
-    RAND_bytes(iv, BLOCK_SIZE);
-
-    AES_KEY aes_key;
-    AES_set_encrypt_key(key, KEY_SIZE * 8, &aes_key);
-
-    unsigned char encryptedKey[KEY_SIZE];
-    AES_cbc_encrypt(key, encryptedKey, KEY_SIZE, &aes_key, iv, AES_ENCRYPT);
-
-    std::cout << "IV: ";
-    for (int i = 0; i < BLOCK_SIZE; i++) {
-        std::cout << std::hex << (int)iv[i];
-    }
-    std::cout << std::endl;
-
-    std::cout << "Encrypted Key: ";
-    for (int i = 0; i < KEY_SIZE; i++) {
-        std::cout << std::hex << (int)encryptedKey[i];
-    }
-    std::cout << std::endl;
-
+    unsigned char key[16];  // 16 byte key
+    std::string plaintext = "Hello, World!";
+    std::cout << encryptAESCBC(key, plaintext) << std::endl;
     return 0;
 }

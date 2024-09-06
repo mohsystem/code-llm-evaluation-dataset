@@ -1,5 +1,3 @@
-def reverse_string(s):
-  return s[::-1]
-
-input_string = input("Enter a string: ")
-print(reverse_string(input_string))
+string = input("Enter a string: ")
+reversed_string = string[::-1]
+print(reversed_string)

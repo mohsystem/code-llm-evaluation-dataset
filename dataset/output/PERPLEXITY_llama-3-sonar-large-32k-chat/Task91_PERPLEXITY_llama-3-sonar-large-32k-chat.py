@@ -1,14 +1,26 @@
 import socket
 
-def udp_server():
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    server_socket.bind(("localhost", 9876))
+# Create a UDP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    while True:
-        data, address = server_socket.recvfrom(1024)
-        print("Received packet from", address)
-        data = data.decode("utf-8").upper().encode("utf-8")
-        server_socket.sendto(data, address)
+# Bind the socket to a specific IP address and port
+server_address = ('localhost', 53)
+sock.bind(server_address)
 
-if __name__ == "__main__":
-    udp_server()
+print('Starting UDP server on {} port {}'.format(*server_address))
+
+while True:
+    # Receive data from client
+    data, address = sock.recvfrom(4096)
+
+    # Parse the received data (DNS request)
+    # This is a simplified example, in real-world scenarios you would need to parse the DNS request using a library like dnspython
+    print('Received {} bytes from {}'.format(len(data), address))
+    print(data.decode())
+
+    # Resolve DNS records (this is a simplified example, in real-world scenarios you would need to use a DNS resolver library)
+    dns_response = 'DNS response'
+
+    # Send the response back to the client
+    sent = sock.sendto(dns_response.encode(), address)
+    print('Sent {} bytes back to {}'.format(sent, address))

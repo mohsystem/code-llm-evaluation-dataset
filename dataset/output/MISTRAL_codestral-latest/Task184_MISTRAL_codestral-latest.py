@@ -6,14 +6,10 @@ class Robot:
         self.name = self.generate_name()
 
     def generate_name(self):
-        letters = random.choices(string.ascii_uppercase, k=2)
-        digits = random.choices(string.digits, k=3)
-        return ''.join(letters + digits)
+        letters = ''.join(random.choices(string.ascii_uppercase, k=2))
+        digits = ''.join(random.choices(string.digits, k=3))
+        return letters + digits
 
-# Test the Robot class
-robots = set()
-while len(robots) < 1000:  # Create 1000 unique robots
-    robot = Robot()
-    robots.add(robot.name)
-
-print(len(robots) == 1000)  # Should print: True
+# Test
+robots = [Robot() for _ in range(1000)]
+assert len(set(robot.name for robot in robots)) == 1000

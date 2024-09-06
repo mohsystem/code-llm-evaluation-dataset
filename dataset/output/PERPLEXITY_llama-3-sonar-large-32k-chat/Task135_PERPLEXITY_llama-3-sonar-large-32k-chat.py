@@ -1,22 +1,20 @@
-import os
-import uuid
+# Python code using Flask framework
 from flask import Flask, request, session
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = 'secret_key_here'
 
 @app.before_request
 def csrf_protect():
-    if request.method == "POST":
+    if request.method == 'POST':
         token = session.pop('_csrf_token', None)
         if not token or token != request.form.get('_csrf_token'):
-            return "CSRF token missing or invalid", 403
+            return 'CSRF token missing or invalid', 403
 
 @app.route('/form', methods=['GET', 'POST'])
-def index():
-    if request.method == "GET":
-        token = uuid.uuid4().hex
-        session['_csrf_token'] = token
+def form():
+    if request.method == 'GET':
+        token = session['_csrf_token'] = generate_token()
         return '''
             <form action="" method="post">
                 <input type="hidden" name="_csrf_token" value="{}">
@@ -24,7 +22,10 @@ def index():
             </form>
         '''.format(token)
     else:
-        return "Form submitted successfully"
+        return 'Form submitted successfully'
+
+def generate_token():
+    return 'random_token_here'
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

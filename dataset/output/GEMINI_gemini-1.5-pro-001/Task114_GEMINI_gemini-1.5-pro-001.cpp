@@ -1,35 +1,42 @@
 #include <iostream>
 #include <string>
-#include <algorithm>
 
 using namespace std;
 
 int main() {
-    string inputString, copiedString, concatenatedString, reversedString;
+    // String declaration and initialization
+    string str1 = "Hello";
+    string str2 = "World";
 
-    cout << "Enter a string: ";
-    getline(cin, inputString);
+    // String concatenation
+    string concatenatedString = str1 + " " + str2;
+    cout << "Concatenated String: " << concatenatedString << endl;
 
-    // Copy the string
-    copiedString = inputString;
+    // String copying
+    string copiedString = str1;
+    cout << "Copied String: " << copiedString << endl;
 
-    // Concatenate the string with itself
-    concatenatedString = inputString + inputString;
+    // String length
+    int length = concatenatedString.length();
+    cout << "Length of Concatenated String: " << length << endl;
 
-    // Reverse the string
-    reversedString = inputString;
-    reverse(reversedString.begin(), reversedString.end());
+    // String manipulation - uppercase
+    string uppercaseString = concatenatedString;
+    for (char &c: uppercaseString) {
+        c = toupper(c);
+    }
+    cout << "Uppercase String: " << uppercaseString << endl;
 
-    // Convert the string to uppercase
-    transform(inputString.begin(), inputString.end(), inputString.begin(), ::toupper);
+    // String manipulation - lowercase
+    string lowercaseString = concatenatedString;
+    for (char &c: lowercaseString) {
+        c = tolower(c);
+    }
+    cout << "Lowercase String: " << lowercaseString << endl;
 
-    // Convert the string to lowercase
-    transform(inputString.begin(), inputString.end(), inputString.begin(), ::tolower);
-
-    cout << "Copied string: " << copiedString << endl;
-    cout << "Concatenated string: " << concatenatedString << endl;
-    cout << "Reversed string: " << reversedString << endl;
-    cout << "Uppercase string: " << inputString << endl;
+    // Substring extraction
+    string substring = concatenatedString.substr(0, 5);
+    cout << "Substring: " << substring << endl;
 
     return 0;
 }

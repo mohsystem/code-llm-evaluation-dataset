@@ -4,24 +4,39 @@
 #include <map>
 #include <string>
 
-std::map<std::string, std::map<std::string, int>> productTable = {
-    {"product1", {{"price", 10}, {"quantity", 50}}},
+std::map<std::string, std::map<std::string, std::string>> productTable = {
+    {"P123", {{"name", "Product 1"}, {"price", "10.99"}, {"quantity", "100"}}},
+    {"P456", {{"name", "Product 2"}, {"price", "20.99"}, {"quantity", "50"}}},
     // Add more products as needed
 };
 
-std::string getProductDetails(const std::map<std::string, std::map<std::string, int>>& productTable, const std::string& productName) {
-    auto it = productTable.find(productName);
+std::map<std::string, std::string> getProductDetails(const std::string& productId) {
+    auto it = productTable.find(productId);
     if (it != productTable.end()) {
-        std::string details = "Price: " + std::to_string(it->second["price"]) + ", Quantity: " + std::to_string(it->second["quantity"]);
-        return details;
+        return it->second;
+    } else {
+        return {};
     }
-    return "Product not found";
 }
 
 int main() {
-    std::string productName;
-    std::cout << "Enter product name: ";
-    std::getline(std::cin, productName);
-    std::cout << getProductDetails(productTable, productName) << std::endl;
+    std::string productId;
+
+    // Get user input
+    std::cout << "Enter product ID: ";
+    std::cin >> productId;
+
+    // Get product details
+    std::map<std::string, std::string> productDetails = getProductDetails(productId);
+
+    // Print product details
+    if (!productDetails.empty()) {
+        std::cout << "Name: " << productDetails["name"] << std::endl;
+        std::cout << "Price: " << productDetails["price"] << std::endl;
+        std::cout << "Quantity: " << productDetails["quantity"] << std::endl;
+    } else {
+        std::cout << "Product not found" << std::endl;
+    }
+
     return 0;
 }

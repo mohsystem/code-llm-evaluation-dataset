@@ -1,37 +1,23 @@
 #include <stdio.h>
-#include <math.h>
+#include <string.h>
+#include <stdlib.h>
 
 char *expandedForm(int num) {
-    int len = 0;
-    int temp = num;
-    while (temp > 0) {
-        len++;
-        temp /= 10;
-    }
-
-    char *str = malloc(len * 5 * sizeof(char)); // Allocate enough memory
-    str[0] = '\0'; // Initialize as empty string
-
-    for (int i = 0; i < len; i++) {
-        int digit = (int)(num / pow(10, len - i - 1)) % 10;
-        if (digit != 0) {
-            char part[20];
-            sprintf(part, "%d", (int)(digit * pow(10, len - i - 1)));
-            strcat(str, part);
-            if (i != len - 1) {
-                strcat(str, " + ");
+    char numStr[20]; 
+    sprintf(numStr, "%d", num);
+    int length = strlen(numStr);
+    char *result = (char *)malloc(length * length * sizeof(char)); 
+    result[0] = '\0'; 
+    for (int i = 0; i < length; i++) {
+        if (numStr[i] != '0') {
+            if (strlen(result) > 0) {
+                strcat(result, " + ");
+            }
+            strncat(result, &numStr[i], 1);
+            for (int j = i + 1; j < length; j++) {
+                strncat(result, "0", 1); 
             }
         }
     }
-    return str;
-}
-
-int main() {
-    printf("%s
-", expandedForm(12));
-    printf("%s
-", expandedForm(42));
-    printf("%s
-", expandedForm(70304));
-    return 0;
+    return result;
 }

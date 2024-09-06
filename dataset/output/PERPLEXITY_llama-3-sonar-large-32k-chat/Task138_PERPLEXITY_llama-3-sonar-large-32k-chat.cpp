@@ -13,7 +13,7 @@ public:
         : username(username), password(password), privileges(privileges) {}
 
     bool hasPrivilege(std::string privilege) {
-        for (const auto& p : privileges) {
+        for (auto &p : privileges) {
             if (p == privilege) {
                 return true;
             }

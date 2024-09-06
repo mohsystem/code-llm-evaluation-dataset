@@ -3,12 +3,11 @@
 #include <string.h>
 
 int main() {
-    char data[256];
+    char data[100];
     printf("Enter data: ");
-    fgets(data, 256, stdin);
-    data[strcspn(data, "
-")] = 0; // remove newline character
-    char command[256];
+    fgets(data, sizeof(data), stdin);
+    data[strcspn(data, "\n")] = 0; // remove newline character
+    char command[150];
     sprintf(command, "echo %s > output.txt", data);
     system(command);
     return 0;

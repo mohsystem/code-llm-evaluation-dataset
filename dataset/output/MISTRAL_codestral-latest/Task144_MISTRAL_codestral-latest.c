@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
 int* mergeSortedArrays(int* arr1, int size1, int* arr2, int size2, int* mergedSize) {
-    int* merged = malloc((size1 + size2) * sizeof(int));
+    int* merged = (int*)malloc((size1 + size2) * sizeof(int));
     int i = 0, j = 0, k = 0;
 
     while (i < size1 && j < size2) {

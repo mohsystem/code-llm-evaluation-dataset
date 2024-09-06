@@ -1,18 +1,19 @@
 
 #include <iostream>
 
+long long factorial(int n) {
+    if (n == 0 || n == 1) {
+        return 1;
+    } else {
+        return n * factorial(n - 1);
+    }
+}
+
 int main() {
     int num;
-    unsigned long long factorial = 1;
-    
     std::cout << "Enter a number: ";
     std::cin >> num;
-    
-    for (int i = 1; i <= num; i++) {
-        factorial *= i;
-    }
-    
-    std::cout << "Factorial of " << num << " is: " << factorial << std::endl;
-    
+    long long result = factorial(num);
+    std::cout << "The factorial of " << num << " is " << result << std::endl;
     return 0;
 }

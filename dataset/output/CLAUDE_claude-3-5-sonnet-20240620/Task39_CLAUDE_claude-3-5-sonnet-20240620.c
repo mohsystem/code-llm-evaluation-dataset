@@ -4,31 +4,31 @@
 #include <string.h>
 
 #define MAX_FILENAME 256
-#define MAX_COMMAND 512
 
 int main() {
     char filename[MAX_FILENAME];
-    char command[MAX_COMMAND];
+    char command[MAX_FILENAME + 5]; // 4 for "cat " and 1 for null terminator
 
     printf("Enter the filename: ");
-    fgets(filename, sizeof(filename), stdin);
-    filename[strcspn(filename, "\
-")] = 0;  // Remove newline
-
-    snprintf(command, sizeof(command), "cat %s", filename);
-
-    FILE *fp = popen(command, "r");
-    if (fp == NULL) {
-        printf("Failed to run command\
-");
+    if (fgets(filename, sizeof(filename), stdin) == NULL) {
+        fprintf(stderr, "Error reading input\\n");
         return 1;
     }
 
-    char output[1024];
-    while (fgets(output, sizeof(output), fp) != NULL) {
-        printf("%s", output);
+    // Remove newline character if present
+    size_t len = strlen(filename);
+    if (len > 0 && filename[len-1] == '\\n') {
+        filename[len-1] = '\\0';
     }
 
-    pclose(fp);
+    snprintf(command, sizeof(command), "cat %s", filename);
+    
+    int result = system(command);
+
+    if (result != 0) {
+        fprintf(stderr, "Error executing command\\n");
+        return 1;
+    }
+
     return 0;
 }

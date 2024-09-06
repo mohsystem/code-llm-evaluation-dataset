@@ -3,19 +3,23 @@ import threading
 
 lock = threading.Lock()
 
-def process_file(filename):
+def process_file(file_name):
     with lock:
-        print(f"Processing file: {filename}")
+        print(f"Processing file: {file_name}")
         # Simulate file processing
-        import time
-        time.sleep(1)
+        with open(file_name, 'r') as file:
+            content = file.read()
+            print(f"File content: {content}")
+        print(f"Finished processing file: {file_name}")
 
 def main():
-    files = os.listdir("files")
+    directory = "./files"
+    files = os.listdir(directory)
     threads = []
 
     for file in files:
-        thread = threading.Thread(target=process_file, args=(file,))
+        file_path = os.path.join(directory, file)
+        thread = threading.Thread(target=process_file, args=(file_path,))
         threads.append(thread)
         thread.start()
 

@@ -1,15 +1,16 @@
 import hashlib
-import OpenSSL
+import ssl
 
-known_hash = "your_known_hash_here"
-certificate_path = "path_to_your_certificate.cer"
+def check_ssl_certificate(hostname, port, expected_hash):
+    context = ssl.create_default_context()
+    with context.wrap_socket(socket.create_connection((hostname, port)), server_hostname=hostname) as s:
+        der_cert = s.getpeercert(binary_form=True)
+        pem_cert = ssl.DER_cert_to_PEM_cert(der_cert)
+        cert_hash = hashlib.sha256(pem_cert.encode()).hexdigest()
+        if cert_hash == expected_hash:
+            print("Certificate matches the expected hash")
+        else:
+            print("Certificate does not match the expected hash")
 
-with open(certificate_path, 'rb') as file:
-    cert = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, file.read())
-
-hash = hashlib.sha256(cert.to_cryptography().public_bytes(encoding='der')).hexdigest()
-
-if hash == known_hash:
-    print("Certificate matches the known hash.")
-else:
-    print("Certificate does not match the known hash.")
+# Example usage:
+check_ssl_certificate("example.com", 443, "expected_hash_here")

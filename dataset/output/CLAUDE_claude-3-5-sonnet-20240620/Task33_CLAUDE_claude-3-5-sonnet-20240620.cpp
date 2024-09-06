@@ -1,29 +1,15 @@
 
-#include <vector>
-#include <queue>
 #include <algorithm>
+#include <vector>
 
 class Solution {
 public:
     static int queueTime(std::vector<int> customers, int n) {
-        std::priority_queue<int, std::vector<int>, std::greater<int>> tills;
-        
-        for (int i = 0; i < n; i++) {
-            tills.push(0);
+        std::vector<int> tills(n, 0);
+        for (int customer : customers) {
+            tills[0] += customer;
+            std::sort(tills.begin(), tills.end());
         }
-        
-        for (int customerTime : customers) {
-            int tillTime = tills.top();
-            tills.pop();
-            tills.push(tillTime + customerTime);
-        }
-        
-        int maxTime = 0;
-        while (!tills.empty()) {
-            maxTime = tills.top();
-            tills.pop();
-        }
-        
-        return maxTime;
+        return *std::max_element(tills.begin(), tills.end());
     }
 };

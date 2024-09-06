@@ -1,14 +1,7 @@
 # Python
-def main():
-    map = {}
-    with open('file.txt', 'r') as file:
-        for line in file:
-            parts = line.strip().split('=')
-            if len(parts) == 2:
-                map[parts[0]] = parts[1]
-
-    for key in sorted(map.keys()):
-        print(f'{key}={map[key]}')
-
-if __name__ == '__main__':
-    main()
+with open('file.txt', 'r') as file:
+    lines = file.readlines()
+    records = [line.strip().split('=') for line in lines]
+    records.sort()
+    for record in records:
+        print('='.join(record))

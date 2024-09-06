@@ -1,37 +1,46 @@
+code here:
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 int main() {
-    char str1[20] = "Hello";
-    char str2[20] = "World";
-    
+    char s1[10] = "Hello";
+    char s2[10] = "World";
+    printf("Original Strings:\n");
+    printf("s1: %s\n", s1);
+    printf("s2: %s\n", s2);
+
     // Copying a string
-    char str3[20];
-    strcpy(str3, str1);
-    printf("Copied string: %s
-", str3);
-    
+    char s3[10];
+    strcpy(s3, s1);
+    printf("\nCopied String:\n");
+    printf("s3: %s\n", s3);
+
     // Concatenating strings
-    char str4[40];
-    strcpy(str4, str1);
-    strcat(str4, " ");
-    strcat(str4, str2);
-    printf("Concatenated string: %s
-", str4);
-    
+    char s4[20];
+    strcpy(s4, s1);
+    strcat(s4, " ");
+    strcat(s4, s2);
+    printf("\nConcatenated String:\n");
+    printf("s4: %s\n", s4);
+
     // Manipulating strings (upper case)
-    for(int i = 0; i < strlen(str1); i++) {
-        str1[i] = toupper(str1[i]);
+    char s5[10];
+    strcpy(s5, s1);
+    for(int i = 0; i < strlen(s5); i++) {
+        s5[i] = toupper(s5[i]);
     }
-    printf("Upper case string: %s
-", str1);
-    
+    printf("\nUpper Case String:\n");
+    printf("s5: %s\n", s5);
+
     // Manipulating strings (lower case)
-    for(int i = 0; i < strlen(str2); i++) {
-        str2[i] = tolower(str2[i]);
+    char s6[10];
+    strcpy(s6, s2);
+    for(int i = 0; i < strlen(s6); i++) {
+        s6[i] = tolower(s6[i]);
     }
-    printf("Lower case string: %s
-", str2);
-    
+    printf("\nLower Case String:\n");
+    printf("s6: %s\n", s6);
+
     return 0;
 }

@@ -1,24 +1,21 @@
-import heapq
-
 class MedianFinder:
     def __init__(self):
-        self.small = []
-        self.large = []
-        
+        self.nums = []
+    
     def addNum(self, num: int) -> None:
-        heapq.heappush(self.large, -heapq.heappushpop(self.small, -num))
-        if len(self.large) > len(self.small):
-            heapq.heappush(self.small, -heapq.heappop(self.large))
-            
+        from bisect import insort
+        insort(self.nums, num)
+    
     def findMedian(self) -> float:
-        if len(self.small) > len(self.large):
-            return -self.small[0]
-        return (-self.small[0] + self.large[0]) / 2
+        n = len(self.nums)
+        if n % 2 == 1:
+            return float(self.nums[n // 2])
+        else:
+            return (self.nums[n // 2 - 1] + self.nums[n // 2]) / 2.0
 
-# Example Usage
 medianFinder = MedianFinder()
-medianFinder.addNum(1)    
+medianFinder.addNum(1)
 medianFinder.addNum(2)
-print(medianFinder.findMedian()) # Output: 1.5
+print(medianFinder.findMedian())  # 1.5
 medianFinder.addNum(3)
-print(medianFinder.findMedian()) # Output: 2.0
+print(medianFinder.findMedian())  # 2.0

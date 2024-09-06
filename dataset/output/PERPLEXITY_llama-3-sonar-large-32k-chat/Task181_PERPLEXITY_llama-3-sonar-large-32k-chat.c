@@ -1,3 +1,5 @@
+code here:
+// Note: C does not have built-in support for threads or locks. This implementation uses POSIX threads and mutexes.
 #include <pthread.h>
 
 typedef struct {
@@ -14,58 +16,39 @@ BankAccount* bankAccountCreate(double initialBalance) {
     return account;
 }
 
-void openAccount(BankAccount* account) {
-    if (account->closed) {
-        printf("Account is already closed
-");
-        return;
-    }
+void bankAccountOpen(BankAccount* account) {
     account->closed = false;
 }
 
-void closeAccount(BankAccount* account) {
-    if (account->closed) {
-        printf("Account is already closed
-");
-        return;
-    }
+void bankAccountClose(BankAccount* account) {
     account->closed = true;
 }
 
-void deposit(BankAccount* account, double amount) {
+bool bankAccountDeposit(BankAccount* account, double amount) {
     if (account->closed) {
-        printf("Account is closed
-");
-        return;
+        return false;
     }
     pthread_mutex_lock(&account->lock);
     account->balance += amount;
     pthread_mutex_unlock(&account->lock);
+    return true;
 }
 
-void withdraw(BankAccount* account, double amount) {
+bool bankAccountWithdraw(BankAccount* account, double amount) {
     if (account->closed) {
-        printf("Account is closed
-");
-        return;
+        return false;
     }
     pthread_mutex_lock(&account->lock);
     if (amount > account->balance) {
-        printf("Insufficient balance
-");
         pthread_mutex_unlock(&account->lock);
-        return;
+        return false;
     }
     account->balance -= amount;
     pthread_mutex_unlock(&account->lock);
+    return true;
 }
 
-double getBalance(BankAccount* account) {
-    if (account->closed) {
-        printf("Account is closed
-");
-        return 0.0;
-    }
+double bankAccountGetBalance(BankAccount* account) {
     pthread_mutex_lock(&account->lock);
     double balance = account->balance;
     pthread_mutex_unlock(&account->lock);

@@ -1,11 +1,9 @@
-#include <iostream>
+#include <stdio.h>
 
-int main() {
-    int people[][2] = {{10, 0}, {3, 5}, {5, 8}};
-    int remainingPeople = 0;
-    for (int i = 0; i < 3; i++) {
-        remainingPeople += people[i][0] - people[i][1];
+int number_of_people_still_on_bus(int people[][2], int size) {
+    int count = 0;
+    for (int i = 0; i < size; i++) {
+        count += people[i][0] - people[i][1];
     }
-    std::cout << remainingPeople << std::endl;
-    return 0;
+    return count;
 }

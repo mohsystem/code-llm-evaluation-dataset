@@ -14,10 +14,8 @@ int main() {
     char inputString[100];
     printf("Enter a string: ");
     fgets(inputString, sizeof(inputString), stdin);
-    inputString[strcspn(inputString, "
-")] = 0;
+    inputString[strcspn(inputString, "\n")] = 0; // Remove trailing newline
     reverse_string(inputString);
-    printf("Reversed string is: %s
-", inputString);
+    printf("Reversed string is: %s\n", inputString);
     return 0;
 }

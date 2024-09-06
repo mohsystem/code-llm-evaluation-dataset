@@ -1,17 +1,21 @@
-// C++
-#include <iostream>
-#include <cctype>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <algorithm>
 
 std::string toJadenCase(std::string phrase) {
-    for (int i = 0; i < phrase.length(); i++) {
-        if (i == 0 || phrase[i - 1] == ' ') {
-            phrase[i] = std::toupper(phrase[i]);
-        }
-    }
-    return phrase;
-}
+    std::istringstream iss(phrase);
+    std::vector<std::string> words;
+    std::string word;
 
-int main() {
-    std::cout << toJadenCase("How can mirrors be real if our eyes aren't real");
-    return 0;
+    while (iss >> word) {
+        std::transform(word.begin(), word.begin() + 1, word.begin(), ::toupper);
+        words.push_back(word);
+    }
+
+    std::ostringstream oss;
+    std::copy(words.begin(), words.end() - 1, std::ostream_iterator<std::string>(oss, " "));
+    oss << words.back();
+
+    return oss.str();
 }

@@ -8,39 +8,60 @@
  */
 class Solution {
 public:
+    vector<vector<int>> H;
+    
     void findSecretWord(vector<string>& words, Master& master) {
         int n = words.size();
-        vector<vector<int>> H(n, vector<int>(n, 0));
+        H.resize(n, vector<int>(n, 0));
         for (int i = 0; i < n; ++i) {
             for (int j = i; j < n; ++j) {
-                H[i][j] = H[j][i] = match(words[i], words[j]);
+                int matches = 0;
+                for (int k = 0; k < 6; ++k) {
+                    if (words[i][k] == words[j][k]) {
+                        matches++;
+                    }
+                }
+                H[i][j] = H[j][i] = matches;
             }
         }
         
         vector<int> possible(n);
         iota(possible.begin(), possible.end(), 0);
+        
         int matches = 0;
-        while (!possible.empty() && master.guess(words[possible[0]]) != 6) {
-            int guess = rand() % possible.size();
-            matches = master.guess(words[possible[guess]]);
-            vector<int> nextPossible;
+        while (matches < 6) {
+            int guess = findBestGuess(possible, words);
+            matches = master.guess(words[guess]);
+            if (matches == 6) {
+                break;
+            }
+            vector<int> newPossible;
             for (int j : possible) {
-                if (H[possible[guess]][j] == matches) {
-                    nextPossible.push_back(j);
+                if (H[guess][j] == matches) {
+                    newPossible.push_back(j);
                 }
             }
-            possible = nextPossible;
+            possible = newPossible;
         }
     }
-
+    
 private:
-    int match(const string& a, const string& b) {
-        int matches = 0;
-        for (int i = 0; i < a.length(); ++i) {
-            if (a[i] == b[i]) {
-                ++matches;
+    int findBestGuess(const vector<int>& possible, const vector<string>& words) {
+        int minMaxGroupSize = possible.size();
+        int ans = -1;
+        for (int i : possible) {
+            vector<int> groups(7, 0);
+            for (int j : possible) {
+                if (i != j) {
+                    groups[H[i][j]]++;
+                }
+            }
+            int maxGroupSize = *max_element(groups.begin(), groups.end());
+            if (maxGroupSize < minMaxGroupSize) {
+                minMaxGroupSize = maxGroupSize;
+                ans = i;
             }
         }
-        return matches;
+        return ans;
     }
 };

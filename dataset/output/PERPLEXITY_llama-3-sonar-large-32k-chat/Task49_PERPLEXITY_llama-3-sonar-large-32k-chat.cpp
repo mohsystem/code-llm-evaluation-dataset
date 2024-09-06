@@ -1,46 +1,19 @@
-#include <mysql.h>
+// Note: This code is not a real API endpoint, but a simple console-based program that stores user data in a file.
 #include <iostream>
+#include <fstream>
 #include <string>
 
 int main() {
-    MYSQL *conn;
-    MYSQL_RES *res;
-    MYSQL_ROW row;
-
-    std::string server = "localhost";
-    std::string user = "root";
-    std::string password = "password";
-    std::string database = "mydb";
-
-    conn = mysql_init(NULL);
-
-    if (!mysql_real_connect(conn, server.c_str(), user.c_str(), password.c_str(), database.c_str(), 0, NULL, 0)) {
-        std::cerr << mysql_error(conn) << std::endl;
-        return 1;
-    }
-
-    std::string query = "CREATE TABLE IF NOT EXISTS users (name VARCHAR(255), email VARCHAR(255))";
-
-    if (mysql_query(conn, query.c_str())) {
-        std::cerr << mysql_error(conn) << std::endl;
-        return 1;
-    }
-
+    std::string name, email;
     std::cout << "Enter name: ";
-    std::string name;
     std::getline(std::cin, name);
-
     std::cout << "Enter email: ";
-    std::string email;
     std::getline(std::cin, email);
 
-    query = "INSERT INTO users (name, email) VALUES ('" + name + "', '" + email + "')";
+    std::ofstream file("users.txt", std::ios::app);
+    file << name << "," << email << std::endl;
+    file.close();
 
-    if (mysql_query(conn, query.c_str())) {
-        std::cerr << mysql_error(conn) << std::endl;
-        return 1;
-    }
-
-    mysql_close(conn);
+    std::cout << "User created successfully!" << std::endl;
     return 0;
 }

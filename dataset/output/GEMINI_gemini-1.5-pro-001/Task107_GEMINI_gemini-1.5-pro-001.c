@@ -1,2 +1,2 @@
-// C code cannot perform JNDI lookups directly as it is a Java-specific technology. 
-// JNDI lookups require a JVM and Java libraries.
+// JNDI lookups are primarily a Java feature and not directly supported in C.
+// You would need to use a JNI (Java Native Interface) wrapper to access Java JNDI functionality from C.

@@ -1,50 +1,53 @@
-// C
+// C (using miniz for ZIP files)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <archive.h>
-#include <archive_entry.h>
+#include "miniz.h"
 
-#define BUF_SIZE 10240
-
-int main(int argc, char *argv[]) {
-    struct archive *a;
-    struct archive_entry *entry;
-    int r;
-    char buff[BUF_SIZE];
-    size_t size;
-
-    a = archive_read_new();
-    archive_read_support_format_all(a);
-    archive_read_support_filter_all(a);
-    r = archive_read_open_filename(a, "path_to_your_archive_file", 10240);
-    if (r != ARCHIVE_OK) {
-        fprintf(stderr, "%s
-", archive_error_string(a));
-        return 1;
+void extractZip(const char* zipFilePath, const char* destDir) {
+    mz_zip_archive zipArchive = {0};
+    if (!mz_zip_reader_init_file(&zipArchive, zipFilePath)) {
+        printf("Error opening archive\n");
+        return;
     }
 
-    while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
-        const char *filename = archive_entry_pathname(entry);
-        printf("Extracting %s
-", filename);
-        archive_entry_set_pathname(entry, filename);
-        int fd = open(filename, O_WRONLY | O_CREAT, 0644);
-        if (fd < 0) {
-            perror("open");
-            return 1;
+    mz_uint numFiles = mz_zip_reader_get_num_files(&zipArchive);
+    for (mz_uint i = 0; i < numFiles; ++i) {
+        mz_zip_archive_file_stat fileStat;
+        if (!mz_zip_reader_file_stat(&zipArchive, i, &fileStat)) {
+            printf("Error reading file stat\n");
+            mz_zip_reader_end(&zipArchive);
+            return;
         }
 
-        while ((r = archive_read_data(a, buff, BUF_SIZE)) > 0) {
-            write(fd, buff, r);
-        }
+        char filePath[256];
+        snprintf(filePath, sizeof(filePath), "%s/%s", destDir, fileStat.m_filename);
 
-        close(fd);
+        if (mz_zip_reader_is_file_a_directory(&zipArchive, i)) {
+            mkdir(filePath, 0755);
+        } else {
+            FILE* extractedFile = fopen(filePath, "wb");
+            if (!extractedFile) {
+                printf("Error creating file\n");
+                mz_zip_reader_end(&zipArchive);
+                return;
+            }
+
+            if (!mz_zip_reader_extract_to_file(&zipArchive, i, filePath, 0)) {
+                printf("Error extracting file\n");
+                fclose(extractedFile);
+                mz_zip_reader_end(&zipArchive);
+                return;
+            }
+
+            fclose(extractedFile);
+        }
     }
 
-    archive_read_close(a);
-    archive_read_free(a);
+    mz_zip_reader_end(&zipArchive);
+}
 
+int main() {
+    extractZip("path/to/archive.zip", "path/to/destination");
     return 0;
 }

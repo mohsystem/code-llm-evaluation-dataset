@@ -1,20 +1,21 @@
+// CPP
 #include <iostream>
 #include <string>
 
 int main() {
-    std::string input;
-    std::string result = "";
+    std::string concatenatedString = "";
+    std::string userInput;
 
-    std::cout << "Enter strings to concatenate (enter 'end' to stop):
-";
-    std::getline(std::cin, input);
-
-    while (input != "end") {
-        result += input;
-        std::getline(std::cin, input);
+    while (true) {
+        std::cout << "Enter a string (or press enter to finish): ";
+        std::getline(std::cin, userInput);
+        if (userInput.empty()) {
+            break;
+        }
+        concatenatedString += userInput;
     }
 
-    std::cout << "Concatenated string: " << result << std::endl;
+    std::cout << "Concatenated string: " << concatenatedString << std::endl;
 
     return 0;
 }

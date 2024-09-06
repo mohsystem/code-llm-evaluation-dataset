@@ -1,37 +1,19 @@
-// C++ code using CppCMS framework
-// main.cpp
-#include <cppcms/application.h>
-#include <cppcms/applications_pool.h>
-#include <cppcms/service.h>
-#include <cppcms/http_response.h>
-#include <cppcms/url_dispatcher.h>
+// C++ CGI web application
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
 
-class MyApp : public cppcms::application {
-public:
-    MyApp(cppcms::service &srv) : cppcms::application(srv) {
-        dispatcher().assign("/", &MyApp::home, this);
-        dispatcher().assign("/submit", &MyApp::submit, this);
+int main() {
+    char* data = getenv("QUERY_STRING");
+    if (data != nullptr) {
+        char* userInput = strstr(data, "user_input=");
+        if (userInput != nullptr) {
+            userInput += strlen("user_input=");
+            std::cout << "Content-type: text/html\n\n";
+            std::cout << "<html><body>";
+            std::cout << "<h1>Your input: " << userInput << "</h1>";
+            std::cout << "</body></html>";
+        }
     }
-
-    void home() {
-        response().out() << "<form action='/submit' method='post'>"
-                          << "<input type='text' name='user_input'>"
-                          << "<input type='submit' value='Submit'>"
-                          << "</form>";
-    }
-
-    void submit() {
-        std::string userInput = request().post("user_input");
-        response().out() << "You entered: " << userInput;
-    }
-};
-
-int main(int argc, char **argv) {
-    try {
-        cppcms::service srv(argc, argv);
-        srv.applications_pool().mount(cppcms::applications_factory<MyApp>());
-        srv.run();
-    } catch (std::exception const &e) {
-        std::cerr << e.what() << std::endl;
-    }
+    return 0;
 }

@@ -1,34 +1,27 @@
 #include <iostream>
 #include <sstream>
 #include <cctype>
+#include <string>
+using namespace std;
 
-std::string toJadenCase(const std::string &phrase) {
+string toJadenCase(string phrase) {
     if (phrase.empty()) {
         return "";
     }
-
-    std::stringstream ss(phrase);
-    std::stringstream jadenCase;
-    std::string word;
-    bool firstWord = true;
-
-    while (ss >> word) {
-        if (!firstWord) {
-            jadenCase << " ";
-        } else {
-            firstWord = false;
-        }
+    istringstream stream(phrase);
+    string word;
+    string jadenCase = "";
+    while (stream >> word) {
         word[0] = toupper(word[0]);
-        jadenCase << word;
+        jadenCase += word + " ";
     }
-
-    return jadenCase.str();
+    if (!jadenCase.empty()) {
+        jadenCase.pop_back(); // Remove trailing space
+    }
+    return jadenCase;
 }
 
 int main() {
-    // Add test cases here
-    std::cout << toJadenCase("How can mirrors be real if our eyes aren't real") << std::endl;
-    std::cout << toJadenCase("") << std::endl;
-    std::cout << toJadenCase("") << std::endl;
+    cout << toJadenCase("How can mirrors be real if our eyes aren't real") << endl;
     return 0;
 }

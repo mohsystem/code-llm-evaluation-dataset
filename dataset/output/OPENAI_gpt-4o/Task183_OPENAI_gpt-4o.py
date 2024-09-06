@@ -1,16 +1,13 @@
-def largest_product(digits, span):
-    if span == 0:
-        return 1
+def find_largest_product(sequence, span):
     max_product = 0
-    for i in range(len(digits) - span + 1):
+    for i in range(len(sequence) - span + 1):
         product = 1
-        for j in range(i, i + span):
-            product *= int(digits[j])
+        for j in range(span):
+            product *= int(sequence[i + j])
         if product > max_product:
             max_product = product
     return max_product
 
-# Test case
-digits = "63915"
+sequence = "63915"
 span = 3
-print(largest_product(digits, span))
+print(find_largest_product(sequence, span))

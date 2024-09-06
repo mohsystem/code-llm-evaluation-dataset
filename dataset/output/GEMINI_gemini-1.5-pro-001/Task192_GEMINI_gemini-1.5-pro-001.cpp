@@ -1,10 +1,11 @@
 class Solution {
 public:
     bool xorGame(vector<int>& nums) {
-        int xor = 0;
+        int xorSum = 0;
         for (int num : nums) {
-            xor ^= num;
+            xorSum ^= num;
         }
-        return xor == 0 || nums.size() % 2 == 0;
+
+        return xorSum == 0 || nums.size() % 2 == 0;
     }
 };

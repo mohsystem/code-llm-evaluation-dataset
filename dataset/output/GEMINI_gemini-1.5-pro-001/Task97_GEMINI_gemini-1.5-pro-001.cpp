@@ -1,39 +1,41 @@
 #include <iostream>
+#include <fstream>
 #include <string>
-#include <stdexcept>
-#include <pugixml.hpp>
+
+#include <pugixml.cpp>
+
+using namespace std;
 
 int main(int argc, char* argv[]) {
     if (argc != 4) {
-        std::cerr << "Usage: " << argv[0] << " <xml_file> <xpath_query> <id_value>" << std::endl;
+        cerr << "Usage: " << argv[0] << " <xpath> <xml_file> <id_value>" << endl;
         return 1;
     }
 
-    std::string xmlFile = argv[1];
-    std::string xpathQuery = argv[2];
-    std::string idValue = argv[3];
+    const char* xpath_expression = argv[1];
+    const char* xml_file_path = argv[2];
+    const char* id_value = argv[3];
 
-    try {
-        // Construct and parse the XML file
-        pugi::xml_document doc;
-        pugi::xml_parse_result result = doc.load_file(xmlFile.c_str());
-        if (!result) {
-            throw std::runtime_error("Failed to parse XML file: " + xmlFile);
-        }
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file(xml_file_path);
 
-        // Execute the XPath query
-        std::string query = xpathQuery + "=\"" + idValue + "\"]";
-        pugi::xpath_node node = doc.select_node(query.c_str());
-        if (!node) {
-            throw std::runtime_error("XPath query returned no results: " + query);
-        }
-
-        // Return the result
-        std::cout << node.node().text().get() << std::endl;
-
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+    if (!result) {
+        cerr << "Error parsing XML: " << result.description() << endl;
         return 1;
+    }
+
+    string full_xpath = string(xpath_expression) + "[@id='" + id_value + "']";
+    pugi::xpath_query query(full_xpath.c_str());
+    pugi::xpath_node_set nodes = query.evaluate_node_set(doc);
+
+    for (pugi::xpath_node_set::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
+        pugi::xml_node node = it->node();
+        cout << node.name() << " ";
+
+        for (pugi::xml_attribute attr = node.first_attribute(); attr; attr = attr.next_attribute()) {
+            cout << attr.name() << "=\"" << attr.value() << "\" ";
+        }
+        cout << endl;
     }
 
     return 0;

@@ -1,24 +1,20 @@
-#include <stdio.h>
 #include <ctype.h>
+#include <stdbool.h>
+#include <stdio.h>
 
-int isIsogram(char str[]) {
-    int count[26] = {0};
-    for (int i = 0; str[i]; i++) {
-        char c = tolower(str[i]);
-        if (count[c - 'a'] == 1) {
-            return 0;
+bool isIsogram(const char* str) {
+    int count[256] = {0};
+    for (; *str; str++) {
+        if (++count[tolower(*str)] > 1) {
+            return false;
         }
-        count[c - 'a'] = 1;
     }
-    return 1;
+    return true;
 }
 
 int main() {
-    printf("%d
-", isIsogram("Dermatoglyphics")); // 1
-    printf("%d
-", isIsogram("aba")); // 0
-    printf("%d
-", isIsogram("moOse")); // 0
+    printf("%d\n", isIsogram("Dermatoglyphics"));  // 1
+    printf("%d\n", isIsogram("aba"));  // 0
+    printf("%d\n", isIsogram("moOse"));  // 0
     return 0;
 }

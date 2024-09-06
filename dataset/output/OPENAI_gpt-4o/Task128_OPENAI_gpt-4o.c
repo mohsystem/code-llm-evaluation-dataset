@@ -2,13 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-int generateRandomNumber() {
-    return rand() % 100 + 1;
-}
-
 int main() {
     srand(time(0));
-    printf("C random number: %d
-", generateRandomNumber());
+    printf("C Random Number: %d\n", rand() % 100 + 1);
     return 0;
 }

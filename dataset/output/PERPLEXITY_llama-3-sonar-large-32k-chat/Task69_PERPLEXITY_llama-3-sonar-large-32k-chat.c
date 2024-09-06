@@ -1,18 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 2) {
-        printf("Usage: %s <file_path>
-", argv[0]);
+        printf("Usage: ./delete_file <file_path>\n");
         return 1;
     }
-    if (remove(argv[1]) == 0) {
-        printf("File deleted successfully
-");
+
+    char* filePath = argv[1];
+
+    if (remove(filePath) != 0) {
+        printf("Failed to delete the file\n");
     } else {
-        printf("Failed to delete the file
-");
+        printf("File deleted successfully\n");
     }
+
     return 0;
 }

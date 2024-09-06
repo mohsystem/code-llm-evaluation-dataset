@@ -5,6 +5,7 @@ public:
         for (int num : nums) {
             xorSum ^= num;
         }
+
         return xorSum == 0 || nums.size() % 2 == 0;
     }
 };

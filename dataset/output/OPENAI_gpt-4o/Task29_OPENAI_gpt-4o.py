@@ -1,14 +1,8 @@
-def two_sum(nums, target):
-    num_map = {}
-    for i, num in enumerate(nums):
-        complement = target - num
-        if complement in num_map:
-            return [num_map[complement], i]
-        num_map[num] = i
+def two_sum(numbers, target):
+    for i in range(len(numbers)):
+        for j in range(i + 1, len(numbers)):
+            if numbers[i] + numbers[j] == target:
+                return (i, j)
 
-# Test cases
-result1 = two_sum([1, 2, 3], 4)
-print(result1)
-
-result2 = two_sum([3, 2, 4], 6)
-print(result2)
+print(two_sum([1, 2, 3], 4))
+print(two_sum([3, 2, 4], 6))

@@ -27,6 +27,7 @@ class PermissionManager:
         else:
             return False
 
+# Example usage
 manager = PermissionManager()
 manager.add_user("admin", "password", ["read", "write", "execute"])
 manager.add_user("user", "password", ["read"])

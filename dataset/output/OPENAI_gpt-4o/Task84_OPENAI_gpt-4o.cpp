@@ -1,21 +1,19 @@
 #include <iostream>
+#include <string>
 #include <cstdlib>
 #include <ctime>
-#include <string>
 
-std::string generateSessionIdCPP(int length) {
-    const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    std::string result;
-    result.resize(length);
-    for (int i = 0; i < length; i++) {
-        int key = rand() % (sizeof(charset) - 1);
-        result[i] = charset[key];
+std::string generateSessionID() {
+    std::string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    std::string sessionID;
+    for (int i = 0; i < 16; i++) {
+        sessionID += characters[rand() % characters.length()];
     }
-    return result;
+    return sessionID;
 }
 
 int main() {
     srand(time(0));
-    std::cout << "C++ Session ID: " << generateSessionIdCPP(16) << std::endl;
+    std::cout << "CPP generated session ID: " << generateSessionID() << std::endl;
     return 0;
 }

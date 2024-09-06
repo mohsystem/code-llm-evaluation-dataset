@@ -1,7 +1,7 @@
-def is_valid(walk):
+def is_valid_walk(walk):
     if len(walk) != 10:
         return False
-    x, y = 0, 0
+    x = y = 0
     for direction in walk:
         if direction == 'n':
             y += 1
@@ -11,7 +11,7 @@ def is_valid(walk):
             x += 1
         elif direction == 'w':
             x -= 1
-    return x == 0 and y == 0
+    return x == y == 0
 
-walk = ['n', 's', 'n', 's', 'n', 's', 'n', 's', 'n', 's']
-print(is_valid(walk))  # should return true
+# Example usage
+print(is_valid_walk(['n', 's', 'n', 's', 'n', 's', 'n', 's', 'n', 's']))  # Output: True

@@ -1,33 +1,53 @@
 #include <iostream>
-#include <string>
 #include <ldap.h>
+#include <string>
+#include <vector>
+#include <json/json.h>
 
 int main(int argc, char *argv[]) {
     std::string domainComponent = argv[1];
     std::string username = argv[2];
 
-    LDAP *ldap;
+    std::string query = "(uid=" + username + ")";
+    
+    LDAP *ld;
     LDAPMessage *result, *entry;
-    int version = LDAP_VERSION3;
-    int rc;
-    std::string search_base = "DC=" + domainComponent + ",DC=com";
-    std::string filter = "(sAMAccountName=" + username + ")";
+    int ldap_version = LDAP_VERSION3;
 
-    rc = ldap_initialize(&ldap, "ldap://localhost");
-    ldap_set_option(ldap, LDAP_OPT_PROTOCOL_VERSION, &version);
-
-    rc = ldap_search_ext_s(ldap, search_base.c_str(), LDAP_SCOPE_SUBTREE, filter.c_str(), NULL, 0, NULL, NULL, NULL, 100, &result);
-    if (rc == LDAP_SUCCESS) {
-        for (entry = ldap_first_entry(ldap, result); entry != NULL; entry = ldap_next_entry(ldap, entry)) {
-            char *dn = ldap_get_dn(ldap, entry);
-            std::cout << "dn: " << dn << std::endl;
-            ldap_memfree(dn);
-        }
-        ldap_msgfree(result);
-    } else {
-        std::cerr << "Error: " << ldap_err2string(rc) << std::endl;
+    if (ldap_initialize(&ld, "ldap://localhost") != LDAP_SUCCESS) {
+        std::cerr << "LDAP initialization failed" << std::endl;
+        return 1;
     }
 
-    ldap_unbind_ext(ldap, NULL, NULL);
+    ldap_set_option(ld, LDAP_OPT_PROTOCOL_VERSION, &ldap_version);
+
+    if (ldap_simple_bind_s(ld, nullptr, nullptr) != LDAP_SUCCESS) {
+        std::cerr << "LDAP bind failed" << std::endl;
+        return 1;
+    }
+
+    std::string base_dn = "dc=" + domainComponent;
+    if (ldap_search_ext_s(ld, base_dn.c_str(), LDAP_SCOPE_SUBTREE, query.c_str(), nullptr, 0, nullptr, nullptr, nullptr, LDAP_NO_LIMIT, &result) != LDAP_SUCCESS) {
+        std::cerr << "LDAP search failed" << std::endl;
+        return 1;
+    }
+
+    entry = ldap_first_entry(ld, result);
+    if (entry == nullptr) {
+        std::cerr << "No entries found" << std::endl;
+    } else {
+        Json::Value root;
+        for (entry = ldap_first_entry(ld, result); entry != nullptr; entry = ldap_next_entry(ld, entry)) {
+            Json::Value userInfo;
+            char *dn = ldap_get_dn(ld, entry);
+            userInfo["dn"] = dn;
+            root.append(userInfo);
+            ldap_memfree(dn);
+        }
+        std::cout << root.toStyledString() << std::endl;
+    }
+
+    ldap_msgfree(result);
+    ldap_unbind_ext_s(ld, nullptr, nullptr);
     return 0;
 }

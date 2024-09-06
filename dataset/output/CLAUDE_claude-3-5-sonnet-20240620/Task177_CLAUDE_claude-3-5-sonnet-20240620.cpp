@@ -2,31 +2,21 @@
 class Solution {
 public:
     int constrainedSubsetSum(vector<int>& nums, int k) {
-        int n = nums.size();
-        vector<int> dp = nums;
         deque<int> dq;
-        
-        int maxSum = nums[0];
-        for (int i = 0; i < n; i++) {
-            if (!dq.empty() && i - dq.front() > k) {
-                dq.pop_front();
-            }
-            
+        for (int i = 0; i < nums.size(); i++) {
             if (!dq.empty()) {
-                dp[i] = max(dp[i], nums[i] + dp[dq.front()]);
+                nums[i] += dq.front();
             }
-            
-            while (!dq.empty() && dp[dq.back()] <= dp[i]) {
+            while (!dq.empty() && dq.back() < nums[i]) {
                 dq.pop_back();
             }
-            
-            if (dp[i] > 0) {
-                dq.push_back(i);
+            if (nums[i] > 0) {
+                dq.push_back(nums[i]);
             }
-            
-            maxSum = max(maxSum, dp[i]);
+            if (i >= k && !dq.empty() && dq.front() == nums[i - k]) {
+                dq.pop_front();
+            }
         }
-        
-        return maxSum;
+        return *max_element(nums.begin(), nums.end());
     }
 };

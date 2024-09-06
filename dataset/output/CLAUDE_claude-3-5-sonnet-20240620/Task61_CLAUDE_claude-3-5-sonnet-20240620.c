@@ -3,26 +3,25 @@
 #include <string.h>
 #include <libxml/parser.h>
 
-xmlNodePtr parseXMLString(const char* xmlString) {
-    xmlDocPtr doc = xmlReadMemory(xmlString, strlen(xmlString), "noname.xml", NULL, 0);
+const char* get_root_element(const char* xml_string) {
+    xmlDocPtr doc = xmlReadMemory(xml_string, strlen(xml_string), "noname.xml", NULL, 0);
     if (doc == NULL) {
-        fprintf(stderr, "Failed to parse XML\
-");
-        return NULL;
+        return "Error parsing XML";
     }
+    
     xmlNodePtr root = xmlDocGetRootElement(doc);
+    if (root == NULL) {
+        xmlFreeDoc(doc);
+        return "Empty document";
+    }
+    
+    const char* root_name = (const char*)root->name;
     xmlFreeDoc(doc);
-    return root;
+    return root_name;
 }
 
 int main() {
-    const char* xmlString = "<root><child1>Value1</child1><child2>Value2</child2></root>";
-    xmlInitParser();
-    xmlNodePtr rootElement = parseXMLString(xmlString);
-    if (rootElement != NULL) {
-        printf("Root element: %s\
-", rootElement->name);
-    }
-    xmlCleanupParser();
+    const char* xml_str = "<root><child1>Content</child1><child2 attr=\\"value\\"/></root>";
+    printf("%s\\n", get_root_element(xml_str));
     return 0;
 }

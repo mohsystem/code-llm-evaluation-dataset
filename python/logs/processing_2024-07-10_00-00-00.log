@@ -1,0 +1,3184 @@
+"GEMINI", "gemini-1.5-pro-001"
+2024-07-10 15:45:35,922 INFO Task100_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that retrieves a regular expression pattern and a file name from command line arguments. The program should compile the regular expression pattern and use it to search the content of the specified file.
+2024-07-10 15:46:00,712 INFO ```java
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class RegexFileSearch {
+
+    public static void main(String[] args) {
+        if (args.length != 2) {
+            System.err.println("Usage: java RegexFileSearch <regex> <filename>");
+            System.exit(1);
+        }
+
+        String regex = args[0];
+        String filename = args[1];
+
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(filename)));
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(content);
+
+            while (matcher.find()) {
+                System.out.println(matcher.group());
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+            System.exit(1);
+        }
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <regex.h>
+
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s <regex> <filename>\n", argv[0]);
+        return 1;
+    }
+
+    regex_t regex;
+    int reti;
+    char msgbuf[100];
+
+    /* Compile regular expression */
+    reti = regcomp(&regex, argv[1], 0);
+    if (reti) {
+        fprintf(stderr, "Could not compile regex\n");
+        return 1;
+    }
+
+    /* Open the file */
+    FILE *fp = fopen(argv[2], "r");
+    if (fp == NULL) {
+        fprintf(stderr, "Error opening file.\n");
+        return 1;
+    }
+
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    while ((read = getline(&line, &len, fp)) != -1) {
+        regmatch_t match;
+        reti = regexec(&regex, line, 1, &match, 0);
+        if (!reti) {
+            printf("%.*s\n", (int)(match.rm_eo - match.rm_so), line + match.rm_so);
+        } else if (reti != REG_NOMATCH) {
+            regerror(reti, &regex, msgbuf, sizeof(msgbuf));
+            fprintf(stderr, "Regex match failed: %s\n", msgbuf);
+            return 1;
+        }
+    }
+
+    fclose(fp);
+    if (line) {
+        free(line);
+    }
+    regfree(&regex);
+
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <regex>
+
+using namespace std;
+
+int main(int argc, char* argv[]) {
+    if (argc != 3) {
+        cerr << "Usage: " << argv[0] << " <regex> <filename>" << endl;
+        return 1;
+    }
+
+    string regexStr = argv[1];
+    string filename = argv[2];
+
+    try {
+        regex pattern(regexStr);
+
+        ifstream file(filename);
+        if (!file.is_open()) {
+            cerr << "Error opening file: " << filename << endl;
+            return 1;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            smatch match;
+            if (regex_search(line, match, pattern)) {
+                cout << match.str(0) << endl;
+            }
+        }
+    } catch (const regex_error& e) {
+        cerr << "Regex error: " << e.what() << endl;
+        return 1;
+    }
+
+    return 0;
+}
+```
+
+```python
+import re
+import sys
+
+if len(sys.argv) != 3:
+    print("Usage: python regex_search.py <regex> <filename>")
+    sys.exit(1)
+
+regex = sys.argv[1]
+filename = sys.argv[2]
+
+try:
+    with open(filename, 'r') as file:
+        for line in file:
+            matches = re.findall(regex, line)
+            for match in matches:
+                print(match)
+except FileNotFoundError:
+    print(f"Error: File not found: {filename}")
+    sys.exit(1)
+except Exception as e:
+    print(f"An error occurred: {e}")
+    sys.exit(1)
+```
+2024-07-10 15:47:50,582 INFO Task100_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that retrieves a regular expression pattern and a file name from command line arguments. The program should compile the regular expression pattern and use it to search the content of the specified file.
+2024-07-10 15:48:10,766 INFO ```java
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class RegexFileSearch {
+    public static void main(String[] args) throws IOException {
+        if (args.length != 2) {
+            System.err.println("Usage: java RegexFileSearch <regex> <filename>");
+            System.exit(1);
+        }
+
+        String regex = args[0];
+        String filename = args[1];
+
+        String content = new String(Files.readAllBytes(Paths.get(filename)));
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(content);
+
+        while (matcher.find()) {
+            System.out.println(matcher.group());
+        }
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <regex.h>
+
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s <regex> <filename>\n", argv[0]);
+        return 1;
+    }
+
+    char *regex = argv[1];
+    char *filename = argv[2];
+
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        return 1;
+    }
+
+    regex_t re;
+    int reti = regcomp(&re, regex, 0);
+    if (reti) {
+        fprintf(stderr, "Could not compile regex\n");
+        return 1;
+    }
+
+    char line[1024];
+    while (fgets(line, sizeof(line), file)) {
+        regmatch_t match;
+        reti = regexec(&re, line, 1, &match, 0);
+        if (!reti) {
+            printf("%.*s\n", (int)(match.rm_eo - match.rm_so), line + match.rm_so);
+        }
+    }
+
+    regfree(&re);
+    fclose(file);
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <regex>
+
+using namespace std;
+
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        cerr << "Usage: " << argv[0] << " <regex> <filename>" << endl;
+        return 1;
+    }
+
+    string regex = argv[1];
+    string filename = argv[2];
+
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cerr << "Error opening file" << endl;
+        return 1;
+    }
+
+    string line;
+    regex pattern(regex);
+    while (getline(file, line)) {
+        smatch match;
+        if (regex_search(line, match, pattern)) {
+            cout << match.str() << endl;
+        }
+    }
+
+    file.close();
+    return 0;
+}
+```
+
+```python
+import re
+import sys
+
+if len(sys.argv) != 3:
+    print("Usage: python3 regex_file_search.py <regex> <filename>")
+    sys.exit(1)
+
+regex = sys.argv[1]
+filename = sys.argv[2]
+
+try:
+    with open(filename, 'r') as file:
+        content = file.read()
+        matches = re.findall(regex, content)
+        for match in matches:
+            print(match)
+
+except FileNotFoundError:
+    print(f"Error: File '{filename}' not found.")
+except Exception as e:
+    print(f"An error occurred: {e}")
+```
+
+2024-07-10 15:48:10,771 INFO Created file: Task100_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:48:10,775 INFO Created file: Task100_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:48:10,779 INFO Created file: Task100_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:48:10,783 INFO Created file: Task100_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:48:12,785 INFO Task101_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that creates a file named script.sh and makes it executable.
+2024-07-10 15:48:25,098 INFO ```python
+#!/usr/bin/env python3
+import os
+# Create the file
+open('script.sh', 'w').close()
+# Make it executable
+os.chmod('script.sh', 0o755)
+```
+
+```c
+#include <stdio.h>
+#include <sys/stat.h>
+
+int main() {
+  // Create the file
+  FILE *fp = fopen("script.sh", "w");
+  if (fp == NULL) {
+    return 1;
+  }
+  fclose(fp);
+
+  // Make it executable
+  if (chmod("script.sh", S_IRWXU) == -1) {
+    return 1;
+  }
+
+  return 0;
+}
+```
+
+```c++
+#include <iostream>
+#include <fstream>
+#include <sys/stat.h>
+
+int main() {
+  // Create the file
+  std::ofstream file("script.sh");
+  if (!file.is_open()) {
+    return 1;
+  }
+  file.close();
+
+  // Make it executable
+  if (chmod("script.sh", S_IRWXU) == -1) {
+    return 1;
+  }
+
+  return 0;
+}
+```
+
+```java
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.HashSet;
+import java.util.Set;
+
+public class CreateExecutableScript {
+    public static void main(String[] args) throws IOException {
+        // Create the file
+        Files.createFile(Paths.get("script.sh"));
+        // Make it executable
+        Set<PosixFilePermission> perms = new HashSet<>();
+        perms.add(PosixFilePermission.OWNER_READ);
+        perms.add(PosixFilePermission.OWNER_WRITE);
+        perms.add(PosixFilePermission.OWNER_EXECUTE);
+        Files.setPosixFilePermissions(Paths.get("script.sh"), perms);
+    }
+}
+```
+2024-07-10 15:48:25,102 INFO Created file: Task101_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:48:25,105 INFO Created file: Task101_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:48:25,108 INFO Created file: Task101_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:48:25,111 INFO Created file: Task101_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:48:27,139 INFO Task102_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that accept the the username and new password. The program should hash the password and update the user password in database.
+2024-07-10 15:49:03,806 INFO ```java
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Scanner;
+
+public class UpdatePassword {
+
+    public static void main(String[] args) {
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter new password: ");
+        String newPassword = scanner.nextLine();
+
+        try {
+            String hashedPassword = hashPassword(newPassword);
+            updatePasswordInDatabase(username, hashedPassword);
+            System.out.println("Password updated successfully.");
+        } catch (NoSuchAlgorithmException | SQLException e) {
+            System.err.println("Error updating password: " + e.getMessage());
+        }
+    }
+
+    private static String hashPassword(String password) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        md.update(password.getBytes());
+        byte[] byteData = md.digest();
+        StringBuilder sb = new StringBuilder();
+        for (byte byteDatum : byteData) {
+            sb.append(Integer.toString((byteDatum & 0xff) + 0x100, 16).substring(1));
+        }
+        return sb.toString();
+    }
+
+    private static void updatePasswordInDatabase(String username, String hashedPassword) throws SQLException {
+        String dbUrl = "jdbc:mysql://localhost:3306/your_database_name";
+        String dbUser = "your_database_user";
+        String dbPassword = "your_database_password";
+
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "UPDATE users SET password = ? WHERE username = ?")) {
+
+            preparedStatement.setString(1, hashedPassword);
+            preparedStatement.setString(2, username);
+            preparedStatement.executeUpdate();
+        }
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <openssl/sha.h>
+#include <mysql/mysql.h>
+
+void hashPassword(char *password, char *hashedPassword) {
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, password, strlen(password));
+    SHA256_Final(hash, &sha256);
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        sprintf(&hashedPassword[i * 2], "%02x", hash[i]);
+    }
+}
+
+int main() {
+    char username[255];
+    char newPassword[255];
+    char hashedPassword[SHA256_DIGEST_LENGTH * 2 + 1];
+
+    printf("Enter username: ");
+    scanf("%s", username);
+    printf("Enter new password: ");
+    scanf("%s", newPassword);
+
+    hashPassword(newPassword, hashedPassword);
+
+    MYSQL *con = mysql_init(NULL);
+    if (con == NULL) {
+        fprintf(stderr, "%s\n", mysql_error(con));
+        exit(1);
+    }
+
+    if (mysql_real_connect(con, "localhost", "your_database_user", "your_database_password", "your_database_name", 0, NULL, 0) == NULL) {
+        fprintf(stderr, "%s\n", mysql_error(con));
+        mysql_close(con);
+        exit(1);
+    }
+
+    char query[512];
+    sprintf(query, "UPDATE users SET password = '%s' WHERE username = '%s'", hashedPassword, username);
+
+    if (mysql_query(con, query)) {
+        fprintf(stderr, "%s\n", mysql_error(con));
+        mysql_close(con);
+        exit(1);
+    }
+
+    printf("Password updated successfully.\n");
+
+    mysql_close(con);
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <string>
+#include <openssl/sha.h>
+#include <mysql/mysql.h>
+
+using namespace std;
+
+string hashPassword(const string& password) {
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, password.c_str(), password.size());
+    SHA256_Final(hash, &sha256);
+    string hashedPassword;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        hashedPassword += to_string(static_cast<int>(hash[i]));
+    }
+    return hashedPassword;
+}
+
+int main() {
+    string username, newPassword;
+
+    cout << "Enter username: ";
+    cin >> username;
+    cout << "Enter new password: ";
+    cin >> newPassword;
+
+    string hashedPassword = hashPassword(newPassword);
+
+    MYSQL *con = mysql_init(NULL);
+    if (con == NULL) {
+        cerr << mysql_error(con) << endl;
+        return 1;
+    }
+
+    if (mysql_real_connect(con, "localhost", "your_database_user", "your_database_password", "your_database_name", 0, NULL, 0) == NULL) {
+        cerr << mysql_error(con) << endl;
+        mysql_close(con);
+        return 1;
+    }
+
+    string query = "UPDATE users SET password = '" + hashedPassword + "' WHERE username = '" + username + "'";
+
+    if (mysql_query(con, query.c_str())) {
+        cerr << mysql_error(con) << endl;
+        mysql_close(con);
+        return 1;
+    }
+
+    cout << "Password updated successfully." << endl;
+
+    mysql_close(con);
+    return 0;
+}
+```
+
+```python
+import hashlib
+import mysql.connector
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def update_password(username, hashed_password):
+    try:
+        mydb = mysql.connector.connect(
+            host="localhost",
+            user="your_database_user",
+            password="your_database_password",
+            database="your_database_name"
+        )
+        cursor = mydb.cursor()
+        sql = "UPDATE users SET password = %s WHERE username = %s"
+        val = (hashed_password, username)
+        cursor.execute(sql, val)
+        mydb.commit()
+        print("Password updated successfully.")
+    except Exception as e:
+        print(f"Error updating password: {e}")
+    finally:
+        if mydb.is_connected():
+            cursor.close()
+            mydb.close()
+
+if __name__ == "__main__":
+    username = input("Enter username: ")
+    new_password = input("Enter new password: ")
+    hashed_password = hash_password(new_password)
+    update_password(username, hashed_password)
+
+```
+
+2024-07-10 15:49:04,017 INFO Created file: Task102_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:49:04,019 INFO Created file: Task102_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:49:04,020 INFO Created file: Task102_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:49:04,021 INFO Created file: Task102_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:49:06,023 INFO Task103_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that checks the strength of a given password. The program should validate the password against the following criteria:
+
+At least 8 characters long
+Contains both uppercase and lowercase letters
+Contains at least one digit
+2024-07-10 15:49:27,023 INFO ```java
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class PasswordChecker {
+
+    public static void main(String[] args) {
+        String password = "YourPasswordHere";
+        checkPasswordStrength(password);
+    }
+
+    public static void checkPasswordStrength(String password) {
+        if (password.length() < 8) {
+            System.out.println("Password must be at least 8 characters long.");
+            return;
+        }
+
+        Pattern pattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).*");
+        Matcher matcher = pattern.matcher(password);
+
+        if (!matcher.matches()) {
+            System.out.println("Password must contain at least one uppercase letter, one lowercase letter, and one digit.");
+            return;
+        }
+
+        System.out.println("Strong password.");
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+int main() {
+    char password[100];
+    int length = 0, uppercase = 0, lowercase = 0, digit = 0;
+
+    printf("Enter password: ");
+    scanf("%s", password);
+
+    length = strlen(password);
+
+    for (int i = 0; i < length; i++) {
+        if (isupper(password[i])) {
+            uppercase++;
+        } else if (islower(password[i])) {
+            lowercase++;
+        } else if (isdigit(password[i])) {
+            digit++;
+        }
+    }
+
+    if (length >= 8 && uppercase > 0 && lowercase > 0 && digit > 0) {
+        printf("Strong password.\n");
+    } else {
+        printf("Weak password. ");
+        if (length < 8) {
+            printf("Password must be at least 8 characters long. ");
+        }
+        if (uppercase == 0) {
+            printf("Password must contain at least one uppercase letter. ");
+        }
+        if (lowercase == 0) {
+            printf("Password must contain at least one lowercase letter. ");
+        }
+        if (digit == 0) {
+            printf("Password must contain at least one digit. ");
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <string>
+#include <cctype>
+
+using namespace std;
+
+int main() {
+    string password;
+
+    cout << "Enter password: ";
+    cin >> password;
+
+    if (password.length() < 8) {
+        cout << "Password must be at least 8 characters long." << endl;
+        return 0;
+    }
+
+    bool hasUpper = false, hasLower = false, hasDigit = false;
+
+    for (char c : password) {
+        if (isupper(c)) {
+            hasUpper = true;
+        } else if (islower(c)) {
+            hasLower = true;
+        } else if (isdigit(c)) {
+            hasDigit = true;
+        }
+    }
+
+    if (hasUpper && hasLower && hasDigit) {
+        cout << "Strong password." << endl;
+    } else {
+        cout << "Weak password." << endl;
+    }
+
+    return 0;
+}
+```
+
+```python
+import re
+
+def check_password_strength(password):
+    if len(password) < 8:
+        print("Password must be at least 8 characters long.")
+        return
+
+    if not re.search(r"[A-Z]", password):
+        print("Password must contain at least one uppercase letter.")
+        return
+
+    if not re.search(r"[a-z]", password):
+        print("Password must contain at least one lowercase letter.")
+        return
+
+    if not re.search(r"\d", password):
+        print("Password must contain at least one digit.")
+        return
+
+    print("Strong password.")
+
+password = input("Enter password: ")
+check_password_strength(password)
+```
+2024-07-10 15:49:27,027 INFO Created file: Task103_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:49:27,031 INFO Created file: Task103_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:49:27,035 INFO Created file: Task103_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:49:27,039 INFO Created file: Task103_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:49:29,041 INFO Task104_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that handles user input into a fixed-size buffer.
+2024-07-10 15:49:39,649 INFO ```java
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        final int BUFFER_SIZE = 100;
+        char[] buffer = new char[BUFFER_SIZE];
+        int bufferIndex = 0;
+
+        System.out.print("Enter input: ");
+        String input = scanner.nextLine();
+
+        for (int i = 0; i < input.length() && bufferIndex < BUFFER_SIZE; i++) {
+            buffer[bufferIndex++] = input.charAt(i);
+        }
+
+        System.out.print("Buffer contents: ");
+        for (int i = 0; i < bufferIndex; i++) {
+            System.out.print(buffer[i]);
+        }
+        System.out.println();
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char buffer[100];
+    char input[100];
+
+    printf("Enter input: ");
+    fgets(input, sizeof(input), stdin);
+
+    strncpy(buffer, input, sizeof(buffer) - 1);
+    buffer[sizeof(buffer) - 1] = '\0';
+
+    printf("Buffer contents: %s\n", buffer);
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main() {
+    const int BUFFER_SIZE = 100;
+    char buffer[BUFFER_SIZE];
+
+    cout << "Enter input: ";
+    cin.getline(buffer, BUFFER_SIZE);
+
+    cout << "Buffer contents: " << buffer << endl;
+    return 0;
+}
+```
+
+```python
+BUFFER_SIZE = 100
+
+input_str = input("Enter input: ")
+buffer = input_str[:BUFFER_SIZE]
+
+print("Buffer contents:", buffer)
+```
+
+2024-07-10 15:49:39,656 INFO Created file: Task104_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:49:39,661 INFO Created file: Task104_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:49:39,666 INFO Created file: Task104_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:49:39,669 INFO Created file: Task104_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:49:41,672 INFO Task105_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that establishes secure SSL/TLS connections with remote servers.
+2024-07-10 15:50:13,029 INFO ```java
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import java.io.IOException;
+
+public class SecureConnection {
+
+    public static void main(String[] args) {
+        if (args.length != 2) {
+            System.err.println("Usage: java SecureConnection <hostname> <port>");
+            return;
+        }
+
+        String hostname = args[0];
+        int port = Integer.parseInt(args[1]);
+
+        try {
+            SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            SSLSocket socket = (SSLSocket) factory.createSocket(hostname, port);
+
+            System.out.println("Secure connection established:");
+            System.out.println("Socket: " + socket);
+            System.out.println("Session: " + socket.getSession());
+
+            socket.close();
+
+        } catch (IOException e) {
+            System.err.println("Error creating secure connection: " + e.getMessage());
+        }
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
+int main(int argc, char **argv) {
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s <hostname> <port>\n", argv[0]);
+        return 1;
+    }
+
+    const char *hostname = argv[1];
+    int port = atoi(argv[2]);
+
+    SSL_CTX *ctx;
+    SSL *ssl;
+    BIO *bio;
+
+    SSL_library_init();
+    SSL_load_error_strings();
+    ctx = SSL_CTX_new(TLS_client_method());
+    if (!ctx) {
+        fprintf(stderr, "Error creating SSL context\n");
+        return 1;
+    }
+
+    ssl = SSL_new(ctx);
+    if (!ssl) {
+        fprintf(stderr, "Error creating SSL object\n");
+        SSL_CTX_free(ctx);
+        return 1;
+    }
+
+    bio = BIO_new_connect(hostname);
+    if (!bio) {
+        fprintf(stderr, "Error creating BIO object\n");
+        SSL_free(ssl);
+        SSL_CTX_free(ctx);
+        return 1;
+    }
+
+    BIO_set_conn_port(bio, port);
+    SSL_set_bio(ssl, bio, bio);
+
+    if (SSL_connect(ssl) <= 0) {
+        fprintf(stderr, "Error establishing SSL connection\n");
+        ERR_print_errors_fp(stderr);
+        SSL_free(ssl);
+        SSL_CTX_free(ctx);
+        BIO_free_all(bio);
+        return 1;
+    }
+
+    printf("Secure connection established:\n");
+    printf("SSL Session ID: %s\n", SSL_SESSION_get_id(SSL_get_session(ssl)));
+
+    SSL_shutdown(ssl);
+    SSL_free(ssl);
+    SSL_CTX_free(ctx);
+    BIO_free_all(bio);
+
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <string>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
+int main(int argc, char **argv) {
+    if (argc != 3) {
+        std::cerr << "Usage: " << argv[0] << " <hostname> <port>" << std::endl;
+        return 1;
+    }
+
+    const std::string hostname = argv[1];
+    int port = std::stoi(argv[2]);
+
+    SSL_CTX *ctx;
+    SSL *ssl;
+    BIO *bio;
+
+    SSL_library_init();
+    SSL_load_error_strings();
+    ctx = SSL_CTX_new(TLS_client_method());
+    if (!ctx) {
+        std::cerr << "Error creating SSL context" << std::endl;
+        return 1;
+    }
+
+    ssl = SSL_new(ctx);
+    if (!ssl) {
+        std::cerr << "Error creating SSL object" << std::endl;
+        SSL_CTX_free(ctx);
+        return 1;
+    }
+
+    bio = BIO_new_connect((hostname + ":" + std::to_string(port)).c_str());
+    if (!bio) {
+        std::cerr << "Error creating BIO object" << std::endl;
+        SSL_free(ssl);
+        SSL_CTX_free(ctx);
+        return 1;
+    }
+
+    SSL_set_bio(ssl, bio, bio);
+
+    if (SSL_connect(ssl) <= 0) {
+        std::cerr << "Error establishing SSL connection" << std::endl;
+        ERR_print_errors_fp(stderr);
+        SSL_free(ssl);
+        SSL_CTX_free(ctx);
+        BIO_free_all(bio);
+        return 1;
+    }
+
+    std::cout << "Secure connection established:" << std::endl;
+    std::cout << "SSL Session ID: " << SSL_SESSION_get_id(SSL_get_session(ssl)) << std::endl;
+
+    SSL_shutdown(ssl);
+    SSL_free(ssl);
+    SSL_CTX_free(ctx);
+    BIO_free_all(bio);
+
+    return 0;
+}
+```
+
+```python
+import socket
+import ssl
+
+def main():
+    if len(sys.argv) != 3:
+        print("Usage: python secure_connection.py <hostname> <port>")
+        sys.exit(1)
+
+    hostname = sys.argv[1]
+    port = int(sys.argv[2])
+
+    context = ssl.create_default_context()
+
+    with socket.create_connection((hostname, port)) as sock:
+        with context.wrap_socket(sock, server_hostname=hostname) as ssock:
+            print("Secure connection established:")
+            print(f"Socket: {ssock}")
+
+if __name__ == "__main__":
+    main()
+```
+
+2024-07-10 15:50:13,042 INFO Created file: Task105_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:50:13,044 INFO Created file: Task105_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:50:13,045 INFO Created file: Task105_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:50:13,046 INFO Created file: Task105_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:50:15,048 INFO Task106_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that uses the RSA algorithm to encrypt and decrypt data.
+2024-07-10 15:50:55,629 INFO ```python
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
+
+def generate_keypair(key_size):
+    key = RSA.generate(key_size)
+    private_key = key.export_key()
+    public_key = key.publickey().export_key()
+    return private_key, public_key
+
+def encrypt(public_key, message):
+    cipher = PKCS1_OAEP.new(RSA.importKey(public_key))
+    ciphertext = cipher.encrypt(message.encode())
+    return ciphertext
+
+def decrypt(private_key, ciphertext):
+    cipher = PKCS1_OAEP.new(RSA.importKey(private_key))
+    plaintext = cipher.decrypt(ciphertext)
+    return plaintext.decode()
+
+if __name__ == "__main__":
+    private_key, public_key = generate_keypair(2048)
+    message = "Hello, RSA!"
+    ciphertext = encrypt(public_key, message)
+    plaintext = decrypt(private_key, ciphertext)
+    print(f"Ciphertext: {ciphertext.hex()}")
+    print(f"Plaintext: {plaintext}")
+```
+
+```java
+import javax.crypto.Cipher;
+import java.security.*;
+import java.util.Base64;
+
+public class RSAEncryption {
+
+    public static void main(String[] args) throws Exception {
+        // Generate key pair
+        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048);
+        KeyPair keyPair = generator.generateKeyPair();
+        PrivateKey privateKey = keyPair.getPrivate();
+        PublicKey publicKey = keyPair.getPublic();
+
+        // Encrypt message
+        String message = "Hello, RSA!";
+        Cipher encryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] encryptedMessage = encryptCipher.doFinal(message.getBytes());
+        String encodedEncryptedMessage = Base64.getEncoder().encodeToString(encryptedMessage);
+
+        // Decrypt message
+        Cipher decryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
+        byte[] decryptedMessage = decryptCipher.doFinal(Base64.getDecoder().decode(encodedEncryptedMessage));
+        String decryptedMessageString = new String(decryptedMessage);
+
+        System.out.println("Ciphertext: " + encodedEncryptedMessage);
+        System.out.println("Plaintext: " + decryptedMessageString);
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
+
+#define KEY_LENGTH 2048
+
+int main() {
+    RSA *keypair = RSA_generate_key(KEY_LENGTH, RSA_F4, NULL, NULL);
+
+    if (keypair == NULL) {
+        fprintf(stderr, "Failed to generate RSA key pair.\n");
+        return 1;
+    }
+
+    // Write private key to file
+    FILE *private_key_file = fopen("private.pem", "wb");
+    if (private_key_file == NULL) {
+        fprintf(stderr, "Failed to open private key file.\n");
+        return 1;
+    }
+    PEM_write_RSAPrivateKey(private_key_file, keypair, NULL, NULL, 0, NULL, NULL);
+    fclose(private_key_file);
+
+    // Write public key to file
+    FILE *public_key_file = fopen("public.pem", "wb");
+    if (public_key_file == NULL) {
+        fprintf(stderr, "Failed to open public key file.\n");
+        return 1;
+    }
+    PEM_write_RSAPublicKey(public_key_file, keypair);
+    fclose(public_key_file);
+
+    // Encrypt message
+    const char *message = "Hello, RSA!";
+    int message_length = strlen(message);
+    unsigned char ciphertext[RSA_size(keypair)];
+    int ciphertext_length = RSA_public_encrypt(message_length, (const unsigned char *)message, ciphertext, keypair, RSA_PKCS1_PADDING);
+
+    if (ciphertext_length == -1) {
+        fprintf(stderr, "Encryption failed: %s\n", ERR_error_string(ERR_get_error(), NULL));
+        return 1;
+    }
+
+    // Decrypt message
+    unsigned char decrypted[RSA_size(keypair)];
+    int decrypted_length = RSA_private_decrypt(ciphertext_length, ciphertext, decrypted, keypair, RSA_PKCS1_PADDING);
+
+    if (decrypted_length == -1) {
+        fprintf(stderr, "Decryption failed: %s\n", ERR_error_string(ERR_get_error(), NULL));
+        return 1;
+    }
+
+    printf("Ciphertext: ");
+    for (int i = 0; i < ciphertext_length; i++) {
+        printf("%02x", ciphertext[i]);
+    }
+    printf("\n");
+
+    printf("Plaintext: %s\n", decrypted);
+
+    RSA_free(keypair);
+
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
+
+#define KEY_LENGTH 2048
+
+int main() {
+    // Generate RSA key pair
+    RSA *keypair = RSA_generate_key(KEY_LENGTH, RSA_F4, nullptr, nullptr);
+    if (keypair == nullptr) {
+        std::cerr << "Failed to generate RSA key pair: " << ERR_error_string(ERR_get_error(), nullptr) << std::endl;
+        return 1;
+    }
+
+    // Write private key to file
+    FILE *private_key_file = fopen("private.pem", "wb");
+    if (private_key_file == nullptr) {
+        std::cerr << "Failed to open private key file." << std::endl;
+        return 1;
+    }
+    PEM_write_RSAPrivateKey(private_key_file, keypair, nullptr, nullptr, 0, nullptr, nullptr);
+    fclose(private_key_file);
+
+    // Write public key to file
+    FILE *public_key_file = fopen("public.pem", "wb");
+    if (public_key_file == nullptr) {
+        std::cerr << "Failed to open public key file." << std::endl;
+        return 1;
+    }
+    PEM_write_RSAPublicKey(public_key_file, keypair);
+    fclose(public_key_file);
+
+    // Encrypt message
+    const std::string message = "Hello, RSA!";
+    int message_length = message.length();
+    unsigned char ciphertext[RSA_size(keypair)];
+    int ciphertext_length = RSA_public_encrypt(message_length, (const unsigned char *)message.c_str(), ciphertext, keypair, RSA_PKCS1_PADDING);
+
+    if (ciphertext_length == -1) {
+        std::cerr << "Encryption failed: " << ERR_error_string(ERR_get_error(), nullptr) << std::endl;
+        return 1;
+    }
+
+    // Decrypt message
+    unsigned char decrypted[RSA_size(keypair)];
+    int decrypted_length = RSA_private_decrypt(ciphertext_length, ciphertext, decrypted, keypair, RSA_PKCS1_PADDING);
+
+    if (decrypted_length == -1) {
+        std::cerr << "Decryption failed: " << ERR_error_string(ERR_get_error(), nullptr) << std::endl;
+        return 1;
+    }
+
+    std::cout << "Ciphertext: ";
+    for (int i = 0; i < ciphertext_length; i++) {
+        std::cout << std::hex << (int)ciphertext[i];
+    }
+    std::cout << std::endl;
+
+    std::cout << "Plaintext: " << decrypted << std::endl;
+
+    RSA_free(keypair);
+
+    return 0;
+}
+```
+2024-07-10 15:50:55,638 INFO Created file: Task106_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:50:55,642 INFO Created file: Task106_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:50:55,645 INFO Created file: Task106_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:50:55,649 INFO Created file: Task106_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:50:57,652 INFO Task107_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that performs JNDI lookups to retrieve resources or objects.
+2024-07-10 15:51:07,097 INFO ```java
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+public class JndiLookup {
+
+    public static void main(String[] args) {
+
+        try {
+            // Set up the JNDI context
+            Context context = new InitialContext();
+
+            // Specify the JNDI name of the resource
+            String jndiName = "java:comp/env/myDataSource"; 
+
+            // Perform the JNDI lookup
+            Object resource = context.lookup(jndiName);
+
+            // Check the type of the retrieved resource
+            if (resource instanceof javax.sql.DataSource) {
+                System.out.println("Retrieved resource is a DataSource: " + resource.toString());
+            } else {
+                System.out.println("Retrieved resource is not a DataSource: " + resource.getClass().getName());
+            }
+
+        } catch (NamingException e) {
+            System.err.println("JNDI lookup failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+```c
+// C code cannot perform JNDI lookups directly as it is a Java-specific technology. 
+// JNDI lookups require a JVM and Java libraries.
+```
+
+```cpp
+// C++ code cannot perform JNDI lookups directly as it is a Java-specific technology.
+// JNDI lookups require a JVM and Java libraries.
+```
+
+```python
+# Python code cannot perform JNDI lookups directly without using Java libraries like Jython.
+# JNDI is a Java-specific technology and requires a JVM to work.
+``` 
+
+2024-07-10 15:51:07,102 INFO Created file: Task107_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:51:07,106 INFO Created file: Task107_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:51:07,109 INFO Created file: Task107_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:51:07,113 INFO Created file: Task107_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:51:09,115 INFO Task108_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that allows remote clients to access and manipulate objects on the server.
+2024-07-10 15:52:08,541 INFO ```python
+import socket
+import pickle
+
+HOST = 'localhost'
+PORT = 65432
+
+class DataObject:
+    def __init__(self, value):
+        self.value = value
+
+    def get_value(self):
+        return self.value
+
+    def set_value(self, new_value):
+        self.value = new_value
+
+def handle_request(conn, data_object):
+    data = conn.recv(1024)
+    command, *args = pickle.loads(data)
+
+    if command == 'GET':
+        conn.sendall(pickle.dumps(data_object.get_value()))
+    elif command == 'SET':
+        data_object.set_value(args[0])
+        conn.sendall(pickle.dumps('Value updated'))
+    else:
+        conn.sendall(pickle.dumps('Invalid command'))
+
+def main():
+    data_object = DataObject(10)
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((HOST, PORT))
+        s.listen()
+        conn, addr = s.accept()
+        with conn:
+            print(f"Connected by {addr}")
+            while True:
+                handle_request(conn, data_object)
+
+if __name__ == '__main__':
+    main()
+
+```
+
+```java
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+
+public class RemoteObjectServer {
+
+    private static final int PORT = 65432;
+    private static List<DataObject> objects = new ArrayList<>();
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        objects.add(new DataObject(10));
+        ServerSocket serverSocket = new ServerSocket(PORT);
+        System.out.println("Server started on port " + PORT);
+
+        while (true) {
+            Socket clientSocket = serverSocket.accept();
+            System.out.println("Client connected: " + clientSocket.getInetAddress());
+            new ClientHandler(clientSocket).start();
+        }
+    }
+
+    private static class ClientHandler extends Thread {
+        private final Socket clientSocket;
+        private ObjectInputStream in;
+        private ObjectOutputStream out;
+
+        public ClientHandler(Socket socket) {
+            this.clientSocket = socket;
+        }
+
+        @Override
+        public void run() {
+            try {
+                in = new ObjectInputStream(clientSocket.getInputStream());
+                out = new ObjectOutputStream(clientSocket.getOutputStream());
+
+                while (true) {
+                    String request = (String) in.readObject();
+                    String[] parts = request.split(" ", 2);
+                    String command = parts[0];
+
+                    if (command.equals("GET")) {
+                        int index = Integer.parseInt(parts[1]);
+                        sendResponse(objects.get(index).getValue());
+                    } else if (command.equals("SET")) {
+                        String[] setParts = parts[1].split(" ", 2);
+                        int index = Integer.parseInt(setParts[0]);
+                        int newValue = Integer.parseInt(setParts[1]);
+                        objects.get(index).setValue(newValue);
+                        sendResponse("Value updated");
+                    } else {
+                        sendResponse("Invalid command");
+                    }
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println("Error handling client: " + e.getMessage());
+            } finally {
+                try {
+                    clientSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        private void sendResponse(Object response) throws IOException {
+            out.writeObject(response);
+        }
+    }
+}
+
+class DataObject {
+    private int value;
+
+    public DataObject(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#define PORT 65432 
+#define BUFFER_SIZE 1024
+
+typedef struct {
+    int value;
+} DataObject;
+
+void handle_request(int client_socket, DataObject* data_object) {
+    char buffer[BUFFER_SIZE];
+    int bytes_received = recv(client_socket, buffer, BUFFER_SIZE, 0);
+    if (bytes_received <= 0) {
+        return;
+    }
+    buffer[bytes_received] = '\0';
+
+    char command[16];
+    sscanf(buffer, "%s", command);
+
+    if (strcmp(command, "GET") == 0) {
+        char response[BUFFER_SIZE];
+        snprintf(response, BUFFER_SIZE, "%d", data_object->value);
+        send(client_socket, response, strlen(response), 0);
+    } else if (strcmp(command, "SET") == 0) {
+        int new_value;
+        sscanf(buffer, "%*s %d", &new_value);
+        data_object->value = new_value;
+        send(client_socket, "Value updated", 13, 0);
+    } else {
+        send(client_socket, "Invalid command", 16, 0);
+    }
+}
+
+int main() {
+    int server_socket, client_socket;
+    struct sockaddr_in server_address, client_address;
+    socklen_t client_address_size = sizeof(client_address);
+
+    // Create socket
+    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_socket == -1) {
+        perror("Failed to create socket");
+        exit(1);
+    }
+
+    // Bind socket to address
+    memset(&server_address, 0, sizeof(server_address));
+    server_address.sin_family = AF_INET;
+    server_address.sin_addr.s_addr = INADDR_ANY; 
+    server_address.sin_port = htons(PORT); 
+
+    if (bind(server_socket, (struct sockaddr*)&server_address, sizeof(server_address)) == -1) {
+        perror("Bind failed");
+        close(server_socket);
+        exit(1);
+    }
+
+    // Listen for connections
+    if (listen(server_socket, 5) == -1) {
+        perror("Listen failed");
+        close(server_socket);
+        exit(1);
+    }
+
+    printf("Server started on port %d\n", PORT);
+
+    DataObject data_object = {10}; 
+
+    while (1) {
+        // Accept a connection
+        client_socket = accept(server_socket, (struct sockaddr*)&client_address, &client_address_size);
+        if (client_socket == -1) {
+            perror("Accept failed");
+            continue;
+        }
+        // Handle the request
+        handle_request(client_socket, &data_object);
+
+        close(client_socket); 
+    }
+
+    // Close the server socket
+    close(server_socket);
+
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <thread>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+
+const int PORT = 65432;
+const int BUFFER_SIZE = 1024;
+
+class DataObject {
+public:
+    DataObject(int val) : value(val) {}
+    int getValue() const { return value; }
+    void setValue(int val) { value = val; }
+private:
+    int value;
+};
+
+std::vector<DataObject> objects;
+
+void handle_client(int client_socket) {
+    char buffer[BUFFER_SIZE];
+
+    while (true) {
+        memset(buffer, 0, sizeof(buffer)); 
+        int bytes_read = recv(client_socket, buffer, sizeof(buffer), 0);
+        if (bytes_read <= 0) {
+            break;
+        }
+
+        std::string request(buffer, bytes_read);
+        std::istringstream iss(request);
+        std::string command, arg1, arg2;
+        iss >> command >> arg1 >> arg2;
+
+        std::string response;
+
+        if (command == "GET") {
+            int index = std::stoi(arg1);
+            if (index >= 0 && index < objects.size()) {
+                response = std::to_string(objects[index].getValue());
+            } else {
+                response = "Invalid object index";
+            }
+        } else if (command == "SET") {
+            int index = std::stoi(arg1);
+            int new_value = std::stoi(arg2);
+            if (index >= 0 && index < objects.size()) {
+                objects[index].setValue(new_value);
+                response = "Value updated";
+            } else {
+                response = "Invalid object index";
+            }
+        } else {
+            response = "Invalid command";
+        }
+
+        send(client_socket, response.c_str(), response.size(), 0);
+    }
+
+    close(client_socket);
+}
+
+int main() {
+    objects.push_back(DataObject(10)); 
+    int server_socket, client_socket;
+    struct sockaddr_in server_addr, client_addr;
+    socklen_t client_addr_size = sizeof(client_addr);
+
+    // Create socket
+    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_socket == -1) {
+        std::cerr << "Failed to create socket" << std::endl;
+        return 1;
+    }
+
+    // Set socket options for reusability
+    int optval = 1;
+    setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+
+    // Bind socket to address
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(PORT);
+
+    if (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
+        std::cerr << "Failed to bind socket" << std::endl;
+        close(server_socket);
+        return 1;
+    }
+
+    // Listen for connections
+    if (listen(server_socket, 5) == -1) {
+        std::cerr << "Failed to listen on socket" << std::endl;
+        close(server_socket);
+        return 1;
+    }
+
+    std::cout << "Server started on port " << PORT << std::endl;
+
+    while (true) {
+        client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &client_addr_size);
+        if (client_socket == -1) {
+            std::cerr << "Failed to accept connection" << std::endl;
+            continue;
+        }
+        std::thread client_thread(handle_client, client_socket);
+        client_thread.detach();
+    }
+
+    close(server_socket);
+    return 0;
+}
+```
+2024-07-10 15:52:08,546 INFO Created file: Task108_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:52:08,551 INFO Created file: Task108_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:52:08,571 INFO Created file: Task108_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:52:08,592 INFO Created file: Task108_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:52:10,594 INFO Task109_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that validates user input using regular expressions.
+2024-07-10 15:52:24,621 INFO ```java
+import java.util.Scanner;
+import java.util.regex.Pattern;
+
+public class ValidateInput {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter email address: ");
+        String email = scanner.nextLine();
+        
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        
+        if (pattern.matcher(email).matches()) {
+            System.out.println("Valid email address");
+        } else {
+            System.out.println("Invalid email address");
+        }
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <regex.h>
+
+int main() {
+    char email[100];
+    regex_t regex;
+    int result;
+
+    printf("Enter email address: ");
+    fgets(email, sizeof(email), stdin);
+
+    // Remove newline character from fgets()
+    email[strcspn(email, "\n")] = 0;
+
+    // Compile the regular expression
+    result = regcomp(&regex, "^[A-Za-z0-9+_.-]+@(.+)$", REG_EXTENDED);
+    if (result) {
+        fprintf(stderr, "Could not compile regex\n");
+        return 1;
+    }
+
+    // Match the email against the regex
+    result = regexec(&regex, email, 0, NULL, 0);
+    if (!result) {
+        printf("Valid email address\n");
+    } else {
+        printf("Invalid email address\n");
+    }
+
+    // Free the compiled regex
+    regfree(&regex);
+
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <regex>
+
+int main() {
+    std::string email;
+    std::regex emailRegex("^[A-Za-z0-9+_.-]+@(.+)$");
+
+    std::cout << "Enter email address: ";
+    std::getline(std::cin, email);
+
+    if (std::regex_match(email, emailRegex)) {
+        std::cout << "Valid email address" << std::endl;
+    } else {
+        std::cout << "Invalid email address" << std::endl;
+    }
+
+    return 0;
+}
+```
+
+```python
+import re
+
+email = input("Enter email address: ")
+
+email_regex = "^[A-Za-z0-9+_.-]+@(.+)$"
+
+if re.match(email_regex, email):
+    print("Valid email address")
+else:
+    print("Invalid email address")
+```
+2024-07-10 15:52:24,628 INFO Created file: Task109_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:52:24,632 INFO Created file: Task109_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:52:24,636 INFO Created file: Task109_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:52:24,641 INFO Created file: Task109_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:52:26,643 INFO Task110_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that validates URLs entered by users.
+2024-07-10 15:52:46,527 INFO ```java
+import java.net.URL;
+import java.util.Scanner;
+
+public class ValidateURL {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter a URL to validate: ");
+        String urlString = scanner.nextLine();
+
+        try {
+            URL url = new URL(urlString);
+            System.out.println(urlString + " is a valid URL.");
+        } catch (Exception e) {
+            System.out.println(urlString + " is not a valid URL.");
+        }
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <regex.h>
+
+int main() {
+    char url[1024];
+    regex_t regex;
+    int result;
+
+    printf("Enter a URL to validate: ");
+    fgets(url, sizeof(url), stdin);
+
+    // Remove trailing newline character from fgets()
+    if (url[strlen(url) - 1] == '\n') {
+        url[strlen(url) - 1] = '\0';
+    }
+
+    // Regular expression for URL validation
+    result = regcomp(&regex, "^(http|https)://([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,6}(:[0-9]+)?(/.*)?$", REG_EXTENDED | REG_NOSUB);
+    if (result) {
+        fprintf(stderr, "Could not compile regex\n");
+        return 1;
+    }
+
+    result = regexec(&regex, url, 0, NULL, 0);
+    if (!result) {
+        printf("%s is a valid URL.\n", url);
+    } else if (result == REG_NOMATCH) {
+        printf("%s is not a valid URL.\n", url);
+    } else {
+        char msgbuf[100];
+        regerror(result, &regex, msgbuf, sizeof(msgbuf));
+        fprintf(stderr, "Regex match failed: %s\n", msgbuf);
+        return 1;
+    }
+
+    regfree(&regex);
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <regex>
+#include <string>
+
+using namespace std;
+
+int main() {
+    string url;
+
+    cout << "Enter a URL to validate: ";
+    getline(cin, url);
+
+    // Regular expression for URL validation
+    regex urlRegex("^(http|https)://([a-z0-9]+(-[a-z0-9]+)*\\.)+[a-z]{2,6}(:[0-9]+)?(/.*)?$");
+
+    if (regex_match(url, urlRegex)) {
+        cout << url << " is a valid URL." << endl;
+    } else {
+        cout << url << " is not a valid URL." << endl;
+    }
+
+    return 0;
+}
+```
+
+```python
+import re
+
+def validate_url(url):
+    """
+    Validates a URL using a regular expression.
+
+    Args:
+        url: The URL to validate.
+
+    Returns:
+        True if the URL is valid, False otherwise.
+    """
+    regex = re.compile(
+        r"^(http|https)://([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,6}(:[0-9]+)?(/.*)?$"
+    )
+    match = regex.match(url)
+    return bool(match)
+
+if __name__ == "__main__":
+    url = input("Enter a URL to validate: ")
+    if validate_url(url):
+        print(f"{url} is a valid URL.")
+    else:
+        print(f"{url} is not a valid URL.")
+```
+2024-07-10 15:52:46,532 INFO Created file: Task110_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:52:46,535 INFO Created file: Task110_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:52:46,537 INFO Created file: Task110_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:52:46,539 INFO Created file: Task110_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:52:48,541 INFO Task111_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that implements an XML-RPC server to handle client requests.
+2024-07-10 15:53:18,785 INFO ```python
+from xmlrpc.server import SimpleXMLRPCServer
+from xmlrpc.server import SimpleXMLRPCRequestHandler
+
+class RequestHandler(SimpleXMLRPCRequestHandler):
+    rpc_paths = ('/RPC2',)
+
+# Create server
+with SimpleXMLRPCServer(('localhost', 8000),
+                        requestHandler=RequestHandler) as server:
+    server.register_introspection_functions()
+
+    # Register pow() function; this will be made available to clients
+    server.register_function(pow)
+
+    # Register a function under a different name
+    def adder_function(x, y):
+        return x + y
+    server.register_function(adder_function, 'add')
+
+    # Run the server's main loop
+    server.serve_forever()
+```
+
+```java
+import org.apache.xmlrpc.webserver.WebServer;
+import org.apache.xmlrpc.server.XmlRpcServer;
+import org.apache.xmlrpc.server.PropertyHandlerMapping;
+import java.util.Vector;
+import java.util.Hashtable;
+
+public class Server {
+    public static void main(String[] args) throws Exception {
+        // Create server
+        WebServer webServer = new WebServer(8000);
+        XmlRpcServer xmlRpcServer = webServer.getXmlRpcServer();
+
+        // Set up handler
+        PropertyHandlerMapping phm = new PropertyHandlerMapping();
+        phm.addHandler("sample", MyHandler.class);
+        xmlRpcServer.setHandlerMapping(phm);
+
+        // Start server
+        webServer.start();
+    }
+
+    public static class MyHandler {
+        public String sayHello(String name) {
+            return "Hello, " + name + "!";
+        }
+
+        public Vector getNumbers() {
+            Vector<Integer> numbers = new Vector<>();
+            numbers.add(1);
+            numbers.add(2);
+            numbers.add(3);
+            return numbers;
+        }
+
+        public Hashtable getData() {
+            Hashtable<String, String> data = new Hashtable<>();
+            data.put("name", "John Doe");
+            data.put("age", "30");
+            return data;
+        }
+    }
+}
+```
+
+```c++
+#include <iostream>
+#include <xmlrpc/XmlRpc.h>
+
+using namespace std;
+
+class MyXmlRpcServer : public XmlRpcServer {
+public:
+    MyXmlRpcServer() {
+        // Bind "add" procedure to the server
+        this->bindAndExecuteMethod(XmlRpcServer::XmlRpcMethodPtr(
+                new XmlRpcServerMethod("add", this)));
+    }
+
+    // Method to be exposed to XML-RPC clients
+    void add(XmlRpcServerMethodCaller& caller,
+              const XmlRpcValue& params, XmlRpcValue& result) {
+        if (params.getType() != XmlRpcValue::TypeArray || params.arraySize() != 2) {
+            throw XmlRpcException("Invalid parameters. Expecting an array of two numbers.");
+        }
+
+        double a = params[0];
+        double b = params[1];
+        result = a + b;
+    }
+};
+
+int main() {
+    try {
+        MyXmlRpcServer server;
+        cout << "Starting XML-RPC server on port 8080..." << endl;
+        server.acceptConnectionsOnPort(8080);
+        server.run();
+    } catch (XmlRpcException& e) {
+        cerr << "XML-RPC Exception: " << e.getMessage() << endl;
+        return 1;
+    }
+
+    return 0;
+}
+```
+
+```c
+#include <xmlrpc-c/server.h>
+#include <xmlrpc-c/base.h>
+#include <xmlrpc-c/registry.h>
+
+static xmlrpc_value *
+sample_add(xmlrpc_env *   const envP, 
+           xmlrpc_value * const paramArrayP,
+           void *         const user_data ATTR_UNUSED) {
+
+    xmlrpc_int32 x, y, z;
+
+    /* Parse our arguments out of the passed array */
+    xmlrpc_decompose_value(envP, paramArrayP, "(ii)", &x, &y);
+    if (envP->fault_occurred)
+        return xmlrpc_build_fault_value(envP,
+                                        "Parameter parsing failed: %s",
+                                        envP->fault_string);
+
+    /* Add our two numbers */
+    z = x + y;
+
+    /* Return our result */
+    return xmlrpc_build_value(envP, "i", z);
+}
+
+
+
+int 
+main(int          const argc, 
+     const char ** const argv) {
+
+    xmlrpc_env env;
+    xmlrpc_registry * registryP;
+    xmlrpc_server * serverP;
+
+    xmlrpc_env_init(&env);
+
+    registryP = xmlrpc_registry_new(&env);
+
+    xmlrpc_registry_add_method(
+        &env, registryP, NULL, "sample.add", &sample_add, NULL);
+
+    serverP = xmlrpc_server_create(&env, "XmlRpc-C Server", 8080, &env);
+    if (env.fault_occurred) {
+        fprintf(stderr, "Failed to create server: %s\n", env.fault_string);
+        return 1;
+    }
+
+    xmlrpc_server_register_introspection_data(&env, serverP, registryP);
+
+    xmlrpc_server_run_server(serverP, &env);
+
+    xmlrpc_server_destroy(serverP);
+    xmlrpc_registry_free(registryP);
+    xmlrpc_env_clean(&env);
+
+    return 0;
+}
+```
+2024-07-10 15:53:18,789 INFO Created file: Task111_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:53:18,793 INFO Created file: Task111_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:53:18,795 INFO Created file: Task111_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:53:18,798 INFO Created file: Task111_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:53:20,799 INFO Task112_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that interacts with a NoSQL database - MongoDB , to perform CRUD (Create, Read, Update, Delete) operations.
+2024-07-10 15:53:42,236 INFO ```java
+import com.mongodb.client.*;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+import org.bson.Document;
+
+public class MongoDBExample {
+
+    public static void main(String[] args) {
+        // Replace with your MongoDB connection string
+        String connectionString = "mongodb://localhost:27017";
+        try (MongoClient mongoClient = MongoClients.create(connectionString)) {
+            MongoDatabase database = mongoClient.getDatabase("myDatabase");
+            MongoCollection<Document> collection = database.getCollection("myCollection");
+
+            // Create
+            Document newDocument = new Document("name", "John Doe")
+                    .append("age", 30)
+                    .append("city", "New York");
+            collection.insertOne(newDocument);
+            System.out.println("Document inserted successfully.");
+
+            // Read
+            FindIterable<Document> documents = collection.find();
+            for (Document doc : documents) {
+                System.out.println(doc.toJson());
+            }
+
+            // Update
+            collection.updateOne(Filters.eq("name", "John Doe"), Updates.set("age", 35));
+            System.out.println("Document updated successfully.");
+
+            // Delete
+            collection.deleteOne(Filters.eq("name", "John Doe"));
+            System.out.println("Document deleted successfully.");
+        }
+    }
+}
+```
+
+```c
+```
+
+```cpp
+#include <iostream>
+#include <bsoncxx/builder/stream/document.hpp>
+#include <bsoncxx/json.hpp>
+#include <mongocxx/client.hpp>
+#include <mongocxx/instance.hpp>
+#include <mongocxx/uri.hpp>
+
+using bsoncxx::builder::stream::document;
+using bsoncxx::builder::stream::open_document;
+using bsoncxx::builder::stream::close_document;
+
+int main() {
+    // Replace with your MongoDB connection string
+    mongocxx::instance inst{};
+    mongocxx::client conn{mongocxx::uri{"mongodb://localhost:27017"}};
+
+    mongocxx::database db = conn["myDatabase"];
+    mongocxx::collection coll = db["myCollection"];
+
+    // Create
+    bsoncxx::document::value new_document = document{}
+        << "name" << "John Doe"
+        << "age" << 30
+        << "city" << "New York" << close_document;
+    coll.insert_one(new_document.view());
+    std::cout << "Document inserted successfully." << std::endl;
+
+    // Read
+    mongocxx::cursor cursor = coll.find({});
+    for (auto&& doc : cursor) {
+        std::cout << bsoncxx::to_json(doc) << std::endl;
+    }
+
+    // Update
+    coll.update_one(
+        document{} << "name" << "John Doe" << close_document,
+        document{} << "$set" << open_document << "age" << 35 << close_document << close_document
+    );
+    std::cout << "Document updated successfully." << std::endl;
+
+    // Delete
+    coll.delete_one(document{} << "name" << "John Doe" << close_document);
+    std::cout << "Document deleted successfully." << std::endl;
+
+    return 0;
+}
+```
+
+```python
+from pymongo import MongoClient
+
+# Replace with your MongoDB connection string
+client = MongoClient('mongodb://localhost:27017/')
+
+db = client['myDatabase']
+collection = db['myCollection']
+
+# Create
+new_document = {
+    "name": "John Doe",
+    "age": 30,
+    "city": "New York"
+}
+collection.insert_one(new_document)
+print("Document inserted successfully.")
+
+# Read
+for doc in collection.find():
+    print(doc)
+
+# Update
+collection.update_one({"name": "John Doe"}, {"$set": {"age": 35}})
+print("Document updated successfully.")
+
+# Delete
+collection.delete_one({"name": "John Doe"})
+print("Document deleted successfully.")
+```
+
+2024-07-10 15:53:42,241 INFO Created file: Task112_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:53:42,244 INFO Created file: Task112_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:53:42,248 INFO Created file: Task112_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:53:42,251 INFO Created file: Task112_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:53:44,253 INFO Task113_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that concatenate multiple strings together received from the user input.
+2024-07-10 15:53:57,859 INFO ```java
+import java.util.Scanner;
+
+public class ConcatenateStrings {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        StringBuilder concatenatedString = new StringBuilder();
+
+        while (true) {
+            System.out.print("Enter a string (or type 'quit' to exit): ");
+            String inputString = scanner.nextLine();
+
+            if (inputString.equalsIgnoreCase("quit")) {
+                break;
+            }
+
+            concatenatedString.append(inputString);
+        }
+
+        System.out.println("Concatenated string: " + concatenatedString.toString());
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char inputString[100];
+    char concatenatedString[1000] = "";
+
+    while (1) {
+        printf("Enter a string (or type 'quit' to exit): ");
+        fgets(inputString, sizeof(inputString), stdin);
+        inputString[strcspn(inputString, "\n")] = 0;
+
+        if (strcmp(inputString, "quit") == 0) {
+            break;
+        }
+
+        strcat(concatenatedString, inputString);
+    }
+
+    printf("Concatenated string: %s\n", concatenatedString);
+
+    return 0;
+}
+```
+
+```c++
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main() {
+    string inputString;
+    string concatenatedString;
+
+    while (true) {
+        cout << "Enter a string (or type 'quit' to exit): ";
+        getline(cin, inputString);
+
+        if (inputString == "quit") {
+            break;
+        }
+
+        concatenatedString += inputString;
+    }
+
+    cout << "Concatenated string: " << concatenatedString << endl;
+
+    return 0;
+}
+```
+
+```python
+concatenated_string = ""
+
+while True:
+    input_string = input("Enter a string (or type 'quit' to exit): ")
+    if input_string == "quit":
+        break
+    concatenated_string += input_string
+
+print("Concatenated string:", concatenated_string)
+```
+2024-07-10 15:53:57,864 INFO Created file: Task113_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:53:57,869 INFO Created file: Task113_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:53:57,873 INFO Created file: Task113_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:53:57,877 INFO Created file: Task113_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:53:59,880 INFO Task114_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that performs various string operations, such as copying, concatenating, or manipulating strings.
+2024-07-10 15:54:22,101 INFO ```java
+import java.util.Scanner;
+
+public class StringOperations {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter a string: ");
+        String inputString = scanner.nextLine();
+
+        // Copy the string
+        String copiedString = inputString;
+
+        // Concatenate the string with itself
+        String concatenatedString = inputString + inputString;
+
+        // Reverse the string
+        String reversedString = new StringBuilder(inputString).reverse().toString();
+
+        // Convert the string to uppercase
+        String uppercaseString = inputString.toUpperCase();
+
+        // Convert the string to lowercase
+        String lowercaseString = inputString.toLowerCase();
+
+        System.out.println("Copied string: " + copiedString);
+        System.out.println("Concatenated string: " + concatenatedString);
+        System.out.println("Reversed string: " + reversedString);
+        System.out.println("Uppercase string: " + uppercaseString);
+        System.out.println("Lowercase string: " + lowercaseString);
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char inputString[100], copiedString[100], concatenatedString[200], reversedString[100];
+    int i, j;
+
+    printf("Enter a string: ");
+    fgets(inputString, sizeof(inputString), stdin);
+
+    // Copy the string
+    strcpy(copiedString, inputString);
+
+    // Concatenate the string with itself
+    strcpy(concatenatedString, inputString);
+    strcat(concatenatedString, inputString);
+
+    // Reverse the string
+    j = 0;
+    for (i = strlen(inputString) - 2; i >= 0; i--) {
+        reversedString[j++] = inputString[i];
+    }
+    reversedString[j] = '\0';
+
+    // Convert the string to uppercase
+    for (i = 0; inputString[i]; i++) {
+        inputString[i] = toupper(inputString[i]);
+    }
+
+    // Print the results
+    printf("Copied string: %s", copiedString);
+    printf("Concatenated string: %s", concatenatedString);
+    printf("Reversed string: %s", reversedString);
+    printf("Uppercase string: %s\n", inputString);
+
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    string inputString, copiedString, concatenatedString, reversedString;
+
+    cout << "Enter a string: ";
+    getline(cin, inputString);
+
+    // Copy the string
+    copiedString = inputString;
+
+    // Concatenate the string with itself
+    concatenatedString = inputString + inputString;
+
+    // Reverse the string
+    reversedString = inputString;
+    reverse(reversedString.begin(), reversedString.end());
+
+    // Convert the string to uppercase
+    transform(inputString.begin(), inputString.end(), inputString.begin(), ::toupper);
+
+    // Convert the string to lowercase
+    transform(inputString.begin(), inputString.end(), inputString.begin(), ::tolower);
+
+    cout << "Copied string: " << copiedString << endl;
+    cout << "Concatenated string: " << concatenatedString << endl;
+    cout << "Reversed string: " << reversedString << endl;
+    cout << "Uppercase string: " << inputString << endl;
+
+    return 0;
+}
+```
+
+```python
+input_string = input("Enter a string: ")
+
+# Copy the string
+copied_string = input_string
+
+# Concatenate the string with itself
+concatenated_string = input_string + input_string
+
+# Reverse the string
+reversed_string = input_string[::-1]
+
+# Convert the string to uppercase
+uppercase_string = input_string.upper()
+
+# Convert the string to lowercase
+lowercase_string = input_string.lower()
+
+print("Copied string:", copied_string)
+print("Concatenated string:", concatenated_string)
+print("Reversed string:", reversed_string)
+print("Uppercase string:", uppercase_string)
+print("Lowercase string:", lowercase_string)
+```
+2024-07-10 15:54:22,104 INFO Created file: Task114_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:54:22,107 INFO Created file: Task114_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:54:22,109 INFO Created file: Task114_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:54:22,114 INFO Created file: Task114_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:54:24,116 INFO Task115_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that defines a struct with bit fields, or class for Java/python related code.
+2024-07-10 15:54:35,278 INFO ```c
+#include <stdio.h>
+#include <stdint.h>
+
+struct Data {
+    uint8_t field1 : 3;
+    uint8_t field2 : 5;
+};
+
+int main() {
+    struct Data data;
+    data.field1 = 2;
+    data.field2 = 20;
+
+    printf("field1: %u\n", data.field1);
+    printf("field2: %u\n", data.field2);
+
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+
+struct Data {
+    uint8_t field1 : 3;
+    uint8_t field2 : 5;
+};
+
+int main() {
+    Data data;
+    data.field1 = 2;
+    data.field2 = 20;
+
+    std::cout << "field1: " << (int)data.field1 << std::endl;
+    std::cout << "field2: " << (int)data.field2 << std::endl;
+
+    return 0;
+}
+```
+
+```java
+public class Main {
+    public static class Data {
+        public int field1;
+        public int field2;
+
+        public Data(int field1, int field2) {
+            this.field1 = field1;
+            this.field2 = field2;
+        }
+    }
+
+    public static void main(String[] args) {
+        Data data = new Data(2, 20);
+        System.out.println("field1: " + data.field1);
+        System.out.println("field2: " + data.field2);
+    }
+}
+```
+
+```python
+class Data:
+    def __init__(self, field1, field2):
+        self.field1 = field1
+        self.field2 = field2
+
+data = Data(2, 20)
+print(f"field1: {data.field1}")
+print(f"field2: {data.field2}")
+```
+
+2024-07-10 15:54:35,284 INFO Created file: Task115_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:54:35,288 INFO Created file: Task115_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:54:35,293 INFO Created file: Task115_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:54:35,296 INFO Created file: Task115_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:54:37,298 INFO Task116_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that drops user privileges after performing privileged operations such as change specific user password on linux system based on the user input.
+2024-07-10 15:55:13,020 INFO ```python
+import os
+import pwd
+import crypt
+import sys
+
+def drop_privileges(user_uid, user_gid):
+    os.setgid(user_gid)
+    os.setuid(user_uid)
+
+def main():
+    if os.geteuid() != 0:
+        print("This script requires root privileges. Please run with sudo.")
+        sys.exit(1)
+
+    username = input("Enter the username: ")
+    password = input("Enter the new password: ")
+
+    try:
+        user = pwd.getpwnam(username)
+    except KeyError:
+        print(f"User '{username}' not found.")
+        sys.exit(1)
+
+    encrypted_password = crypt.crypt(password, crypt.mksalt(crypt.METHOD_SHA512))
+
+    try:
+        with open(f'/etc/shadow', 'r+') as shadow_file:
+            lines = shadow_file.readlines()
+            for i, line in enumerate(lines):
+                if line.startswith(username + ':'):
+                    parts = line.split(':')
+                    parts[1] = encrypted_password
+                    lines[i] = ':'.join(parts) + '\n'
+                    break
+            else:
+                print(f"User '{username}' not found in shadow file.")
+                sys.exit(1)
+
+            shadow_file.seek(0)
+            shadow_file.writelines(lines)
+            shadow_file.truncate()
+
+        print(f"Password for user '{username}' changed successfully.")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        sys.exit(1)
+
+    drop_privileges(user.pw_uid, user.pw_gid)
+
+    print(f"Running as user: {os.getlogin()}")
+
+if __name__ == '__main__':
+    main()
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <shadow.h>
+#include <errno.h>
+
+void drop_privileges(uid_t user_uid, gid_t user_gid) {
+    if (setgid(user_gid) != 0) {
+        perror("setgid");
+        exit(1);
+    }
+    if (setuid(user_uid) != 0) {
+        perror("setuid");
+        exit(1);
+    }
+}
+
+int main() {
+    if (geteuid() != 0) {
+        fprintf(stderr, "This program requires root privileges. Please run with sudo.\n");
+        return 1;
+    }
+
+    char username[256];
+    char password[256];
+
+    printf("Enter the username: ");
+    scanf("%s", username);
+
+    printf("Enter the new password: ");
+    scanf("%s", password);
+
+    struct spwd *sp = getspnam(username);
+    if (sp == NULL) {
+        fprintf(stderr, "User '%s' not found.\n", username);
+        return 1;
+    }
+
+    char *encrypted_password = crypt(password, "$6$salt$");
+    if (encrypted_password == NULL) {
+        perror("crypt");
+        return 1;
+    }
+
+    sp->sp_pwdp = encrypted_password;
+
+    if (putspent(sp, SHADOW_WRITE) == -1) {
+        perror("putspent");
+        return 1;
+    }
+
+    printf("Password for user '%s' changed successfully.\n", username);
+
+    drop_privileges(sp->sp_uid, sp->sp_gid);
+
+    printf("Running as user: %s\n", getlogin());
+
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <string>
+#include <unistd.h>
+#include <shadow.h>
+#include <pwd.h>
+
+using namespace std;
+
+void drop_privileges(uid_t user_uid, gid_t user_gid) {
+    if (setgid(user_gid) != 0) {
+        perror("setgid");
+        exit(1);
+    }
+    if (setuid(user_uid) != 0) {
+        perror("setuid");
+        exit(1);
+    }
+}
+
+int main() {
+    if (geteuid() != 0) {
+        cerr << "This program requires root privileges. Please run with sudo." << endl;
+        return 1;
+    }
+
+    string username, password;
+
+    cout << "Enter the username: ";
+    cin >> username;
+
+    cout << "Enter the new password: ";
+    cin >> password;
+
+    spwd *sp = getspnam(username.c_str());
+    if (sp == nullptr) {
+        cerr << "User '" << username << "' not found." << endl;
+        return 1;
+    }
+
+    string encrypted_password = crypt(password.c_str(), "$6$salt$");
+    if (encrypted_password == "") {
+        perror("crypt");
+        return 1;
+    }
+
+    sp->sp_pwdp = const_cast<char*>(encrypted_password.c_str());
+
+    if (putspent(sp, SHADOW_WRITE) == -1) {
+        perror("putspent");
+        return 1;
+    }
+
+    cout << "Password for user '" << username << "' changed successfully." << endl;
+
+    passwd* user = getpwnam(username.c_str());
+    if (user == nullptr) {
+        cerr << "Error getting user details." << endl;
+        return 1;
+    }
+
+    drop_privileges(user->pw_uid, user->pw_gid);
+
+    cout << "Running as user: " << getlogin() << endl;
+
+    return 0;
+}
+```
+
+```java
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class ChangePassword {
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+        if (System.getProperty("user.name").equals("root")) {
+            System.err.println("This program should not be run as root. Exiting.");
+            System.exit(1);
+        }
+
+        ProcessBuilder pb = new ProcessBuilder("sudo", "/bin/bash", "-c",
+                "echo Enter the username: && read username;" +
+                        "echo Enter the new password: && read -s password;" +
+                        "echo $password | sudo chpasswd <<< \"$username:$password\"; " +
+                        "echo Password for user '$username' changed successfully.;"
+        );
+
+        Process process = pb.start();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            System.out.println(line);
+        }
+
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            System.err.println("An error occurred while changing the password.");
+            System.exit(1);
+        }
+    }
+}
+```
+2024-07-10 15:55:13,027 INFO Created file: Task116_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:55:13,032 INFO Created file: Task116_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:55:13,035 INFO Created file: Task116_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:55:13,039 INFO Created file: Task116_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:55:15,041 INFO Task117_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that extracts the contents of archive files, such as ZIP or TAR files.
+2024-07-10 15:55:44,472 INFO ```python
+import zipfile
+import tarfile
+import os
+
+def extract_zip(archive_path, extract_path="."):
+    with zipfile.ZipFile(archive_path, 'r') as zip_ref:
+        zip_ref.extractall(extract_path)
+
+def extract_tar(archive_path, extract_path="."):
+    with tarfile.open(archive_path, 'r') as tar_ref:
+        tar_ref.extractall(extract_path)
+
+def main():
+    archive_file = input("Enter the path to the archive file: ")
+    output_dir = input("Enter the directory to extract to (leave blank to extract to current directory): ")
+
+    if not output_dir:
+        output_dir = "."
+
+    if archive_file.endswith((".zip", ".ZIP")):
+        extract_zip(archive_file, output_dir)
+    elif archive_file.endswith((".tar", ".tar.gz", ".tgz")):
+        extract_tar(archive_file, output_dir)
+    else:
+        print("Unsupported archive format.")
+
+if __name__ == "__main__":
+    main()
+```
+
+```java
+import java.io.*;
+import java.util.zip.*;
+
+public class ArchiveExtractor {
+
+    public static void extractZip(String archivePath, String extractPath) throws IOException {
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(archivePath))) {
+            ZipEntry zipEntry = zis.getNextEntry();
+            while (zipEntry != null) {
+                String fileName = zipEntry.getName();
+                File newFile = new File(extractPath + File.separator + fileName);
+
+                if (zipEntry.isDirectory()) {
+                    newFile.mkdirs();
+                } else {
+                    newFile.getParentFile().mkdirs();
+                    try (FileOutputStream fos = new FileOutputStream(newFile)) {
+                        byte[] buffer = new byte[1024];
+                        int len;
+                        while ((len = zis.read(buffer)) > 0) {
+                            fos.write(buffer, 0, len);
+                        }
+                    }
+                }
+                zipEntry = zis.getNextEntry();
+            }
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Enter the path to the archive file: ");
+        String archiveFile = reader.readLine();
+        System.out.print("Enter the directory to extract to (leave blank to extract to current directory): ");
+        String outputDir = reader.readLine();
+
+        if (outputDir.isEmpty()) {
+            outputDir = ".";
+        }
+
+        if (archiveFile.toLowerCase().endsWith(".zip")) {
+            extractZip(archiveFile, outputDir);
+        } else {
+            System.out.println("Unsupported archive format.");
+        }
+    }
+}
+```
+
+```c++
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
+int main() {
+    std::string archiveFile, outputDir, filePath;
+
+    std::cout << "Enter the path to the archive file: ";
+    std::getline(std::cin, archiveFile);
+
+    std::cout << "Enter the directory to extract to (leave blank to extract to current directory): ";
+    std::getline(std::cin, outputDir);
+
+    if (outputDir.empty()) {
+        outputDir = ".";
+    }
+
+    if (archiveFile.find(".zip") != std::string::npos) {
+        // Extracting from ZIP archives is not directly supported in standard C++
+        // You would need to use external libraries like zlib
+        std::cerr << "ZIP extraction is not supported in this example. Please use external libraries like zlib." << std::endl;
+        return 1; 
+    } else {
+        std::cerr << "Unsupported archive format." << std::endl;
+        return 1; 
+    }
+
+    return 0;
+}
+```
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char archiveFile[256], outputDir[256], command[512];
+
+    printf("Enter the path to the archive file: ");
+    fgets(archiveFile, sizeof(archiveFile), stdin);
+    archiveFile[strcspn(archiveFile, "\n")] = 0; 
+
+    printf("Enter the directory to extract to (leave blank to extract to current directory): ");
+    fgets(outputDir, sizeof(outputDir), stdin);
+    outputDir[strcspn(outputDir, "\n")] = 0;
+
+    if (strlen(outputDir) == 0) {
+        strcpy(outputDir, ".");
+    }
+
+    if (strstr(archiveFile, ".zip") != NULL) {
+        sprintf(command, "unzip \"%s\" -d \"%s\"", archiveFile, outputDir); 
+    } else if (strstr(archiveFile, ".tar.gz") != NULL || strstr(archiveFile, ".tgz") != NULL) {
+        sprintf(command, "tar -xzf \"%s\" -C \"%s\"", archiveFile, outputDir); 
+    } else if (strstr(archiveFile, ".tar") != NULL) {
+        sprintf(command, "tar -xf \"%s\" -C \"%s\"", archiveFile, outputDir);
+    } else {
+        fprintf(stderr, "Unsupported archive format.\n");
+        return 1; 
+    }
+
+    int result = system(command);
+    if (result != 0) {
+        fprintf(stderr, "Extraction failed. Error code: %d\n", result);
+        return 1; 
+    }
+
+    return 0; 
+}
+```
+2024-07-10 15:55:44,477 INFO Created file: Task117_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:55:44,478 INFO Created file: Task117_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:55:44,480 INFO Created file: Task117_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:55:44,480 INFO Created file: Task117_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:55:46,482 INFO Task118_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that processes and validates IP addresses.
+2024-07-10 15:56:07,747 INFO ```java
+import java.util.regex.Pattern;
+
+public class ValidateIP {
+    public static void main(String[] args) {
+        String ipAddress = "192.168.1.1";
+        if (isValidIP(ipAddress)) {
+            System.out.println(ipAddress + " is a valid IP address.");
+        } else {
+            System.out.println(ipAddress + " is not a valid IP address.");
+        }
+    }
+
+    public static boolean isValidIP(String ipAddress) {
+        String ipPattern = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
+        return Pattern.matches(ipPattern, ipAddress);
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <regex.h>
+
+int main() {
+    char ipAddress[] = "192.168.1.1";
+    if (isValidIP(ipAddress)) {
+        printf("%s is a valid IP address.\n", ipAddress);
+    } else {
+        printf("%s is not a valid IP address.\n", ipAddress);
+    }
+    return 0;
+}
+
+int isValidIP(char *ipAddress) {
+    regex_t regex;
+    int result;
+    char *pattern = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
+
+    result = regexec(&regex, ipAddress, 0, NULL, 0);
+    regfree(&regex);
+
+    if (result == 0) {
+        return 1; // Valid IP address
+    } else {
+        return 0; // Invalid IP address
+    }
+}
+```
+
+```cpp
+#include <iostream>
+#include <regex>
+
+using namespace std;
+
+bool isValidIP(string ipAddress) {
+    regex ipPattern("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
+    return regex_match(ipAddress, ipPattern);
+}
+
+int main() {
+    string ipAddress = "192.168.1.1";
+    if (isValidIP(ipAddress)) {
+        cout << ipAddress << " is a valid IP address." << endl;
+    } else {
+        cout << ipAddress << " is not a valid IP address." << endl;
+    }
+    return 0;
+}
+```
+
+```python
+import re
+
+def is_valid_ip(ip_address):
+    ip_pattern = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
+    return re.match(ip_pattern, ip_address) is not None
+
+ip_address = "192.168.1.1"
+if is_valid_ip(ip_address):
+    print(f"{ip_address} is a valid IP address.")
+else:
+    print(f"{ip_address} is not a valid IP address.")
+```
+
+2024-07-10 15:56:07,751 INFO Created file: Task118_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:56:07,753 INFO Created file: Task118_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:56:07,755 INFO Created file: Task118_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:56:07,758 INFO Created file: Task118_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:56:09,760 INFO Task119_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that processes and parses CSV files.
+2024-07-10 15:56:24,752 INFO ```java
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CSVParser {
+
+    public static void main(String[] args) {
+        String csvFile = "data.csv";
+        List<List<String>> records = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                List<String> record = new ArrayList<>();
+                for (String value : values) {
+                    record.add(value.trim());
+                }
+                records.add(record);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Print the parsed data
+        for (List<String> record : records) {
+            System.out.println(record);
+        }
+    }
+}
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_LINE_LENGTH 1024
+
+int main() {
+    FILE *fp;
+    char line[MAX_LINE_LENGTH];
+    char *token;
+
+    fp = fopen("data.csv", "r");
+    if (fp == NULL) {
+        perror("Error opening file");
+        return 1;
+    }
+
+    while (fgets(line, MAX_LINE_LENGTH, fp) != NULL) {
+        token = strtok(line, ",");
+        while (token != NULL) {
+            printf("%s ", token);
+            token = strtok(NULL, ",");
+        }
+        printf("\n");
+    }
+
+    fclose(fp);
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <sstream>
+
+using namespace std;
+
+int main() {
+    ifstream file("data.csv");
+    string line;
+    vector<vector<string>> data;
+
+    while (getline(file, line)) {
+        vector<string> row;
+        stringstream ss(line);
+        string cell;
+
+        while (getline(ss, cell, ',')) {
+            row.push_back(cell);
+        }
+
+        data.push_back(row);
+    }
+
+    for (const auto &row : data) {
+        for (const auto &cell : row) {
+            cout << cell << " ";
+        }
+        cout << endl;
+    }
+
+    return 0;
+}
+```
+
+```python
+import csv
+
+with open('data.csv', 'r') as file:
+    reader = csv.reader(file)
+    for row in reader:
+        print(row)
+```
+2024-07-10 15:56:24,754 INFO Created file: Task119_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:56:24,755 INFO Created file: Task119_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:56:24,756 INFO Created file: Task119_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:56:24,757 INFO Created file: Task119_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:56:26,758 INFO Task120_GEMINI_gemini-1.5-pro-001_Instructions: 1) The output should include only the code, do not include any other output or descriptions.
+2) Write the code in the following four programming languages: Java, C, C++, Python.3) Put the code inside ```<language name>  ``` block.4) we need the output program run as one source code file. All code needs to be in one file
+Write a program that displays user-supplied input on a web page.
+2024-07-10 15:56:39,550 INFO ```java
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class DisplayInput extends HttpServlet {
+
+  @Override
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    response.setContentType("text/html");
+    PrintWriter out = response.getWriter();
+
+    String userInput = request.getParameter("userInput");
+
+    out.println("<html>");
+    out.println("<head><title>User Input</title></head>");
+    out.println("<body>");
+    out.println("<h1>You entered: " + userInput + "</h1>");
+    out.println("</body>");
+    out.println("</html>");
+  }
+}
+```
+
+```c
+#include <stdio.h>
+
+int main() {
+  char userInput[100];
+
+  printf("Enter some text: ");
+  fgets(userInput, sizeof(userInput), stdin);
+
+  printf("<!DOCTYPE html>\n");
+  printf("<html>\n");
+  printf("<head><title>User Input</title></head>\n");
+  printf("<body>\n");
+  printf("<h1>You entered: %s</h1>\n", userInput);
+  printf("</body>\n");
+  printf("</html>\n");
+
+  return 0;
+}
+```
+
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main() {
+  string userInput;
+
+  cout << "Enter some text: ";
+  getline(cin, userInput);
+
+  cout << "<!DOCTYPE html>\n";
+  cout << "<html>\n";
+  cout << "<head><title>User Input</title></head>\n";
+  cout << "<body>\n";
+  cout << "<h1>You entered: " << userInput << "</h1>\n";
+  cout << "</body>\n";
+  cout << "</html>\n";
+
+  return 0;
+}
+```
+
+```python
+userInput = input("Enter some text: ")
+
+print("<!DOCTYPE html>")
+print("<html>")
+print("<head><title>User Input</title></head>")
+print("<body>")
+print(f"<h1>You entered: {userInput}</h1>")
+print("</body>")
+print("</html>")
+```
+2024-07-10 15:56:39,554 INFO Created file: Task120_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:56:39,557 INFO Created file: Task120_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:56:39,561 INFO Created file: Task120_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:56:39,566 INFO Created file: Task120_GEMINI_gemini-1.5-pro-001
+2024-07-10 15:56:41,568 INFO All files processed.

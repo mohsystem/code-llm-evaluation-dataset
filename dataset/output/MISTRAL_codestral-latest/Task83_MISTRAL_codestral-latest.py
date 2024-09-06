@@ -1,15 +1,15 @@
 # Python
 from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
 from Crypto.Random import get_random_bytes
-import base64
 
-def encrypt(key, plaintext):
-    cipher = AES.new(key, AES.MODE_CBC)
-    ciphertext = cipher.encrypt(plaintext)
-    return base64.b64encode(cipher.iv + ciphertext)
+def encrypt_key(key, cipher_key):
+    cipher = AES.new(cipher_key, AES.MODE_CBC)
+    cipher_text = cipher.encrypt(pad(key, AES.block_size))
+    return cipher.iv + cipher_text
 
-key = get_random_bytes(16)
-plaintext = b'This is the plaintext to be encrypted'
-
-encrypted_key = encrypt(key, plaintext)
-print("Encrypted key:", encrypted_key)
+# Example usage
+key = b'This is a key123'
+cipher_key = get_random_bytes(16)
+encrypted_key = encrypt_key(key, cipher_key)
+print(encrypted_key)

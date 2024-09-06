@@ -65,15 +65,14 @@ int main() {
     int rc = sqlite3_open("products.db", &db);
 
     if (rc) {
-        cerr << "Can\'t open database: " << sqlite3_errmsg(db) << endl;
+        cerr << "Can't open database: " << sqlite3_errmsg(db) << endl;
         return 1;
     }
 
     createTable(db);
 
     while (true) {
-        cout << "\
-1. Add product" << endl;
+        cout << "\\n1. Add product" << endl;
         cout << "2. Get product details" << endl;
         cout << "3. Exit" << endl;
         cout << "Enter your choice: ";

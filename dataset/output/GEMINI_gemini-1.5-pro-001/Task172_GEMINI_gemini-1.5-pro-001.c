@@ -1,30 +1,38 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-int distinctEchoSubstrings(char *text) {
+int distinctEchoSubstrings(char * text){
     int n = strlen(text);
-    char substrings[1000][1000];
-    int count = 0;
-    int found;
-
+    char **substrings = (char **)malloc(n * sizeof(char *));
     for (int i = 0; i < n; i++) {
-        for (int j = i + 1; j <= n; j += 2) {
-            char sub[1000];
-            strncpy(sub, text + i, j - i);
-            sub[j - i] = '\0';
-            if (strncmp(sub, sub + (j - i) / 2, (j - i) / 2) == 0) {
-                found = 0;
-                for (int k = 0; k < count; k++) {
-                    if (strcmp(substrings[k], sub) == 0) {
-                        found = 1;
+        substrings[i] = (char *)malloc(n * sizeof(char));
+    }
+    int count = 0;
+    for (int i = 0; i < n; i++) {
+        for (int len = 1; len <= n - i; len++) {
+            char *substring = (char *)malloc((len + 1) * sizeof(char));
+            strncpy(substring, text + i, len);
+            substring[len] = '\0';
+
+            if (len % 2 == 0 && strncmp(substring, substring + len / 2, len / 2) == 0) {
+                int duplicate = 0;
+                for (int j = 0; j < count; j++) {
+                    if (strcmp(substring, substrings[j]) == 0) {
+                        duplicate = 1;
                         break;
                     }
                 }
-                if (!found) {
-                    strcpy(substrings[count++], sub);
+                if (!duplicate) {
+                    strcpy(substrings[count++], substring);
                 }
             }
+            free(substring);
         }
     }
+    for (int i = 0; i < n; i++) {
+        free(substrings[i]);
+    }
+    free(substrings);
     return count;
 }

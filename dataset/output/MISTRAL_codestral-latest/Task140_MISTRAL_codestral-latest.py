@@ -13,9 +13,9 @@ def calculate(num1, num2, operator):
     else:
         return "Error: Invalid operator"
 
+# Test the function
 num1 = float(input("Enter first number: "))
 num2 = float(input("Enter second number: "))
 operator = input("Enter operator (+, -, *, /): ")
-
 result = calculate(num1, num2, operator)
 print("Result: ", result)

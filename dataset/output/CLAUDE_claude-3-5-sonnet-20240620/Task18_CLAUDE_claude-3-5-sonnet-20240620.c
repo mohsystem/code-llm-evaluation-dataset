@@ -1,37 +1,48 @@
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int convertBinaryArrayToInt(int* binary, int size) {
-    int result = 0;
+    char* binaryString = (char*)malloc((size + 1) * sizeof(char));
     for (int i = 0; i < size; i++) {
-        result = result * 2 + binary[i];
+        binaryString[i] = binary[i] + '0';
     }
+    binaryString[size] = '\\0';
+    
+    int result = (int)strtol(binaryString, NULL, 2);
+    free(binaryString);
     return result;
 }
 
-int main() {
-    int test1[] = {0, 0, 0, 1};
-    int test2[] = {0, 0, 1, 0};
-    int test3[] = {0, 1, 0, 1};
-    int test4[] = {1, 0, 0, 1};
-    int test5[] = {0, 1, 1, 0};
-    int test6[] = {1, 1, 1, 1};
-    int test7[] = {1, 0, 1, 1};
+void printArray(int* arr, int size) {
+    printf("[");
+    for (int i = 0; i < size; i++) {
+        printf("%d", arr[i]);
+        if (i < size - 1) printf(", ");
+    }
+    printf("]");
+}
 
-    printf("%d\
-", convertBinaryArrayToInt(test1, 4)); // 1
-    printf("%d\
-", convertBinaryArrayToInt(test2, 4)); // 2
-    printf("%d\
-", convertBinaryArrayToInt(test3, 4)); // 5
-    printf("%d\
-", convertBinaryArrayToInt(test4, 4)); // 9
-    printf("%d\
-", convertBinaryArrayToInt(test5, 4)); // 6
-    printf("%d\
-", convertBinaryArrayToInt(test6, 4)); // 15
-    printf("%d\
-", convertBinaryArrayToInt(test7, 4)); // 11
+int main() {
+    int testCases[][4] = {
+        {0, 0, 0, 1},
+        {0, 0, 1, 0},
+        {0, 1, 0, 1},
+        {1, 0, 0, 1},
+        {0, 0, 1, 0},
+        {0, 1, 1, 0},
+        {1, 1, 1, 1},
+        {1, 0, 1, 1}
+    };
+
+    int numTestCases = sizeof(testCases) / sizeof(testCases[0]);
+
+    for (int i = 0; i < numTestCases; i++) {
+        printf("Testing: ");
+        printArray(testCases[i], 4);
+        printf(" ==> %d\\n", convertBinaryArrayToInt(testCases[i], 4));
+    }
 
     return 0;
 }

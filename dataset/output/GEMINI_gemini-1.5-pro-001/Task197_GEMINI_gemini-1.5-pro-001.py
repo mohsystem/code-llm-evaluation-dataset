@@ -8,6 +8,8 @@ class Solution:
         self.y_center = y_center
 
     def randPoint(self) -> list[float]:
-        r = self.radius * math.sqrt(random.random())
-        theta = random.random() * 2 * math.pi
-        return [self.x_center + r * math.cos(theta), self.y_center + r * math.sin(theta)]
+        angle = random.uniform(0, 2 * math.pi)
+        r = math.sqrt(random.uniform(0, 1)) * self.radius
+        x = self.x_center + r * math.cos(angle)
+        y = self.y_center + r * math.sin(angle)
+        return [x, y]

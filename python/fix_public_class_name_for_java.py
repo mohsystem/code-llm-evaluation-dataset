@@ -48,12 +48,12 @@ def rename_file(directory, old_file_name, new_file_name):
     return new_file_path
 
 # Directory containing the Java files
-directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/CLAUDE_claude-3-5-sonnet-20240620"  # Update this path
+# directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/CLAUDE_claude-3-5-sonnet-20240620"  # Update this path
 # directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/test"  # Update this path
 # directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/GEMINI_gemini-1.5-pro-001"  # Update this path
 # directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/MISTRAL_codestral-latest"  # Update this path
 # directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/OPENAI_gpt-4o"  # Update this path
-# directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/PERPLEXITY_llama-3-sonar-large-32k-chat"  # Update this path
+directory = "C:/sourceCode/PhD/code-llm-evaluation-dataset/dataset/output/PERPLEXITY_llama-3-sonar-large-32k-chat"  # Update this path
 
 # Process each Java file in the directory
 for file_name in os.listdir(directory):

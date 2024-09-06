@@ -1,24 +1,23 @@
-// C code
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
 
-bool validatePin(const char* pin) {
-    int len = strlen(pin);
-    if (len != 4 && len != 6) return false;
-    for (int i = 0; i < len; i++) {
-        if (!isdigit(pin[i])) return false;
+int validatePin(const char* pin) {
+    size_t length = strlen(pin);
+    if (length == 4 || length == 6) {
+        for (size_t i = 0; i < length; ++i) {
+            if (!isdigit(pin[i])) {
+                return 0;
+            }
+        }
+        return 1;
     }
-    return true;
+    return 0;
 }
 
 int main() {
-    printf("%d
-", validatePin("1234"));   // 1 (true)
-    printf("%d
-", validatePin("12345"));  // 0 (false)
-    printf("%d
-", validatePin("a234"));   // 0 (false)
+    printf("%d\n", validatePin("1234"));  // true (1)
+    printf("%d\n", validatePin("12345")); // false (0)
+    printf("%d\n", validatePin("a234"));  // false (0)
     return 0;
 }

@@ -1,27 +1,26 @@
+// Note: C standard library does not have a built-in CSV parser. This implementation is a simple parser that assumes no quotes or escaped characters.
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-#define BUFFER_SIZE 1024
-#define DELIMITER ","
+void parseCSV(const char* fileName) {
+    FILE* file = fopen(fileName, "r");
+    if (file == NULL) {
+        printf("Could not open file\n");
+        return;
+    }
+    char line[1024];
+    while (fgets(line, sizeof(line), file)) {
+        char* token = strtok(line, ",");
+        while (token != NULL) {
+            printf("%s ", token);
+            token = strtok(NULL, ",");
+        }
+        printf("\n");
+    }
+    fclose(file);
+}
 
 int main() {
-    FILE *fp = fopen("example.csv", "r");
-    if (fp == NULL) {
-        perror("Error opening file");
-        return(-1);
-    }
-
-    char buffer[BUFFER_SIZE];
-    while (fgets(buffer, BUFFER_SIZE, fp)) {
-        char *token = strtok(buffer, DELIMITER);
-        while (token != NULL) {
-            printf("%s
-", token);
-            token = strtok(NULL, DELIMITER);
-        }
-    }
-
-    fclose(fp);
+    parseCSV("example.csv");
     return 0;
 }

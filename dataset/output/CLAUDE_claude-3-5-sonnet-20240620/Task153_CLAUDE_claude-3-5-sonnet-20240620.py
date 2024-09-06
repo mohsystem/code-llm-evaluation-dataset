@@ -17,11 +17,13 @@ def bfs(graph, start):
 
 # Example usage
 graph = {
-    0: [1, 2],
-    1: [2],
-    2: [0, 3],
-    3: [3]
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B', 'F'],
+    'F': ['C', 'E']
 }
 
-print("BFS starting from vertex 2:")
-bfs(graph, 2)
+print("BFS starting from vertex 'A':")
+bfs(graph, 'A')

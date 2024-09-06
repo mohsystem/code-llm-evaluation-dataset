@@ -41,7 +41,7 @@ void pushFront(Deque* deque, int value) {
     if (deque->size == deque->capacity) {
         return;
     }
-    if (deque->front == -1) {
+    if (deque->rear == -1) {
         deque->front = 0;
         deque->rear = 0;
     } else {
@@ -51,10 +51,11 @@ void pushFront(Deque* deque, int value) {
     deque->size++;
 }
 
-void popFront(Deque* deque) {
+int popFront(Deque* deque) {
     if (deque->size == 0) {
-        return;
+        return -1;
     }
+    int value = deque->data[deque->front];
     if (deque->front == deque->rear) {
         deque->front = -1;
         deque->rear = -1;
@@ -62,12 +63,14 @@ void popFront(Deque* deque) {
         deque->front = (deque->front + 1) % deque->capacity;
     }
     deque->size--;
+    return value;
 }
 
-void popBack(Deque* deque) {
+int popBack(Deque* deque) {
     if (deque->size == 0) {
-        return;
+        return -1;
     }
+    int value = deque->data[deque->rear];
     if (deque->front == deque->rear) {
         deque->front = -1;
         deque->rear = -1;
@@ -75,6 +78,7 @@ void popBack(Deque* deque) {
         deque->rear = (deque->rear - 1 + deque->capacity) % deque->capacity;
     }
     deque->size--;
+    return value;
 }
 
 int front(Deque* deque) {
@@ -92,11 +96,11 @@ int back(Deque* deque) {
 }
 
 int* maxSlidingWindow(int* nums, int numsSize, int k, int* returnSize) {
-    int n = numsSize;
-    int* result = (int*)malloc((n - k + 1) * sizeof(int));
-    Deque* window = createDeque(n);
+    int* result = (int*)malloc((numsSize - k + 1) * sizeof(int));
+    *returnSize = numsSize - k + 1;
+    Deque* window = createDeque(numsSize);
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < numsSize; i++) {
         while (window->size > 0 && window->front <= i - k) {
             popFront(window);
         }
@@ -109,7 +113,6 @@ int* maxSlidingWindow(int* nums, int numsSize, int k, int* returnSize) {
         }
     }
 
-    *returnSize = n - k + 1;
     destroyDeque(window);
     return result;
 }

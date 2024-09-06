@@ -1,39 +1,13 @@
 
-#include <iostream>
 #include <vector>
-#include <variant>
-#include <string>
+#include <algorithm>
 
-std::vector<int> filterList(const std::vector<std::variant<int, std::string>>& list) {
-    std::vector<int> result;
-    for (const auto& item : list) {
-        if (std::holds_alternative<int>(item)) {
-            result.push_back(std::get<int>(item));
-        }
+class Solution {
+public:
+    static std::vector<int> filter_list(const std::vector<int>& l) {
+        std::vector<int> result;
+        std::copy_if(l.begin(), l.end(), std::back_inserter(result),
+                     [](const auto& elem) { return std::is_integral<decltype(elem)>::value; });
+        return result;
     }
-    return result;
-}
-
-int main() {
-    std::vector<std::variant<int, std::string>> list1 = {1, 2, "a", "b"};
-    std::vector<std::variant<int, std::string>> list2 = {1, "a", "b", 0, 15};
-    std::vector<std::variant<int, std::string>> list3 = {1, 2, "a", "b", "aasf", "1", "123", 123};
-
-    auto printList = [](const std::vector<int>& list) {
-        for (int item : list) {
-            std::cout << item << " ";
-        }
-        std::cout << std::endl;
-    };
-
-    std::cout << "Filtered list 1: ";
-    printList(filterList(list1));
-
-    std::cout << "Filtered list 2: ";
-    printList(filterList(list2));
-
-    std::cout << "Filtered list 3: ";
-    printList(filterList(list3));
-
-    return 0;
-}
+};

@@ -1,59 +1,22 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 typedef struct {
-    char sessionId[37];
-    char username[50];
-} Session;
+    char sessionId[20];
+    char userId[20];
+} UserSession;
 
-Session sessions[100];
-int sessionCount = 0;
-
-char *generateSessionId() {
-    static char uuid[37];
-    snprintf(uuid, sizeof(uuid), "%x-%x-%x-%x-%x", rand(), rand(), rand(), rand(), rand());
-    return uuid;
-}
-
-void createSession(char *username) {
-    Session s;
-    strcpy(s.sessionId, generateSessionId());
-    strcpy(s.username, username);
-    sessions[sessionCount++] = s;
-    printf("Session ID: %s
-", s.sessionId);
-}
-
-char *getSession(char *sessionId) {
-    for (int i = 0; i < sessionCount; i++) {
-        if (strcmp(sessions[i].sessionId, sessionId) == 0) {
-            return sessions[i].username;
-        }
-    }
-    return NULL;
-}
-
-void removeSession(char *sessionId) {
-    for (int i = 0; i < sessionCount; i++) {
-        if (strcmp(sessions[i].sessionId, sessionId) == 0) {
-            for (int j = i; j < sessionCount - 1; j++) {
-                sessions[j] = sessions[j + 1];
-            }
-            sessionCount--;
-            break;
-        }
-    }
+void toString(UserSession session, char *output) {
+    sprintf(output, "Session ID: %s, User ID: %s", session.sessionId, session.userId);
 }
 
 int main() {
-    createSession("JohnDoe");
-    char *username = getSession(generateSessionId());
-    printf("User: %s
-", username ? username : "Session not found");
-    removeSession(generateSessionId());
-    username = getSession(generateSessionId());
-    printf("Session removed. User: %s
-", username ? username : "Session not found");
+    UserSession session;
+    strcpy(session.sessionId, "abc123");
+    strcpy(session.userId, "user001");
+
+    char output[100];
+    toString(session, output);
+    printf("%s\n", output);
     return 0;
 }

@@ -1,38 +1,44 @@
+# Python - Server
 import socket
 import threading
 
-users = {'user1': 'pass1', 'user2': 'pass2'}
-
 def handle_client(client_socket):
-    request = client_socket.recv(1024).decode('utf-8')
-    username, password = request.split(',')
-    response = "Login failed"
-    if users.get(username) == password:
-        response = "Login success"
-    client_socket.send(response.encode('utf-8'))
-    client_socket.close()
-
-def start_server():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(('0.0.0.0', 12345))
-    server.listen(5)
-    print("Server started on port 12345.")
     while True:
-        client_socket, addr = server.accept()
+        try:
+            data = client_socket.recv(1024).decode("utf-8")
+            if not data:
+                break
+
+            credentials = data.split(':')
+            if len(credentials) != 2:
+                client_socket.send("Invalid format. Use username:password\n".encode("utf-8"))
+                continue
+
+            username, password = credentials[0], credentials[1]
+            
+            with open("users.txt", "r") as f:
+                users = f.read().splitlines()
+                auth = f"{username}:{password}" in users
+                
+            if auth:
+                client_socket.send("Login successful\n".encode("utf-8"))
+            else:
+                client_socket.send("Login failed\n".encode("utf-8"))
+        except:
+            client_socket.close()
+            break
+
+def server():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind(("0.0.0.0", 12345))
+    server_socket.listen(5)
+    print("Server listening on port 12345")
+
+    while True:
+        client_socket, addr = server_socket.accept()
+        print(f"Accepted connection from {addr}")
         client_handler = threading.Thread(target=handle_client, args=(client_socket,))
         client_handler.start()
-    
-def start_client():
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(('127.0.0.1', 12345))
-    username = input("Enter username: ")
-    password = input("Enter password: ")
-    request = f"{username},{password}"
-    client.send(request.encode('utf-8'))
-    response = client.recv(4096).decode('utf-8')
-    print("Server response:", response)
-    client.close()
-
+        
 if __name__ == "__main__":
-    threading.Thread(target=start_server).start()
-    threading.Thread(target=start_client).start()
+    server()

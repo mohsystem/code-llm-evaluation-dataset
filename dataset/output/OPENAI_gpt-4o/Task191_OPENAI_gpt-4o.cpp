@@ -1,3 +1,5 @@
+// C++ code for finding length of the longest valid parentheses substring
+
 #include <iostream>
 #include <stack>
 #include <string>
@@ -6,9 +8,9 @@ using namespace std;
 int longestValidParentheses(string s) {
     stack<int> stk;
     stk.push(-1);
-    int maxLength = 0;
+    int max_length = 0;
 
-    for (int i = 0; i < s.length(); ++i) {
+    for (int i = 0; i < s.length(); i++) {
         if (s[i] == '(') {
             stk.push(i);
         } else {
@@ -16,17 +18,20 @@ int longestValidParentheses(string s) {
             if (stk.empty()) {
                 stk.push(i);
             } else {
-                maxLength = max(maxLength, i - stk.top());
+                max_length = max(max_length, i - stk.top());
             }
         }
     }
 
-    return maxLength;
+    return max_length;
 }
 
 int main() {
-    cout << longestValidParentheses("(()") << endl;
-    cout << longestValidParentheses(")()())") << endl;
-    cout << longestValidParentheses("") << endl;
+    string s = "(()";  // Example 1
+    cout << longestValidParentheses(s) << endl;  // Output: 2
+    s = ")()())";  // Example 2
+    cout << longestValidParentheses(s) << endl;  // Output: 4
+    s = "";  // Example 3
+    cout << longestValidParentheses(s) << endl;  // Output: 0
     return 0;
 }

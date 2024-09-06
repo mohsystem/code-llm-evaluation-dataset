@@ -1,61 +1,42 @@
 
 #include <iostream>
 #include <string>
-#include <libxml/parser.h>
-#include <libxml/xpath.h>
+#include <vector>
+#include <pugixml.hpp>
 
-void executeXPathQuery(const std::string& filename, const std::string& xpathExpr) {
-    xmlDocPtr doc;
-    xmlXPathContextPtr xpathCtx;
-    xmlXPathObjectPtr xpathObj;
+std::vector<std::string> execute_xpath(const std::string& xml_file, const std::string& xpath) {
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file(xml_file.c_str());
 
-    doc = xmlParseFile(filename.c_str());
-    if (doc == nullptr) {
-        std::cerr << "Error: unable to parse file \\"" << filename << "\\"" << std::endl;
-        return;
+    if (!result) {
+        std::cerr << "XML parsing error: " << result.description() << std::endl;
+        return {};
     }
 
-    xpathCtx = xmlXPathNewContext(doc);
-    if(xpathCtx == nullptr) {
-        std::cerr << "Error: unable to create new XPath context" << std::endl;
-        xmlFreeDoc(doc);
-        return;
+    std::vector<std::string> results;
+    pugi::xpath_node_set nodes = doc.select_nodes(xpath.c_str());
+
+    for (const auto& node : nodes) {
+        results.push_back(node.node().child_value());
     }
 
-    xpathObj = xmlXPathEvalExpression(reinterpret_cast<const xmlChar*>(xpathExpr.c_str()), xpathCtx);
-    if(xpathObj == nullptr) {
-        std::cerr << "Error: unable to evaluate xpath expression \\"" << xpathExpr << "\\"" << std::endl;
-        xmlXPathFreeContext(xpathCtx);
-        xmlFreeDoc(doc);
-        return;
-    }
-
-    xmlNodeSetPtr nodes = xpathObj->nodesetval;
-    if (nodes) {
-        for (int i = 0; i < nodes->nodeNr; i++) {
-            xmlNodePtr cur = nodes->nodeTab[i];
-            xmlChar* content = xmlNodeGetContent(cur);
-            std::cout << content << std::endl;
-            xmlFree(content);
-        }
-    }
-
-    xmlXPathFreeObject(xpathObj);
-    xmlXPathFreeContext(xpathCtx);
-    xmlFreeDoc(doc);
-    xmlCleanupParser();
+    return results;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char* argv[]) {
     if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <xpath> <xml_file>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <xml_file> <xpath>" << std::endl;
         return 1;
     }
 
-    std::string xpathExpr = argv[1];
-    std::string filename = argv[2];
+    std::string xml_file = argv[1];
+    std::string xpath = argv[2];
 
-    executeXPathQuery(filename, xpathExpr);
+    std::vector<std::string> result = execute_xpath(xml_file, xpath);
+
+    for (const auto& item : result) {
+        std::cout << item << std::endl;
+    }
 
     return 0;
 }

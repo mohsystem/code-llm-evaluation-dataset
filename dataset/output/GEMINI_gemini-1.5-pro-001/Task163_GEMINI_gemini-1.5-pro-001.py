@@ -1,12 +1,16 @@
-def longestRun(nums):
-  if len(nums) <= 1:
-    return len(nums)
-  longest = 1
-  current = 1
-  for i in range(1, len(nums)):
-    if nums[i] == nums[i-1] + 1 or nums[i] == nums[i-1] - 1:
-      current += 1
+def longestRun(lst):
+  if len(lst) <= 1:
+    return len(lst)
+
+  maxRun = 1
+  currentRun = 1
+
+  for i in range(1, len(lst)):
+    if (lst[i] == lst[i - 1] + 1) or (lst[i] == lst[i - 1] - 1):
+      currentRun += 1
     else:
-      current = 1
-    longest = max(longest, current)
-  return longest
+      currentRun = 1
+
+    maxRun = max(maxRun, currentRun)
+
+  return maxRun

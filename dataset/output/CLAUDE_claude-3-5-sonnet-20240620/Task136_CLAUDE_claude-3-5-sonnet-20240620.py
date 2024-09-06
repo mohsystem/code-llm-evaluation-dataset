@@ -18,25 +18,22 @@ def login(username, password):
 
 def main():
     while True:
-        choice = input("1. Register\
-2. Login\
-3. Exit\
-Choose an option: ")
-        if choice == \'1\':
+        choice = input("1. Register\\n2. Login\\n3. Exit\\nChoose an option: ")
+        if choice == '1':
             username = input("Enter username: ")
             password = input("Enter password: ")
             if register(username, password):
                 print("Registration successful")
             else:
                 print("Username already exists")
-        elif choice == \'2\':
+        elif choice == '2':
             username = input("Enter username: ")
             password = input("Enter password: ")
             if login(username, password):
                 print("Login successful")
             else:
                 print("Invalid credentials")
-        elif choice == \'3\':
+        elif choice == '3':
             break
         else:
             print("Invalid choice")

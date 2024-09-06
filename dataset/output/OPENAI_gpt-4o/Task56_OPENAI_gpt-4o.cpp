@@ -1,20 +1,28 @@
 #include <iostream>
 #include <random>
-#include <string>
+#include <chrono>
+#include <cstdlib>
+#include <unistd.h>
 
-std::string generateToken(size_t length) {
-    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    std::default_random_engine rng(std::random_device{}());
-    std::uniform_int_distribution<> dist(0, sizeof(charset) - 2);
+void generateToken() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 255);
 
-    std::string token;
-    for (size_t i = 0; i < length; ++i) {
-        token += charset[dist(rng)];
+    char token[16];
+    for (int i = 0; i < 16; ++i) {
+        token[i] = static_cast<char>(dis(gen));
     }
-    return token;
+
+    std::cout << "C++ Generated Token: ";
+    for (char c : token) {
+        printf("%02x", (unsigned char)c);
+    }
+    std::cout << std::endl;
 }
 
 int main() {
-    std::cout << "C++ Token: " << generateToken(36) << std::endl;
+    sleep(5); // Waiting for 5 seconds
+    generateToken();
     return 0;
 }

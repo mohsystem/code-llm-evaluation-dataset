@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #define MAX_NODES 100
 
@@ -10,8 +9,8 @@ struct Node {
 };
 
 struct Graph {
-    int numNodes;
-    struct Node** adjList;
+    int numVertices;
+    struct Node** adjLists;
 };
 
 struct Node* createNode(int data) {
@@ -21,47 +20,61 @@ struct Node* createNode(int data) {
     return newNode;
 }
 
-struct Graph* createGraph(int numNodes) {
+struct Graph* createGraph(int vertices) {
     struct Graph* graph = (struct Graph*)malloc(sizeof(struct Graph));
-    graph->numNodes = numNodes;
-    graph->adjList = (struct Node**)malloc(numNodes * sizeof(struct Node*));
-    for (int i = 0; i < numNodes; i++) {
-        graph->adjList[i] = NULL;
-    }
+    graph->numVertices = vertices;
+    graph->adjLists = (struct Node**)malloc(vertices * sizeof(struct Node*));
+
+    for (int i = 0; i < vertices; i++)
+        graph->adjLists[i] = NULL;
+
     return graph;
 }
 
 void addEdge(struct Graph* graph, int src, int dest) {
     struct Node* newNode = createNode(dest);
-    newNode->next = graph->adjList[src];
-    graph->adjList[src] = newNode;
+    newNode->next = graph->adjLists[src];
+    graph->adjLists[src] = newNode;
 
     newNode = createNode(src);
-    newNode->next = graph->adjList[dest];
-    graph->adjList[dest] = newNode;
+    newNode->next = graph->adjLists[dest];
+    graph->adjLists[dest] = newNode;
 }
 
-void bfs(struct Graph* graph, int start) {
-    bool visited[MAX_NODES] = {false};
-    struct Node* queue[MAX_NODES];
-    int front = 0, rear = 0;
+void bfs(struct Graph* graph, int startVertex) {
+    int* visited = (int*)malloc(graph->numVertices * sizeof(int));
+    for (int i = 0; i < graph->numVertices; i++)
+        visited[i] = 0;
 
-    visited[start] = true;
-    queue[rear++] = createNode(start);
+    struct Node* queue = createNode(startVertex);
+    visited[startVertex] = 1;
 
-    while (front != rear) {
-        struct Node* node = queue[front++];
-        printf("%d ", node->data);
+    while (queue != NULL) {
+        printf("%d ", queue->data);
+        struct Node* temp = queue;
+        queue = queue->next;
+        free(temp);
 
-        struct Node* temp = graph->adjList[node->data];
-        while (temp) {
-            if (!visited[temp->data]) {
-                visited[temp->data] = true;
-                queue[rear++] = createNode(temp->data);
+        struct Node* adjList = graph->adjLists[queue->data];
+        while (adjList != NULL) {
+            int adjVertex = adjList->data;
+            if (visited[adjVertex] == 0) {
+                struct Node* newNode = createNode(adjVertex);
+                if (queue == NULL)
+                    queue = newNode;
+                else {
+                    struct Node* last = queue;
+                    while (last->next != NULL)
+                        last = last->next;
+                    last->next = newNode;
+                }
+                visited[adjVertex] = 1;
             }
-            temp = temp->next;
+            adjList = adjList->next;
         }
     }
+
+    free(visited);
 }
 
 int main() {

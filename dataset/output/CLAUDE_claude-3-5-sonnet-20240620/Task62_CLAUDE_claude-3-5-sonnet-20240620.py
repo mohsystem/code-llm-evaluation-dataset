@@ -1,16 +1,14 @@
 
 import json
 
-def parse_json(json_string):
+def parse_json_and_get_root(json_string):
     try:
-        return json.loads(json_string)
-    except json.JSONDecodeError as e:
-        print(f"JSON parse error: {e}")
+        parsed_json = json.loads(json_string)
+        return parsed_json
+    except json.JSONDecodeError:
         return None
 
-if __name__ == "__main__":
-    json_string = \'{"name":"John","age":30,"city":"New York"}\'
-    root_element = parse_json(json_string)
-    
-    if root_element is not None:
-        print(f"Root element: {root_element}")
+# Example usage
+json_string = '{"name": "John", "age": 30, "city": "New York"}'
+root_element = parse_json_and_get_root(json_string)
+print(root_element)

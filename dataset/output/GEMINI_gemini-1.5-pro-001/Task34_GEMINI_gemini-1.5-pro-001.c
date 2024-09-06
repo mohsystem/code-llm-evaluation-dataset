@@ -1,17 +1,22 @@
-#include <stdbool.h>
 #include <math.h>
+#include <stdbool.h>
+#include <stdio.h>
 
-bool is_narcissistic(int num) {
-  if (num < 0) {
-    return false;
+bool narcissistic(int value) {
+  int originalValue = value;
+  int numDigits = 0;
+  while (value > 0) {
+    value /= 10;
+    numDigits++;
   }
-  int originalNum = num;
-  int sum = 0;
-  int digits = floor(log10(abs(num))) + 1;
-  while (num > 0) {
-    int digit = num % 10;
-    sum += pow(digit, digits);
-    num /= 10;
+
+  value = originalValue;
+  int total = 0;
+  while (value > 0) {
+    int digit = value % 10;
+    total += pow(digit, numDigits);
+    value /= 10;
   }
-  return sum == originalNum;
+
+  return total == originalValue;
 }

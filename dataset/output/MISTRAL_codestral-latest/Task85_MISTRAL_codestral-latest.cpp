@@ -3,21 +3,21 @@
 #include <ctime>
 
 std::string generateRandomString(int length) {
-    const std::string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    std::string randomString;
-    randomString.reserve(length);
+    std::string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    std::string result;
 
-    std::srand(std::time(nullptr));
+    srand(time(0));
+
     for (int i = 0; i < length; i++) {
-        randomString.push_back(characters[std::rand() % characters.length()]);
+        int index = rand() % letters.length();
+        result += letters[index];
     }
 
-    return randomString;
+    return result;
 }
 
 int main() {
-    int length = 10; // specify the length of the random string
-    std::string randomString = generateRandomString(length);
-    std::cout << "Random String: " << randomString << std::endl;
+    int length = 10; // specify the length of the string
+    std::cout << generateRandomString(length) << std::endl;
     return 0;
 }

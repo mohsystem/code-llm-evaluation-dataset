@@ -1,19 +1,19 @@
 #include <iostream>
 #include <fstream>
-#include <sys/stat.h>
+#include <cstdlib>
+using namespace std;
 
 int main() {
-  // Create the file
-  std::ofstream file("script.sh");
-  if (!file.is_open()) {
-    return 1;
-  }
-  file.close();
+    ofstream script("script.sh");
+    script << "#!/bin/bash" << endl;
+    script << "echo \"Hello from script.sh!\"" << endl;
+    script.close();
 
-  // Make it executable
-  if (chmod("script.sh", S_IRWXU) == -1) {
-    return 1;
-  }
+    // Make the script executable
+    if (system("chmod +x script.sh") != 0) {
+        cerr << "Error making script executable." << endl;
+        return 1;
+    }
 
-  return 0;
+    return 0;
 }

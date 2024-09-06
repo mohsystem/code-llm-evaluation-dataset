@@ -1,19 +1,15 @@
-import os
 import shutil
+import os
 
-source_path = 'source.txt'
-destination_path = '/tmp/destination.txt'
+source_path = '/path/to/source/file.txt'
+dest_path = '/path/to/dest/tmp_file.txt'
 
 try:
-    with open(source_path, 'r') as file:
-        content = file.read()
-    
-    with open(destination_path, 'w') as file:
-        file.write(content)
-        
-    print("File copied successfully in Python!")
-
+    shutil.copy(source_path, dest_path)
+    print("File copied successfully.")
 except FileNotFoundError:
-    print("The source file does not exist.")
-except IOError:
-    print("An error occurred while handling the file.")
+    print(f"Error: The file at {source_path} does not exist.")
+except PermissionError:
+    print("Error: Permission denied.")
+except Exception as e:
+    print(f"An unexpected error occurred: {e}")

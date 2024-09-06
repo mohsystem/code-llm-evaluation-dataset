@@ -2,15 +2,23 @@ import sys
 import heapq
 
 def dijkstra(graph, start):
-    distances = {node: sys.maxsize for node in graph}
+    distances = {node: float('infinity') for node in graph}
     distances[start] = 0
-    pq = [(0, start)]
-    while pq:
-        current_distance, current_node = heapq.heappop(pq)
+    priority_queue = [(0, start)]
+
+    while priority_queue:
+        current_distance, current_node = heapq.heappop(priority_queue)
+
+        if current_distance > distances[current_node]:
+            continue
+
         for neighbor, weight in graph[current_node].items():
-            if current_distance + weight < distances[neighbor]:
-                distances[neighbor] = current_distance + weight
-                heapq.heappush(pq, (current_distance + weight, neighbor))
+            distance = current_distance + weight
+
+            if distance < distances[neighbor]:
+                distances[neighbor] = distance
+                heapq.heappush(priority_queue, (distance, neighbor))
+
     return distances
 
 graph = {

@@ -1,3 +1,4 @@
+// C++
 #include<iostream>
 using namespace std;
 
@@ -8,11 +9,11 @@ int gcd(int a, int b) {
 }
 
 int main() {
-    int a, b;
+    int num1, num2;
     cout << "Enter first number: ";
-    cin >> a;
+    cin >> num1;
     cout << "Enter second number: ";
-    cin >> b;
-    cout << "The GCD of " << a << " and " << b << " is: " << gcd(a, b);
+    cin >> num2;
+    cout << "The GCD is " << gcd(num1, num2);
     return 0;
 }

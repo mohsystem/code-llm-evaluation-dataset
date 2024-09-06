@@ -4,18 +4,24 @@
 #include <sstream>
 
 std::vector<std::string> lastNameLenSort(std::vector<std::string> names) {
-    std::sort(names.begin(), names.end(), [](const std::string& a, const std::string& b) {
-        std::istringstream issA(a);
-        std::istringstream issB(b);
-        std::string lastNameA, lastNameB;
-        issA >> std::string() >> lastNameA;
-        issB >> std::string() >> lastNameB;
-        if (lastNameA.length() != lastNameB.length()) {
-            return lastNameA.length() < lastNameB.length();
+    auto lastName = [](const std::string& name) {
+        std::istringstream iss(name);
+        std::string word;
+        std::string last;
+        while (iss >> word) {
+            last = word;
+        }
+        return last;
+    };
+
+    std::sort(names.begin(), names.end(), [&lastName](const std::string& a, const std::string& b) {
+        if (lastName(a).length() != lastName(b).length()) {
+            return lastName(a).length() < lastName(b).length();
         } else {
-            return lastNameA < lastNameB;
+            return lastName(a) < lastName(b);
         }
     });
+
     return names;
 }
 

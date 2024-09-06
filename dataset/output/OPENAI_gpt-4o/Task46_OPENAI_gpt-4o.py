@@ -1,27 +1,31 @@
-import mysql.connector
+import sqlite3
 
-def main():
-    conn = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="password",
-        database="testdb"
-    )
-
+def create_table():
+    conn = sqlite3.connect('users.db')
     cursor = conn.cursor()
-
-    name = input("Enter name: ")
-    email = input("Enter email: ")
-    password = input("Enter password: ")
-
-    query = "INSERT INTO users (name, email, password) VALUES (%s, %s, %s)"
-    values = (name, email, password)
-    cursor.execute(query, values)
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        password TEXT NOT NULL
+        );
+    ''')
     conn.commit()
-
-    print("User registered successfully!")
-    cursor.close()
     conn.close()
 
-if __name__ == "__main__":
-    main()
+def register_user(name, email, password):
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO users (name, email, password) VALUES (?, ?, ?)
+        ''', (name, email, password))
+    conn.commit()
+    conn.close()
+
+create_table()
+name = input("Enter your name: ")
+email = input("Enter your email: ")
+password = input("Enter your password: ")
+register_user(name, email, password)
+print("User registered successfully!")

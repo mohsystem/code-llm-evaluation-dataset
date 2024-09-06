@@ -1,24 +1,9 @@
 
-#include <iostream>
+#include <cstdint>
 
-struct Flags {
-    unsigned int flag1 : 1;
-    unsigned int flag2 : 1;
-    unsigned int flag3 : 1;
-    unsigned int value : 5;
+struct BitFields {
+    uint8_t field1 : 2;
+    uint8_t field2 : 3;
+    uint8_t field3 : 1;
+    uint8_t : 2;  // padding
 };
-
-int main() {
-    Flags flags = {0};
-    flags.flag1 = 1;
-    flags.flag2 = 0;
-    flags.flag3 = 1;
-    flags.value = 15;
-
-    std::cout << "Flag1: " << flags.flag1 << std::endl;
-    std::cout << "Flag2: " << flags.flag2 << std::endl;
-    std::cout << "Flag3: " << flags.flag3 << std::endl;
-    std::cout << "Value: " << flags.value << std::endl;
-
-    return 0;
-}

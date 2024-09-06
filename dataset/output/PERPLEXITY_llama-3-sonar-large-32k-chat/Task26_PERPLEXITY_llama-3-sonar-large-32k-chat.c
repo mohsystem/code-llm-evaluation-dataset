@@ -1,26 +1,23 @@
 #include <stdio.h>
 
-int findOdd(int seq[], int n) {
-    int result = 0;
-    for (int i = 0; i < n; i++) {
+int findOdd(int arr[], int size) {
+    for (int i = 0; i < size; i++) {
         int count = 0;
-        for (int j = 0; j < n; j++) {
-            if (seq[i] == seq[j]) {
+        for (int j = 0; j < size; j++) {
+            if (arr[j] == arr[i]) {
                 count++;
             }
         }
         if (count % 2 != 0) {
-            result = seq[i];
+            return arr[i];
         }
     }
-    return result;
+    return -1;
 }
 
 int main() {
-    int seq[] = {1,2,2,3,3,3,4,3,3,3,2,2,1};
-    int n = sizeof(seq) / sizeof(seq[0]);
-    int result = findOdd(seq, n);
-    printf("%d
-", result);
+    int arr[] = {1,2,2,3,3,3,4,3,3,3,2,2,1};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    printf("%d\n", findOdd(arr, size));
     return 0;
 }

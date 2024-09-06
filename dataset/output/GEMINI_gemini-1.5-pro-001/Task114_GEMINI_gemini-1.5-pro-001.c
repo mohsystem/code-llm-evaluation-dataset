@@ -2,37 +2,43 @@
 #include <string.h>
 
 int main() {
-    char inputString[100], copiedString[100], concatenatedString[200], reversedString[100];
-    int i, j;
+    // String declaration and initialization
+    char str1[] = "Hello";
+    char str2[] = "World";
+    char concatenatedString[100];
 
-    printf("Enter a string: ");
-    fgets(inputString, sizeof(inputString), stdin);
+    // String concatenation
+    strcpy(concatenatedString, str1);
+    strcat(concatenatedString, " ");
+    strcat(concatenatedString, str2);
+    printf("Concatenated String: %s\n", concatenatedString);
 
-    // Copy the string
-    strcpy(copiedString, inputString);
+    // String copying
+    char copiedString[100];
+    strcpy(copiedString, str1);
+    printf("Copied String: %s\n", copiedString);
 
-    // Concatenate the string with itself
-    strcpy(concatenatedString, inputString);
-    strcat(concatenatedString, inputString);
+    // String length
+    int length = strlen(concatenatedString);
+    printf("Length of Concatenated String: %d\n", length);
 
-    // Reverse the string
-    j = 0;
-    for (i = strlen(inputString) - 2; i >= 0; i--) {
-        reversedString[j++] = inputString[i];
+    // String manipulation - uppercase
+    for (int i = 0; concatenatedString[i] != '\0'; i++) {
+        concatenatedString[i] = toupper(concatenatedString[i]);
     }
-    reversedString[j] = '\0';
+    printf("Uppercase String: %s\n", concatenatedString);
 
-    // Convert the string to uppercase
-    for (i = 0; inputString[i]; i++) {
-        inputString[i] = toupper(inputString[i]);
+    // String manipulation - lowercase
+    for (int i = 0; concatenatedString[i] != '\0'; i++) {
+        concatenatedString[i] = tolower(concatenatedString[i]);
     }
+    printf("Lowercase String: %s\n", concatenatedString);
 
-    // Print the results
-    printf("Copied string: %s", copiedString);
-    printf("Concatenated string: %s", concatenatedString);
-    printf("Reversed string: %s", reversedString);
-    printf("Uppercase string: %s
-", inputString);
+    // Substring extraction
+    char substring[6];
+    strncpy(substring, concatenatedString, 5);
+    substring[5] = '\0'; // Add null terminator
+    printf("Substring: %s\n", substring);
 
     return 0;
 }

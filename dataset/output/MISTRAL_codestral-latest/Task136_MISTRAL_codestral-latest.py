@@ -1,17 +1,26 @@
 # Python
 
-def authenticate_user(username, password):
-    # This is a simple example. In a real-world application,
-    # you would check the username and password against a database.
-    if username == "admin" and password == "password":
-        return True
-    else:
-        return False
+class User:
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
 
-username = input("Enter your username: ")
-password = input("Enter your password: ")
+class Authentication:
+    def __init__(self):
+        self.users = []
 
-if authenticate_user(username, password):
-    print("Authentication successful.")
-else:
-    print("Authentication failed.")
+    def register(self, username, password):
+        new_user = User(username, password)
+        self.users.append(new_user)
+        print("User registered successfully.")
+
+    def login(self, username, password):
+        for user in self.users:
+            if user.username == username and user.password == password:
+                print("Login successful.")
+                return
+        print("Invalid username or password.")
+
+auth = Authentication()
+auth.register("user1", "password1")
+auth.login("user1", "password1")

@@ -28,13 +28,14 @@ int main() {
         res = curl_easy_perform(curl);
 
         if(res != CURLE_OK)
-            fprintf(stderr, "curl_easy_perform() failed: %s
-", curl_easy_strerror(res));
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
 
         curl_easy_cleanup(curl);
-        std::cout << readBuffer << std::endl;
     }
 
     curl_global_cleanup();
+
+    std::cout << readBuffer << std::endl;
+
     return 0;
 }

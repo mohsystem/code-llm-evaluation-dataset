@@ -1,33 +1,32 @@
-import random
-
 class Master:
-    def __init__(self, secret: str):
+    def __init__(self, secret):
         self.secret = secret
         self.guess_count = 0
-    
-    def guess(self, word: str) -> int:
-        self.guess_count += 1
+
+    def guess(self, word):
         if word not in words:
             return -1
-        return sum(s == w for s, w in zip(self.secret, word))
+        self.guess_count += 1
+        return sum(a == b for a, b in zip(self.secret, word))
 
-def findSecretWord(words, master):
-    def match(word1, word2):
-        return sum(1 for x, y in zip(word1, word2) if x == y)
-    
-    attempts = 0
-    while attempts < allowedGuesses:
-        guess_word = random.choice(words)
+def findSecretWord(words, master, allowedGuesses):
+    def match_count(w1, w2):
+        return sum(a == b for a, b in zip(w1, w2))
+
+    from random import choice
+    for _ in range(allowedGuesses):
+        guess_word = choice(words)
         matches = master.guess(guess_word)
         if matches == 6:
             print("You guessed the secret word correctly.")
             return
-        words = [w for w in words if match(w, guess_word) == matches]
-        attempts += 1
+        words = [w for w in words if match_count(w, guess_word) == matches]
+    
     print("Either you took too many guesses, or you did not find the secret word.")
 
-secret = "hamada"
-words = ["hamada","khaled"]
+# Example Usage
+secret = "acckzz"
+words = ["acckzz","ccbazz","eiowzz","abcczz"]
 allowedGuesses = 10
 master = Master(secret)
-findSecretWord(words, master)
+findSecretWord(words, master, allowedGuesses)

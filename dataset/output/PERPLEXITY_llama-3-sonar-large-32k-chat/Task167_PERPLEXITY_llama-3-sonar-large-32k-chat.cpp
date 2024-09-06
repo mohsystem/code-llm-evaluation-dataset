@@ -2,11 +2,11 @@
 #include <cmath>
 using namespace std;
 double cubeDiagonal(double volume) {
-    return round(sqrt(3) * pow(volume, 1. / 3) * 100.) / 100.;
+    return round(sqrt(3) * pow(volume, 1. / 3) * 100.0) / 100.0;
 }
 int main() {
-    cout << fixed << setprecision(2) << cubeDiagonal(8) << endl;  // 3.46
-    cout << fixed << setprecision(2) << cubeDiagonal(343) << endl;  // 12.12
-    cout << fixed << setprecision(2) << cubeDiagonal(1157.625) << endl;  // 18.19
+    cout << cubeDiagonal(8) << endl;
+    cout << cubeDiagonal(343) << endl;
+    cout << cubeDiagonal(1157.625) << endl;
     return 0;
 }

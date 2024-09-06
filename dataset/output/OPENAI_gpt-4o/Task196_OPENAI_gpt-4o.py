@@ -3,56 +3,50 @@ import threading
 class ZeroEvenOdd:
     def __init__(self, n):
         self.n = n
-        self.zero_turn = True
-        self.even_turn = False
-        self.lock = threading.Lock()
-        self.zero_condition = threading.Condition(self.lock)
-        self.even_condition = threading.Condition(self.lock)
-        self.odd_condition = threading.Condition(self.lock)
-        
+        self.zero_count = 0
+        self.even_count = 2
+        self.odd_count = 1
+        self.zero_lock = threading.Lock()
+        self.even_lock = threading.Lock()
+        self.odd_lock = threading.Lock()
+        self.even_lock.acquire()
+        self.odd_lock.acquire()
+
     def zero(self, printNumber):
-        for _ in range(self.n):
-            with self.zero_condition:
-                while not self.zero_turn:
-                    self.zero_condition.wait()
-                printNumber(0)
-                self.zero_turn = False
-                if _ % 2 == 0:
-                    self.odd_condition.notify()
-                else:
-                    self.even_condition.notify()
-                    
+        for i in range(1, self.n + 1):
+            self.zero_lock.acquire()
+            printNumber(0)
+            if i % 2 == 0:
+                self.even_lock.release()
+            else:
+                self.odd_lock.release()
+
     def even(self, printNumber):
-        for i in range(2, self.n + 1, 2):
-            with self.even_condition:
-                while self.zero_turn or not self.even_turn:
-                    self.even_condition.wait()
-                printNumber(i)
-                self.even_turn = False
-                self.zero_turn = True
-                self.zero_condition.notify()
-                
+        for i in range(1, self.n // 2 + 1):
+            self.even_lock.acquire()
+            printNumber(self.even_count)
+            self.even_count += 2
+            self.zero_lock.release()
+
     def odd(self, printNumber):
-        for i in range(1, self.n + 1, 2):
-            with self.odd_condition:
-                while self.zero_turn or self.even_turn:
-                    self.odd_condition.wait()
-                printNumber(i)
-                self.even_turn = True
-                self.zero_turn = True
-                self.zero_condition.notify()
+        for i in range(1, (self.n + 1) // 2 + 1):
+            self.odd_lock.acquire()
+            printNumber(self.odd_count)
+            self.odd_count += 2
+            self.zero_lock.release()
 
 def printNumber(x):
     print(x, end='')
 
 n = 5
 zeroEvenOdd = ZeroEvenOdd(n)
-t1 = threading.Thread(target=zeroEvenOdd.zero, args=(printNumber,))
-t2 = threading.Thread(target=zeroEvenOdd.even, args=(printNumber,))
-t3 = threading.Thread(target=zeroEvenOdd.odd, args=(printNumber,))
-t1.start()
-t2.start()
-t3.start()
-t1.join()
-t2.join()
-t3.join()
+threads = [
+    threading.Thread(target=zeroEvenOdd.zero, args=(printNumber,)),
+    threading.Thread(target=zeroEvenOdd.even, args=(printNumber,)),
+    threading.Thread(target=zeroEvenOdd.odd, args=(printNumber,))
+]
+
+for t in threads:
+    t.start()
+for t in threads:
+    t.join()

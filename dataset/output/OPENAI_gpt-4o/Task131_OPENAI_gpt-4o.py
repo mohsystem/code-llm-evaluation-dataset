@@ -1,11 +1,5 @@
-import json
+import pickle
 
-def deserialize(data):
-    try:
-        return json.loads(data)
-    except json.JSONDecodeError as e:
-        return f"Error decoding JSON: {e}"
-
-data = '{"name": "John", "age": 30}'
-deserialized_data = deserialize(data)
-print(deserialized_data)
+# Serialization example in Python
+data = pickle.loads(user_supplied_binary_data)
+print(data)

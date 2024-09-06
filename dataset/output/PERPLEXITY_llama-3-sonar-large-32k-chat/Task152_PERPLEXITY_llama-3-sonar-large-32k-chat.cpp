@@ -1,62 +1,107 @@
 #include <iostream>
-#include <list>
+#include <string>
+
+using namespace std;
 
 class HashTable {
 private:
     int size;
-    std::list<std::pair<int, std::string>>* table;
+    int* slots;
+    string* data;
 
 public:
     HashTable(int size) {
         this->size = size;
-        table = new std::list<std::pair<int, std::string>>[size];
+        this->slots = new int[size];
+        this->data = new string[size];
+        for (int i = 0; i < size; i++) {
+            slots[i] = 0;
+        }
     }
 
-    int hash(int key) {
+    void put(int key, string value) {
+        int hashValue = hashFunction(key, size);
+
+        if (slots[hashValue] == 0) {
+            slots[hashValue] = key;
+            data[hashValue] = value;
+        } else {
+            if (slots[hashValue] == key) {
+                data[hashValue] = value; // replace
+            } else {
+                int nextSlot = rehash(hashValue, size);
+                while (slots[nextSlot] != 0 && slots[nextSlot] != key) {
+                    nextSlot = rehash(nextSlot, size);
+                }
+
+                if (slots[nextSlot] == 0) {
+                    slots[nextSlot] = key;
+                    data[nextSlot] = value;
+                } else {
+                    data[nextSlot] = value; // replace
+                }
+            }
+        }
+    }
+
+    int hashFunction(int key, int size) {
         return key % size;
     }
 
-    void insert(int key, std::string value) {
-        int index = hash(key);
-        for (auto it = table[index].begin(); it != table[index].end(); ++it) {
-            if (it->first == key) {
-                it->second = value;
-                return;
-            }
-        }
-        table[index].push_back(std::make_pair(key, value));
+    int rehash(int oldHash, int size) {
+        return (oldHash + 1) % size;
     }
 
-    void delete(int key) {
-        int index = hash(key);
-        for (auto it = table[index].begin(); it != table[index].end(); ++it) {
-            if (it->first == key) {
-                table[index].erase(it);
-                return;
-            }
-        }
-    }
+    string get(int key) {
+        int startSlot = hashFunction(key, size);
 
-    std::string search(int key) {
-        int index = hash(key);
-        for (auto it = table[index].begin(); it != table[index].end(); ++it) {
-            if (it->first == key) {
-                return it->second;
+        string value = "";
+        bool stop = false;
+        bool found = false;
+        int position = startSlot;
+        while (slots[position] != 0 && !found && !stop) {
+            if (slots[position] == key) {
+                found = true;
+                value = data[position];
+            } else {
+                position = rehash(position, size);
+                if (position == startSlot) {
+                    stop = true;
+                }
             }
         }
-        return "";
+        return value;
     }
 };
 
 int main() {
-    HashTable ht(10);
-    ht.insert(1, "one");
-    ht.insert(11, "eleven");
-    ht.insert(21, "twenty one");
-    std::cout << ht.search(1) << std::endl;  // Output: one
-    std::cout << ht.search(11) << std::endl;  // Output: eleven
-    std::cout << ht.search(21) << std::endl;  // Output: twenty one
-    ht.delete(11);
-    std::cout << ht.search(11) << std::endl;  // Output: 
+    HashTable h(11);
+    h.put(54, "cat");
+    h.put(26, "dog");
+    h.put(93, "lion");
+    h.put(17, "tiger");
+    h.put(77, "bird");
+    h.put(31, "cow");
+    h.put(44, "goat");
+    h.put(55, "pig");
+    h.put(20, "chicken");
+
+    for (int i = 0; i < 11; i++) {
+        cout << h.slots[i] << " ";
+    }
+    cout << endl;
+
+    for (int i = 0; i < 11; i++) {
+        cout << h.data[i] << " ";
+    }
+    cout << endl;
+
+    cout << h.get(20) << endl;
+
+    cout << h.get(17) << endl;
+    h.put(20, "duck");
+    cout << h.get(20) << endl;
+    cout << h.get(99) << endl;
+
     return 0;
 }

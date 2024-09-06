@@ -1,5 +1,6 @@
-with open("input.txt", "r") as file:
-    records = [line.strip().split("-", 1) for line in file]
-records.sort(key=lambda x: x[0])
+code here:
+f = open("input.txt", "r")
+records = [line.strip().split("=") for line in f]
+records.sort()
 for record in records:
-    print(f"{record[0]}-{record[1]}")
+    print("=".join(record))

@@ -1,10 +1,34 @@
 import random
+import math
 
-def generate_keys(p, q):
+def gcd(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
+
+def multiplicative_inverse(e, phi):
+    def extended_gcd(a, b):
+        if a == 0:
+            return b, 0, 1
+        else:
+            gcd, x, y = extended_gcd(b % a, a)
+            return gcd, y - (b // a) * x, x
+
+    gcd, x, y = extended_gcd(e, phi)
+    if gcd != 1:
+        return None
+    else:
+        return x % phi
+
+def generate_keypair(p, q):
     n = p * q
     phi = (p - 1) * (q - 1)
-    e = 17  # coprime with phi
-    d = pow(e, -1, phi)
+
+    e = random.randrange(1, phi)
+    while gcd(e, phi) != 1:
+        e = random.randrange(1, phi)
+
+    d = multiplicative_inverse(e, phi)
     return ((e, n), (d, n))
 
 def encrypt(pk, plaintext):
@@ -17,16 +41,14 @@ def decrypt(pk, ciphertext):
     plain = [chr((char ** key) % n) for char in ciphertext]
     return ''.join(plain)
 
-def main():
-    p = 61  # prime number
-    q = 53  # prime number
-    public, private = generate_keys(p, q)
-    print("Public Key:", public)
-    print("Private Key:", private)
-    message = input("Enter a message: ")
-    encrypted_msg = encrypt(public, message)
-    print("Encrypted Message:", ''.join(map(lambda x: str(x), encrypted_msg)))
-    print("Decrypted Message:", decrypt(private, encrypted_msg))
+p = 61
+q = 53
+public, private = generate_keypair(p, q)
+print("Public Key:", public)
+print("Private Key:", private)
 
-if __name__ == '__main__':
-    main()
+message = "Hello, World!"
+encrypted_msg = encrypt(public, message)
+print("Encrypted Message:", ''.join(map(lambda x: str(x), encrypted_msg)))
+
+print("Decrypted Message:", decrypt(private, encrypted_msg))

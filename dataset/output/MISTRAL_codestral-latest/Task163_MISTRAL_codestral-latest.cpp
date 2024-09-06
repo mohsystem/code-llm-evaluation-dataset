@@ -1,22 +1,19 @@
 #include <algorithm>
 #include <vector>
 
-int longestRun(std::vector<int>& arr) {
+int longestRun(std::vector<int> arr) {
     if (arr.empty()) {
         return 0;
     }
-
-    int longestSequence = 1;
-    int currentSequence = 1;
-
+    int longest = 1;
+    int current = 1;
     for (int i = 1; i < arr.size(); i++) {
         if (arr[i] == arr[i-1] + 1 || arr[i] == arr[i-1] - 1) {
-            currentSequence++;
+            current++;
         } else {
-            longestSequence = std::max(longestSequence, currentSequence);
-            currentSequence = 1;
+            longest = std::max(longest, current);
+            current = 1;
         }
     }
-
-    return std::max(longestSequence, currentSequence);
+    return std::max(longest, current);
 }

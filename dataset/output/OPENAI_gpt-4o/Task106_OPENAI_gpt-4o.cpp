@@ -1,48 +1,83 @@
+// C++ RSA Encryption and Decryption
 #include <iostream>
-#include <string>
-#include <gmpxx.h>
-
-void generate_keys(mpz_class &n, mpz_class &d, mpz_class &e, int bits) {
-    gmp_randclass r(gmp_randinit_default);
-    r.seed(time(NULL));
-
-    mpz_class p = r.get_z_bits(bits / 2);
-    mpz_nextprime(p.get_mpz_t(), p.get_mpz_t());
-
-    mpz_class q = r.get_z_bits(bits / 2);
-    mpz_nextprime(q.get_mpz_t(), q.get_mpz_t());
-
-    n = p * q;
-
-    mpz_class phi = (p - 1) * (q - 1);
-
-    e = 65537;
-    mpz_invert(d.get_mpz_t(), e.get_mpz_t(), phi.get_mpz_t());
-}
-
-void encrypt(mpz_class &ciphertext, const mpz_class &message, const mpz_class &e, const mpz_class &n) {
-    mpz_powm(ciphertext.get_mpz_t(), message.get_mpz_t(), e.get_mpz_t(), n.get_mpz_t());
-}
-
-void decrypt(mpz_class &decrypted, const mpz_class &ciphertext, const mpz_class &d, const mpz_class &n) {
-    mpz_powm(decrypted.get_mpz_t(), ciphertext.get_mpz_t(), d.get_mpz_t(), n.get_mpz_t());
-}
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
+#include <string.h>
 
 int main() {
-    mpz_class n, d, e, plaintext, ciphertext, decrypted;
+    int bits = 2048;
+    unsigned long e = RSA_F4;
+    RSA *rsa = RSA_generate_key(bits, e, NULL, NULL);
 
-    generate_keys(n, d, e, 1024);
-    
-    std::string message = "Hello RSA!";
-    plaintext = mpz_class(message.c_str());
+    BIO *pri = BIO_new(BIO_s_mem());
+    BIO *pub = BIO_new(BIO_s_mem());
 
-    std::cout << "Plaintext: " << plaintext << std::endl;
+    PEM_write_bio_RSAPrivateKey(pri, rsa, NULL, NULL, 0, NULL, NULL);
+    PEM_write_bio_RSAPublicKey(pub, rsa);
 
-    encrypt(ciphertext, plaintext, e, n);
-    std::cout << "Encrypted: " << ciphertext << std::endl;
+    size_t pri_len = BIO_pending(pri);
+    size_t pub_len = BIO_pending(pub);
 
-    decrypt(decrypted, ciphertext, d, n);
-    std::cout << "Decrypted: " << decrypted.get_str() << std::endl;
+    char *pri_key = (char*)malloc(pri_len + 1);
+    char *pub_key = (char*)malloc(pub_len + 1);
+
+    BIO_read(pri, pri_key, pri_len);
+    BIO_read(pub, pub_key, pub_len);
+
+    pri_key[pri_len] = '\0';
+    pub_key[pub_len] = '\0';
+
+    std::cout << "Public Key:\n" << pub_key << std::endl;
+    std::cout << "Private Key:\n" << pri_key << std::endl;
+
+    std::string message = "This is a secret message";
+
+    RSA *rsa_public = RSA_new();
+    BIO *pubbio = BIO_new_mem_buf(pub_key, -1);
+    PEM_read_bio_RSAPublicKey(pubbio, &rsa_public, NULL, NULL);
+
+    char *encrypted = (char*)malloc(RSA_size(rsa_public));
+    int encrypted_length = RSA_public_encrypt(message.length(), (unsigned char*)message.c_str(), (unsigned char*)encrypted, rsa_public, RSA_PKCS1_OAEP_PADDING);
+
+    if(encrypted_length == -1) {
+        char *err = (char*)malloc(130);
+        ERR_load_crypto_strings();
+        ERR_error_string(ERR_get_error(), err);
+        std::cout << "Encryption Error: " << err << std::endl;
+        free(err);
+    } else {
+        std::cout << "Encrypted: " << encrypted << std::endl;
+    }
+
+    RSA *rsa_private = RSA_new();
+    BIO *pribio = BIO_new_mem_buf(pri_key, -1);
+    PEM_read_bio_RSAPrivateKey(pribio, &rsa_private, NULL, NULL);
+
+    char *decrypted = (char*)malloc(encrypted_length);
+    int decrypted_length = RSA_private_decrypt(encrypted_length, (unsigned char*)encrypted, (unsigned char*)decrypted, rsa_private, RSA_PKCS1_OAEP_PADDING);
+
+    if(decrypted_length == -1) {
+        char *err = (char*)malloc(130);
+        ERR_load_crypto_strings();
+        ERR_error_string(ERR_get_error(), err);
+        std::cout << "Decryption Error: " << err << std::endl;
+        free(err);
+    } else {
+        std::cout << "Decrypted: " << std::string(decrypted, decrypted_length) << std::endl;
+    }
+
+    RSA_free(rsa);
+    RSA_free(rsa_public);
+    RSA_free(rsa_private);
+    BIO_free_all(pri);
+    BIO_free_all(pub);
+    BIO_free_all(pubbio);
+    BIO_free_all(pribio);
+    free(pri_key);
+    free(pub_key);
+    free(encrypted);
+    free(decrypted);
 
     return 0;
 }

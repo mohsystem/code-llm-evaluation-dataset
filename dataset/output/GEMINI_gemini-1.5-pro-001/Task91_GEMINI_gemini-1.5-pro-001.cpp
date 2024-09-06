@@ -1,168 +1,98 @@
 #include <iostream>
-#include <string>
-#include <unordered_map>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <cstring>
 
-#define DNS_PORT 53
-#define MAX_PACKET_SIZE 512
+#define PORT 53
+#define BUFFER_SIZE 1024
 
-// Structure to represent a DNS header
-struct DNSHeader {
-    uint16_t id;
-    uint16_t flags;
-    uint16_t qdcount;
-    uint16_t ancount;
-    uint16_t nscount;
-    uint16_t arcount;
+// Structure to represent a DNS query
+struct DNSQuery {
+    // Add fields for DNS query parsing
 };
 
-// Structure to represent a DNS question
-struct DNSQuestion {
-    std::string qname;
-    uint16_t qtype;
-    uint16_t qclass;
+// Structure to represent a DNS response
+struct DNSResponse {
+    // Add fields for DNS response creation
 };
 
-// Function to convert domain name to DNS format
-void toDNSFormat(std::string& domainName) {
-    size_t pos = 0;
-    while ((pos = domainName.find('.', pos)) != std::string::npos) {
-        domainName.insert(pos, 1, domainName.at(pos - 1));
-        pos += 2;
-    }
+// Function to parse DNS query
+DNSQuery parseDNSQuery(const char* data) {
+    // Implement DNS query parsing logic here
+    DNSQuery query;
+    // ...
+    return query;
 }
 
-// Function to extract the domain name from a DNS query
-std::string extractDomainName(const char* buffer, int& index) {
-    std::string domainName;
-    while (buffer[index] != '\0') {
-        int labelLength = static_cast<int>(buffer[index]);
-        index++;
-        domainName += std::string(buffer + index, labelLength) + '.';
-        index += labelLength;
-    }
-    index++; // Skip the null terminator
-    domainName.pop_back(); // Remove the trailing dot
-    return domainName;
+// Function to resolve DNS query
+const char* resolveDNSQuery(const DNSQuery& query) {
+    // Implement DNS resolution logic here
+    // Return the resolved IP address as a string
+    return "127.0.0.1";
 }
 
-// Function to parse a DNS query
-DNSQuestion parseDNSQuery(const char* buffer) {
-    DNSQuestion dnsQuestion;
-    int index = sizeof(DNSHeader);
-
-    // Extract the domain name from the query
-    dnsQuestion.qname = extractDomainName(buffer, index);
-
-    // Extract the query type and class
-    dnsQuestion.qtype = ntohs(*reinterpret_cast<const uint16_t*>(buffer + index));
-    index += sizeof(uint16_t);
-    dnsQuestion.qclass = ntohs(*reinterpret_cast<const uint16_t*>(buffer + index));
-
-    return dnsQuestion;
-}
-
-// Function to create a DNS response
-void createDNSResponse(char* buffer, const std::string& ipAddress) {
-    // Parse the DNS query
-    DNSQuestion dnsQuestion = parseDNSQuery(buffer);
-
-    // Modify the DNS header
-    DNSHeader* dnsHeader = reinterpret_cast<DNSHeader*>(buffer);
-    dnsHeader->flags = htons(0x8180); // Set response flags
-    dnsHeader->ancount = htons(1);    // Set answer count to 1
-
-    // Modify the DNS answer section
-    int index = sizeof(DNSHeader) + dnsQuestion.qname.size() + 2 + 4; // Position after the question section
-
-    // Copy the domain name to the answer section
-    std::strcpy(buffer + index, dnsQuestion.qname.c_str());
-    index += dnsQuestion.qname.size() + 1;
-
-    // Set answer type to A (IPv4 address)
-    *reinterpret_cast<uint16_t*>(buffer + index) = htons(1);
-    index += sizeof(uint16_t);
-
-    // Set answer class to IN (Internet)
-    *reinterpret_cast<uint16_t*>(buffer + index) = htons(1);
-    index += sizeof(uint16_t);
-
-    // Set answer TTL (arbitrary value)
-    *reinterpret_cast<uint32_t*>(buffer + index) = htonl(3600);
-    index += sizeof(uint32_t);
-
-    // Set answer data length (IPv4 address length)
-    *reinterpret_cast<uint16_t*>(buffer + index) = htons(4);
-    index += sizeof(uint16_t);
-
-    // Copy the IP address to the answer section
-    inet_pton(AF_INET, ipAddress.c_str(), buffer + index);
+// Function to create DNS response
+std::string createDNSResponse(const DNSQuery& query, const char* resolvedIP) {
+    // Implement DNS response creation logic here
+    std::string response = "DNS response";
+    // ...
+    return response;
 }
 
 int main() {
-    // Create a UDP socket
-    int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    int sockfd;
+    struct sockaddr_in serverAddr, clientAddr;
+    socklen_t clientLen = sizeof(clientAddr);
+    char buffer[BUFFER_SIZE];
+
+    // Create UDP socket
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd < 0) {
-        std::cerr << "Failed to create socket" << std::endl;
+        std::cerr << "Error creating socket" << std::endl;
         return 1;
     }
 
-    // Bind the socket to the DNS port
-    sockaddr_in serverAddress{};
-    serverAddress.sin_family = AF_INET;
-    serverAddress.sin_addr.s_addr = INADDR_ANY;
-    serverAddress.sin_port = htons(DNS_PORT);
-    if (bind(sockfd, reinterpret_cast<sockaddr*>(&serverAddress), sizeof(serverAddress)) < 0) {
-        std::cerr << "Failed to bind socket" << std::endl;
+    // Set server address
+    memset(&serverAddr, 0, sizeof(serverAddr));
+    serverAddr.sin_family = AF_INET;
+    serverAddr.sin_addr.s_addr = INADDR_ANY;
+    serverAddr.sin_port = htons(PORT);
+
+    // Bind socket to address
+    if (bind(sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
+        std::cerr << "Error binding socket" << std::endl;
         close(sockfd);
         return 1;
     }
 
-    std::cout << "DNS server listening on port " << DNS_PORT << std::endl;
-
-    // Create a map to store DNS records
-    std::unordered_map<std::string, std::string> dnsRecords = {
-        {"google.com", "172.217.160.142"},
-        {"facebook.com", "157.240.195.35"}
-        // Add more DNS records as needed
-    };
+    std::cout << "DNS server listening on port " << PORT << std::endl;
 
     while (true) {
-        char buffer[MAX_PACKET_SIZE];
-        sockaddr_in clientAddress{};
-        socklen_t clientAddressLength = sizeof(clientAddress);
-
-        // Receive a DNS query from a client
-        ssize_t bytesReceived = recvfrom(sockfd, buffer, sizeof(buffer), 0, reinterpret_cast<sockaddr*>(&clientAddress), &clientAddressLength);
+        // Receive DNS query
+        ssize_t bytesReceived = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr*)&clientAddr, &clientLen);
         if (bytesReceived < 0) {
-            std::cerr << "Failed to receive data" << std::endl;
+            std::cerr << "Error receiving data" << std::endl;
             continue;
         }
 
-        // Parse the DNS query and extract the domain name
-        DNSQuestion dnsQuestion = parseDNSQuery(buffer);
-        std::string domainName = dnsQuestion.qname;
-        std::cout << "Received DNS query for: " << domainName << std::endl;
+        // Parse DNS query
+        DNSQuery query = parseDNSQuery(buffer);
 
-        // Resolve the domain name to an IP address
-        std::string ipAddress = dnsRecords[domainName];
+        // Resolve DNS query
+        const char* resolvedIP = resolveDNSQuery(query);
 
-        // Create a DNS response
-        createDNSResponse(buffer, ipAddress);
+        // Create DNS response
+        std::string response = createDNSResponse(query, resolvedIP);
 
-        // Send the DNS response back to the client
-        ssize_t bytesSent = sendto(sockfd, buffer, bytesReceived, 0, reinterpret_cast<sockaddr*>(&clientAddress), clientAddressLength);
+        // Send DNS response
+        ssize_t bytesSent = sendto(sockfd, response.c_str(), response.size(), 0, (struct sockaddr*)&clientAddr, clientLen);
         if (bytesSent < 0) {
-            std::cerr << "Failed to send data" << std::endl;
+            std::cerr << "Error sending data" << std::endl;
         }
     }
 
-    // Close the socket
     close(sockfd);
-
     return 0;
 }

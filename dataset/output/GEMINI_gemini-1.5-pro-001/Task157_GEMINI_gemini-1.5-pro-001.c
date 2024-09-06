@@ -3,15 +3,13 @@
 
 int main() {
     // Allocate memory
-    int* array = (int*)malloc(1024 * sizeof(int));
+    int* ptr = (int*)malloc(sizeof(int));
 
-    // Use memory (example)
-    if (array != NULL) {
-        array[0] = 10;
-    }
+    // Use the allocated memory (optional)
+    *ptr = 10;
 
     // Deallocate memory
-    free(array);
+    free(ptr);
 
     return 0;
 }

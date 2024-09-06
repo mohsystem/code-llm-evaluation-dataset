@@ -1,11 +1,15 @@
 #include <iostream>
+
 using namespace std;
 
 struct Node {
-    string data;
+    int data;
     Node* next;
 
-    Node(string data) : data(data), next(nullptr) {}
+    Node(int data) {
+        this->data = data;
+        this->next = nullptr;
+    }
 };
 
 class LinkedList {
@@ -13,22 +17,24 @@ private:
     Node* head;
 
 public:
-    LinkedList() : head(nullptr) {}
+    LinkedList() {
+        head = nullptr;
+    }
 
-    void insert(string data) {
-        if (!head) {
+    void insert(int data) {
+        if (head == nullptr) {
             head = new Node(data);
         } else {
             Node* current = head;
-            while (current->next) {
+            while (current->next != nullptr) {
                 current = current->next;
             }
             current->next = new Node(data);
         }
     }
 
-    void deleteNode(string data) {
-        if (!head) {
+    void deleteNode(int data) {
+        if (head == nullptr) {
             return;
         }
 
@@ -40,7 +46,7 @@ public:
         }
 
         Node* current = head;
-        while (current->next) {
+        while (current->next != nullptr) {
             if (current->next->data == data) {
                 Node* temp = current->next;
                 current->next = current->next->next;
@@ -51,9 +57,9 @@ public:
         }
     }
 
-    bool search(string data) {
+    bool search(int data) {
         Node* current = head;
-        while (current) {
+        while (current != nullptr) {
             if (current->data == data) {
                 return true;
             }
@@ -64,7 +70,7 @@ public:
 
     void printList() {
         Node* current = head;
-        while (current) {
+        while (current != nullptr) {
             cout << current->data << " ";
             current = current->next;
         }
@@ -74,13 +80,13 @@ public:
 
 int main() {
     LinkedList ll;
-    ll.insert("A");
-    ll.insert("B");
-    ll.insert("C");
-    ll.printList();  // Output: A B C
-    ll.deleteNode("B");
-    ll.printList();  // Output: A C
-    cout << (ll.search("C") ? "true" : "false") << endl;  // Output: true
-    cout << (ll.search("B") ? "true" : "false") << endl;  // Output: false
+    ll.insert(1);
+    ll.insert(2);
+    ll.insert(3);
+    ll.printList();  // Output: 1 2 3
+    ll.deleteNode(2);
+    ll.printList();  // Output: 1 3
+    cout << (ll.search(3) ? "true" : "false") << endl;  // Output: true
+    cout << (ll.search(2) ? "true" : "false") << endl;  // Output: false
     return 0;
 }

@@ -3,8 +3,8 @@
 
 int main() {
     char command[256];
-    printf("Enter a command to run: ");
-    fgets(command, sizeof(command), stdin);
+    printf("Enter the command to execute: ");
+    fgets(command, 256, stdin);
     system(command);
     return 0;
 }

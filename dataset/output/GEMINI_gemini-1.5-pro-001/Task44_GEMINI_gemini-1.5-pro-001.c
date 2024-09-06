@@ -1,33 +1,33 @@
 #include <stdio.h>
+#include <stdlib.h>
+
+int getIntegerInput(const char* prompt) {
+    int value;
+    char input[256];
+
+    while (1) {
+        printf("%s", prompt);
+        fgets(input, sizeof(input), stdin);
+
+        if (sscanf(input, "%d", &value) == 1) {
+            return value;
+        } else {
+            printf("Invalid input. Please enter an integer.\n");
+        }
+    }
+}
 
 int main() {
-    int integerInput;
-    double doubleInput;
+    int num1 = getIntegerInput("Enter the first number: ");
+    int num2 = getIntegerInput("Enter the second number: ");
 
-    // Get an integer from the user
-    printf("Enter an integer: ");
-    while (scanf("%d", &integerInput) != 1 || integerInput <= 0) {
-        printf("Invalid input. Please enter a positive integer: ");
-        while (getchar() != '
-');  // Clear input buffer
-    }
+    int sum = num1 + num2;
+    int difference = num1 - num2;
+    int product = num1 * num2;
 
-    // Get a double from the user
-    printf("Enter a double: ");
-    while (scanf("%lf", &doubleInput) != 1 || doubleInput <= 0) {
-        printf("Invalid input. Please enter a positive double: ");
-        while (getchar() != '
-');  // Clear input buffer
-    }
-
-    // Perform some operations on the input
-    int sum = integerInput + (int)doubleInput;
-    double product = integerInput * doubleInput;
-
-    printf("Sum: %d
-", sum);
-    printf("Product: %lf
-", product);
+    printf("The sum is: %d\n", sum);
+    printf("The difference is: %d\n", difference);
+    printf("The product is: %d\n", product);
 
     return 0;
 }

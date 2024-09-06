@@ -1,24 +1,22 @@
 #include <stdio.h>
 #include <string.h>
 
-void reverse_string(char* str) {
-  char *end = str + strlen(str) - 1;
-  char temp;
-  while (end > str) {
-    temp = *str;
-    *str++ = *end;
-    *end-- = temp;
-  }
-}
-
 int main() {
-  char inputString[100];
-  printf("Enter a string: ");
-  fgets(inputString, sizeof(inputString), stdin);
-  inputString[strcspn(inputString, "
-")] = 0; 
-  reverse_string(inputString);
-  printf("%s
-", inputString);
-  return 0;
+    char str[100];
+    int i, len;
+
+    printf("Enter a string: ");
+    fgets(str, sizeof(str), stdin);
+
+    len = strlen(str);
+
+    for (i = 0; i < len / 2; i++) {
+        char temp = str[i];
+        str[i] = str[len - i - 1];
+        str[len - i - 1] = temp;
+    }
+
+    printf("%s\n", str);
+
+    return 0;
 }

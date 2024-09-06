@@ -6,23 +6,19 @@
 #include <array>
 #include <memory>
 
-bool validate_command(const std::string& command) {
-    // Check if command is empty
-    if (command.empty()) {
+bool validateCommand(const std::string& cmd) {
+    if (cmd.empty() || std::regex_search(cmd, std::regex("(rm|sudo|mv|cp|chmod|chown)"))) {
         return false;
     }
-
-    // Check for semicolons, pipes, or redirections
-    std::regex invalid_chars_regex("[;|><]");
-    return !std::regex_search(command, invalid_chars_regex);
+    return true;
 }
 
-std::string exec(const char* cmd) {
+std::string executeCommand(const std::string& cmd) {
     std::array<char, 128> buffer;
     std::string result;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
     if (!pipe) {
-        throw std::runtime_error("popen() failed!");
+        return "Error executing command";
     }
     while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
         result += buffer.data();
@@ -31,21 +27,19 @@ std::string exec(const char* cmd) {
 }
 
 int main() {
-    std::string command;
-    std::cout << "Enter a bash command: ";
-    std::getline(std::cin, command);
-
-    if (validate_command(command)) {
-        try {
-            std::string output = exec(command.c_str());
-            std::cout << output;
-        } catch (const std::runtime_error& e) {
-            std::cerr << "Error: " << e.what() << std::endl;
-            return 1;
+    std::string userInput;
+    while (true) {
+        std::cout << "Enter a bash command (or 'exit' to quit): ";
+        std::getline(std::cin, userInput);
+        if (userInput == "exit") {
+            break;
         }
-    } else {
-        std::cout << "Invalid command format or content." << std::endl;
+        if (validateCommand(userInput)) {
+            std::string output = executeCommand(userInput);
+            std::cout << "Output: " << output << std::endl;
+        } else {
+            std::cout << "Invalid or potentially dangerous command. Please try again." << std::endl;
+        }
     }
-
     return 0;
 }

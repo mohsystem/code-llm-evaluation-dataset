@@ -1,29 +1,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <openssl/hmac.h>
-#include <openssl/rand.h>
+#include <openssl/sha.h>
 
-char* generate_csrf_token() {
-    unsigned char key[32];
-    RAND_bytes(key, sizeof(key));
+typedef struct {
+    char token[SHA256_DIGEST_LENGTH*2 + 1];
+} CSRFProtection;
 
-    unsigned char* out = HMAC(EVP_sha256(), "SuperSecretKey", 13, key, sizeof(key), NULL, NULL);
+void generateToken(CSRFProtection* csrf, const char* sessionId) {
+    unsigned char randomValue[60];
+    FILE* urandom = fopen("/dev/urandom", "rb");
+    fread(randomValue, sizeof(randomValue), 1, urandom);
+    fclose(urandom);
 
-    char* token = (char*)malloc(EVP_MAX_MD_SIZE * 2 + 1);
-    for (int i = 0; i < EVP_MAX_MD_SIZE; i++) {
-        sprintf(&token[i * 2], "%02x", out[i]);
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256(randomValue, sizeof(randomValue), hash);
+
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+        sprintf(csrf->token + (i * 2), "%02x", hash[i]);
     }
+    strcat(csrf->token, sessionId);
+}
 
-    return token;
+int validateToken(CSRFProtection* csrf, const char* token, const char* sessionId) {
+    char expectedToken[sizeof(csrf->token)];
+    strcpy(expectedToken, csrf->token);
+    strcat(expectedToken, sessionId);
+    return strcmp(expectedToken, token) == 0;
 }
 
 int main() {
-    char* csrf_token = generate_csrf_token();
-    printf("Generated CSRF Token: %s
-", csrf_token);
-    free(csrf_token);
-    // This is a mock-up example. Add HTTP handling using a library like libmicrohttpd for a full example.
-
+    CSRFProtection csrf;
+    const char* sessionId = "12345ABC";
+    generateToken(&csrf, sessionId);
+    printf("Token: %s\n", csrf.token);
+    printf("Validation: %d\n", validateToken(&csrf, csrf.token, sessionId));
     return 0;
 }

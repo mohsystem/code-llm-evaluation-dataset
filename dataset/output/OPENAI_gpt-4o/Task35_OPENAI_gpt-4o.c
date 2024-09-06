@@ -1,18 +1,22 @@
 #include <stdio.h>
 
-int peopleOnBus(int busStops[][2], int size) {
-    int people = 0;
+typedef struct {
+    int on;
+    int off;
+} Stop;
+
+int numberOfPeople(Stop busStops[], int size) {
+    int totalPeople = 0;
     for (int i = 0; i < size; i++) {
-        people += busStops[i][0];
-        people -= busStops[i][1];
+        totalPeople += busStops[i].on;
+        totalPeople -= busStops[i].off;
     }
-    return people;
+    return totalPeople;
 }
 
 int main() {
-    int busStops[][2] = {{3, 0}, {2, 1}, {5, 3}, {2, 2}};
+    Stop busStops[] = {{10, 0}, {3, 5}, {5, 8}};
     int size = sizeof(busStops) / sizeof(busStops[0]);
-    printf("%d
-", peopleOnBus(busStops, size));
+    printf("%d\n", numberOfPeople(busStops, size)); // Output: 5
     return 0;
 }

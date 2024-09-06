@@ -1,34 +1,24 @@
 #include <iostream>
-#include <cstdio>
-#include <regex>
-
-bool isValidCommand(const std::string &command) {
-    std::regex validPattern("[a-zA-Z0-9\\s-_/.]+");
-    return std::regex_match(command, validPattern);
-}
+#include <cstdlib>
+#include <array>
+#include <memory>
 
 int main() {
     std::string command;
-    
-    std::cout << "Enter shell command: ";
+    std::cout << "Enter a bash command: ";
     std::getline(std::cin, command);
 
-    if (isValidCommand(command)) {
-        FILE* pipe = popen(command.c_str(), "r");
-        if (!pipe) {
-            std::cerr << "Failed to run command." << std::endl;
-            return 1;
-        }
-
-        char buffer[128];
-        while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-            std::cout << buffer;
-        }
-
-        pclose(pipe);
-    } else {
-        std::cerr << "Invalid command." << std::endl;
+    std::shared_ptr<FILE> pipe(popen(command.c_str(), "r"), pclose);
+    if (!pipe) {
+        std::cerr << "An error occurred during execution." << std::endl;
+        return 1;
+    }
+    std::array<char, 128> buffer;
+    std::string result;
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+        result += buffer.data();
     }
 
+    std::cout << "Command output: " << result << std::endl;
     return 0;
 }

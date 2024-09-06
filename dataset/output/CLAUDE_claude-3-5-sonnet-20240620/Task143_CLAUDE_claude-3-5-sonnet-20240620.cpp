@@ -1,38 +1,33 @@
 
 #include <iostream>
 #include <vector>
-#include <sstream>
+using namespace std;
 
-void bubbleSort(std::vector<int>& arr) {
+void bubbleSort(vector<int>& arr) {
     int n = arr.size();
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
             if (arr[j] > arr[j + 1]) {
-                std::swap(arr[j], arr[j + 1]);
+                swap(arr[j], arr[j + 1]);
             }
         }
     }
 }
 
 int main() {
-    std::string input;
-    std::cout << "Enter integers separated by spaces: ";
-    std::getline(std::cin, input);
-
-    std::vector<int> arr;
-    std::istringstream iss(input);
-    int num;
-    while (iss >> num) {
-        arr.push_back(num);
+    int n;
+    cout << "Enter the number of elements: ";
+    cin >> n;
+    vector<int> arr(n);
+    cout << "Enter the elements:" << endl;
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
     }
-
     bubbleSort(arr);
-
-    std::cout << "Sorted array: ";
-    for (int i = 0; i < arr.size(); i++) {
-        std::cout << arr[i] << " ";
+    cout << "Sorted array: ";
+    for (int num : arr) {
+        cout << num << " ";
     }
-    std::cout << std::endl;
-
+    cout << endl;
     return 0;
 }

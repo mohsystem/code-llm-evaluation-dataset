@@ -1,24 +1,21 @@
+// C++
 #include <iostream>
 #include <string>
 
-void redirectUser(std::string input) {
-    if (input == "home") {
+int main() {
+    std::string userInput;
+    std::cout << "Enter your input: ";
+    std::cin >> userInput;
+
+    if (userInput == "home") {
         std::cout << "Redirecting to home page..." << std::endl;
-    } else if (input == "about") {
+    } else if (userInput == "about") {
         std::cout << "Redirecting to about page..." << std::endl;
-    } else if (input == "contact") {
+    } else if (userInput == "contact") {
         std::cout << "Redirecting to contact page..." << std::endl;
     } else {
-        std::cout << "Invalid input. Staying on current page." << std::endl;
+        std::cout << "Invalid input. Redirecting to default page..." << std::endl;
     }
-}
-
-int main() {
-    std::string input;
-    std::cout << "Enter a page: ";
-    std::getline(std::cin, input);
-
-    redirectUser(input);
 
     return 0;
 }

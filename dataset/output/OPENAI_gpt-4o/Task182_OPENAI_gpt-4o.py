@@ -1,19 +1,11 @@
 import re
 
-def clean_phone_number(phone):
-    phone = re.sub(r'\D', '', phone)
-    if phone.startswith('1') and len(phone) == 11:
-        phone = phone[1:]
-    return phone
+def clean_number(number):
+    number = re.sub(r'[^0-9]', '', number)
+    if number.startswith('1') and len(number) == 11:
+        number = number[1:]
+    return number
 
-numbers = [
-    "+1 (613)-995-0253",
-    "613-995-0253",
-    "1 613 995 0253",
-    "613.995.0253"
-]
-
-for number in numbers:
-    print(clean_phone_number(number))
-
-# Java, C++, and C code will be run using appropriate methods within their respective blocks.
+numbers = ['+1 (613)-995-0253', '613-995-0253', '1 613 995 0253', '613.995.0253']
+cleaned_numbers = [clean_number(num) for num in numbers]
+print(cleaned_numbers)

@@ -1,26 +1,9 @@
-// C example (using libmicrohttpd)
-#include <stdlib.h>
-#include <string.h>
-#include <microhttpd.h>
+// This is a very simplified example and doesn't include all the necessary parts of a full-fledged web application
 
-#define POSTBUFFERSIZE  512
-#define GET             0
-#define POST            1
-
-int update_settings(void *cls, struct MHD_Connection *connection,
-                    const char *url, const char *method,
-                    const char *version, const char *upload_data,
-                    size_t *upload_data_size, void **con_cls) {
-    if (strcmp(method, "POST") == 0) {
-        char *csrfToken = MHD_lookup_connection_value(connection, MHD_GET_ARGUMENT_KIND, "csrf_token");
-        if (csrfToken != NULL && strcmp(csrfToken, "your-csrf-token") == 0) {
-            // Your code to update settings here
-            free(csrfToken);
-            return MHD_create_response_from_buffer(strlen("Settings updated"), (void *)"Settings updated", MHD_RESPMEM_PERSISTENT);
-        } else {
-            free(csrfToken);
-            return MHD_create_response_from_buffer(strlen("Invalid CSRF token"), (void *)"Invalid CSRF token", MHD_RESPMEM_PERSISTENT);
-        }
+void on_post_request(void *data, ONION_REQUEST *req, ONION_RESPONSE *res) {
+    if (req->full_url[0] == '/' && req->full_url[1] == 'u' && req->full_url[2] == 'p' && req->full_url[3] == 'd' && req->full_url[4] == 'a' && req->full_url[5] == 't' && req->full_url[6] == 'e') {
+        // Validate CSRF token here
+        // Update user settings here
+        onion_response_printf(res, "Settings updated");
     }
-    return MHD_NO;
 }

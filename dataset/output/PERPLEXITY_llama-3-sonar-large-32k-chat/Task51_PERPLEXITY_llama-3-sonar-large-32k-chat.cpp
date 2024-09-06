@@ -1,18 +1,26 @@
 #include <iostream>
 #include <string>
 
-std::string encrypt(const std::string& str) {
-    std::string encrypted;
-    for (char c : str) {
-        encrypted += (char) (c + 3);
+std::string encrypt(const std::string& text, int shift) {
+    std::string result;
+
+    for (char c : text) {
+        if (isalpha(c)) {
+            char base = isupper(c) ? 'A' : 'a';
+            result += (char) ((c - base + shift) % 26 + base);
+        } else {
+            result += c;
+        }
     }
-    return encrypted;
+
+    return result;
 }
 
 int main() {
-    std::string str = "Hello, World!";
-    std::cout << "Original: " << str << std::endl;
-    std::string encrypted = encrypt(str);
-    std::cout << "Encrypted: " << encrypted << std::endl;
+    std::string text = "Hello, World!";
+    int shift = 3;
+    std::cout << "Text : " << text << std::endl;
+    std::cout << "Shift : " << shift << std::endl;
+    std::cout << "Cipher: " << encrypt(text, shift) << std::endl;
     return 0;
 }

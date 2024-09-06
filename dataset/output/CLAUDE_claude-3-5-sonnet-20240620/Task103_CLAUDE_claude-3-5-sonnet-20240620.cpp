@@ -1,41 +1,32 @@
 
 #include <iostream>
 #include <string>
+#include <regex>
 
 bool checkPasswordStrength(const std::string& password) {
     if (password.length() < 8) {
         return false;
     }
-
-    bool hasUppercase = false;
-    bool hasLowercase = false;
-    bool hasDigit = false;
-
-    for (char c : password) {
-        if (std::isupper(c)) {
-            hasUppercase = true;
-        } else if (std::islower(c)) {
-            hasLowercase = true;
-        } else if (std::isdigit(c)) {
-            hasDigit = true;
-        }
+    if (!std::regex_search(password, std::regex("[A-Z]"))) {
+        return false;
     }
-
-    return hasUppercase && hasLowercase && hasDigit;
+    if (!std::regex_search(password, std::regex("[a-z]"))) {
+        return false;
+    }
+    if (!std::regex_search(password, std::regex("\\\\d"))) {
+        return false;
+    }
+    return true;
 }
 
 int main() {
     std::string password;
     std::cout << "Enter a password: ";
     std::getline(std::cin, password);
-
-    bool isStrong = checkPasswordStrength(password);
-
-    if (isStrong) {
-        std::cout << "Strong password!" << std::endl;
+    if (checkPasswordStrength(password)) {
+        std::cout << "Password is strong" << std::endl;
     } else {
-        std::cout << "Weak password. Please try again." << std::endl;
+        std::cout << "Password is weak" << std::endl;
     }
-
     return 0;
 }

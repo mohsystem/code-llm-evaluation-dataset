@@ -1,36 +1,39 @@
-// C
 #include <stdio.h>
 #include <string.h>
 
-void reverse(char* start, char* end) {
+void reverse(char *begin, char *end) {
     char temp;
-    while (start < end) {
-        temp = *start;
-        *start++ = *end;
+    while (begin < end) {
+        temp = *begin;
+        *begin++ = *end;
         *end-- = temp;
     }
 }
 
-void reverseWords(char* str) {
-    char* word_begin = NULL;
-    char* temp = str;
+void spinWords(char *sentence) {
+    char *word_begin = sentence;
+    char *temp = sentence;
+    
     while (*temp) {
-        if ((word_begin == NULL) && ((*temp == ' ') || (*temp == '\0')))
-            word_begin = temp;
-        if ((word_begin != NULL) && (*(temp + 1) == ' ' || *(temp + 1) == '\0')) {
-            if ((temp - word_begin) >= 4) {
-                reverse(word_begin, temp);
-            }
-            word_begin = NULL;
-        }
         temp++;
+        if (*temp == ' ' || *temp == '\0') {
+            if (temp - word_begin >= 5) {
+                reverse(word_begin, temp - 1);
+            }
+            word_begin = temp + 1;
+        }
+    }
+}
+
+void printExamples() {
+    char examples[][100] = {"Hey fellow warriors", "This is a test", "This is another test"};
+    for (int i = 0; i < 3; i++) {
+        spinWords(examples[i]);
+        printf("%s\n", examples[i]);
     }
 }
 
 int main() {
-    char input[] = "Hey fellow warriors";
-    reverseWords(input);
-    printf("%s
-", input);
+    printExamples();
     return 0;
 }

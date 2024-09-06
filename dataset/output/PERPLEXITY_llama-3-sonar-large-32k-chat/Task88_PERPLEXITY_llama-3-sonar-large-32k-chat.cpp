@@ -1,45 +1,36 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <string>
-#include <ctime>
 #include <cstdlib>
+#include <ctime>
 
-std::string generateRandomString() {
-    std::string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    std::string randomString;
-    srand(static_cast<unsigned int>(time(nullptr)));
-    for (int i = 0; i < 10; i++) {
-        randomString += chars[rand() % chars.length()];
+std::string getRandomString() {
+    std::string SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    std::string salt;
+    srand(time(0));
+    while (salt.length() < 10) {
+        salt += SALTCHARS[rand() % SALTCHARS.length()];
     }
-    return randomString;
+    return salt;
 }
 
 std::string toUnicode(const std::string& str) {
     std::string unicodeString;
     for (char c : str) {
         unicodeString += "\\u";
-        unicodeString += std::to_string(static_cast<unsigned int>(c));
-        unicodeString += " ";
+        unicodeString += std::to_string(static_cast<int>(c));
     }
     return unicodeString;
 }
 
-void writeToFile(const std::string& filePath, const std::string& content) {
-    std::ofstream file(filePath, std::ios::out | std::ios::trunc);
-    file.imbue(std::locale("en_US.UTF-8"));
-    file << content;
-}
-
 int main() {
-    std::string filePath = "tempXXXXXX.txt";
-    for (char& c : filePath) {
-        if (c == 'X') {
-            c = 'A' + rand() % 26;
-        }
-    }
-    std::string randomString = generateRandomString();
+    std::string randomString = getRandomString();
     std::string unicodeString = toUnicode(randomString);
-    writeToFile(filePath, unicodeString);
-    std::cout << filePath << std::endl;
+    std::string tempFileName = "temp_" + getRandomString() + ".txt";
+    std::ofstream tempFile(tempFileName, std::ios::out | std::ios::binary);
+    tempFile.imbue(std::locale("en_US.UTF-8"));
+    tempFile << unicodeString;
+    tempFile.close();
+    std::cout << tempFileName << std::endl;
     return 0;
 }

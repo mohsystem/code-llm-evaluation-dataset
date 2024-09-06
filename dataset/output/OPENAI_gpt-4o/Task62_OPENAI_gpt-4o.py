@@ -1,6 +1,13 @@
 import json
 
-jsonString = '{"name":"John", "age":30, "car":null}'
-obj = json.loads(jsonString)
-root_key = next(iter(obj.keys()))
-print("Root Element:", root_key)
+json_string = '{"name": "John", "age": 30, "city": "New York"}'
+
+def get_root_element(json_str):
+    try:
+        parsed_json = json.loads(json_str)
+        return parsed_json
+    except json.JSONDecodeError as e:
+        return None
+
+root_element = get_root_element(json_string)
+print(root_element)

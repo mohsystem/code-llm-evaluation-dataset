@@ -1,41 +1,55 @@
 
 #include <stdio.h>
-#include <regex.h>
 #include <string.h>
+#include <regex.h>
+#include <stdbool.h>
 
-#define MAX_URL_LENGTH 2000
+#define MAX_URL_LENGTH 2048
 
-int main() {
-    char url[MAX_URL_LENGTH];
+bool isValidURL(const char* url) {
     regex_t regex;
     int reti;
+    char msgbuf[100];
 
-    printf("Enter a URL: ");
-    fgets(url, sizeof(url), stdin);
-    url[strcspn(url, "\
-")] = 0;  // Remove newline
-
-    reti = regcomp(&regex, "^(https?://)?([[:alnum:].-]+)\\\\.([[:alpha:]]{2,6})(:[0-9]+)?([/[:alnum:] .-]*)*/?$", REG_EXTENDED);
+    reti = regcomp(&regex, "^(https?|ftp)://[^[:space:]/$.?#].[^[:space:]]*$", REG_EXTENDED | REG_ICASE);
     if (reti) {
-        fprintf(stderr, "Could not compile regex\
-");
-        return 1;
+        fprintf(stderr, "Could not compile regex\\n");
+        return false;
     }
 
     reti = regexec(&regex, url, 0, NULL, 0);
     if (!reti) {
-        printf("Valid URL\
-");
-    } else if (reti == REG_NOMATCH) {
-        printf("Invalid URL\
-");
-    } else {
-        char msgbuf[100];
-        regerror(reti, &regex, msgbuf, sizeof(msgbuf));
-        fprintf(stderr, "Regex match failed: %s\
-", msgbuf);
+        regfree(&regex);
+        return true;
     }
+    else if (reti == REG_NOMATCH) {
+        regfree(&regex);
+        return false;
+    }
+    else {
+        regerror(reti, &regex, msgbuf, sizeof(msgbuf));
+        fprintf(stderr, "Regex match failed: %s\\n", msgbuf);
+        regfree(&regex);
+        return false;
+    }
+}
 
-    regfree(&regex);
+int main() {
+    char url[MAX_URL_LENGTH];
+    while (1) {
+        printf("Enter a URL (or 'quit' to exit): ");
+        fgets(url, sizeof(url), stdin);
+        url[strcspn(url, "\\n")] = 0;  // Remove newline
+
+        if (strcmp(url, "quit") == 0) {
+            break;
+        }
+
+        if (isValidURL(url)) {
+            printf("Valid URL\\n");
+        } else {
+            printf("Invalid URL\\n");
+        }
+    }
     return 0;
 }

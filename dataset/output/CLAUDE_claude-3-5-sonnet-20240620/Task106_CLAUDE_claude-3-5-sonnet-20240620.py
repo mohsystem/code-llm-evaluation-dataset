@@ -1,54 +1,56 @@
 
 import random
-from math import gcd
+import math
 
-def is_prime(n, k=5):
-    if n < 2: return False
-    for p in [2,3,5,7,11,13,17,19,23,29]:
-        if n % p == 0: return n == p
-    s, d = 0, n-1
-    while d % 2 == 0:
-        s, d = s+1, d//2
-    for _ in range(k):
-        x = pow(random.randint(2, n-1), d, n)
-        if x == 1 or x == n-1: continue
-        for _ in range(s-1):
-            x = pow(x, 2, n)
-            if x == n-1: break
-        else: return False
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return False
     return True
 
-def generate_prime(bits):
-    while True:
-        p = random.getrandbits(bits)
-        if is_prime(p):
-            return p
+def generate_prime(min_val, max_val):
+    prime = random.randint(min_val, max_val)
+    while not is_prime(prime):
+        prime = random.randint(min_val, max_val)
+    return prime
 
-def generate_keypair(bits):
-    p = generate_prime(bits // 2)
-    q = generate_prime(bits // 2)
+def mod_inverse(a, m):
+    for i in range(1, m):
+        if (a * i) % m == 1:
+            return i
+    return None
+
+def generate_keypair(p, q):
     n = p * q
-    phi = (p-1) * (q-1)
-    e = 65537
-    d = pow(e, -1, phi)
+    phi = (p - 1) * (q - 1)
+    e = random.randrange(1, phi)
+    g = math.gcd(e, phi)
+    while g != 1:
+        e = random.randrange(1, phi)
+        g = math.gcd(e, phi)
+    d = mod_inverse(e, phi)
     return ((e, n), (d, n))
 
 def encrypt(pk, plaintext):
-    e, n = pk
-    cipher = [pow(ord(char), e, n) for char in plaintext]
+    key, n = pk
+    cipher = [pow(ord(char), key, n) for char in plaintext]
     return cipher
 
 def decrypt(pk, ciphertext):
-    d, n = pk
-    plain = [chr(pow(char, d, n)) for char in ciphertext]
-    return \'\'.join(plain)
+    key, n = pk
+    plain = [chr(pow(char, key, n)) for char in ciphertext]
+    return ''.join(plain)
 
-if __name__ == \'__main__\':
-    public, private = generate_keypair(1024)
-    message = "Hello, RSA!"
-    encrypted = encrypt(public, message)
-    decrypted = decrypt(private, encrypted)
+if __name__ == '__main__':
+    p = generate_prime(1000, 5000)
+    q = generate_prime(1000, 5000)
+    public, private = generate_keypair(p, q)
     
-    print(f"Original: {message}")
-    print(f"Encrypted: {encrypted}")
-    print(f"Decrypted: {decrypted}")
+    message = input("Enter a message to encrypt: ")
+    encrypted_msg = encrypt(public, message)
+    print("Encrypted message:", encrypted_msg)
+    
+    decrypted_msg = decrypt(private, encrypted_msg)
+    print("Decrypted message:", decrypted_msg)

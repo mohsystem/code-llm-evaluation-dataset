@@ -3,54 +3,37 @@
 #include <stdexcept>
 #include <limits>
 
-int divide(int a, int b) {
+double divide_numbers(double a, double b) {
     if (b == 0) {
-        throw std::runtime_error("Division by zero");
+        throw std::runtime_error("Cannot divide by zero.");
     }
     return a / b;
 }
 
 int main() {
     try {
-        int num, divisor, result, index;
-        int array[5] = {0};
-
-        std::cout << "Enter a number: ";
-        if (!(std::cin >> num)) {
-            throw std::runtime_error("Invalid input. Please enter a valid integer.");
+        double num1, num2;
+        
+        std::cout << "Enter first number: ";
+        if (!(std::cin >> num1)) {
+            throw std::runtime_error("Invalid input for first number.");
         }
 
-        std::cout << "Enter another number: ";
-        if (!(std::cin >> divisor)) {
-            throw std::runtime_error("Invalid input. Please enter a valid integer.");
+        std::cout << "Enter second number: ";
+        if (!(std::cin >> num2)) {
+            throw std::runtime_error("Invalid input for second number.");
         }
 
-        result = divide(num, divisor);
-        std::cout << "Result of division: " << result << std::endl;
-
-        std::cout << "Enter an index to access the array: ";
-        if (!(std::cin >> index)) {
-            throw std::runtime_error("Invalid input. Please enter a valid integer.");
-        }
-
-        if (index < 0 || index >= 5) {
-            throw std::out_of_range("Array index out of bounds");
-        }
-
-        std::cout << "Value at index " << index << ": " << array[index] << std::endl;
+        double result = divide_numbers(num1, num2);
+        std::cout << "Result: " << result << std::endl;
     }
     catch (const std::runtime_error& e) {
         std::cerr << "Error: " << e.what() << std::endl;
-        return 1;
-    }
-    catch (const std::out_of_range& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-        return 1;
     }
     catch (const std::exception& e) {
         std::cerr << "An unexpected error occurred: " << e.what() << std::endl;
-        return 1;
     }
 
+    std::cout << "Program execution completed." << std::endl;
     return 0;
 }

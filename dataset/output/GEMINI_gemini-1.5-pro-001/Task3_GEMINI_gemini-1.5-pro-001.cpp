@@ -3,22 +3,14 @@
 #include <set>
 #include <algorithm>
 
-bool isPangram(const std::string& text) {
-    if (text.length() < 26) {
-        return false;
-    }
+using namespace std;
 
-    std::set<char> letters;
-    for (char c : text) {
-        if (std::isalpha(c)) {
-            letters.insert(std::tolower(c));
-        }
+bool isPangram(string str) {
+  set<char> alphabet;
+  for (char c : str) {
+    if (isalpha(c)) {
+      alphabet.insert(tolower(c));
     }
-    return letters.size() == 26;
-}
-
-int main() {
-    std::string text = "The quick brown fox jumps over the lazy dog";
-    std::cout << (isPangram(text) ? "True" : "False") << std::endl;
-    return 0;
+  }
+  return alphabet.size() == 26;
 }

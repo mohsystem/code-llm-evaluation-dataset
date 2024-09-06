@@ -1,9 +1,8 @@
 import json
 
-def main():
-    json_string = "{\"name\":\"John\", \"age\":30, \"city\":\"New York\"}"
-    json_obj = json.loads(json_string)
-    print("Root element:", list(json_obj.keys())[0])
+def get_root_element(json_string):
+    json_data = json.loads(json_string)
+    return type(json_data).__name__
 
-if __name__ == "__main__":
-    main()
+json_string = '{"name":"John", "age":30, "city":"New York"}'
+print(get_root_element(json_string))

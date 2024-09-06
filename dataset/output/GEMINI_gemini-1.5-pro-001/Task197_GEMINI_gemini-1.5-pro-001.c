@@ -18,11 +18,11 @@ Solution* solutionCreate(double radius, double x_center, double y_center) {
 }
 
 double* solutionRandPoint(Solution* obj, int* retSize) {
-    double r = obj->radius * sqrt(((double) rand() / (RAND_MAX)));
-    double theta = ((double) rand() / (RAND_MAX)) * 2 * M_PI;
     double* point = (double*) malloc(2 * sizeof(double));
-    point[0] = obj->x_center + r * cos(theta);
-    point[1] = obj->y_center + r * sin(theta);
+    double angle = ((double)rand() / RAND_MAX) * 2 * M_PI;
+    double r = sqrt(((double)rand() / RAND_MAX)) * obj->radius;
+    point[0] = obj->x_center + r * cos(angle);
+    point[1] = obj->y_center + r * sin(angle);
     *retSize = 2;
     return point;
 }

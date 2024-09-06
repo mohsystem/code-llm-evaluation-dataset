@@ -5,24 +5,33 @@
 using namespace std;
 
 int main() {
-    string filename;
-    string content;
+    string filePath;
 
-    cout << "Enter the file name to create: ";
-    cin >> filename;
+    cout << "Enter the path to the file you want to upload: ";
+    getline(cin, filePath);
 
-    cout << "Enter the content to write to the file:
-";
-    getline(cin >> ws, content); // Read the entire line, including spaces
+    ifstream file(filePath, ios::binary);
 
-    ofstream MyFile(filename);
+    if (file.is_open()) {
+        // Get the file size
+        file.seekg(0, ios::end);
+        streampos fileSize = file.tellg();
+        file.seekg(0, ios::beg);
 
-    if (MyFile.is_open()) {
-        MyFile << content;
-        MyFile.close();
-        cout << "File created and content written successfully!";
+        // Read the file content into a buffer
+        char* buffer = new char[fileSize];
+        file.read(buffer, fileSize);
+        file.close();
+
+        // Process the uploaded file content (buffer) here
+        // ...
+
+        delete[] buffer;
+
+        cout << "File uploaded successfully!" << endl;
     } else {
-        cout << "Unable to open file";
+        cerr << "Error opening file: " << filePath << endl;
+        return 1;
     }
 
     return 0;

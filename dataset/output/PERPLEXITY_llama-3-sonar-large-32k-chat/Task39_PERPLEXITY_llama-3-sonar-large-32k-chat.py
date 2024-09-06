@@ -1,4 +1,3 @@
-import os
-
+import subprocess
 filename = input("Enter a filename: ")
-os.system("cat " + filename)
+subprocess.run(["cat", filename])

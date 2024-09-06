@@ -1,37 +1,36 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <openssl/evp.h>
 #include <openssl/aes.h>
+#include <openssl/rand.h>
 
-int main() {
-    // Secret key (randomly chosen for demonstration)
-    unsigned char key[16] = "0123456789abcdef";
-
-    // Message to encrypt
-    unsigned char *message = (unsigned char *)"Hello, World!";
-    int message_len = strlen((char *)message);
-    
-    // Create cipher
+void encrypt(const char *message, const char *secretKey, unsigned char *encryptedMessage) {
+    unsigned char key[32], iv[32];
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    EVP_EncryptInit_ex(ctx, EVP_aes_128_ecb(), NULL, key, NULL);
 
-    // Encrypt message
-    unsigned char encryptedMessage[128];
-    int len;
-    EVP_EncryptUpdate(ctx, encryptedMessage, &len, message, message_len);
-    
-    int ciphertext_len = len;
+    RAND_bytes(key, sizeof(key));
+    RAND_bytes(iv, sizeof(iv));
+
+    EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, (unsigned char *)secretKey, iv);
+
+    int len, encryptedMessageLen;
+
+    EVP_EncryptUpdate(ctx, encryptedMessage, &len, (unsigned char *)message, strlen(message));
+    encryptedMessageLen = len;
+
     EVP_EncryptFinal_ex(ctx, encryptedMessage + len, &len);
-    ciphertext_len += len;
-
-    // Print encrypted message in base64
-    for (int i = 0; i < ciphertext_len; i++) {
-        printf("%02x", encryptedMessage[i]);
-    }
-    printf("
-");
+    encryptedMessageLen += len;
 
     EVP_CIPHER_CTX_free(ctx);
+}
+
+int main() {
+    const char *message = "Secret Message";
+    const char *secretKey = "thisisaverysecret";
+    unsigned char encryptedMessage[128];
+
+    encrypt(message, secretKey, encryptedMessage);
+    printf("Encrypted: %s\n", encryptedMessage);
+
     return 0;
 }

@@ -1,10 +1,9 @@
-def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return a
+import ctypes
 
-if __name__ == "__main__":
-    import sys
-    input = map(int, sys.stdin.read().split())
-    a, b = input
-    print(gcd(a, b))
+lib = ctypes.CDLL("solution.so")
+
+a = int(input("Enter first number: "))
+b = int(input("Enter second number: "))
+
+result = lib.gcd(a, b)
+print("Greatest Common Divisor:", result)

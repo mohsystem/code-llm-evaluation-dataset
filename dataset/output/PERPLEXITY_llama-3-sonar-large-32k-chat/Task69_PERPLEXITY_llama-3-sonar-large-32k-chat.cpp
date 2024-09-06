@@ -1,15 +1,19 @@
 #include <iostream>
 #include <fstream>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 2) {
-        std::cout << "Usage: " << argv[0] << " <file_path>" << std::endl;
+        std::cout << "Usage: ./delete_file <file_path>" << std::endl;
         return 1;
     }
-    if (std::remove(argv[1]) == 0) {
-        std::cout << "File deleted successfully" << std::endl;
-    } else {
+
+    std::string filePath = argv[1];
+
+    if (std::remove(filePath.c_str()) != 0) {
         std::cout << "Failed to delete the file" << std::endl;
+    } else {
+        std::cout << "File deleted successfully" << std::endl;
     }
+
     return 0;
 }

@@ -13,27 +13,27 @@ struct Node* newNode(int data) {
     return node;
 }
 
-void preorderTraversal(struct Node* node) {
-    if (node != NULL) {
-        printf("%d ", node->data);
-        preorderTraversal(node->left);
-        preorderTraversal(node->right);
+void preorderTraversal(struct Node* root) {
+    if (root) {
+        printf("%d ", root->data);
+        preorderTraversal(root->left);
+        preorderTraversal(root->right);
     }
 }
 
-void inorderTraversal(struct Node* node) {
-    if (node != NULL) {
-        inorderTraversal(node->left);
-        printf("%d ", node->data);
-        inorderTraversal(node->right);
+void inorderTraversal(struct Node* root) {
+    if (root) {
+        inorderTraversal(root->left);
+        printf("%d ", root->data);
+        inorderTraversal(root->right);
     }
 }
 
-void postorderTraversal(struct Node* node) {
-    if (node != NULL) {
-        postorderTraversal(node->left);
-        postorderTraversal(node->right);
-        printf("%d ", node->data);
+void postorderTraversal(struct Node* root) {
+    if (root) {
+        postorderTraversal(root->left);
+        postorderTraversal(root->right);
+        printf("%d ", root->data);
     }
 }
 
@@ -46,18 +46,15 @@ int main() {
 
     printf("Preorder traversal: ");
     preorderTraversal(root);
-    printf("
-");
+    printf("\n");
 
     printf("Inorder traversal: ");
     inorderTraversal(root);
-    printf("
-");
+    printf("\n");
 
     printf("Postorder traversal: ");
     postorderTraversal(root);
-    printf("
-");
+    printf("\n");
 
     return 0;
 }

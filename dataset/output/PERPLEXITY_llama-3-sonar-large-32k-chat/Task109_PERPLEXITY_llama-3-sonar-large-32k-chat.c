@@ -1,36 +1,21 @@
-#include <stdio.h>
+// C does not have built-in support for regular expressions. You can use the POSIX regex library, but it's not part of the standard library.
+// You can use the following code, but it requires the POSIX regex library to be installed and linked:
 #include <regex.h>
+#include <stdio.h>
 
 int main() {
-    regex_t regex;
-    int reti;
-    char msgbuf[100];
-
-    /* Compile regular expression */
-    reti = regcomp(&regex, "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$", 0);
-    if (reti) {
-        fprintf(stderr, "Could not compile regex
-");
-        exit(1);
-    }
-
-    /* Get user input */
-    char email[100];
-    printf("Enter your email:");
-    scanf("%99s", email);
-
-    /* Execute regular expression */
-    reti = regexec(&regex, email, 0, NULL, 0);
-    if (!reti) {
-        printf("Email is valid
-");
+    regex_t pattern;
+    regcomp(&pattern, "^[a-zA-Z0-9_]{3,16}$", 0);
+    char user_input[256];
+    printf("Enter a username: ");
+    fgets(user_input, 256, stdin);
+    user_input[strcspn(user_input, "\n")] = 0; // remove newline character
+    int status = regexec(&pattern, user_input, 0, NULL, 0);
+    if (status == 0) {
+        printf("Valid username\n");
     } else {
-        printf("Email is not valid
-");
+        printf("Invalid username\n");
     }
-
-    /* Free compiled regular expression */
-    regfree(&regex);
-
+    regfree(&pattern);
     return 0;
 }

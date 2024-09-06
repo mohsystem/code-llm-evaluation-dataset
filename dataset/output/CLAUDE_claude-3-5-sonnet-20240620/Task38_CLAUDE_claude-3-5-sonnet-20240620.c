@@ -2,54 +2,74 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <microhttpd.h>
 
-#define MAX_INPUT 1000
+#define PAGE "<html><body>"\\
+             "<form action=\\"/\\" method=\\"post\\">"\\
+             "Name: <input type=\\"text\\" name=\\"name\\"/>"\\
+             "<input type=\\"submit\\" value=\\"Submit\\"/>"\\
+             "</form>"\\
+             "</body></html>"
 
-void print_html_header() {
-    printf("Content-Type: text/html\
-\
-");
-    printf("<html><head><title>Form Results</title></head><body>");
-}
+#define MAX_NAME_LENGTH 64
 
-void print_html_footer() {
-    printf("</body></html>");
-}
+static int answer_to_connection(void *cls, struct MHD_Connection *connection,
+                                const char *url, const char *method,
+                                const char *version, const char *upload_data,
+                                size_t *upload_data_size, void **con_cls)
+{
+    static int dummy;
+    struct MHD_Response *response;
+    int ret;
 
-int main() {
-    char *data;
-    char name[100] = "", email[100] = "";
-
-    print_html_header();
-
-    data = getenv("REQUEST_METHOD");
-    if (data && strcmp(data, "POST") == 0) {
-        int content_length = atoi(getenv("CONTENT_LENGTH"));
-        char input[MAX_INPUT];
-        fgets(input, content_length + 1, stdin);
-
-        char *token = strtok(input, "&");
-        while (token != NULL) {
-            if (strncmp(token, "name=", 5) == 0) {
-                strcpy(name, token + 5);
-            } else if (strncmp(token, "email=", 6) == 0) {
-                strcpy(email, token + 6);
-            }
-            token = strtok(NULL, "&");
-        }
-
-        printf("<h2>Submitted Information:</h2>");
-        printf("<p>Name: %s</p>", name);
-        printf("<p>Email: %s</p>", email);
-    } else {
-        printf("<h2>User Input Form</h2>");
-        printf("<form method=\'post\'>");
-        printf("Name: <input type=\'text\' name=\'name\'><br>");
-        printf("Email: <input type=\'text\' name=\'email\'><br>");
-        printf("<input type=\'submit\' value=\'Submit\'>");
-        printf("</form>");
+    if (strcmp(method, "GET") == 0) {
+        response = MHD_create_response_from_buffer(strlen(PAGE),
+                                                   (void *)PAGE,
+                                                   MHD_RESPMEM_PERSISTENT);
+        ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
+        MHD_destroy_response(response);
+        return ret;
     }
 
-    print_html_footer();
+    if (strcmp(method, "POST") == 0) {
+        if (*con_cls == NULL) {
+            *con_cls = &dummy;
+            return MHD_YES;
+        }
+        if (*upload_data_size != 0) {
+            char name[MAX_NAME_LENGTH];
+            if (MHD_post_process(connection, upload_data, *upload_data_size,
+                                 "name", name, MAX_NAME_LENGTH) == MHD_NO) {
+                return MHD_NO;
+            }
+            *upload_data_size = 0;
+            char *page = malloc(strlen("<html><body><h1>Hello, !</h1></body></html>") + strlen(name) + 1);
+            sprintf(page, "<html><body><h1>Hello, %s!</h1></body></html>", name);
+            response = MHD_create_response_from_buffer(strlen(page),
+                                                       (void *)page,
+                                                       MHD_RESPMEM_MUST_FREE);
+            ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
+            MHD_destroy_response(response);
+            return ret;
+        }
+    }
+
+    return MHD_NO;
+}
+
+int main()
+{
+    struct MHD_Daemon *daemon;
+
+    daemon = MHD_start_daemon(MHD_USE_AUTO | MHD_USE_INTERNAL_POLLING_THREAD,
+                              8080, NULL, NULL,
+                              &answer_to_connection, NULL,
+                              MHD_OPTION_END);
+    if (daemon == NULL)
+        return 1;
+
+    getchar();
+
+    MHD_stop_daemon(daemon);
     return 0;
 }

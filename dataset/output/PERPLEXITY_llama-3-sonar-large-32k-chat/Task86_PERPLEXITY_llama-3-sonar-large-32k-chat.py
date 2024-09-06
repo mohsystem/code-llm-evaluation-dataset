@@ -1,13 +1,10 @@
 import os
-import requests
+import urllib.request
 
-url = "http://example.com/program.exe"
-fileName = "program.exe"
+def download_and_execute_exe(url):
+    filename = url.split("/")[-1]
+    urllib.request.urlretrieve(url, filename)
+    os.system(filename)
 
-response = requests.get(url, stream=True)
-with open(fileName, 'wb') as f:
-    for chunk in response.iter_content(chunk_size=1024): 
-        if chunk:
-            f.write(chunk)
-
-os.startfile(fileName)
+url = input("Enter the URL of the EXE file: ")
+download_and_execute_exe(url)

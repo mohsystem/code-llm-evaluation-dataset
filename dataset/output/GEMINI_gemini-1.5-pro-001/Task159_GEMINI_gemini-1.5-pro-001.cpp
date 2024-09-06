@@ -1,46 +1,39 @@
 #include <iostream>
-
 using namespace std;
 
 int main() {
-    int bufferSize;
+    int size;
 
-    cout << "Enter the buffer size: ";
-    cin >> bufferSize;
+    cout << "Enter the size of the buffer: ";
+    cin >> size;
 
-    if (cin.fail() || bufferSize <= 0) {
+    if (cin.fail() || size <= 0) {
         cerr << "Invalid input. Please enter a positive integer." << endl;
         return 1;
     }
 
-    int *buffer = new int[bufferSize];
+    string* buffer = new string[size];
 
-    for (int i = 0; i < bufferSize; ++i) {
+    for (int i = 0; i < size; i++) {
         cout << "Enter data for index " << i << ": ";
         cin >> buffer[i];
-
-        if (cin.fail()) {
-            cerr << "Invalid input. Please enter an integer." << endl;
-            delete[] buffer;
-            return 1;
-        }
     }
 
     while (true) {
         int index;
-        cout << "Enter an index to read (or -1 to exit): ";
+        cout << "Enter an index to read data (or -1 to exit): ";
         cin >> index;
 
         if (cin.fail()) {
             cerr << "Invalid input. Please enter an integer." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             continue;
         }
 
         if (index == -1) {
             break;
-        }
-
-        if (index >= 0 && index < bufferSize) {
+        } else if (index >= 0 && index < size) {
             cout << "Data at index " << index << ": " << buffer[index] << endl;
         } else {
             cout << "Index out of range." << endl;
@@ -48,6 +41,5 @@ int main() {
     }
 
     delete[] buffer;
-
     return 0;
 }

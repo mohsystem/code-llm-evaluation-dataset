@@ -1,31 +1,42 @@
 #include <iostream>
-#include <string>
-#include <ctime>
+#include <random>
 #include <sstream>
-#include <openssl/hmac.h>
-#include <openssl/rand.h>
+#include <iomanip>
+#include <openssl/sha.h>
 
-std::string generate_csrf_token() {
-    unsigned char key[32];
-    RAND_bytes(key, sizeof(key));
+class CSRFProtection {
+    private:
+        std::string token;
 
-    unsigned char out[EVP_MAX_MD_SIZE];
-    unsigned int out_len;
+    public:
+        std::string generateToken(const std::string& sessionId) {
+            std::random_device rd;
+            std::mt19937_64 gen(rd());
+            std::uniform_int_distribution<unsigned long long> dis;
+            unsigned long long randomValue = dis(gen);
+            std::stringstream ss;
+            ss << std::hex << std::setw(16) << std::setfill('0') << randomValue;
 
-    HMAC(EVP_sha256(), "SuperSecretKey", 13, key, sizeof(key), out, &out_len);
+            unsigned char hash[SHA256_DIGEST_LENGTH];
+            SHA256(reinterpret_cast<const unsigned char*>(ss.str().c_str()), ss.str().length(), hash);
+            std::stringstream sha256hex;
+            for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+                sha256hex << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(hash[i]);
+            }
+            token = sha256hex.str() + sessionId;
+            return token;
+        }
 
-    std::ostringstream oss;
-    for (unsigned int i = 0; i < out_len; i++) {
-        oss << std::hex << static_cast<int>(out[i]);
-    }
-
-    return oss.str();
-}
+        bool validateToken(const std::string& token, const std::string& sessionId) {
+            return token == this->token + sessionId;
+        }
+};
 
 int main() {
-    std::string csrf_token = generate_csrf_token();
-    std::cout << "Generated CSRF Token: " << csrf_token << std::endl;
-    // This is a mock-up example. Add HTTP handling using a library like cpp-httplib for a full example.
-
+    CSRFProtection csrf;
+    std::string sessionId = "12345ABC";
+    std::string token = csrf.generateToken(sessionId);
+    std::cout << "Token: " << token << std::endl;
+    std::cout << "Validation: " << csrf.validateToken(token, sessionId) << std::endl;
     return 0;
 }

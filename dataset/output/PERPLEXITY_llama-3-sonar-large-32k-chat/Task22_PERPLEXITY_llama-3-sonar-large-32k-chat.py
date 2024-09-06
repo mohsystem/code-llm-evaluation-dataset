@@ -1,2 +1,2 @@
-def filter_list(list):
-    return [i for i in list if isinstance(i, int)]
+def filter_list(l):
+    return [i for i in l if type(i) == int]

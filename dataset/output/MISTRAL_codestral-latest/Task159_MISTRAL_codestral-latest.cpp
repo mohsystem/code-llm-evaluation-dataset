@@ -1,21 +1,29 @@
+// C++
 #include <iostream>
+#include <fstream>
 
 int main() {
-    std::cout << "Enter the size of the buffer: ";
-    int size;
-    std::cin >> size;
-    int* buffer = new int[size];
+    // Allocate memory buffer
+    std::ofstream outfile("buffer.dat", std::ios::binary);
+    char zero = 0;
+    for (int i = 0; i < 1024; i++) {
+        outfile.write(&zero, sizeof(zero));
+    }
+    outfile.close();
 
-    std::cout << "Enter the index to read from the buffer: ";
+    // User input for index
     int index;
+    std::cout << "Enter index: ";
     std::cin >> index;
 
-    if (index >= 0 && index < size) {
-        std::cout << "Value at index " << index << ": " << buffer[index] << std::endl;
-    } else {
-        std::cout << "Invalid index." << std::endl;
-    }
+    // Read from buffer
+    std::ifstream infile("buffer.dat", std::ios::binary);
+    infile.seekg(index);
+    char value;
+    infile.read(&value, sizeof(value));
+    infile.close();
 
-    delete[] buffer;
+    std::cout << "Value at index: " << static_cast<int>(value) << std::endl;
+
     return 0;
 }

@@ -4,41 +4,38 @@
 #include <list>
 #include <string>
 
+template<typename K, typename V>
 class HashTable {
 private:
-    int size;
-    std::vector<std::list<std::pair<std::string, int>>> table;
+    static const int SIZE = 10;
+    std::vector<std::list<std::pair<K, V>>> table;
 
-    int hashFunction(const std::string& key) {
-        int hash = 0;
-        for (char c : key) {
-            hash = (hash * 31 + c) % size;
-        }
-        return hash;
+    int hashFunction(const K& key) const {
+        return std::hash<K>{}(key) % SIZE;
     }
 
 public:
-    HashTable(int size) : size(size), table(size) {}
+    HashTable() : table(SIZE) {}
 
-    void insert(const std::string& key, int value) {
-        int hashIndex = hashFunction(key);
-        for (auto& entry : table[hashIndex]) {
+    void insert(const K& key, const V& value) {
+        int index = hashFunction(key);
+        for (auto& entry : table[index]) {
             if (entry.first == key) {
                 entry.second = value;
                 return;
             }
         }
-        table[hashIndex].emplace_back(key, value);
+        table[index].emplace_back(key, value);
     }
 
-    void remove(const std::string& key) {
-        int hashIndex = hashFunction(key);
-        table[hashIndex].remove_if([&key](const auto& entry) { return entry.first == key; });
+    void remove(const K& key) {
+        int index = hashFunction(key);
+        table[index].remove_if([&key](const auto& entry) { return entry.first == key; });
     }
 
-    int* search(const std::string& key) {
-        int hashIndex = hashFunction(key);
-        for (auto& entry : table[hashIndex]) {
+    V* search(const K& key) {
+        int index = hashFunction(key);
+        for (auto& entry : table[index]) {
             if (entry.first == key) {
                 return &entry.second;
             }
@@ -48,20 +45,18 @@ public:
 };
 
 int main() {
-    HashTable ht(10);
+    HashTable<std::string, int> ht;
     ht.insert("apple", 5);
     ht.insert("banana", 7);
     ht.insert("orange", 3);
 
-    int* result = ht.search("apple");
-    std::cout << (result ? *result : -1) << std::endl;  // Output: 5
-
-    result = ht.search("grape");
-    std::cout << (result ? *result : -1) << std::endl;  // Output: -1
+    int* value = ht.search("banana");
+    if (value) std::cout << *value << std::endl; // Output: 7
 
     ht.remove("banana");
-    result = ht.search("banana");
-    std::cout << (result ? *result : -1) << std::endl;  // Output: -1
+    value = ht.search("banana");
+    if (value) std::cout << *value << std::endl;
+    else std::cout << "Not found" << std::endl; // Output: Not found
 
     return 0;
 }

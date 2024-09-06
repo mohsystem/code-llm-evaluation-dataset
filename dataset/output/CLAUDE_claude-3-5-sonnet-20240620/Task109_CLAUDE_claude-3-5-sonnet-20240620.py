@@ -1,21 +1,30 @@
 
 import re
 
-def validate_input(input_string, pattern):
-    return re.match(pattern, input_string) is not None
+def validate_input():
+    # Email validation
+    email_pattern = r'^[\\w\\.-]+@[\\w\\.-]+\\.\\w+$'
+    email = input("Enter your email: ")
+    if re.match(email_pattern, email):
+        print("Valid email")
+    else:
+        print("Invalid email")
 
-email = input("Enter an email address: ")
-email_pattern = r\'^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$\'
+    # Phone number validation (US format)
+    phone_pattern = r'^\\(?([0-9]{3})\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$'
+    phone = input("Enter your phone number: ")
+    if re.match(phone_pattern, phone):
+        print("Valid phone number")
+    else:
+        print("Invalid phone number")
 
-if validate_input(email, email_pattern):
-    print("Valid email address")
-else:
-    print("Invalid email address")
+    # Password validation (at least 8 characters, 1 uppercase, 1 lowercase, 1 digit)
+    password_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$'
+    password = input("Enter your password: ")
+    if re.match(password_pattern, password):
+        print("Valid password")
+    else:
+        print("Invalid password")
 
-phone = input("Enter a phone number (XXX-XXX-XXXX): ")
-phone_pattern = r\'^\\d{3}-\\d{3}-\\d{4}$\'
-
-if validate_input(phone, phone_pattern):
-    print("Valid phone number")
-else:
-    print("Invalid phone number")
+if __name__ == "__main__":
+    validate_input()

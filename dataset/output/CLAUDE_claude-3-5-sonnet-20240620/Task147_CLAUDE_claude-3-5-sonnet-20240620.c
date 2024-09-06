@@ -12,24 +12,22 @@ int findKthLargest(int* nums, int numsSize, int k) {
 }
 
 int main() {
-    int n, k;
+    int numsSize;
     printf("Enter the number of elements: ");
-    scanf("%d", &n);
-
-    int* nums = (int*)malloc(n * sizeof(int));
-    printf("Enter the array elements:\
-");
-    for (int i = 0; i < n; i++) {
+    scanf("%d", &numsSize);
+    
+    int* nums = (int*)malloc(numsSize * sizeof(int));
+    printf("Enter the array elements:\\n");
+    for (int i = 0; i < numsSize; i++) {
         scanf("%d", &nums[i]);
     }
-
+    
+    int k;
     printf("Enter the value of k: ");
     scanf("%d", &k);
-
-    int result = findKthLargest(nums, n, k);
-    printf("The %dth largest element is: %d\
-", k, result);
-
+    
+    printf("The %dth largest element is: %d\\n", k, findKthLargest(nums, numsSize, k));
+    
     free(nums);
     return 0;
 }

@@ -1,11 +1,10 @@
-#include <iostream>
-#include <cmath>
+#include<iostream>
 using namespace std;
 int main() {
-    double radius;
+    double radius, area;
     cout << "Enter the radius of the circle: ";
     cin >> radius;
-    double area = M_PI * pow(radius, 2);
+    area = 3.14159 * (radius * radius);
     cout << "The area of the circle is: " << area << endl;
     return 0;
 }

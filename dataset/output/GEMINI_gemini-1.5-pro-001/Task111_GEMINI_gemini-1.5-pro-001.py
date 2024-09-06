@@ -6,16 +6,25 @@ class RequestHandler(SimpleXMLRPCRequestHandler):
 
 # Create server
 with SimpleXMLRPCServer(('localhost', 8000),
-                        requestHandler=RequestHandler) as server:
+                       requestHandler=RequestHandler) as server:
     server.register_introspection_functions()
 
-    # Register pow() function; this will be made available to clients
+    # Register pow() function; this will use the Python/C math library
+    def pow(x, y):
+        return x**y
     server.register_function(pow)
 
-    # Register a function under a different name
-    def adder_function(x, y):
+    # Register an add function
+    def add(x, y):
         return x + y
-    server.register_function(adder_function, 'add')
+    server.register_function(add)
 
-    # Run the server's main loop
-    server.serve_forever()
+    # Register a function under function ID 'sum'
+    server.register_function(sum, 'sum')
+
+    # Run the server forever
+    print("Serving XML-RPC on localhost port 8000...")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\nKeyboard interrupt received, exiting.")

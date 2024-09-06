@@ -1,59 +1,48 @@
 #include <stdio.h>
 
-#define MAX_SIZE 40000
+#define MAX_SIZE 40001
 
 typedef struct {
-    int nums[MAX_SIZE];
-    int prefixProducts[MAX_SIZE + 1];
+    int products[MAX_SIZE];
     int size;
 } ProductOfNumbers;
 
-ProductOfNumbers* productOfNumbersCreate() {
-    ProductOfNumbers* obj = (ProductOfNumbers*)malloc(sizeof(ProductOfNumbers));
-    obj->size = 0;
-    obj->prefixProducts[0] = 1;
-    return obj;
+void ProductOfNumbersInit(ProductOfNumbers* obj) {
+    obj->products[0] = 1;
+    obj->size = 1;
 }
 
-void productOfNumbersAdd(ProductOfNumbers* obj, int num) {
+void ProductOfNumbersAdd(ProductOfNumbers* obj, int num) {
     if (num == 0) {
-        obj->size = 0;
-        obj->prefixProducts[0] = 1;
+        obj->products[0] = 1;
+        obj->size = 1;
     } else {
-        obj->nums[obj->size] = num;
+        obj->products[obj->size] = obj->products[obj->size - 1] * num;
         obj->size++;
-        obj->prefixProducts[obj->size] = obj->prefixProducts[obj->size - 1] * num;
     }
 }
 
-int productOfNumbersGetProduct(ProductOfNumbers* obj, int k) {
-    if (k >= obj->size + 1) {
+int ProductOfNumbersGetProduct(ProductOfNumbers* obj, int k) {
+    if (k >= obj->size) {
         return 0;
     }
-    return obj->prefixProducts[obj->size] / obj->prefixProducts[obj->size - k];
-}
-
-void productOfNumbersFree(ProductOfNumbers* obj) {
-    free(obj);
+    return obj->products[obj->size - 1] / obj->products[obj->size - k - 1];
 }
 
 int main() {
-    ProductOfNumbers* productOfNumbers = productOfNumbersCreate();
-    productOfNumbersAdd(productOfNumbers, 3);
-    productOfNumbersAdd(productOfNumbers, 0);
-    productOfNumbersAdd(productOfNumbers, 2);
-    productOfNumbersAdd(productOfNumbers, 5);
-    productOfNumbersAdd(productOfNumbers, 4);
-    printf("%d
-", productOfNumbersGetProduct(productOfNumbers, 2));  // 20
-    printf("%d
-", productOfNumbersGetProduct(productOfNumbers, 3));  // 40
-    printf("%d
-", productOfNumbersGetProduct(productOfNumbers, 4));  // 0
-    productOfNumbersAdd(productOfNumbers, 8);
-    printf("%d
-", productOfNumbersGetProduct(productOfNumbers, 2));  // 32
+    ProductOfNumbers productOfNumbers;
+    ProductOfNumbersInit(&productOfNumbers);
+    
+    ProductOfNumbersAdd(&productOfNumbers, 3);
+    ProductOfNumbersAdd(&productOfNumbers, 0);
+    ProductOfNumbersAdd(&productOfNumbers, 2);
+    ProductOfNumbersAdd(&productOfNumbers, 5);
+    ProductOfNumbersAdd(&productOfNumbers, 4);
+    printf("%d\n", ProductOfNumbersGetProduct(&productOfNumbers, 2));  // return 20
+    printf("%d\n", ProductOfNumbersGetProduct(&productOfNumbers, 3));  // return 40
+    printf("%d\n", ProductOfNumbersGetProduct(&productOfNumbers, 4));  // return 0
+    ProductOfNumbersAdd(&productOfNumbers, 8);
+    printf("%d\n", ProductOfNumbersGetProduct(&productOfNumbers, 2));  // return 32
 
-    productOfNumbersFree(productOfNumbers);
     return 0;
 }

@@ -9,39 +9,41 @@
 void logEvent(const char* eventType, const char* description) {
     FILE* logFile = fopen("security_events.log", "a");
     if (logFile != NULL) {
-        time_t now = time(NULL);
-        char* dt = ctime(&now);
-        dt[strlen(dt) - 1] = \'\\0\';  // Remove newline
-        fprintf(logFile, "%s - Event Type: %s, Description: %s\
-", dt, eventType, description);
+        time_t now;
+        time(&now);
+        char* time_str = ctime(&now);
+        time_str[strlen(time_str) - 1] = '\\0';  // Remove newline
+        fprintf(logFile, "%s - INFO - Event Type: %s, Description: %s\\n", 
+                time_str, eventType, description);
         fclose(logFile);
     } else {
-        fprintf(stderr, "Unable to open log file!\
-");
-    }
-}
-
-void monitorEvents() {
-    char eventType[MAX_LENGTH], description[MAX_LENGTH];
-    while (1) {
-        printf("Enter event type (or \'q\' to quit): ");
-        fgets(eventType, sizeof(eventType), stdin);
-        eventType[strcspn(eventType, "\
-")] = 0;  // Remove newline
-        if (strcmp(eventType, "q") == 0 || strcmp(eventType, "Q") == 0) {
-            break;
-        }
-        printf("Enter event description: ");
-        fgets(description, sizeof(description), stdin);
-        description[strcspn(description, "\
-")] = 0;  // Remove newline
-        logEvent(eventType, description);
+        fprintf(stderr, "Unable to open log file!\\n");
     }
 }
 
 int main() {
-    printf("Security Event Monitoring System\
-");
-    monitorEvents();
+    char eventType[MAX_LENGTH];
+    char description[MAX_LENGTH];
+
+    printf("Security Event Monitoring System\\n");
+
+    while (1) {
+        printf("Enter event type (or 'q' to quit): ");
+        fgets(eventType, sizeof(eventType), stdin);
+        eventType[strcspn(eventType, "\\n")] = 0;  // Remove newline
+
+        if (strcmp(eventType, "q") == 0 || strcmp(eventType, "Q") == 0) {
+            break;
+        }
+
+        printf("Enter event description: ");
+        fgets(description, sizeof(description), stdin);
+        description[strcspn(description, "\\n")] = 0;  // Remove newline
+
+        logEvent(eventType, description);
+        printf("Event logged successfully.\\n");
+    }
+
+    printf("Monitoring ended. Check 'security_events.log' for recorded events.\\n");
     return 0;
 }

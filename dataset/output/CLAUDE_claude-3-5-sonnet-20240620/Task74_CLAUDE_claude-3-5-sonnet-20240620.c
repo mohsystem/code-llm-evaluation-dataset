@@ -3,28 +3,25 @@
 #include <stdlib.h>
 #include <libpq-fe.h>
 
-PGconn* getConnection() {
-    const char* conninfo = "host=localhost port=5432 dbname=your_database user=your_username password=your_password";
-    PGconn* conn = PQconnectdb(conninfo);
+PGconn* createConnection() {
+    const char *conninfo = "host=localhost dbname=your_database user=your_username password=your_password";
     
-    if (PQstatus(conn) != CONNECTION_OK) {
+    PGconn *conn = PQconnectdb(conninfo);
+
+    if (PQstatus(conn) == CONNECTION_OK) {
+        printf("Connection created successfully\\n");
+        return conn;
+    } else {
         fprintf(stderr, "Connection to database failed: %s", PQerrorMessage(conn));
         PQfinish(conn);
         return NULL;
     }
-    
-    return conn;
 }
 
 int main() {
-    PGconn* conn = getConnection();
-    if (conn != NULL) {
-        printf("Connected to the database!\
-");
+    PGconn *conn = createConnection();
+    if (conn) {
         PQfinish(conn);
-    } else {
-        printf("Failed to connect to the database.\
-");
     }
     return 0;
 }

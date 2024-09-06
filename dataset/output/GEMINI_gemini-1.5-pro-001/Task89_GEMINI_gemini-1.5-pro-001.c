@@ -1,34 +1,41 @@
 #include <stdio.h>
 #include <string.h>
 
-int main() {
-    char storedPassword[100], enteredPassword[100];
-    FILE *fp;
+#define MAX_PASSWORD_LEN 100
 
+int checkPassword(const char* storedPassword) {
+    char enteredPassword[MAX_PASSWORD_LEN];
     printf("Enter password: ");
-    fgets(enteredPassword, sizeof(enteredPassword), stdin);
-    enteredPassword[strcspn(enteredPassword, "
-")] = 0; // Remove trailing newline
+    fgets(enteredPassword, MAX_PASSWORD_LEN, stdin);
+    enteredPassword[strcspn(enteredPassword, "\n")] = 0; // Remove trailing newline
 
-    fp = fopen("password.txt", "r");
-    if (fp == NULL) {
-        printf("Error opening file.
-");
+    if (strlen(enteredPassword) != strlen(storedPassword)) {
+        return 0;
+    }
+    for (size_t i = 0; i < strlen(storedPassword); ++i) {
+        if (storedPassword[i] != enteredPassword[i]) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int main() {
+    FILE* file = fopen("password.txt", "r");
+    if (file == NULL) {
+        fprintf(stderr, "Password file not found. Please create 'password.txt'.\n");
         return 1;
     }
 
-    fgets(storedPassword, sizeof(storedPassword), fp);
-    fclose(fp);
+    char storedPassword[MAX_PASSWORD_LEN];
+    fgets(storedPassword, MAX_PASSWORD_LEN, file);
+    storedPassword[strcspn(storedPassword, "\n")] = 0; // Remove trailing newline
+    fclose(file);
 
-    storedPassword[strcspn(storedPassword, "
-")] = 0; // Remove trailing newline
-
-    if (strcmp(storedPassword, enteredPassword) == 0) {
-        printf("Password matches.
-");
+    if (checkPassword(storedPassword)) {
+        printf("Passwords match.\n");
     } else {
-        printf("Incorrect password.
-");
+        printf("Passwords do not match.\n");
     }
 
     return 0;

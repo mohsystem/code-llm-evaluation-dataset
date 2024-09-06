@@ -1,22 +1,27 @@
 #include <iostream>
 #include <string>
 
-int main() {
-    std::string username, oldPassword, newPassword, confirmPassword;
+using namespace std;
 
-    std::cout << "Enter your username: ";
-    std::getline(std::cin, username);
-    std::cout << "Enter your old password: ";
-    std::getline(std::cin, oldPassword);
-    std::cout << "Enter your new password: ";
-    std::getline(std::cin, newPassword);
-    std::cout << "Confirm your new password: ";
-    std::getline(std::cin, confirmPassword);
+int main() {
+    string username, oldPassword, newPassword, confirmPassword;
+
+    cout << "Enter your username: ";
+    getline(cin, username);
+
+    cout << "Enter your old password: ";
+    getline(cin, oldPassword);
+
+    cout << "Enter your new password: ";
+    getline(cin, newPassword);
+
+    cout << "Confirm your new password: ";
+    getline(cin, confirmPassword);
 
     if (newPassword == confirmPassword) {
-        std::cout << "Password reset successfully!" << std::endl;
+        cout << "Password reset successfully!" << endl;
     } else {
-        std::cout << "New password and confirm password do not match. Please try again." << std::endl;
+        cout << "New password and confirm password do not match. Try again!" << endl;
     }
 
     return 0;

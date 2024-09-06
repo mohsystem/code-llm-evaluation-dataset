@@ -1,74 +1,83 @@
 
 import socket
 import threading
+import json
+import os
 
-PORT = 5000
-SERVER = "localhost"
-
-def load_users():
-    users = {}
-    with open("users.txt", "r") as file:
-        for line in file:
-            username, password = line.strip().split(":")
-            users[username] = password
-    return users
-
-class ChatServer:
-    def __init__(self):
-        self.users = load_users()
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.bind((SERVER, PORT))
+# Server
+class Server:
+    def __init__(self, host='localhost', port=5000):
+        self.host = host
+        self.port = port
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.bind((self.host, self.port))
+        self.clients = []
 
     def start(self):
-        self.server.listen()
-        print(f"Server is listening on {SERVER}:{PORT}")
+        self.server_socket.listen()
+        print(f"Server listening on {self.host}:{self.port}")
         while True:
-            conn, addr = self.server.accept()
-            thread = threading.Thread(target=self.handle_client, args=(conn, addr))
-            thread.start()
+            client_socket, address = self.server_socket.accept()
+            client_thread = threading.Thread(target=self.handle_client, args=(client_socket,))
+            client_thread.start()
 
-    def handle_client(self, conn, addr):
-        print(f"New connection from {addr}")
-        try:
-            data = conn.recv(1024).decode()
-            command, username, password = data.split("|")
-            if command == "LOGIN":
-                if username in self.users and self.users[username] == password:
-                    conn.send("LOGIN_SUCCESS".encode())
-                else:
-                    conn.send("LOGIN_FAILED".encode())
-        finally:
-            conn.close()
+    def handle_client(self, client_socket):
+        while True:
+            try:
+                data = client_socket.recv(1024).decode('utf-8')
+                if not data:
+                    break
+                request = json.loads(data)
+                if request['action'] == 'login':
+                    response = self.authenticate(request['username'], request['password'])
+                    client_socket.send(json.dumps(response).encode('utf-8'))
+            except:
+                break
+        client_socket.close()
 
-class ChatClient:
-    def __init__(self):
-        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def authenticate(self, username, password):
+        # Simple file-based authentication
+        if os.path.exists('users.txt'):
+            with open('users.txt', 'r') as file:
+                for line in file:
+                    stored_username, stored_password = line.strip().split(':')
+                    if username == stored_username and password == stored_password:
+                        return {'status': 'success', 'message': 'Login successful'}
+        return {'status': 'failure', 'message': 'Invalid credentials'}
+
+# Client
+class Client:
+    def __init__(self, host='localhost', port=5000):
+        self.host = host
+        self.port = port
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connect(self):
-        self.client.connect((SERVER, PORT))
+        self.client_socket.connect((self.host, self.port))
 
-    def login(self, username, password):
-        request = f"LOGIN|{username}|{password}"
-        self.client.send(request.encode())
-        response = self.client.recv(1024).decode()
-        return response
-
-if __name__ == "__main__":
-    import sys
-
-    if len(sys.argv) < 2:
-        print("Usage: python script.py [server|client]")
-        sys.exit(1)
-
-    if sys.argv[1] == "server":
-        server = ChatServer()
-        server.start()
-    elif sys.argv[1] == "client":
-        client = ChatClient()
-        client.connect()
+    def login(self):
         username = input("Enter username: ")
         password = input("Enter password: ")
-        response = client.login(username, password)
-        print(f"Server response: {response}")
+        request = {
+            'action': 'login',
+            'username': username,
+            'password': password
+        }
+        self.client_socket.send(json.dumps(request).encode('utf-8'))
+        response = json.loads(self.client_socket.recv(1024).decode('utf-8'))
+        print(response['message'])
+
+    def start(self):
+        self.connect()
+        self.login()
+
+if __name__ == "__main__":
+    choice = input("Enter 's' for server, 'c' for client: ")
+    if choice.lower() == 's':
+        server = Server()
+        server.start()
+    elif choice.lower() == 'c':
+        client = Client()
+        client.start()
     else:
-        print("Invalid argument. Use \'server\' or \'client\'.")
+        print("Invalid choice")

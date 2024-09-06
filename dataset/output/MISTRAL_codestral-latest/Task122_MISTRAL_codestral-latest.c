@@ -1,28 +1,24 @@
 // C
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-void signup() {
-    char username[50], password[50];
-    printf("Enter username: ");
-    scanf("%s", username);
-    printf("Enter password: ");
-    scanf("%s", password);
-    // In a real-world application, you would hash the password before storing it.
-    // For simplicity, we're storing it as is.
-    FILE *file = fopen("passwords.txt", "a");
-    if (file == NULL) {
-        printf("Error opening file!
-");
-        exit(1);
-    }
-    fprintf(file, "%s:%s
-", username, password);
-    fclose(file);
+struct User {
+    char username[50];
+    char password[50];
+};
+
+struct User passwords[100]; // Assuming a maximum of 100 users
+int userCount = 0;
+
+void signup(char* username, char* password) {
+    strcpy(passwords[userCount].username, username);
+    strcpy(passwords[userCount].password, password);
+    userCount++;
 }
 
+// Example usage
 int main() {
-    signup();
+    signup("user1", "password1");
     return 0;
 }

@@ -1,7 +1,8 @@
 import os
 import pwd
+import spwd
 import crypt
-import sys
+import getpass
 
 def drop_privileges(user_uid, user_gid):
     os.setgid(user_gid)
@@ -10,46 +11,41 @@ def drop_privileges(user_uid, user_gid):
 def main():
     if os.geteuid() != 0:
         print("This script requires root privileges. Please run with sudo.")
-        sys.exit(1)
-
-    username = input("Enter the username: ")
-    password = input("Enter the new password: ")
+        return
 
     try:
-        user = pwd.getpwnam(username)
+        # Get target username from user input
+        username = input("Enter the username to change password for: ")
+
+        # Get the user's UID and GID
+        user_info = pwd.getpwnam(username)
+        user_uid = user_info.pw_uid
+        user_gid = user_info.pw_gid
+
+        # Get new password securely
+        while True:
+            password = getpass.getpass("Enter new password: ")
+            confirm_password = getpass.getpass("Confirm new password: ")
+            if password == confirm_password:
+                break
+            else:
+                print("Passwords do not match. Please try again.")
+
+        # Hash the new password
+        hashed_password = crypt.crypt(password, crypt.mksalt(crypt.METHOD_SHA512))
+
+        # Update password in shadow password database
+        spwd.getspnam(username).sp_pwd = hashed_password
+
+        # Drop privileges to the target user
+        drop_privileges(user_uid, user_gid)
+
+        print(f"Password for user {username} changed successfully.")
+
     except KeyError:
         print(f"User '{username}' not found.")
-        sys.exit(1)
-
-    encrypted_password = crypt.crypt(password, crypt.mksalt(crypt.METHOD_SHA512))
-
-    try:
-        with open(f'/etc/shadow', 'r+') as shadow_file:
-            lines = shadow_file.readlines()
-            for i, line in enumerate(lines):
-                if line.startswith(username + ':'):
-                    parts = line.split(':')
-                    parts[1] = encrypted_password
-                    lines[i] = ':'.join(parts) + '
-'
-                    break
-            else:
-                print(f"User '{username}' not found in shadow file.")
-                sys.exit(1)
-
-            shadow_file.seek(0)
-            shadow_file.writelines(lines)
-            shadow_file.truncate()
-
-        print(f"Password for user '{username}' changed successfully.")
-
     except Exception as e:
         print(f"An error occurred: {e}")
-        sys.exit(1)
 
-    drop_privileges(user.pw_uid, user.pw_gid)
-
-    print(f"Running as user: {os.getlogin()}")
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

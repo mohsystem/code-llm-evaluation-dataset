@@ -1,27 +1,22 @@
 // C++
-#include <iostream>
+#include <string>
 #include <unordered_map>
-#include <uuid/uuid.h>
 
-class SessionManager {
-private:
-    std::unordered_map<std::string, std::string> sessions;
-
+class Session {
 public:
-    std::string createSession(const std::string& userId) {
-        uuid_t uuid;
-        uuid_generate(uuid);
-        char sessionId[37];
-        uuid_unparse(uuid, sessionId);
-        sessions[sessionId] = userId;
-        return sessionId;
-    }
+    Session(const std::string& userId) : userId(userId), isActive(true) {}
 
-    std::string getUserFromSession(const std::string& sessionId) {
-        return sessions[sessionId];
-    }
+    // Getters and setters for userId and isActive
 
-    void endSession(const std::string& sessionId) {
-        sessions.erase(sessionId);
-    }
+private:
+    std::string userId;
+    bool isActive;
 };
+
+// Example usage:
+int main() {
+    std::unordered_map<std::string, Session> userSessions;
+    std::string userId = "123";
+    userSessions[userId] = Session(userId);
+    return 0;
+}

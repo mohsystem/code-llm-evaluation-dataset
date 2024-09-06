@@ -1,15 +1,21 @@
-#include <iostream>
 #include <string>
-#include <sstream>
+#include <vector>
+#include <algorithm>
 
-std::string high(const std::string &s) {
-    std::istringstream iss(s);
-    std::string word, maxWord;
+std::string high(const std::string& s) {
+    std::vector<std::string> words;
+    size_t pos = 0;
+    while ((pos = s.find(' ')) != std::string::npos) {
+        words.push_back(s.substr(0, pos));
+        s.erase(0, pos + 1);
+    }
+    words.push_back(s);
+    std::string maxWord = "";
     int maxScore = 0;
-    while (iss >> word) {
+    for (const auto& word : words) {
         int score = 0;
         for (char c : word) {
-            score += c - 'a' + 1;
+            score += c - 96;
         }
         if (score > maxScore) {
             maxScore = score;

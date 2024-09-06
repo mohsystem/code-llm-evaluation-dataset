@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <time.h>
 
@@ -10,23 +10,32 @@ typedef struct {
 } Solution;
 
 Solution* solutionCreate(double radius, double x_center, double y_center) {
-    Solution* obj = (Solution*)malloc(sizeof(Solution));
-    obj->radius = radius;
-    obj->x_center = x_center;
-    obj->y_center = y_center;
+    Solution* sol = (Solution*) malloc(sizeof(Solution));
+    sol->radius = radius;
+    sol->x_center = x_center;
+    sol->y_center = y_center;
     srand(time(0));
-    return obj;
+    return sol;
 }
 
-double* randPoint(Solution* obj) {
-    double* point = (double*)malloc(2 * sizeof(double));
-    double angle = ((double) rand() / RAND_MAX) * 2 * M_PI;
-    double hyp = sqrt((double) rand() / RAND_MAX) * obj->radius;
-    point[0] = obj->x_center + hyp * cos(angle);
-    point[1] = obj->y_center + hyp * sin(angle);
-    return point;
+void randPoint(Solution* sol, double *point) {
+    double r = sol->radius * sqrt((double) rand() / RAND_MAX);
+    double theta = 2 * M_PI * ((double) rand() / RAND_MAX);
+    point[0] = sol->x_center + r * cos(theta);
+    point[1] = sol->y_center + r * sin(theta);
 }
 
-void solutionFree(Solution* obj) {
-    free(obj);
+int main() {
+    Solution* sol = solutionCreate(1.0, 0.0, 0.0);
+    double point[2];
+
+    randPoint(sol, point);
+    printf("Point1: [%f, %f]\n", point[0], point[1]);
+    randPoint(sol, point);
+    printf("Point2: [%f, %f]\n", point[0], point[1]);
+    randPoint(sol, point);
+    printf("Point3: [%f, %f]\n", point[0], point[1]);
+
+    free(sol);
+    return 0;
 }

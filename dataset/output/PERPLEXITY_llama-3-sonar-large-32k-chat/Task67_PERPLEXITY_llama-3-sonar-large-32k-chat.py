@@ -1,39 +1,27 @@
-import mysql.connector
 import sys
+import mysql.connector
 
-class Customer:
-    def __init__(self, username, name, email):
-        self.username = username
-        self.name = name
-        self.email = email
-
-    def __str__(self):
-        return f"Customer: username={self.username}, name={self.name}, email={self.email}"
+def get_customer_info(username):
+    db = mysql.connector.connect(
+        host="localhost",
+        user="your_username",
+        password="your_password",
+        database="your_database"
+    )
+    cursor = db.cursor()
+    query = "SELECT * FROM customer WHERE customerusername = %s"
+    cursor.execute(query, (username,))
+    result = cursor.fetchone()
+    db.close()
+    return result
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print(f"Usage: python {sys.argv[0]} <customerusername>")
+        print("Usage: python script.py <customer_username>")
         sys.exit(1)
-
-    customer_username = sys.argv[1]
-
-    conn = mysql.connector.connect(
-        user='root',
-        password='password',
-        host='localhost',
-        database='mydb'
-    )
-
-    cursor = conn.cursor()
-    query = "SELECT * FROM customer WHERE username = %s"
-    cursor.execute(query, (customer_username,))
-
-    row = cursor.fetchone()
-    if row:
-        customer = Customer(*row)
-        print(customer)
+    username = sys.argv[1]
+    customer_info = get_customer_info(username)
+    if customer_info:
+        print(customer_info)
     else:
         print("Customer not found")
-
-    cursor.close()
-    conn.close()

@@ -7,6 +7,6 @@ def password_reset():
     if new_password == confirm_password:
         print("Password reset successfully!")
     else:
-        print("New password and confirm password do not match. Please try again.")
+        print("New password and confirm password do not match. Try again!")
 
 password_reset()

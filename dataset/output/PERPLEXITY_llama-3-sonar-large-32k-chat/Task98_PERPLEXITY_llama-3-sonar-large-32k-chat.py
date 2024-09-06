@@ -1,5 +1,5 @@
 try:
-    num = int(input("Enter an integer: "))
+    num = int(input("Enter a number: "))
     print("You entered:", num)
 except ValueError:
-    print("Invalid input. Please enter an integer.")
+    print("That's not a valid number!")

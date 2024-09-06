@@ -1,42 +1,50 @@
 import socket
 import pickle
 
-HOST = 'localhost'
-PORT = 65432
+class RemoteObjectServer:
+    def __init__(self, host='localhost', port=5000):
+        self.host = host
+        self.port = port
+        self.objects = {}
 
-class DataObject:
-    def __init__(self, value):
-        self.value = value
+    def start(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+            server_socket.bind((self.host, self.port))
+            server_socket.listen(1)
+            print(f"Server started on {self.host}:{self.port}")
 
-    def get_value(self):
-        return self.value
-
-    def set_value(self, new_value):
-        self.value = new_value
-
-def handle_request(conn, data_object):
-    data = conn.recv(1024)
-    command, *args = pickle.loads(data)
-
-    if command == 'GET':
-        conn.sendall(pickle.dumps(data_object.get_value()))
-    elif command == 'SET':
-        data_object.set_value(args[0])
-        conn.sendall(pickle.dumps('Value updated'))
-    else:
-        conn.sendall(pickle.dumps('Invalid command'))
-
-def main():
-    data_object = DataObject(10)
-
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((HOST, PORT))
-        s.listen()
-        conn, addr = s.accept()
-        with conn:
-            print(f"Connected by {addr}")
             while True:
-                handle_request(conn, data_object)
+                client_socket, client_address = server_socket.accept()
+                print(f"Client connected from {client_address}")
+                self.handle_client(client_socket)
+
+    def handle_client(self, client_socket):
+        while True:
+            try:
+                data = client_socket.recv(1024)
+                if not data:
+                    break
+                command, *args = pickle.loads(data)
+                if command == 'CREATE':
+                    object_id, object_data = args
+                    self.objects[object_id] = object_data
+                elif command == 'GET':
+                    object_id = args[0]
+                    data = pickle.dumps(self.objects.get(object_id))
+                    client_socket.sendall(data)
+                elif command == 'SET':
+                    object_id, attribute, value = args
+                    setattr(self.objects[object_id], attribute, value)
+                elif command == 'CALL':
+                    object_id, method, *method_args = args
+                    method_result = getattr(self.objects[object_id], method)(*method_args)
+                    data = pickle.dumps(method_result)
+                    client_socket.sendall(data)
+            except Exception as e:
+                print(f"Error handling client request: {e}")
+                break
+        client_socket.close()
 
 if __name__ == '__main__':
-    main()
+    server = RemoteObjectServer()
+    server.start()

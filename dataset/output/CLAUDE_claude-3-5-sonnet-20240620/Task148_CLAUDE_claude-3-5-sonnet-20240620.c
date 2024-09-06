@@ -24,8 +24,7 @@ bool isFull(Stack *s) {
 
 void push(Stack *s, int item) {
     if (isFull(s)) {
-        printf("Stack overflow\
-");
+        printf("Stack overflow\\n");
         return;
     }
     s->items[++(s->top)] = item;
@@ -33,8 +32,7 @@ void push(Stack *s, int item) {
 
 int pop(Stack *s) {
     if (isEmpty(s)) {
-        printf("Stack underflow\
-");
+        printf("Stack underflow\\n");
         return -1;
     }
     return s->items[(s->top)--];
@@ -42,8 +40,7 @@ int pop(Stack *s) {
 
 int peek(Stack *s) {
     if (isEmpty(s)) {
-        printf("Stack is empty\
-");
+        printf("Stack is empty\\n");
         return -1;
     }
     return s->items[s->top];
@@ -61,14 +58,9 @@ int main() {
     push(&stack, 2);
     push(&stack, 3);
 
-    printf("Top element: %d\
-", peek(&stack));
-    printf("Popped: %d\
-", pop(&stack));
-    printf("Size: %d\
-", size(&stack));
-    printf("Is empty: %s\
-", isEmpty(&stack) ? "true" : "false");
+    printf("Top element: %d\\n", peek(&stack));
+    printf("Popped: %d\\n", pop(&stack));
+    printf("Size: %d\\n", size(&stack));
 
     return 0;
 }

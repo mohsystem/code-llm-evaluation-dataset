@@ -1,12 +1,12 @@
 #include <vector>
 #include <iostream>
 
-std::vector<int> filterList(std::vector<void*> list) {
-    std::vector<int> newList;
-    for (void* obj : list) {
-        if (dynamic_cast<int*>(obj)) {
-            newList.push_back(*(int*)obj);
+std::vector<int> filterList(std::vector<Object> list) {
+    std::vector<int> result;
+    for (auto obj : list) {
+        if (typeid(obj) == typeid(int)) {
+            result.push_back(obj);
         }
     }
-    return newList;
+    return result;
 }

@@ -1,46 +1,15 @@
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 bool checkFlush(std::vector<std::string> table, std::vector<std::string> hand) {
-    int suits[4] = {0};
-    for (const std::string& card : table) {
-        char suit = card.back();
-        switch (suit) {
-            case 'S':
-                suits[0]++;
-                break;
-            case 'H':
-                suits[1]++;
-                break;
-            case 'D':
-                suits[2]++;
-                break;
-            case 'C':
-                suits[3]++;
-                break;
-        }
-    }
-    for (const std::string& card : hand) {
-        char suit = card.back();
-        switch (suit) {
-            case 'S':
-                suits[0]++;
-                break;
-            case 'H':
-                suits[1]++;
-                break;
-            case 'D':
-                suits[2]++;
-                break;
-            case 'C':
-                suits[3]++;
-                break;
-        }
-    }
-    for (int suit : suits) {
-        if (suit >= 5) {
+    std::unordered_map<char, int> suitCount;
+    for (const auto& card : table)
+        suitCount[card.back()]++;
+    for (const auto& card : hand)
+        suitCount[card.back()]++;
+    for (char suit : "SHDC")
+        if (suitCount[suit] >= 5)
             return true;
-        }
-    }
     return false;
 }

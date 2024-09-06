@@ -1,8 +1,10 @@
 def XO(s):
-    return s.lower().count('x') == s.lower().count('o')
+    s = s.lower()
+    return s.count('x') == s.count('o')
 
-print(XO("ooxx"))
-print(XO("xooxx"))
-print(XO("ooxXm"))
-print(XO("zpzpzpp"))
-print(XO("zzoo"))
+# Example usage
+print(XO("ooxx"))  # True
+print(XO("xooxx"))  # False
+print(XO("ooxXm"))  # True
+print(XO("zpzpzpp"))  # True
+print(XO("zzoo"))  # False

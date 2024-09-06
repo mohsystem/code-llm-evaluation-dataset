@@ -1,23 +1,28 @@
 
 import hashlib
 import ssl
-import OpenSSL.crypto
+import socket
 
-def check_certificate_hash(cert_path, known_hash):
-    with open(cert_path, \'rb\') as cert_file:
-        cert_data = cert_file.read()
+def get_certificate_hash(hostname, port=443):
+    context = ssl.create_default_context()
+    with socket.create_connection((hostname, port)) as sock:
+        with context.wrap_socket(sock, server_hostname=hostname) as secure_sock:
+            cert = secure_sock.getpeercert(binary_form=True)
+    return hashlib.sha256(cert).hexdigest()
 
-    cert = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert_data)
-    cert_der = OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_ASN1, cert)
-
-    calculated_hash = hashlib.sha256(cert_der).hexdigest()
-
-    if calculated_hash == known_hash:
-        print("Certificate hash matches the known hash.")
-    else:
-        print("Certificate hash does not match the known hash.")
+def check_certificate_hash(hostname, known_hash):
+    try:
+        cert_hash = get_certificate_hash(hostname)
+        if cert_hash == known_hash:
+            print(f"Certificate hash for {hostname} matches the known hash.")
+        else:
+            print(f"Certificate hash for {hostname} does not match the known hash.")
+            print(f"Calculated hash: {cert_hash}")
+            print(f"Known hash:     {known_hash}")
+    except Exception as e:
+        print(f"Error: {e}")
 
 if __name__ == "__main__":
-    cert_path = "path/to/certificate.crt"
-    known_hash = "known_hash_value"
-    check_certificate_hash(cert_path, known_hash)
+    hostname = "www.example.com"
+    known_hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"  # Example hash
+    check_certificate_hash(hostname, known_hash)

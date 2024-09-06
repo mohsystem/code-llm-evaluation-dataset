@@ -1,17 +1,11 @@
-import sys
 import re
-
-if len(sys.argv) != 3:
-    print("Usage: python regex_search.py <pattern> <file>")
-    sys.exit(1)
+import sys
 
 pattern = sys.argv[1]
-file = sys.argv[2]
+file_name = sys.argv[2]
 
-try:
-    with open(file, 'r') as f:
-        for line in f:
-            for match in re.finditer(pattern, line):
-                print(match.group())
-except IOError as e:
-    print("Error reading file:", e)
+with open(file_name, 'r') as file:
+    content = file.read()
+    matches = re.findall(pattern, content)
+    for match in matches:
+        print(match)

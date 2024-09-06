@@ -10,36 +10,33 @@
 int main() {
     FILE *file = fopen("file.txt", "r");
     if (file == NULL) {
-        printf("Error opening file\
-");
+        printf("Error opening file\\n");
         return 1;
     }
 
-    char data[MAX_ROWS][MAX_COLS][MAX_LINE_LENGTH];
-    int rows = 0, cols = 0;
+    char content[MAX_ROWS][MAX_COLS][MAX_LINE_LENGTH];
+    int row = 0, col = 0, max_col = 0;
     char line[MAX_LINE_LENGTH];
 
     while (fgets(line, sizeof(line), file)) {
-        char *token = strtok(line, " \
-");
-        cols = 0;
+        char *token = strtok(line, " \\n");
+        col = 0;
         while (token != NULL) {
-            strcpy(data[rows][cols], token);
-            token = strtok(NULL, " \
-");
-            cols++;
+            strcpy(content[row][col], token);
+            token = strtok(NULL, " \\n");
+            col++;
         }
-        rows++;
+        if (col > max_col) max_col = col;
+        row++;
     }
     fclose(file);
 
-    for (int j = 0; j < cols; j++) {
-        for (int i = 0; i < rows; i++) {
-            printf("%s", data[i][j]);
-            if (i < rows - 1) printf(" ");
+    for (int j = 0; j < max_col; j++) {
+        for (int i = 0; i < row; i++) {
+            printf("%s", content[i][j]);
+            if (i < row - 1) printf(" ");
         }
-        printf("\
-");
+        printf("\\n");
     }
 
     return 0;

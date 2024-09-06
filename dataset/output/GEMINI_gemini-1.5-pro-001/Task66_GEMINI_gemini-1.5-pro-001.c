@@ -1,39 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <ctype.h>
-
-int is_valid_command(const char *command) {
-  for (int i = 0; command[i] != '\0'; i++) {
-    if (!isalnum(command[i]) && !isspace(command[i]) && 
-        strchr("./_-", command[i]) == NULL) {
-      return 0;
-    }
-  }
-  return 1;
-}
 
 int main() {
-  char command[1024];
-  
-  printf("Enter a bash command: ");
-  fgets(command, sizeof(command), stdin);
+    char command[1024];
+    printf("Enter a bash command: ");
+    fgets(command, sizeof(command), stdin);
+    command[strcspn(command, "\n")] = 0; // remove trailing newline
 
-  // Remove trailing newline from fgets
-  command[strcspn(command, "
-")] = 0;
-
-  if (is_valid_command(command)) {
-    int result = system(command);
-    if (result != 0) {
-      fprintf(stderr, "Error executing command: %s
-", command);
+    // Execute the command using popen
+    FILE *fp = popen(command, "r");
+    if (fp == NULL) {
+        fprintf(stderr, "Error executing command.\n");
+        return 1;
     }
-  } else {
-    printf("Invalid command format. Please use only alphanumeric characters, spaces, and './-_' 
-");
-  }
 
-  return 0;
+    // Read and print the output
+    char output[1024];
+    while (fgets(output, sizeof(output), fp) != NULL) {
+        printf("%s", output);
+    }
+
+    // Close the pipe and check for errors
+    int status = pclose(fp);
+    if (status == -1) {
+        fprintf(stderr, "Error closing command stream.\n");
+        return 1;
+    }
+
+    return 0;
 }

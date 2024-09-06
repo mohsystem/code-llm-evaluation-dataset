@@ -1,17 +1,21 @@
 #include <iostream>
 #include <algorithm>
 
-bool XO(const std::string& str) {
-    int countX = std::count_if(str.begin(), str.end(), [](char ch) { return std::tolower(ch) == 'x'; });
-    int countO = std::count_if(str.begin(), str.end(), [](char ch) { return std::tolower(ch) == 'o'; });
-    return countX == countO;
+bool XO(const std::string &str) {
+    std::string s = str;
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+    int xCount = std::count(s.begin(), s.end(), 'x');
+    int oCount = std::count(s.begin(), s.end(), 'o');
+    return xCount == oCount;
 }
 
 int main() {
-    std::cout << std::boolalpha << XO("ooxx") << std::endl;
-    std::cout << std::boolalpha << XO("xooxx") << std::endl;
-    std::cout << std::boolalpha << XO("ooxXm") << std::endl;
-    std::cout << std::boolalpha << XO("zpzpzpp") << std::endl;
-    std::cout << std::boolalpha << XO("zzoo") << std::endl;
+    std::cout << std::boolalpha;
+    std::cout << XO("ooxx") << std::endl;  // True
+    std::cout << XO("xooxx") << std::endl;  // False
+    std::cout << XO("ooxXm") << std::endl;  // True
+    std::cout << XO("zpzpzpp") << std::endl;  // True
+    std::cout << XO("zzoo") << std::endl;  // False
+  
     return 0;
 }

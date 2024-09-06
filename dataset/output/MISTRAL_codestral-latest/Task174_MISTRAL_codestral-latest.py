@@ -1,6 +1,6 @@
-def shortest_palindrome(s: str) -> str:
+def shortest_palindrome(s):
     i = 0
-    for j in range(len(s) - 1, -1, -1):
+    for j in range(len(s)-1, -1, -1):
         if s[i] == s[j]:
             i += 1
     if i == len(s):

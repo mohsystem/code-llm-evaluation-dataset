@@ -2,34 +2,35 @@
 #include <string>
 #include <openssl/evp.h>
 #include <openssl/aes.h>
-#include <cstring> // for memset
+#include <openssl/rand.h>
+#include <openssl/err.h>
 
-int main() {
-    // Secret key (randomly chosen for demonstration)
-    unsigned char key[16] = "0123456789abcdef";
-
-    // Message to encrypt
-    std::string message = "Hello, World!";
-
-    // Create cipher context
+std::string encrypt(const std::string &message, const std::string &secretKey) {
+    unsigned char key[32], iv[32];
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    EVP_EncryptInit_ex(ctx, EVP_aes_128_ecb(), NULL, key, NULL);
 
-    // Encrypt message
-    unsigned char encryptedMessage[128];
-    int len;
-    EVP_EncryptUpdate(ctx, encryptedMessage, &len, (unsigned char*)message.c_str(), message.length());
-    
-    int ciphertext_len = len;
-    EVP_EncryptFinal_ex(ctx, encryptedMessage + len, &len);
+    RAND_bytes(key, sizeof(key));
+    RAND_bytes(iv, sizeof(iv));
+
+    EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, (unsigned char *)secretKey.c_str(), iv);
+
+    unsigned char ciphertext[128];
+    int len, ciphertext_len;
+
+    EVP_EncryptUpdate(ctx, ciphertext, &len, (unsigned char *)message.c_str(), message.length());
+    ciphertext_len = len;
+
+    EVP_EncryptFinal_ex(ctx, ciphertext + len, &len);
     ciphertext_len += len;
 
-    // Print encrypted message in hex format
-    for (int i = 0; i < ciphertext_len; i++) {
-        std::cout << std::hex << (int)encryptedMessage[i];
-    }
-    std::cout << std::endl;
-
     EVP_CIPHER_CTX_free(ctx);
+    return std::string((char *)ciphertext, ciphertext_len);
+}
+
+int main() {
+    std::string message = "Secret Message";
+    std::string secretKey = "thisisaverysecret";
+    std::string encryptedMessage = encrypt(message, secretKey);
+    std::cout << "Encrypted: " << encryptedMessage << std::endl;
     return 0;
 }

@@ -1,36 +1,50 @@
+// C code:
+
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_LENGTH 100
+int comparePasswords(const char* filePath, const char* userPassword) {
+    FILE* file = fopen(filePath, "r");
+    char storedPassword[100];
+
+    if (file != NULL) {
+        if (fgets(storedPassword, sizeof(storedPassword), file) != NULL) {
+            // Remove newline character from storedPassword
+            storedPassword[strcspn(storedPassword, "\n")] = '\0';
+
+            if (strcmp(userPassword, storedPassword) == 0) {
+                fclose(file);
+                return 1;
+            } else {
+                fclose(file);
+                return 0;
+            }
+        } else {
+            printf("Error reading the file.\n");
+            fclose(file);
+            return 0;
+        }
+    } else {
+        printf("Error opening the file.\n");
+        return 0;
+    }
+}
 
 int main() {
-    char inputPassword[MAX_LENGTH];
-    char storedPassword[MAX_LENGTH];
+    const char* filePath = "password.txt";
+    char userPassword[100];
 
-    printf("Enter password: ");
-    fgets(inputPassword, MAX_LENGTH, stdin);
-    inputPassword[strcspn(inputPassword, "
-")] = 0; // remove newline character
+    printf("Enter your password: ");
+    fgets(userPassword, sizeof(userPassword), stdin);
 
-    FILE *file = fopen("password.txt", "r");
-    if (file == NULL) {
-        printf("An error occurred while reading the file.
-");
-        return 1;
-    }
+    // Remove newline character from userPassword
+    userPassword[strcspn(userPassword, "\n")] = '\0';
 
-    fgets(storedPassword, MAX_LENGTH, file);
-    storedPassword[strcspn(storedPassword, "
-")] = 0; // remove newline character
-
-    if (strcmp(inputPassword, storedPassword) == 0) {
-        printf("Password is correct.
-");
+    if (comparePasswords(filePath, userPassword)) {
+        printf("Password is correct.\n");
     } else {
-        printf("Password is incorrect.
-");
+        printf("Password is incorrect.\n");
     }
 
-    fclose(file);
     return 0;
 }

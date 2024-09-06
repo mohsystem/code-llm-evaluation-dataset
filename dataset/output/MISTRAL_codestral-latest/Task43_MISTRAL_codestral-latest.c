@@ -1,38 +1,11 @@
-// C
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <uuid/uuid.h>
+// This is a simplified example and doesn't include necessary includes or error handling
 
-typedef struct {
-    char sessionId[37];
-    char userId[256];
-} Session;
-
-Session* createSession(const char* userId) {
-    Session* session = malloc(sizeof(Session));
-    uuid_t uuid;
-    uuid_generate(uuid);
-    uuid_unparse(uuid, session->sessionId);
-    strncpy(session->userId, userId, 255);
-    return session;
-}
-
-char* getUserFromSession(const char* sessionId, Session* sessions, int size) {
-    for (int i = 0; i < size; i++) {
-        if (strcmp(sessions[i].sessionId, sessionId) == 0) {
-            return sessions[i].userId;
-        }
+void handle_request(evhtp_request_t *req, void *arg) {
+    if (req->uri->path->full == evhtp_kv_find(req->uri->query, "login")) {
+        // Create a session
+        evhtp_headers_add_header(req->headers_out, evhtp_header_new("Content-Type", "text/plain", 0, 0));
+        evhtp_send_reply(req, EVHTP_RES_OK);
+        evbuffer_add_printf(req->buffer_out, "Logged in");
     }
-    return NULL;
-}
-
-void terminateSession(const char* sessionId, Session* sessions, int* size) {
-    for (int i = 0; i < *size; i++) {
-        if (strcmp(sessions[i].sessionId, sessionId) == 0) {
-            memmove(&sessions[i], &sessions[i + 1], (*size - i - 1) * sizeof(Session));
-            (*size)--;
-            return;
-        }
-    }
+    // Similarly, you would handle logout requests
 }

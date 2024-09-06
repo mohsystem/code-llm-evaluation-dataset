@@ -2,123 +2,136 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sqlite3.h>
-#include "mongoose.h"
+#include <microhttpd.h>
 
-#define DATABASE "users.db"
+#define PORT 8080
 
-// Structure to hold user data
-typedef struct {
-    char name[100];
-    char email[100];
-} User;
+// Callback function for handling HTTP requests
+static int handle_request(void *cls, struct MHD_Connection *connection,
+                          const char *url, const char *method,
+                          const char *version, const char *upload_data,
+                          size_t *upload_data_size, void **con_cls) {
+    if (strcmp(method, "POST") == 0 && strcmp(url, "/users") == 0) {
+        // Get the POST data
+        const char *name = NULL, *email = NULL;
+        char *data = (char *) upload_data;
 
-// Callback function for SQLite queries
-static int callback(void* data, int argc, char** argv, char** azColName) {
-    return 0;
-}
-
-// Function to handle user creation API endpoint
-static void create_user_handler(struct mg_connection* conn, int ev, void* ev_data) {
-    if (ev != MG_EV_HTTP_REQUEST) {
-        return;
-    }
-
-    struct http_message* hm = (struct http_message*)ev_data;
-    if (mg_vcmp(&hm->method, "POST") != 0) {
-        mg_http_reply(conn, 405, "text/plain", "Method Not Allowed
-");
-        return;
-    }
-
-    // Connect to the SQLite database
-    sqlite3* db;
-    int rc = sqlite3_open(DATABASE, &db);
-    if (rc != SQLITE_OK) {
-        fprintf(stderr, "Can't open database: %s
-", sqlite3_errmsg(db));
-        mg_http_reply(conn, 500, "text/plain", "Internal Server Error
-");
-        return;
-    }
-
-    // Create the users table if it doesn't exist
-    char* err_msg = 0;
-    char* sql = "CREATE TABLE IF NOT EXISTS users ("
-                "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                "name TEXT NOT NULL,"
-                "email TEXT NOT NULL UNIQUE"
-                ");";
-    rc = sqlite3_exec(db, sql, callback, 0, &err_msg);
-    if (rc != SQLITE_OK) {
-        fprintf(stderr, "SQL error: %s
-", err_msg);
-        sqlite3_free(err_msg);
-        mg_http_reply(conn, 500, "text/plain", "Internal Server Error
-");
-        sqlite3_close(db);
-        return;
-    }
-
-    // Parse the user data from the request body
-    User user;
-    mg_get_http_var(&hm->body, "name", user.name, sizeof(user.name));
-    mg_get_http_var(&hm->body, "email", user.email, sizeof(user.email));
-
-    // Check if name and email are provided
-    if (strlen(user.name) == 0 || strlen(user.email) == 0) {
-        mg_http_reply(conn, 400, "text/plain", "Name and email are required
-");
-        sqlite3_close(db);
-        return;
-    }
-
-    // Insert the user data into the database
-    sql = sqlite3_mprintf("INSERT INTO users(name, email) VALUES('%q', '%q')", user.name, user.email);
-    rc = sqlite3_exec(db, sql, callback, 0, &err_msg);
-    sqlite3_free(sql); // Free the SQL statement
-
-    if (rc != SQLITE_OK) {
-        if (err_msg != NULL && strstr(err_msg, "UNIQUE constraint failed") != NULL) {
-            mg_http_reply(conn, 400, "text/plain", "Email address already exists
-");
-        } else {
-            fprintf(stderr, "SQL error: %s
-", err_msg);
-            mg_http_reply(conn, 500, "text/plain", "Internal Server Error
-");
+        // Parse the POST data (assuming application/x-www-form-urlencoded)
+        // Note: This is a simple parsing example and might need adjustments
+        // depending on the actual data format.
+        while (*data) {
+            char *key = data;
+            char *value = strchr(key, '=');
+            if (value) {
+                *value++ = '\0';
+                if (strcmp(key, "name") == 0) {
+                    name = value;
+                } else if (strcmp(key, "email") == 0) {
+                    email = value;
+                }
+                data = strchr(value, '&');
+                if (data) {
+                    *data++ = '\0';
+                } else {
+                    break; // End of data
+                }
+            }
         }
-        sqlite3_free(err_msg);
-        sqlite3_close(db);
-        return;
+
+        if (name && email) {
+            // Open database connection
+            sqlite3 *db;
+            char *zErrMsg = 0;
+            int rc = sqlite3_open("users.db", &db);
+            if (rc) {
+                fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+                sqlite3_close(db);
+                return MHD_NO;
+            }
+
+            // Create a table for users if it doesn't exist
+            char *sqlCreateTable = "CREATE TABLE IF NOT EXISTS users ("
+                                   "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                   "name TEXT NOT NULL,"
+                                   "email TEXT NOT NULL UNIQUE"
+                                   ");";
+            rc = sqlite3_exec(db, sqlCreateTable, 0, 0, &zErrMsg);
+            if (rc != SQLITE_OK) {
+                fprintf(stderr, "SQL error: %s\n", zErrMsg);
+                sqlite3_free(zErrMsg);
+                sqlite3_close(db);
+                return MHD_NO;
+            }
+
+            // Insert user data into the database
+            char sqlInsert[256];
+            sprintf(sqlInsert, "INSERT INTO users (name, email) VALUES ('%s', '%s')", name, email);
+            rc = sqlite3_exec(db, sqlInsert, 0, 0, &zErrMsg);
+            if (rc != SQLITE_OK) {
+                if (strstr(zErrMsg, "UNIQUE constraint failed") != NULL) {
+                    // Email already exists
+                    sqlite3_free(zErrMsg);
+                    sqlite3_close(db);
+
+                    // Return 400 Bad Request
+                    struct MHD_Response *response =
+                            MHD_create_response_from_buffer(strlen("Email already exists"),
+                                                           "Email already exists",
+                                                           MHD_RESPMEM_MUST_COPY);
+                    MHD_add_response_header(response, "Content-Type", "text/plain");
+                    int ret = MHD_queue_response(connection, MHD_HTTP_BAD_REQUEST, response);
+                    MHD_destroy_response(response);
+                    return ret;
+                } else {
+                    fprintf(stderr, "SQL error: %s\n", zErrMsg);
+                    sqlite3_free(zErrMsg);
+                    sqlite3_close(db);
+                    return MHD_NO;
+                }
+            }
+
+            // Close database connection
+            sqlite3_close(db);
+
+            // Return 201 Created
+            struct MHD_Response *response =
+                    MHD_create_response_from_buffer(strlen("User created successfully"),
+                                                   "User created successfully",
+                                                   MHD_RESPMEM_MUST_COPY);
+            MHD_add_response_header(response, "Content-Type", "text/plain");
+            int ret = MHD_queue_response(connection, MHD_HTTP_CREATED, response);
+            MHD_destroy_response(response);
+            return ret;
+        } else {
+            // Missing name or email
+            // Return 400 Bad Request
+            struct MHD_Response *response =
+                    MHD_create_response_from_buffer(strlen("Name and email are required"),
+                                                   "Name and email are required",
+                                                   MHD_RESPMEM_MUST_COPY);
+            MHD_add_response_header(response, "Content-Type", "text/plain");
+            int ret = MHD_queue_response(connection, MHD_HTTP_BAD_REQUEST, response);
+            MHD_destroy_response(response);
+            return ret;
+        }
     }
 
-    // Send a success response
-    mg_http_reply(conn, 201, "text/plain", "User created successfully
-");
-
-    // Close the database connection
-    sqlite3_close(db);
+    return MHD_NO; // Not handled
 }
 
 int main(void) {
-    struct mg_mgr mgr;
-    mg_mgr_init(&mgr, NULL);
+    struct MHD_Daemon *daemon;
 
-    mg_connection* conn = mg_bind(&mgr, "8080", create_user_handler);
-    if (conn == NULL) {
-        fprintf(stderr, "Error starting server on port 8080
-");
-        exit(1);
+    daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY, PORT, NULL, NULL,
+                              &handle_request, NULL, MHD_OPTION_END);
+    if (NULL == daemon) {
+        fprintf(stderr, "Failed to start HTTP server.\n");
+        return 1;
     }
 
-    mg_set_protocol_http_websocket(conn);
+    printf("Server running on port %d...\n", PORT);
+    getchar(); // Wait for user input before stopping the server
 
-    printf("Starting server on port 8080
-");
-    for (;;) {
-        mg_mgr_poll(&mgr, 1000);
-    }
-    mg_mgr_free(&mgr);
-
+    MHD_stop_daemon(daemon);
     return 0;
 }

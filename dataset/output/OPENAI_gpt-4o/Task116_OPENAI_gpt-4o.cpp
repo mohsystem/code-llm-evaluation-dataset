@@ -1,42 +1,25 @@
-#include <jni.h>
 #include <iostream>
 #include <unistd.h>
-#include <sys/types.h>
-#include <pwd.h>
+#include <cstdlib>
 
-extern "C"
-{
-    void drop_privileges();
-}
-
-using namespace std;
-
-extern "C" JNIEXPORT void JNICALL
-Java_Main_dropPrivileges(JNIEnv *, jobject) {
-    drop_privileges();
-}
-
-void drop_privileges() {
-    struct passwd *pw;
-    uid_t uid;
-    gid_t gid;
-
-    // Get nobody user's uid and gid
-    pw = getpwnam("nobody");
-    if (pw) {
-        uid = pw->pw_uid;
-        gid = pw->pw_gid;
-
-        // Set gid and uid to nobody
-        if (setgid(gid) == -1) {
-            perror("setgid");
-            return;
-        }
-        if (setuid(uid) == -1) {
-            perror("setuid");
-            return;
-        }
-    } else {
-        cerr << "Failed to get 'nobody' user details" << endl;
+int main() {
+    if (geteuid() != 0) {
+        std::cerr << "This script must be run as root!" << std::endl;
+        return 1;
     }
+
+    std::string username;
+    std::cout << "Enter username to change password: ";
+    std::cin >> username;
+
+    std::string command = "echo \"" + username + ":newpassword\" | chpasswd";
+    system(command.c_str());
+
+    // Drop privileges
+    if (setuid(geteuid()) != 0) {
+        std::cerr << "Failed to drop privileges" << std::endl;
+        return 1;
+    }
+    std::cout << "Privileges have been dropped." << std::endl;
+    return 0;
 }

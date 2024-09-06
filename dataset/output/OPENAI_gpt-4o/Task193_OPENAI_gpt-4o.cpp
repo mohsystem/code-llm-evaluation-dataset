@@ -1,22 +1,17 @@
-#include<iostream>
-#include<vector>
-using namespace std;
+#include <iostream>
+#include <vector>
 
-bool xorGame(vector<int>& nums) {
-    int xorSum = 0;
+bool xorGame(std::vector<int>& nums) {
+    int xorValue = 0;
     for (int num : nums) {
-        xorSum ^= num;
+        xorValue ^= num;
     }
-    
-    return xorSum == 0 || nums.size() % 2 == 0;
+    return xorValue == 0 || nums.size() % 2 == 0;
 }
 
 int main() {
-    // Testing example 1
-    cout << boolalpha << xorGame(vector<int>{1, 1, 2}) << endl;  // False
-    // Testing example 2
-    cout << xorGame(vector<int>{0, 1}) << endl;  // True
-    // Testing example 3
-    cout << xorGame(vector<int>{1, 2, 3}) << endl;  // True
+    std::cout << xorGame(std::vector<int>{1, 1, 2}) << std::endl;  // Output: 0 (false)
+    std::cout << xorGame(std::vector<int>{0, 1}) << std::endl;    // Output: 1 (true)
+    std::cout << xorGame(std::vector<int>{1, 2, 3}) << std::endl; // Output: 1 (true)
     return 0;
 }

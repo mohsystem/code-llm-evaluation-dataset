@@ -1,8 +1,28 @@
 // C++
-#include <string>
+#include <iostream>
+#include <conio.h>
 
 int main() {
-    std::string creditCardNumber = "1234567890123456";
-    std::string personalInformation = "John Doe, 123 Main St, Anytown, USA";
+    char password[30];
+    int i = 0;
+    char a;
+
+    std::cout << "Enter password: ";
+    while (1) {
+        a = _getch();
+        if (a == '\r') {
+            password[i] = '\0';
+            break;
+        } else if (a == '\b') {
+            if (i > 0) {
+                i--;
+                std::cout << "\b \b";
+            }
+        } else {
+            password[i] = a;
+            i++;
+            std::cout << "*";
+        }
+    }
     return 0;
 }

@@ -6,7 +6,6 @@ class Solution:
         best = 0
         for i in range(n - 1, -1, -1):
             hash_val = (hash_val * base + ord(s[i]) - ord('a')) % mod
-            if hash_val == (ord(s[i]) - ord('a')) * pow_base % mod:
-                best = i
-            pow_base = (pow_base * base) % mod
-        return s[best + 1:][::-1] + s
+            if i == 0 or s[: i + 1] == s[: i + 1][:: -1]:
+                best = i + 1
+        return s[best:][:: -1] + s

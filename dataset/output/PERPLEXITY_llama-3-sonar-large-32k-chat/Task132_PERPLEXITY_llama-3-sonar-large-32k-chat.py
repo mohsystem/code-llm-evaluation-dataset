@@ -1,27 +1,16 @@
 import datetime
+import logging
 
-class SecurityEvent:
-    def __init__(self, event_type, description):
-        self.event_type = event_type
-        self.description = description
-        self.timestamp = datetime.datetime.now()
+logging.basicConfig(filename='security_log.txt', level=logging.INFO, format='%(asctime)s - %(message)s')
 
-    def log_event(self):
-        print(f"{self.timestamp} - {self.event_type}: {self.description}")
+def log_event(event):
+    logging.info(event)
 
-class SecurityMonitor:
-    def __init__(self):
-        self.event_log = []
+def monitor_events():
+    while True:
+        event = input("Enter an event (or 'quit' to exit): ")
+        if event.lower() == 'quit':
+            break
+        log_event(event)
 
-    def log_event(self, event):
-        self.event_log.append(event)
-        event.log_event()
-
-    def monitor_events(self):
-        for event in self.event_log:
-            print(f"Monitoring: {event.event_type} - {event.description}")
-
-monitor = SecurityMonitor()
-monitor.log_event(SecurityEvent("Login Attempt", "User attempted to login"))
-monitor.log_event(SecurityEvent("File Access", "User accessed confidential file"))
-monitor.monitor_events()
+monitor_events()

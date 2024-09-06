@@ -3,9 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <openssl/sha.h>
-#include <mysql/mysql.h>
-
-#define MAX_LENGTH 100
+#include <sqlite3.h>
 
 void hash_password(const char* password, char* hashed_password) {
     unsigned char hash[SHA256_DIGEST_LENGTH];
@@ -17,100 +15,59 @@ void hash_password(const char* password, char* hashed_password) {
     for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
         sprintf(&hashed_password[i * 2], "%02x", hash[i]);
     }
-    hashed_password[SHA256_DIGEST_LENGTH * 2] = \'\\0\';
+    hashed_password[SHA256_DIGEST_LENGTH * 2] = '\\0';
 }
 
-void update_password_in_database(const char* username, const char* hashed_password) {
-    MYSQL* conn;
-    MYSQL_STMT* stmt;
-    MYSQL_BIND bind[2];
-    
-    conn = mysql_init(NULL);
-    if (conn == NULL) {
-        fprintf(stderr, "mysql_init() failed\
-");
-        exit(1);
+void update_password(const char* username, const char* new_password) {
+    char hashed_password[SHA256_DIGEST_LENGTH * 2 + 1];
+    hash_password(new_password, hashed_password);
+
+    sqlite3* db;
+    char* err_msg = 0;
+
+    if (sqlite3_open("users.db", &db) != SQLITE_OK) {
+        fprintf(stderr, "Can't open database: %s\\n", sqlite3_errmsg(db));
+        return;
     }
 
-    if (mysql_real_connect(conn, "localhost", "your_username", "your_password", "your_database", 0, NULL, 0) == NULL) {
-        fprintf(stderr, "mysql_real_connect() failed\
-");
-        mysql_close(conn);
-        exit(1);
+    char* create_table_sql = "CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password TEXT);";
+    if (sqlite3_exec(db, create_table_sql, 0, 0, &err_msg) != SQLITE_OK) {
+        fprintf(stderr, "SQL error: %s\\n", err_msg);
+        sqlite3_free(err_msg);
     }
 
-    const char* sql = "UPDATE users SET password = ? WHERE username = ?";
-    stmt = mysql_stmt_init(conn);
-    if (stmt == NULL) {
-        fprintf(stderr, "mysql_stmt_init() failed\
-");
-        mysql_close(conn);
-        exit(1);
+    char update_sql[256];
+    snprintf(update_sql, sizeof(update_sql), "UPDATE users SET password = '%s' WHERE username = '%s';", hashed_password, username);
+    if (sqlite3_exec(db, update_sql, 0, 0, &err_msg) != SQLITE_OK) {
+        fprintf(stderr, "SQL error: %s\\n", err_msg);
+        sqlite3_free(err_msg);
     }
 
-    if (mysql_stmt_prepare(stmt, sql, strlen(sql)) != 0) {
-        fprintf(stderr, "mysql_stmt_prepare() failed\
-");
-        mysql_stmt_close(stmt);
-        mysql_close(conn);
-        exit(1);
+    if (sqlite3_changes(db) == 0) {
+        char insert_sql[256];
+        snprintf(insert_sql, sizeof(insert_sql), "INSERT INTO users (username, password) VALUES ('%s', '%s');", username, hashed_password);
+        if (sqlite3_exec(db, insert_sql, 0, 0, &err_msg) != SQLITE_OK) {
+            fprintf(stderr, "SQL error: %s\\n", err_msg);
+            sqlite3_free(err_msg);
+        }
     }
 
-    memset(bind, 0, sizeof(bind));
-
-    bind[0].buffer_type = MYSQL_TYPE_STRING;
-    bind[0].buffer = (char*)hashed_password;
-    bind[0].buffer_length = strlen(hashed_password);
-
-    bind[1].buffer_type = MYSQL_TYPE_STRING;
-    bind[1].buffer = (char*)username;
-    bind[1].buffer_length = strlen(username);
-
-    if (mysql_stmt_bind_param(stmt, bind) != 0) {
-        fprintf(stderr, "mysql_stmt_bind_param() failed\
-");
-        mysql_stmt_close(stmt);
-        mysql_close(conn);
-        exit(1);
-    }
-
-    if (mysql_stmt_execute(stmt) != 0) {
-        fprintf(stderr, "mysql_stmt_execute() failed\
-");
-        mysql_stmt_close(stmt);
-        mysql_close(conn);
-        exit(1);
-    }
-
-    if (mysql_stmt_affected_rows(stmt) > 0) {
-        printf("Password updated successfully.\
-");
-    } else {
-        printf("User not found.\
-");
-    }
-
-    mysql_stmt_close(stmt);
-    mysql_close(conn);
+    sqlite3_close(db);
 }
 
 int main() {
-    char username[MAX_LENGTH];
-    char password[MAX_LENGTH];
-    char hashed_password[SHA256_DIGEST_LENGTH * 2 + 1];
+    char username[100], new_password[100];
 
     printf("Enter username: ");
-    fgets(username, MAX_LENGTH, stdin);
-    username[strcspn(username, "\
-")] = \'\\0\';
+    fgets(username, sizeof(username), stdin);
+    username[strcspn(username, "\\n")] = 0;
 
     printf("Enter new password: ");
-    fgets(password, MAX_LENGTH, stdin);
-    password[strcspn(password, "\
-")] = \'\\0\';
+    fgets(new_password, sizeof(new_password), stdin);
+    new_password[strcspn(new_password, "\\n")] = 0;
 
-    hash_password(password, hashed_password);
-    update_password_in_database(username, hashed_password);
+    update_password(username, new_password);
+    printf("Password updated successfully.\\n");
 
     return 0;
 }

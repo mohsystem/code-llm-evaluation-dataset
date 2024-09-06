@@ -17,31 +17,31 @@ void initialize(Queue* q) {
 }
 
 bool isEmpty(Queue* q) {
-    return q->front == -1;
+    return (q->front == -1 && q->rear == -1);
 }
 
 bool isFull(Queue* q) {
-    return (q->rear + 1) % MAX_SIZE == q->front;
+    return ((q->rear + 1) % MAX_SIZE == q->front);
 }
 
 void enqueue(Queue* q, int item) {
     if (isFull(q)) {
-        printf("Queue is full\
-");
+        printf("Queue is full\\n");
         return;
     }
     if (isEmpty(q)) {
         q->front = 0;
+        q->rear = 0;
+    } else {
+        q->rear = (q->rear + 1) % MAX_SIZE;
     }
-    q->rear = (q->rear + 1) % MAX_SIZE;
     q->items[q->rear] = item;
 }
 
 int dequeue(Queue* q) {
     if (isEmpty(q)) {
-        printf("Queue is empty\
-");
-        return -1;
+        printf("Queue is empty\\n");
+        return -1;  // Assuming -1 as an invalid value
     }
     int item = q->items[q->front];
     if (q->front == q->rear) {
@@ -55,32 +55,26 @@ int dequeue(Queue* q) {
 
 int peek(Queue* q) {
     if (isEmpty(q)) {
-        printf("Queue is empty\
-");
-        return -1;
+        printf("Queue is empty\\n");
+        return -1;  // Assuming -1 as an invalid value
     }
     return q->items[q->front];
-}
-
-int size(Queue* q) {
-    if (isEmpty(q)) return 0;
-    if (q->rear >= q->front) {
-        return q->rear - q->front + 1;
-    }
-    return MAX_SIZE - q->front + q->rear + 1;
 }
 
 int main() {
     Queue q;
     initialize(&q);
+
     enqueue(&q, 1);
     enqueue(&q, 2);
     enqueue(&q, 3);
-    printf("%d\
-", peek(&q));  // Output: 1
-    printf("%d\
-", dequeue(&q));  // Output: 1
-    printf("%d\
-", size(&q));  // Output: 2
+
+    printf("%d\\n", peek(&q));  // Output: 1
+    printf("%d\\n", dequeue(&q));  // Output: 1
+    printf("%d\\n", dequeue(&q));  // Output: 2
+    printf("%d\\n", isEmpty(&q));  // Output: 0 (false)
+    printf("%d\\n", dequeue(&q));  // Output: 3
+    printf("%d\\n", isEmpty(&q));  // Output: 1 (true)
+
     return 0;
 }

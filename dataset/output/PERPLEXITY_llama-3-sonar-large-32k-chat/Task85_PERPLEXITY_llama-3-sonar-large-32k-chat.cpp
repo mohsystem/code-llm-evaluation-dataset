@@ -4,17 +4,16 @@
 #include <ctime>
 
 std::string generateRandomString(int length) {
-    std::string alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    std::string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     std::string str;
-    srand(static_cast<unsigned int>(time(nullptr)));
+    srand(time(0));
     for (int i = 0; i < length; i++) {
-        str += alphabet[rand() % alphabet.length()];
+        str += chars[rand() % chars.length()];
     }
     return str;
 }
 
 int main() {
-    std::string str = generateRandomString(10);
-    std::cout << str << std::endl;
+    std::cout << generateRandomString(10) << std::endl;
     return 0;
 }

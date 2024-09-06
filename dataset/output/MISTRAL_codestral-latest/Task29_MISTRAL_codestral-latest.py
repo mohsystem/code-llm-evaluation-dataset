@@ -1,6 +1,5 @@
 def two_sum(numbers, target):
-    num_dict = {}
-    for i, num in enumerate(numbers):
-        if target - num in num_dict:
-            return [num_dict[target - num], i]
-        num_dict[num] = i
+    for i in range(len(numbers)):
+        for j in range(i+1, len(numbers)):
+            if numbers[i] + numbers[j] == target:
+                return [i, j]

@@ -1,97 +1,182 @@
 #include <iostream>
 #include <string>
-#include <thread>
 #include <vector>
-#include <map>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <cstring>
+#include <thread>
+#include <mutex>
+#include <unordered_map>
+#include <fstream>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
-const int PORT = 9001;
+#pragma comment(lib, "Ws2_32.lib")
 
-std::map<std::string, std::string> userDatabase = {
-    {"user1", "pass1"},
-    {"user2", "pass2"}
-};
+using namespace std;
 
-void handleClient(int clientSocket) {
-    char buffer[1024] = {0};
-    read(clientSocket, buffer, 1024);
+#define PORT 65432
 
-    std::string request(buffer);
-    std::string response;
+// Global variables
+vector<SOCKET> clientSockets;
+unordered_map<SOCKET, string> clientUsernames;
+mutex clientListMutex;
+unordered_map<string, string> users;
 
-    // Basic parsing for login
-    if (request.substr(0, 5) == "LOGIN") {
-        size_t pos1 = request.find(' ', 5);
-        size_t pos2 = request.find(' ', pos1 + 1);
-        std::string username = request.substr(pos1 + 1, pos2 - pos1 - 1);
-        std::string password = request.substr(pos2 + 1);
+// Function to load users from file
+void loadUsers() {
+    ifstream file("users.txt");
+    string line, username, password;
 
-        if (userDatabase.count(username) > 0 && userDatabase[username] == password) {
-            response = "Welcome, " + username + "!
-";
+    while (getline(file, line)) {
+        stringstream ss(line);
+        getline(ss, username, ':');
+        getline(ss, password);
+        users[username] = password;
+    }
+}
+
+// Function to handle client connections
+void handleClient(SOCKET clientSocket) {
+    char buffer[1024];
+    string username;
+
+    // Authentication loop
+    while (true) {
+        // Receive username
+        recv(clientSocket, buffer, sizeof(buffer), 0);
+        username = string(buffer);
+
+        // Receive password
+        recv(clientSocket, buffer, sizeof(buffer), 0);
+        string password = string(buffer);
+
+        // Authenticate user
+        if (users.find(username) != users.end() && users[username] == password) {
+            // Send success message
+            send(clientSocket, "Login successful!", 17, 0);
+
+            // Add client to list
+            clientListMutex.lock();
+            clientSockets.push_back(clientSocket);
+            clientUsernames[clientSocket] = username;
+            clientListMutex.unlock();
+
+            // Send join message to other clients
+            for (SOCKET socket : clientSockets) {
+                if (socket != clientSocket) {
+                    string message = username + " has joined the chat!";
+                    send(socket, message.c_str(), message.length() + 1, 0);
+                }
+            }
+
+            break;
         } else {
-            response = "Invalid username or password.
-";
+            // Send error message
+            send(clientSocket, "Invalid username or password!", 29, 0);
         }
-    } else {
-        response = "Invalid request.
-";
     }
 
-    send(clientSocket, response.c_str(), response.size(), 0);
-    close(clientSocket);
+    // Chat loop
+    while (true) {
+        // Receive message from client
+        int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+        if (bytesReceived == SOCKET_ERROR) {
+            break;
+        } else if (bytesReceived == 0) {
+            // Connection closed
+            break;
+        }
+
+        // Send message to other clients
+        string message = username + ": " + string(buffer, 0, bytesReceived);
+        clientListMutex.lock();
+        for (SOCKET socket : clientSockets) {
+            if (socket != clientSocket) {
+                send(socket, message.c_str(), message.length() + 1, 0);
+            }
+        }
+        clientListMutex.unlock();
+    }
+
+    // Remove client from list
+    clientListMutex.lock();
+    clientSockets.erase(remove(clientSockets.begin(), clientSockets.end(), clientSocket), clientSockets.end());
+    clientUsernames.erase(clientSocket);
+    clientListMutex.unlock();
+
+    // Send leave message to other clients
+    for (SOCKET socket : clientSockets) {
+        string message = username + " has left the chat!";
+        send(socket, message.c_str(), message.length() + 1, 0);
+    }
+
+    // Close client socket
+    closesocket(clientSocket);
 }
 
 int main() {
-    int serverSocket, clientSocket;
-    struct sockaddr_in address;
-    int opt = 1;
-    int addrlen = sizeof(address);
+    // Load users from file
+    loadUsers();
+
+    // Initialize Winsock
+    WSADATA wsaData;
+    int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (result != 0) {
+        cerr << "WSAStartup failed: " << result << endl;
+        return 1;
+    }
 
     // Create socket
-    serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (serverSocket == 0) {
-        std::cerr << "Socket creation failed" << std::endl;
+    SOCKET listenSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (listenSocket == INVALID_SOCKET) {
+        cerr << "Socket creation failed: " << WSAGetLastError() << endl;
+        WSACleanup();
         return 1;
     }
 
-    // Set socket options
-    if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) {
-        std::cerr << "Setsockopt failed" << std::endl;
+    // Bind socket to address and port
+    sockaddr_in serverAddress;
+    memset(&serverAddress, 0, sizeof(serverAddress));
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_addr.S_un.S_addr = INADDR_ANY;
+    serverAddress.sin_port = htons(PORT);
+    result = bind(listenSocket, (sockaddr*)&serverAddress, sizeof(serverAddress));
+    if (result == SOCKET_ERROR) {
+        cerr << "Bind failed: " << WSAGetLastError() << endl;
+        closesocket(listenSocket);
+        WSACleanup();
         return 1;
     }
 
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
-
-    // Bind socket
-    if (bind(serverSocket, (struct sockaddr*)&address, sizeof(address)) < 0) {
-        std::cerr << "Bind failed" << std::endl;
+    // Listen for incoming connections
+    result = listen(listenSocket, SOMAXCONN);
+    if (result == SOCKET_ERROR) {
+        cerr << "Listen failed: " << WSAGetLastError() << endl;
+        closesocket(listenSocket);
+        WSACleanup();
         return 1;
     }
 
-    // Listen for connections
-    if (listen(serverSocket, 3) < 0) {
-        std::cerr << "Listen failed" << std::endl;
-        return 1;
-    }
+    cout << "Server started on port " << PORT << endl;
 
-    std::cout << "Server started on port " << PORT << std::endl;
-
+    // Accept client connections
     while (true) {
-        clientSocket = accept(serverSocket, (struct sockaddr*)&address, (socklen_t*)&addrlen);
-        if (clientSocket < 0) {
-            std::cerr << "Accept failed" << std::endl;
-            return 1;
+        sockaddr_in clientAddress;
+        int clientAddressSize = sizeof(clientAddress);
+        SOCKET clientSocket = accept(listenSocket, (sockaddr*)&clientAddress, &clientAddressSize);
+        if (clientSocket == INVALID_SOCKET) {
+            cerr << "Accept failed: " << WSAGetLastError() << endl;
+            continue;
         }
 
-        std::thread clientThread(handleClient, clientSocket);
+        // Create a new thread to handle the client connection
+        thread clientThread(handleClient, clientSocket);
         clientThread.detach();
     }
+
+    // Close listen socket
+    closesocket(listenSocket);
+
+    // Clean up Winsock
+    WSACleanup();
 
     return 0;
 }

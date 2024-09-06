@@ -1,70 +1,73 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct TreeNode {
-    int value;
+typedef struct TreeNode {
+    int val;
     struct TreeNode** children;
-    int children_size;
-};
+    int childrenCount;
+} TreeNode;
 
-struct TreeNode* create_node(int value) {
-    struct TreeNode* node = (struct TreeNode*)malloc(sizeof(struct TreeNode));
-    node->value = value;
+TreeNode* newTreeNode(int val) {
+    TreeNode* node = (TreeNode*) malloc(sizeof(TreeNode));
+    node->val = val;
     node->children = NULL;
-    node->children_size = 0;
+    node->childrenCount = 0;
     return node;
 }
 
-void add_child(struct TreeNode* parent, struct TreeNode* child) {
-    parent->children_size++;
-    parent->children = (struct TreeNode**)realloc(parent->children, parent->children_size * sizeof(struct TreeNode*));
-    parent->children[parent->children_size - 1] = child;
+TreeNode* reorientTree(TreeNode* node, TreeNode* root) {
+    if (root == NULL) root = newTreeNode(node->val);
+    root->children = (TreeNode**) malloc(node->childrenCount * sizeof(TreeNode*));
+    root->childrenCount = node->childrenCount;
+    for (int i = 0; i < node->childrenCount; i++) {
+        root->children[i] = reorientTree(node->children[i], NULL);
+    }
+    return root;
 }
 
-struct TreeNode** build_tree(int edges[][2], int edges_size) {
-    struct TreeNode** nodes = (struct TreeNode**)calloc(10, sizeof(struct TreeNode*)); // Assume max 10 nodes for simplicity
-    for (int i = 0; i < edges_size; i++) {
-        int parent = edges[i][0], child = edges[i][1];
-        if (nodes[parent] == NULL) nodes[parent] = create_node(parent);
-        if (nodes[child] == NULL) nodes[child] = create_node(child);
-        add_child(nodes[parent], nodes[child]);
-    }
-    return nodes;
-}
-
-void reorient_tree(struct TreeNode* node, struct TreeNode* parent) {
-    if (parent) {
-        for (int i = 0; i < node->children_size; i++) {
-            if (node->children[i] == parent) {
-                node->children[i] = node->children[node->children_size - 1];
-                node->children_size--;
-                node->children = (struct TreeNode**)realloc(node->children, node->children_size * sizeof(struct TreeNode*));
-                break;
-            }
-        }
-        add_child(node, parent);
-    }
-    for (int i = 0; i < node->children_size; i++) {
-        reorient_tree(node->children[i], node);
-    }
-}
-
-void print_tree(struct TreeNode* root, int level) {
-    if (!root) return;
-    printf("%*s%d
-", level * 2, "", root->value);
-    for (int i = 0; i < root->children_size; i++) {
-        print_tree(root->children[i], level + 1);
+void printTree(TreeNode* node, int level) {
+    for (int i = 0; i < level * 2; i++) printf(" ");
+    printf("%d\n", node->val);
+    for (int i = 0; i < node->childrenCount; i++) {
+        printTree(node->children[i], level + 1);
     }
 }
 
 int main() {
-    int edges[][2] = {{0, 1}, {0, 2}, {0, 3}, {1, 4}, {1, 5}, {2, 6}, {2, 7}, {3, 8}, {3, 9}};
-    int edges_size = sizeof(edges) / sizeof(edges[0]);
-    struct TreeNode** nodes = build_tree(edges, edges_size);
-    reorient_tree(nodes[0], NULL);
-    struct TreeNode* new_root = nodes[6];
-    reorient_tree(new_root, NULL);
-    print_tree(new_root, 0);
+    TreeNode* n0 = newTreeNode(0);
+    TreeNode* n1 = newTreeNode(1);
+    TreeNode* n2 = newTreeNode(2);
+    TreeNode* n3 = newTreeNode(3);
+    TreeNode* n4 = newTreeNode(4);
+    TreeNode* n5 = newTreeNode(5);
+    TreeNode* n6 = newTreeNode(6);
+    TreeNode* n7 = newTreeNode(7);
+    TreeNode* n8 = newTreeNode(8);
+    TreeNode* n9 = newTreeNode(9);
+
+    n0->childrenCount = 3;
+    n0->children = (TreeNode**) malloc(n0->childrenCount * sizeof(TreeNode*));
+    n0->children[0] = n1;
+    n0->children[1] = n2;
+    n0->children[2] = n3;
+
+    n1->childrenCount = 2;
+    n1->children = (TreeNode**) malloc(n1->childrenCount * sizeof(TreeNode*));
+    n1->children[0] = n4;
+    n1->children[1] = n5;
+
+    n2->childrenCount = 2;
+    n2->children = (TreeNode**) malloc(n2->childrenCount * sizeof(TreeNode*));
+    n2->children[0] = n6;
+    n2->children[1] = n7;
+
+    n3->childrenCount = 2;
+    n3->children = (TreeNode**) malloc(n3->childrenCount * sizeof(TreeNode*));
+    n3->children[0] = n8;
+    n3->children[1] = n9;
+
+    TreeNode* newRoot = reorientTree(n6, NULL);
+    printTree(newRoot, 0);
+
     return 0;
 }

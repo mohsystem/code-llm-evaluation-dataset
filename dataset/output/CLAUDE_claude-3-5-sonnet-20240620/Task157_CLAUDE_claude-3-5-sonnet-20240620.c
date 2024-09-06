@@ -7,15 +7,13 @@ int main() {
     int* ptr = (int*)malloc(10 * sizeof(int));
 
     if (ptr == NULL) {
-        printf("Memory allocation failed\
-");
+        printf("Memory allocation failed\\n");
         return 1;
     }
 
-    // Use the allocated memory
+    // Use the memory
     ptr[0] = 5;
-    printf("%d\
-", ptr[0]);
+    printf("%d\\n", ptr[0]);
 
     // Deallocate memory
     free(ptr);

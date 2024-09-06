@@ -1,16 +1,16 @@
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 #include <vector>
 
-int longestRun(std::vector<int> arr) {
-    if (arr.empty()) {
+int longestRun(std::vector<int> nums) {
+    if (nums.empty()) {
         return 0;
     }
-    std::sort(arr.begin(), arr.end());
+    std::sort(nums.begin(), nums.end());
     int longest_run = 1;
     int current_run = 1;
-    for (int i = 1; i < arr.size(); i++) {
-        if (arr[i] - arr[i-1] == 1) {
+    for (int i = 1; i < nums.size(); i++) {
+        if (nums[i] - nums[i-1] == 1) {
             current_run += 1;
         } else {
             longest_run = std::max(longest_run, current_run);
@@ -21,7 +21,7 @@ int longestRun(std::vector<int> arr) {
 }
 
 int main() {
-    std::vector<int> arr = {1, 2, 3, 5, 6, 7, 8, 9};
-    std::cout << longestRun(arr) << std::endl;
+    std::vector<int> nums = {1, 2, 3, 5, 6, 7, 8, 9};
+    std::cout << longestRun(nums) << std::endl;
     return 0;
 }

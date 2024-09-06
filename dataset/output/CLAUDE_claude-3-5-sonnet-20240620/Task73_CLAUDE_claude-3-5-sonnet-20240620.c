@@ -2,39 +2,55 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #define MAX_PASSWORD_LENGTH 100
 
-int isValidPassword(const char* password) {
-    int len = strlen(password);
-    int hasUpper = 0, hasLower = 0, hasDigit = 0, hasSpecial = 0;
-    const char* specialChars = "!@#$%^&*()_+-=[]{};\':\\"\\\\|,.<>/?";
-
-    if (len < 12) return 0;
-
-    for (int i = 0; i < len; i++) {
-        if (isupper(password[i])) hasUpper = 1;
-        else if (islower(password[i])) hasLower = 1;
-        else if (isdigit(password[i])) hasDigit = 1;
-        else if (strchr(specialChars, password[i])) hasSpecial = 1;
+bool isValidAdminPassword(const char* password) {
+    int length = strlen(password);
+    if (length < 12) {
+        return false;
     }
 
-    return hasUpper && hasLower && hasDigit && hasSpecial;
+    bool hasUppercase = false;
+    bool hasLowercase = false;
+    bool hasDigit = false;
+    bool hasSpecialChar = false;
+
+    for (int i = 0; i < length; i++) {
+        if (isupper(password[i])) hasUppercase = true;
+        if (islower(password[i])) hasLowercase = true;
+        if (isdigit(password[i])) hasDigit = true;
+        if (strchr("!@#$%^&*(),.?\\":{}|<>", password[i])) hasSpecialChar = true;
+    }
+
+    if (!hasUppercase || !hasLowercase || !hasDigit || !hasSpecialChar) {
+        return false;
+    }
+
+    char lowercasePassword[MAX_PASSWORD_LENGTH];
+    strcpy(lowercasePassword, password);
+    for (int i = 0; i < length; i++) {
+        lowercasePassword[i] = tolower(lowercasePassword[i]);
+    }
+
+    if (strstr(lowercasePassword, "admin") != NULL) {
+        return false;
+    }
+
+    return true;
 }
 
 int main() {
     char password[MAX_PASSWORD_LENGTH];
-    printf("Enter password: ");
+    printf("Enter the admin password: ");
     fgets(password, sizeof(password), stdin);
-    password[strcspn(password, "\
-")] = 0;  // Remove newline
+    password[strcspn(password, "\\n")] = 0; // Remove newline
 
-    if (isValidPassword(password)) {
-        printf("Password is valid.\
-");
+    if (isValidAdminPassword(password)) {
+        printf("Password is valid\\n");
     } else {
-        printf("Password is invalid.\
-");
+        printf("Password is invalid\\n");
     }
 
     return 0;

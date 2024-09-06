@@ -1,24 +1,27 @@
 #include <iostream>
 #include <vector>
 
-int findOutlier(const std::vector<int>& arr) {
-    int oddCount = 0, evenCount = 0, oddNum = 0, evenNum = 0;
-    for (int i = 0; i < arr.size() && (oddCount == 0 || evenCount == 0); ++i) {
-        if (arr[i] % 2 == 0) {
-            evenCount++;
-            evenNum = arr[i];
+int findOutlier(const std::vector<int>& integers) {
+    std::vector<int> odds;
+    std::vector<int> evens;
+
+    for (int i : integers) {
+        if (i % 2 == 0) {
+            evens.push_back(i);
         } else {
-            oddCount++;
-            oddNum = arr[i];
+            odds.push_back(i);
         }
     }
-    return oddCount == 1 ? oddNum : evenNum;
+
+    return odds.size() == 1 ? odds[0] : evens[0];
 }
 
 int main() {
-    std::vector<int> example1 = {2, 4, 0, 100, 4, 11, 2602, 36};
-    std::vector<int> example2 = {160, 3, 1719, 19, 11, 13, -21};
-    std::cout << findOutlier(example1) << std::endl;  // Should print 11
-    std::cout << findOutlier(example2) << std::endl;  // Should print 160
+    std::vector<int> vec1 = {2, 4, 0, 100, 4, 11, 2602, 36};
+    std::vector<int> vec2 = {160, 3, 1719, 19, 11, 13, -21};
+
+    std::cout << findOutlier(vec1) << std::endl;  // Output: 11
+    std::cout << findOutlier(vec2) << std::endl;  // Output: 160
+
     return 0;
 }

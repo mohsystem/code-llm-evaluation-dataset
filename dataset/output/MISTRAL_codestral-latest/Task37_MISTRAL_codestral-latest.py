@@ -1,21 +1,24 @@
-# Python
-import mysql.connector
+# Python code using sqlite3 module
+import sqlite3
 
-mydb = mysql.connector.connect(
-  host="localhost",
-  user="username",
-  password="password",
-  database="myDatabase"
-)
+# Connect to the SQLite database
+conn = sqlite3.connect('my_database.db')
 
-mycursor = mydb.cursor()
+# Create a cursor object
+cursor = conn.cursor()
 
+# Get username from user
 username = input("Enter username: ")
 
-query = "SELECT * FROM Users WHERE username = %s"
-mycursor.execute(query, (username,))
+# Execute the query
+cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
 
-myresult = mycursor.fetchall()
+# Fetch the results
+results = cursor.fetchall()
 
-for x in myresult:
-  print(x)
+# Print the results
+for row in results:
+    print(row)
+
+# Close the connection
+conn.close()

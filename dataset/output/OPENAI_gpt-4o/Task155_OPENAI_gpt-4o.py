@@ -1,54 +1,36 @@
 import ctypes
 
-class JavaHeapSort:
-    # Java code as a string
-    java_code = """
-    import java.util.Scanner;
+class Sorting:
+    @staticmethod
+    def heapify(arr, n, i):
+        largest = i 
+        l = 2 * i + 1     
+        r = 2 * i + 2     
 
-    public class JavaHeapSort {
-        public void sort(int arr[]) {
-            int n = arr.length;
-            for (int i = n / 2 - 1; i >= 0; i--)
-                heapify(arr, n, i);
-            for (int i = n - 1; i >= 0; i--) {
-                int temp = arr[0];
-                arr[0] = arr[i];
-                arr[i] = temp;
-                heapify(arr, i, 0);
-            }
-        }
-        
-        void heapify(int arr[], int n, int i) {
-            int largest = i;
-            int left = 2 * i + 1;
-            int right = 2 * i + 2;
-            if (left < n && arr[left] > arr[largest])
-                largest = left;
-            if (right < n && arr[right] > arr[largest])
-                largest = right;
-            if (largest != i) {
-                int swap = arr[i];
-                arr[i] = arr[largest];
-                arr[largest] = swap;
-                heapify(arr, n, largest);
-            }
-        }
-        
-        public static void main(String args[]) {
-            Scanner sc = new Scanner(System.in);
-            System.out.println("Enter number of elements in array:");
-            int n = sc.nextInt();
-            int arr[] = new int[n];
-            System.out.println("Enter elements:");
-            for (int i = 0; i < n; i++) {
-                arr[i] = sc.nextInt();
-            }
-            JavaHeapSort ob = new JavaHeapSort();
-            ob.sort(arr);
-            System.out.println("Sorted array is:");
-            for (int i = 0; i < n; i++) {
-                System.out.print(arr[i] + " ");
-            }
-        }
-    }
-    """
+        if l < n and arr[i] < arr[l]:
+            largest = l
+
+        if r < n and arr[largest] < arr[r]:
+            largest = r
+
+        if largest != i:
+            arr[i], arr[largest] = arr[largest], arr[i]
+            Sorting.heapify(arr, n, largest)
+
+    @staticmethod
+    def heapSort(arr):
+        n = len(arr)
+        for i in range(n // 2 - 1, -1, -1):
+            Sorting.heapify(arr, n, i)
+        for i in range(n-1, 0, -1):
+            arr[i], arr[0] = arr[0], arr[i]
+            Sorting.heapify(arr, i, 0)
+
+class Main:
+    @staticmethod
+    def main():
+        arr = [4, 10, 3, 5, 1]
+        Sorting.heapSort(arr)
+        print("Sorted array is:", arr)
+
+Main.main()

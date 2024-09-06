@@ -2,37 +2,23 @@
 #include <stdlib.h>
 #include <time.h>
 
-int generateRandomNumber(int min, int max) {
-  srand(time(NULL));
-  return rand() % (max - min + 1) + min;
-}
-
-char* generateRandomToken(int length) {
-  const char characters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  char *token = malloc(length + 1);
-  if (token == NULL) {
-    return NULL;
-  }
-
-  srand(time(NULL));
-  for (int i = 0; i < length; ++i) {
-    token[i] = characters[rand() % (sizeof(characters) - 1)];
-  }
-  token[length] = '\0';
-  return token;
-}
-
 int main() {
-  int randomNumber = generateRandomNumber(1, 10);
-  printf("Random number between 1 and 10: %d
-", randomNumber);
+    // Seed the random number generator
+    srand(time(NULL));
 
-  char *randomToken = generateRandomToken(20);
-  if (randomToken != NULL) {
-    printf("Random token of length 20: %s
-", randomToken);
-    free(randomToken);
-  }
+    // Generate a random integer between 1 and 10
+    int randomInteger = rand() % 10 + 1;
+    printf("Random Integer: %d\n", randomInteger);
 
-  return 0;
+    // Generate a random floating-point number between 0 and 1
+    double randomDouble = (double)rand() / RAND_MAX;
+    printf("Random Double: %f\n", randomDouble);
+
+    // Generate a random element from an array
+    char *fruits[] = {"apple", "banana", "cherry"};
+    int randomIndex = rand() % 3;
+    char *randomFruit = fruits[randomIndex];
+    printf("Random Fruit: %s\n", randomFruit);
+
+    return 0;
 }

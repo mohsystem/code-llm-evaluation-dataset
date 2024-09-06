@@ -1,45 +1,35 @@
 
 #include <iostream>
 #include <string>
-#include <limits>
+#include <regex>
 
-int getValidNumber(int min, int max) {
-    int number;
-    while (true) {
-        std::cout << "Enter a number between " << min << " and " << max << ": ";
-        if (std::cin >> number && number >= min && number <= max) {
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), \'\
-\');
-            return number;
-        } else {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), \'\
-\');
-            std::cout << "Invalid input. ";
-        }
-    }
+bool validateInput(const std::string& input) {
+    std::regex pattern("^[a-zA-Z0-9\\\\s]+$");
+    return std::regex_match(input, pattern);
 }
 
-std::string getValidString(int maxLength) {
-    std::string input;
-    while (true) {
-        std::cout << "Enter your name (max " << maxLength << " characters): ";
-        std::getline(std::cin, input);
-        if (!input.empty() && input.length() <= maxLength) {
-            return input;
-        } else {
-            std::cout << "Invalid input. ";
-        }
+std::string processInput(std::string input) {
+    for (char& c : input) {
+        c = std::toupper(c);
     }
+    return input;
 }
 
 int main() {
-    int number = getValidNumber(1, 100);
-    std::string name = getValidString(50);
+    std::string userInput;
 
-    std::cout << "Hello, " << name << "!" << std::endl;
-    std::cout << "Your number squared is: " << (number * number) << std::endl;
-    std::cout << "Your number cubed is: " << (number * number * number) << std::endl;
+    while (true) {
+        std::cout << "Enter some text (alphanumeric characters and spaces only): ";
+        std::getline(std::cin, userInput);
+
+        if (validateInput(userInput)) {
+            std::string processedInput = processInput(userInput);
+            std::cout << "Processed input: " << processedInput << std::endl;
+            break;
+        } else {
+            std::cout << "Invalid input. Please try again." << std::endl;
+        }
+    }
 
     return 0;
 }

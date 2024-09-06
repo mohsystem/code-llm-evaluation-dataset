@@ -2,30 +2,33 @@
 #include <regex.h>
 
 int isValidEmail(const char *email) {
-    regex_t regex;
-    int reti;
+  regex_t regex;
+  int result;
 
-    reti = regcomp(&regex, "^[A-Za-z0-9+_.-]+@(.+)$", REG_EXTENDED);
-    if (reti) {
-        fprintf(stderr, "Could not compile regex
-");
-        return 0;
-    }
+  // Compile the regular expression
+  result = regcomp(&regex, "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", REG_EXTENDED);
+  if (result) {
+    return 0; // Failed to compile
+  }
 
-    reti = regexec(&regex, email, 0, NULL, 0);
-    regfree(&regex);
+  // Match the email against the regex
+  result = regexec(&regex, email, 0, NULL, 0);
+  regfree(&regex);
 
-    return reti == 0;
+  return result == 0; // 0 means match, non-zero means no match
 }
 
 int main() {
-    const char *email = "user@example.com";
-    if (isValidEmail(email)) {
-        printf("Valid Email
-");
-    } else {
-        printf("Invalid Email
-");
-    }
-    return 0;
+  char email[256];
+  printf("Enter an email address: ");
+  fgets(email, sizeof(email), stdin);
+  email[strcspn(email, "\n")] = 0; // Remove trailing newline
+
+  if (isValidEmail(email)) {
+    printf("Valid email address\n");
+  } else {
+    printf("Invalid email address\n");
+  }
+
+  return 0;
 }

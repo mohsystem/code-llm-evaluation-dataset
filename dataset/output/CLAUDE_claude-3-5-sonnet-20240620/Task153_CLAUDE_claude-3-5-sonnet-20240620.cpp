@@ -5,19 +5,19 @@
 #include <unordered_set>
 #include <vector>
 
-void bfs(const std::unordered_map<int, std::vector<int>>& graph, int start) {
-    std::unordered_set<int> visited;
-    std::queue<int> queue;
+void bfs(const std::unordered_map<char, std::vector<char>>& graph, char start) {
+    std::unordered_set<char> visited;
+    std::queue<char> queue;
 
     queue.push(start);
     visited.insert(start);
 
     while (!queue.empty()) {
-        int vertex = queue.front();
+        char vertex = queue.front();
         queue.pop();
         std::cout << vertex << " ";
 
-        for (int neighbor : graph.at(vertex)) {
+        for (char neighbor : graph.at(vertex)) {
             if (visited.find(neighbor) == visited.end()) {
                 visited.insert(neighbor);
                 queue.push(neighbor);
@@ -27,15 +27,17 @@ void bfs(const std::unordered_map<int, std::vector<int>>& graph, int start) {
 }
 
 int main() {
-    std::unordered_map<int, std::vector<int>> graph = {
-        {0, {1, 2}},
-        {1, {2}},
-        {2, {0, 3}},
-        {3, {3}}
+    std::unordered_map<char, std::vector<char>> graph = {
+        {'A', {'B', 'C'}},
+        {'B', {'A', 'D', 'E'}},
+        {'C', {'A', 'F'}},
+        {'D', {'B'}},
+        {'E', {'B', 'F'}},
+        {'F', {'C', 'E'}}
     };
 
-    std::cout << "BFS starting from vertex 2:" << std::endl;
-    bfs(graph, 2);
+    std::cout << "BFS starting from vertex 'A':" << std::endl;
+    bfs(graph, 'A');
 
     return 0;
 }

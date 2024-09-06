@@ -1,35 +1,41 @@
 #include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include <regex.h>
 
-bool isValidNumber(char *num) {
-    int len = strlen(num);
-    if(len > 3) return false;
-    for(int i = 0; i < len; i++) {
-        if ((num[i] < '0' || num[i] > '9')) return false;
+bool validateIP(const char *ip) {
+    regex_t regex;
+    const char *pattern = "^([0-9]{1,3}\\.){3}[0-9]{1,3}$";
+    if (regcomp(&regex, pattern, REG_EXTENDED|REG_NOSUB) != 0) {
+        return false;
     }
-    if (atoi(num) > 255 || (num[0] == '0' && len > 1)) return false;
+    if (regexec(&regex, ip, 0, NULL, 0) != 0) {
+        regfree(&regex);
+        return false;
+    }
+    regfree(&regex);
+    
+    char ipCopy[16];
+    strcpy(ipCopy, ip);
+    char *token = strtok(ipCopy, ".");
+    while (token != NULL) {
+        int num = atoi(token);
+        if (num < 0 || num > 255) {
+            return false;
+        }
+        token = strtok(NULL, ".");
+    }
     return true;
 }
 
-bool isValidIPAddress(char *ip) {
-    int numCount = 0;
-    char *token = strtok(ip, ".");
-    while(token) {
-        if (!isValidNumber(token)) return false;
-        token = strtok(NULL, ".");
-        numCount++;
-    }
-    return numCount == 4;
-}
-
 int main() {
-    char ip1[] = "192.168.0.1";
-    char ip2[] = "256.256.256.256";
-    printf("%d
-", isValidIPAddress(ip1)); // true - 1
-    printf("%d
-", isValidIPAddress(ip2)); // false - 0
+    const char *ips[] = {"192.168.1.1", "256.256.256.256", "123.045.067.089"};
+    printf("Validated IPs: ");
+    for (int i = 0; i < 3; i++) {
+        if (validateIP(ips[i])) {
+            printf("%s ", ips[i]);
+        }
+    }
     return 0;
 }

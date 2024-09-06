@@ -1,15 +1,14 @@
 import sys
 import requests
-import re
+from bs4 import BeautifulSoup
 
-if len(sys.argv) > 1:
-    url = sys.argv[1]
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            html = response.text
-            title_match = re.search(r'<title>(.*?)</title>', html)
-            if title_match:
-                print(title_match.group(1))
-    except Exception as e:
-        print(e)
+if len(sys.argv) != 2:
+    print("Usage: python script.py <URL>")
+    sys.exit(1)
+
+url = sys.argv[1]
+response = requests.get(url)
+soup = BeautifulSoup(response.content, 'html.parser')
+title = soup.title.string
+
+print(title)

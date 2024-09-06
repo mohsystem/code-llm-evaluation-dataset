@@ -1,24 +1,37 @@
 #include <stdio.h>
 #include <string.h>
 
-void dna_complement(char* dna, char* result) {
-    int len = strlen(dna);
-    for (int i = 0; i < len; i++) {
-        if (dna[i] == 'A') result[i] = 'T';
-        else if (dna[i] == 'T') result[i] = 'A';
-        else if (dna[i] == 'C') result[i] = 'G';
-        else if (dna[i] == 'G') result[i] = 'C';
+void dnaStrand(const char* dna, char* complement) {
+    int i;
+    for (i = 0; dna[i] != '\0'; i++) {
+        switch (dna[i]) {
+            case 'A':
+                complement[i] = 'T';
+                break;
+            case 'T':
+                complement[i] = 'A';
+                break;
+            case 'C':
+                complement[i] = 'G';
+                break;
+            case 'G':
+                complement[i] = 'C';
+                break;
+        }
     }
-    result[len] = '\0';
+    complement[i] = '\0';
 }
 
 int main() {
-    char* inputs[] = {"ATTGC", "GTAT"};
-    for (int i = 0; i < 2; i++) {
-        char result[100];
-        dna_complement(inputs[i], result);
-        printf("%s
-", result);
-    }
+    char dna1[] = "ATTGC";
+    char dna2[] = "GTAT";
+    char complement1[6], complement2[5];
+
+    dnaStrand(dna1, complement1);
+    dnaStrand(dna2, complement2);
+
+    printf("%s\n", complement1);  // Output: TAACG
+    printf("%s\n", complement2);  // Output: CATA
+
     return 0;
 }

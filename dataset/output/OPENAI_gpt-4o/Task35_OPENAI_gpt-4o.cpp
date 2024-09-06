@@ -1,17 +1,17 @@
 #include <iostream>
 #include <vector>
 
-int peopleOnBus(const std::vector<std::pair<int, int>>& busStops) {
-    int people = 0;
+int numberOfPeople(const std::vector<std::pair<int, int>>& busStops) {
+    int totalPeople = 0;
     for (const auto& stop : busStops) {
-        people += stop.first;
-        people -= stop.second;
+        totalPeople += stop.first;
+        totalPeople -= stop.second;
     }
-    return people;
+    return totalPeople;
 }
 
 int main() {
-    std::vector<std::pair<int, int>> busStops = {{3, 0}, {2, 1}, {5, 3}, {2, 2}};
-    std::cout << peopleOnBus(busStops) << std::endl;
+    std::vector<std::pair<int, int>> busStops = {{10, 0}, {3, 5}, {5, 8}};
+    std::cout << numberOfPeople(busStops) << std::endl; // Output: 5
     return 0;
 }

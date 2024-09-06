@@ -4,7 +4,7 @@ buffer = [0] * buffer_size
 for i in range(buffer_size):
     buffer[i] = i
 while True:
-    index = int(input("Enter the index to read (or -1 to quit): "))
+    index = int(input("Enter the index to read from the buffer (or -1 to exit): "))
     if index == -1:
         break
     if index < 0 or index >= buffer_size:

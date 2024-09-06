@@ -1,80 +1,66 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX 1000
+#define SIZE 100
 
-typedef struct {
-    int array[MAX];
+struct Queue {
+    int items[SIZE];
     int front;
     int rear;
-} Queue;
+};
 
-void initialize(Queue *q) {
+struct Queue* createQueue() {
+    struct Queue* q = (struct Queue*)malloc(sizeof(struct Queue));
     q->front = -1;
     q->rear = -1;
+    return q;
 }
 
-int is_empty(Queue *q) {
-    return q->front == -1;
+int isEmpty(struct Queue* q) {
+    return q->rear == -1;
 }
 
-void enqueue(Queue *q, int item) {
-    if (q->rear == MAX - 1) {
-        printf("Queue overflow
-");
-        return;
+void enqueue(struct Queue* q, int value) {
+    if (q->rear == SIZE - 1)
+        printf("Queue is Full\n");
+    else {
+        if (q->front == -1)
+            q->front = 0;
+        q->rear++;
+        q->items[q->rear] = value;
     }
-    if (q->front == -1) {
-        q->front = 0;
-    }
-    q->array[++q->rear] = item;
 }
 
-int dequeue(Queue *q) {
-    if (is_empty(q)) {
-        printf("Queue underflow
-");
+int dequeue(struct Queue* q) {
+    int item;
+    if (isEmpty(q)) {
+        printf("Queue is empty\n");
         return -1;
-    }
-    int item = q->array[q->front];
-    if (q->front >= q->rear) {
-        q->front = q->rear = -1;
     } else {
+        item = q->items[q->front];
         q->front++;
+        if (q->front > q->rear) {
+            q->front = q->rear = -1;
+        }
+        return item;
     }
-    return item;
 }
 
-int peek(Queue *q) {
-    if (is_empty(q)) {
-        printf("Queue is empty
-");
+int peek(struct Queue* q) {
+    if (isEmpty(q)) {
+        printf("Queue is empty\n");
         return -1;
     }
-    return q->array[q->front];
+    return q->items[q->front];
 }
 
-// Test the queue
 int main() {
-    Queue q;
-    initialize(&q);
+    struct Queue* q = createQueue();
 
-    enqueue(&q, 1);
-    enqueue(&q, 2);
-    enqueue(&q, 3);
-    printf("%d
-", peek(&q));  // Output: 1
-    printf("%d
-", dequeue(&q));  // Output: 1
-    printf("%d
-", dequeue(&q));  // Output: 2
-    enqueue(&q, 4);
-    printf("%d
-", peek(&q));  // Output: 3
-    printf("%d
-", dequeue(&q));  // Output: 3
-    printf("%d
-", dequeue(&q));  // Output: 4
-    
+    enqueue(q, 10);
+    enqueue(q, 20);
+    enqueue(q, 30);
+    printf("%d\n", dequeue(q));  // 10
+    printf("%d\n", peek(q));  // 20
     return 0;
 }

@@ -1,43 +1,58 @@
-// C
-// This is a simplified example using libxmlrpc.
-// A real-world application would require more complex error handling and memory management.
+// C does not have built-in XML-RPC server, you need to use a third-party library like libxmlrpc.
+// Here is a simple example using libxmlrpc:
+
+#include <stdio.h>
+#include <stdlib.h>
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/server.h>
 #include <xmlrpc-c/server_abyss.h>
 
-static xmlrpc_value *
-method_sample(xmlrpc_env * const envP,
-              xmlrpc_value * const paramArrayP,
-              void * const serverInfo,
-              void * const channelInfo) {
-    xmlrpc_value * resultP;
-    xmlrpc_value * paramP;
-    char * param;
-
-    paramP = xmlrpc_array_elt(paramArrayP, 0);
-    param = xmlrpc_get_string(envP, paramP);
-
-    resultP = xmlrpc_build_value(envP, "{s:s}", "result", xmlrpc_string_new(envP, param));
-    free(param);
-
-    return resultP;
+xmlrpc_value* add(xmlrpc_env* const envP, xmlrpc_value* const paramArrayP, void* const serverInfo, void* const userData) {
+    int sum = 0;
+    int i;
+    for (i = 0; i < xmlrpc_array_size(envP, paramArrayP); i++) {
+        xmlrpc_value* valueP;
+        xmlrpc_array_read_item(envP, paramArrayP, i, &valueP);
+        xmlrpc_int32 value;
+        xmlrpc_read_int(envP, valueP, &value);
+        sum += value;
+    }
+    return xmlrpc_build_value(envP, "i", sum);
 }
 
-int main(void) {
-    xmlrpc_server * serverP;
-    xmlrpc_registry * registryP;
+int main() {
+    xmlrpc_server* serverP;
+    xmlrpc_server_abyss_parms serverparm;
+    xmlrpc_registry* registryP;
     xmlrpc_env env;
 
     xmlrpc_env_init(&env);
-    serverP = xmlrpc_server_abyss_new(&env, 8080, NULL, NULL);
-    registryP = xmlrpc_registry_new(&env);
-    xmlrpc_registry_add_method(&env, registryP, NULL, "sample", method_sample, NULL);
-    xmlrpc_server_set_registry(serverP, registryP, NULL);
-    xmlrpc_server_run(serverP);
+    serverP = xmlrpc_server_abyss_new(&env, XMLRPC_SERVER_ABYSS_FLAGS_NONE, "localhost", 8000, NULL, 0);
+    if (serverP == NULL) {
+        fprintf(stderr, "xmlrpc_server_abyss_new() failed.  Error code is %d\n", env.fault_occurred);
+        return 1;
+    }
 
-    xmlrpc_server_destroy(serverP);
-    xmlrpc_registry_free(registryP);
-    xmlrpc_env_clean(&env);
+    registryP = xmlrpc_registry_new(&env);
+    if (registryP == NULL) {
+        fprintf(stderr, "xmlrpc_registry_new() failed.  Error code is %d\n", env.fault_occurred);
+        return 1;
+    }
+
+    xmlrpc_registry_add_method(&env, registryP, NULL, "add", add, NULL);
+    if (env.fault_occurred) {
+        fprintf(stderr, "xmlrpc_registry_add_method() failed.  Error code is %d\n", env.fault_occurred);
+        return 1;
+    }
+
+    serverparm.registryP = registryP;
+    serverparm.config_file_name = NULL;
+    serverparm.flags = XMLRPC_SERVER_ABYSS_FLAGS_NONE;
+
+    if (!xmlrpc_server_abyss(serverP, &serverparm, XMLRPC_APSIZE(serverparm))) {
+        fprintf(stderr, "xmlrpc_server_abyss() failed.  Error code is %d\n", env.fault_occurred);
+        return 1;
+    }
 
     return 0;
 }

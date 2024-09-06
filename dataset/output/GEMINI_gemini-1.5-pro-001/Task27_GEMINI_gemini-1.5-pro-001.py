@@ -1,17 +1,10 @@
 def find_outlier(integers):
-    even = 0
-    odd = 0
-    even_num = 0
-    odd_num = 0
-    for i in range(len(integers)):
-        if integers[i] % 2 == 0:
-            even += 1
-            even_num = integers[i]
-        else:
-            odd += 1
-            odd_num = integers[i]
-
-    if even > 1:
-        return odd_num
+    parity = integers[0] % 2 + integers[1] % 2 + integers[2] % 2
+    if parity < 2:
+        for i in integers:
+            if i % 2 != 0:
+                return i
     else:
-        return even_num
+        for i in integers:
+            if i % 2 == 0:
+                return i

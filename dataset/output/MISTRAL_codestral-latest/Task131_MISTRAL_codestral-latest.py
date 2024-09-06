@@ -1,4 +1,4 @@
-import json
+import pickle
 
-def deserialize_json(json_data):
-    return json.loads(json_data)
+def deserialize_data(data):
+    return pickle.loads(data)

@@ -8,33 +8,26 @@ typedef struct {
     int top;
 } Stack;
 
-void init(Stack *stack) {
-    stack->top = -1;
-}
-
-void push(Stack *stack, int item) {
-    if (stack->top >= MAX_SIZE - 1) {
-        printf("Stack overflow
-");
+void push(Stack* stack, int item) {
+    if (stack->top >= MAX_SIZE) {
+        printf("Stack overflow\n");
         return;
     }
-    stack->items[++stack->top] = item;
+    stack->items[stack->top++] = item;
 }
 
-int pop(Stack *stack) {
-    if (stack->top < 0) {
-        printf("Stack underflow
-");
-        exit(EXIT_FAILURE);
+int pop(Stack* stack) {
+    if (stack->top <= 0) {
+        printf("Stack underflow\n");
+        return -1;
     }
-    return stack->items[stack->top--];
+    return stack->items[--stack->top];
 }
 
-int peek(Stack *stack) {
-    if (stack->top < 0) {
-        printf("Stack is empty
-");
-        exit(EXIT_FAILURE);
+int peek(Stack* stack) {
+    if (stack->top <= 0) {
+        printf("Stack is empty\n");
+        return -1;
     }
-    return stack->items[stack->top];
+    return stack->items[stack->top - 1];
 }

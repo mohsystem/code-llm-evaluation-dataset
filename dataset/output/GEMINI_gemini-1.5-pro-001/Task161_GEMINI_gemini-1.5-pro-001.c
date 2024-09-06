@@ -1,9 +1,12 @@
 #include <stdio.h>
 
-int max(int a, int b) { return (a > b) ? a : b; }
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
 
 int knapsack(int capacity, int weights[], int values[], int n) {
     int dp[n + 1][capacity + 1];
+
     for (int i = 0; i <= n; i++) {
         for (int w = 0; w <= capacity; w++) {
             if (i == 0 || w == 0) {
@@ -15,6 +18,7 @@ int knapsack(int capacity, int weights[], int values[], int n) {
             }
         }
     }
+
     return dp[n][capacity];
 }
 
@@ -24,7 +28,6 @@ int main() {
     int capacity = 50;
     int n = sizeof(values) / sizeof(values[0]);
     int max_value = knapsack(capacity, weights, values, n);
-    printf("Maximum value: %d
-", max_value);
+    printf("Maximum value: %d\n", max_value);
     return 0;
 }

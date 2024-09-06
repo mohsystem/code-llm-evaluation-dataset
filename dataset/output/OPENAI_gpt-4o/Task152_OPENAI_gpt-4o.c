@@ -1,90 +1,49 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #define SIZE 10
 
-typedef struct HashNode {
+typedef struct {
     int key;
-    char value[50];
-    struct HashNode* next;
-} HashNode;
+    char value[256];
+} HashEntry;
 
-HashNode* hashTable[SIZE];
+HashEntry* table[SIZE];
 
-unsigned int hashFunction(int key) {
+int hashFunction(int key) {
     return key % SIZE;
 }
 
-void insert(int key, char* value) {
-    unsigned int hashKey = hashFunction(key);
-    HashNode* newNode = (HashNode*) malloc(sizeof(HashNode));
-    newNode->key = key;
-    strcpy(newNode->value, value);
-    newNode->next = NULL;
+void insert(int key, const char* value) {
+    int hashKey = hashFunction(key);
+    table[hashKey] = malloc(sizeof(HashEntry));
+    table[hashKey]->key = key;
+    strcpy(table[hashKey]->value, value);
+}
 
-    if (hashTable[hashKey] == NULL) {
-        hashTable[hashKey] = newNode;
-    } else {
-        HashNode* temp = hashTable[hashKey];
-        while (temp->next != NULL) {
-            if (temp->key == key) {
-                strcpy(temp->value, value);
-                free(newNode);
-                return;
-            }
-            temp = temp->next;
-        }
-        temp->next = newNode;
+void deleteKey(int key) {
+    int hashKey = hashFunction(key);
+    if (table[hashKey] != NULL) {
+        free(table[hashKey]);
+        table[hashKey] = NULL;
     }
 }
 
-void delete(int key) {
-    unsigned int hashKey = hashFunction(key);
-    HashNode* temp = hashTable[hashKey];
-    HashNode* prev = NULL;
-
-    while (temp != NULL && temp->key != key) {
-        prev = temp;
-        temp = temp->next;
+const char* search(int key) {
+    int hashKey = hashFunction(key);
+    if (table[hashKey] != NULL) {
+        return table[hashKey]->value;
     }
-
-    if (temp == NULL) return;
-
-    if (prev == NULL) {
-        hashTable[hashKey] = temp->next;
-    } else {
-        prev->next = temp->next;
-    }
-
-    free(temp);
-}
-
-char* search(int key) {
-    unsigned int hashKey = hashFunction(key);
-    HashNode* temp = hashTable[hashKey];
-
-    while (temp != NULL) {
-        if (temp->key == key) {
-            return temp->value;
-        }
-        temp = temp->next;
-    }
-    return "None";
+    return NULL;
 }
 
 int main() {
-    for (int i = 0; i < SIZE; i++) {
-        hashTable[i] = NULL;
-    }
-
     insert(1, "one");
     insert(2, "two");
-    printf("%s
-", search(1)); // should print "one"
-    delete(1);
-    printf("%s
-", search(1)); // should print "None"
-
+    insert(11, "eleven");
+    printf("Search key 1: %s\n", search(1));
+    printf("Search key 2: %s\n", search(2));
+    deleteKey(1);
+    printf("Search key 1 after deletion: %s\n", search(1));
     return 0;
 }

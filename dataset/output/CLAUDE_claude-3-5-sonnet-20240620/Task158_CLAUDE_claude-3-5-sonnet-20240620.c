@@ -7,15 +7,14 @@
 
 int main() {
     char userInput[MAX_INPUT];
-    char command[MAX_INPUT + 5];  // 5 extra chars for "echo "
-    
+    char command[MAX_INPUT + 5];  // Extra space for "echo " and null terminator
+
     printf("Enter data: ");
-    fgets(userInput, MAX_INPUT, stdin);
-    userInput[strcspn(userInput, "\
-")] = 0;  // Remove newline
-    
+    fgets(userInput, sizeof(userInput), stdin);
+    userInput[strcspn(userInput, "\\n")] = 0;  // Remove newline if present
+
     snprintf(command, sizeof(command), "echo %s", userInput);
     system(command);
-    
+
     return 0;
 }

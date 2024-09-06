@@ -1,14 +1,26 @@
+// C++
 #include <iostream>
+#include <string>
+
+bool validateInput(const std::string& userInput) {
+    // Add your validation logic here
+    return true;
+}
+
+void performOperations(const std::string& userInput) {
+    // Add your operations here
+    std::cout << "Performing operations on: " << userInput << std::endl;
+}
 
 int main() {
-    double num;
+    std::string userInput;
+    std::cout << "Enter something: ";
+    std::getline(std::cin, userInput);
 
-    std::cout << "Enter a number: ";
-
-    if (std::cin >> num) {
-        std::cout << "The square of the number is: " << num * num << std::endl;
+    if (validateInput(userInput)) {
+        performOperations(userInput);
     } else {
-        std::cout << "Invalid input. Please enter a number." << std::endl;
+        std::cout << "Invalid input" << std::endl;
     }
 
     return 0;

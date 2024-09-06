@@ -1,39 +1,44 @@
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad, unpad
-import os
+# Python code
+def caesar_encrypt(text, shift):
+    result = ""
 
-def encrypt(file_to_encrypt, encrypted_file, key):
-    cipher = AES.new(key, AES.MODE_ECB)
-    with open(file_to_encrypt, 'rb') as fis:
-        with open(encrypted_file, 'wb') as fos:
-            while True:
-                buffer = fis.read(1024)
-                if not buffer:
-                    break
-                padded_buffer = pad(buffer, AES.block_size)
-                encrypted_buffer = cipher.encrypt(padded_buffer)
-                fos.write(encrypted_buffer)
+    for char in text:
+        if char.isalpha():
+            ascii_offset = 65 if char.isupper() else 97
+            result += chr((ord(char) - ascii_offset + shift) % 26 + ascii_offset)
+        else:
+            result += char
 
-def decrypt(encrypted_file, decrypted_file, key):
-    cipher = AES.new(key, AES.MODE_ECB)
-    with open(encrypted_file, 'rb') as fis:
-        with open(decrypted_file, 'wb') as fos:
-            while True:
-                buffer = fis.read(1024)
-                if not buffer:
-                    break
-                decrypted_buffer = cipher.decrypt(buffer)
-                unpadded_buffer = unpad(decrypted_buffer, AES.block_size)
-                fos.write(unpadded_buffer)
+    return result
 
-def main():
-    file_to_encrypt = "input.txt"
-    encrypted_file = "encrypted.txt"
-    decrypted_file = "decrypted.txt"
-    key = os.urandom(16)  # 16 bytes key for AES-128
+def caesar_decrypt(text, shift):
+    result = ""
 
-    encrypt(file_to_encrypt, encrypted_file, key)
-    decrypt(encrypted_file, decrypted_file, key)
+    for char in text:
+        if char.isalpha():
+            ascii_offset = 65 if char.isupper() else 97
+            result += chr((ord(char) - ascii_offset - shift) % 26 + ascii_offset)
+        else:
+            result += char
 
-if __name__ == "__main__":
-    main()
+    return result
+
+def encrypt_file(file_path, shift):
+    with open(file_path, 'r') as file:
+        text = file.read()
+    encrypted_text = caesar_encrypt(text, shift)
+    with open(file_path, 'w') as file:
+        file.write(encrypted_text)
+
+def decrypt_file(file_path, shift):
+    with open(file_path, 'r') as file:
+        text = file.read()
+    decrypted_text = caesar_decrypt(text, shift)
+    with open(file_path, 'w') as file:
+        file.write(decrypted_text)
+
+# Example usage
+file_path = 'example.txt'
+shift = 3
+encrypt_file(file_path, shift)
+decrypt_file(file_path, shift)

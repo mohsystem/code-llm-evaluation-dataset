@@ -1,22 +1,22 @@
 #include <stdio.h>
-#include <stdlib.h>
 
-int maxSubArray(int *nums, int length) {
-    int maxSum = nums[0];
-    int currentSum = nums[0];
-    for (int i = 1; i < length; i++) {
-        currentSum = (nums[i] > currentSum + nums[i]) ? nums[i] : currentSum + nums[i];
-        maxSum = (maxSum > currentSum) ? maxSum : currentSum;
+int maxSubArraySum(int arr[], int size) {
+    int maxCurrent = arr[0];
+    int maxGlobal = arr[0];
+
+    for (int i = 1; i < size; i++) {
+        maxCurrent = arr[i] > (maxCurrent + arr[i]) ? arr[i] : (maxCurrent + arr[i]);
+        if (maxCurrent > maxGlobal) {
+            maxGlobal = maxCurrent;
+        }
     }
-    return maxSum;
+    return maxGlobal;
 }
 
-int main(int argc, char *argv[]) {
-    int nums[argc - 1];
-    for (int i = 1; i < argc; i++) {
-        nums[i - 1] = atoi(argv[i]);
-    }
-    printf("C: %d
-", maxSubArray(nums, argc - 1));
+int main() {
+    int arr[] = {1, -3, 2, 1, -1};
+    int size = sizeof(arr)/sizeof(arr[0]);
+
+    printf("Max contiguous subarray sum is: %d\n", maxSubArraySum(arr, size));
     return 0;
 }

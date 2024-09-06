@@ -1,24 +1,23 @@
-// C++
 #include <iostream>
 #include <string>
-#include <cctype>
 
-std::string encrypt(std::string text, int s) {
-    for (int i = 0; i < text.length(); i++) {
-        if (isupper(text[i]))
-            text[i] = (text[i] + s - 65) % 26 + 65;
-        else
-            text[i] = (text[i] + s - 97) % 26 + 97;
+std::string encryptString(const std::string& inputString, int key) {
+    std::string encryptedString;
+    for (char c : inputString) {
+        if (std::isalpha(c)) {
+            int asciiOffset = std::isupper(c) ? 65 : 97;
+            encryptedString += static_cast<char>((c - asciiOffset + key) % 26 + asciiOffset);
+        } else {
+            encryptedString += c;
+        }
     }
-
-    return text;
+    return encryptedString;
 }
 
 int main() {
-    std::string text = "HELLO";
-    int s = 4;
-    std::cout << "Text : " << text << std::endl;
-    std::cout << "Shift : " << s << std::endl;
-    std::cout << "Cipher: " << encrypt(text, s) << std::endl;
+    std::string inputString = "HELLO WORLD";
+    int key = 3;
+    std::string encryptedString = encryptString(inputString, key);
+    std::cout << encryptedString << std::endl;
     return 0;
 }

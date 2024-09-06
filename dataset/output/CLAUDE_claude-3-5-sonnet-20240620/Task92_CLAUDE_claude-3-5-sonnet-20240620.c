@@ -2,42 +2,64 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
-#define MAX_COUNTER 10
-#define NUM_THREADS 5
+typedef struct {
+    int currentCounter;
+    int maxCounter;
+    pthread_mutex_t mutex;
+} SharedResource;
 
-int currentCounter = 0;
-pthread_mutex_t lock;
+void initSharedResource(SharedResource* resource, int maxCounter) {
+    resource->currentCounter = 0;
+    resource->maxCounter = maxCounter;
+    pthread_mutex_init(&resource->mutex, NULL);
+}
 
-void* counterThread(void* arg) {
-    while (true) {
-        if (currentCounter <= MAX_COUNTER) {
-            pthread_mutex_lock(&lock);
-            if (currentCounter <= MAX_COUNTER) {
-                currentCounter++;
-                printf("Thread %ld accessing counter: %d\
-", (long)pthread_self(), currentCounter);
-            }
-            pthread_mutex_unlock(&lock);
-        } else {
-            break;
+bool accessResource(SharedResource* resource, int threadId) {
+    bool accessed = false;
+    if (resource->currentCounter <= resource->maxCounter) {
+        pthread_mutex_lock(&resource->mutex);
+        if (resource->currentCounter <= resource->maxCounter) {
+            resource->currentCounter++;
+            printf("Thread %d accessing. Current counter: %d\\n", threadId, resource->currentCounter);
+            accessed = resource->currentCounter <= resource->maxCounter;
         }
+        pthread_mutex_unlock(&resource->mutex);
     }
+    return accessed;
+}
+
+void* threadFunction(void* arg) {
+    int* threadId = (int*)arg;
+    SharedResource* resource = (SharedResource*)((void**)arg)[1];
+    
+    while (accessResource(resource, *threadId)) {
+        // Continue accessing the resource
+    }
+    
+    free(threadId);
     return NULL;
 }
 
 int main() {
-    pthread_t threads[NUM_THREADS];
-    pthread_mutex_init(&lock, NULL);
+    const int maxCounter = 10;
+    const int numThreads = 5;
+    SharedResource sharedResource;
+    initSharedResource(&sharedResource, maxCounter);
 
-    for (int i = 0; i < NUM_THREADS; i++) {
-        pthread_create(&threads[i], NULL, counterThread, NULL);
+    pthread_t threads[numThreads];
+    for (int i = 0; i < numThreads; i++) {
+        int* threadId = malloc(sizeof(int));
+        *threadId = i;
+        void* args[2] = {threadId, &sharedResource};
+        pthread_create(&threads[i], NULL, threadFunction, args);
     }
 
-    for (int i = 0; i < NUM_THREADS; i++) {
+    for (int i = 0; i < numThreads; i++) {
         pthread_join(threads[i], NULL);
     }
 
-    pthread_mutex_destroy(&lock);
+    pthread_mutex_destroy(&sharedResource.mutex);
     return 0;
 }

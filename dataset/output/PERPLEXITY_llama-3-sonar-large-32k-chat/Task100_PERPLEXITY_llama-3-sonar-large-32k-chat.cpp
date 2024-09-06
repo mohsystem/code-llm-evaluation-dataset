@@ -1,28 +1,32 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
+#include <string>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 3) {
-        std::cout << "Usage: " << argv[0] << " <pattern> <file>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " pattern file_name" << std::endl;
         return 1;
     }
+
     std::string pattern = argv[1];
-    std::string file = argv[2];
-    std::regex regex(pattern);
-    std::ifstream fp(file);
-    if (!fp) {
-        std::cout << "Could not open file" << std::endl;
+    std::string file_name = argv[2];
+
+    std::ifstream file(file_name);
+    if (!file) {
+        std::cerr << "Failed to open file " << file_name << std::endl;
         return 1;
     }
+
+    std::regex re(pattern);
     std::string line;
-    while (std::getline(fp, line)) {
+    while (std::getline(file, line)) {
         std::smatch match;
-        while (std::regex_search(line, match, regex)) {
+        while (std::regex_search(line, match, re)) {
             std::cout << match.str() << std::endl;
             line = match.suffix();
         }
     }
-    fp.close();
+
     return 0;
 }

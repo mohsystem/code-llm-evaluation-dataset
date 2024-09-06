@@ -1,31 +1,30 @@
+// C code
+
 #include <stdio.h>
 #include <stdlib.h>
 
 int main() {
-    int size = 10;
-    char* buffer = (char*)malloc(size * sizeof(char));
+    int size;
 
-    // Fill the buffer with some data
-    for (int i = 0; i < size; i++) {
-        buffer[i] = 'A' + i;
+    printf("Enter the size of the buffer: ");
+    scanf("%d", &size);
+    int *buffer = (int*)malloc(size * sizeof(int));
+    
+    if (buffer == NULL) {
+        printf("Memory allocation failed.\n");
+        return 1;
     }
 
-    int index;
-    // Allow the user to read data from the buffer
     while (1) {
-        printf("Enter index to read (0-%d) or -1 to exit: ", size-1);
-        scanf("%d", &index);
+        int idx;
+        printf("Enter index (-1 to quit): ");
+        scanf("%d", &idx);
+        if (idx == -1) break;
 
-        if (index == -1) {
-            break;
-        }
-
-        if (index >= 0 && index < size) {
-            printf("Data at index %d: %c
-", index, buffer[index]);
+        if (idx >= 0 && idx < size) {
+            printf("Value at index %d: %d\n", idx, buffer[idx]);
         } else {
-            printf("Index out of bounds
-");
+            printf("Index out of bounds.\n");
         }
     }
 

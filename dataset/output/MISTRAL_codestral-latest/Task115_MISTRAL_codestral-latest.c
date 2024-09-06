@@ -1,16 +1,7 @@
-#include <stdio.h>
+// C does not support bit fields in structs in the same way as C++ or Java.
+// However, you can use bitwise operators to manipulate individual bits.
+// Here's an example of how you might define a struct with three bits:
 
-typedef struct {
-    unsigned int bitField : 32;
-} BitFieldExample;
-
-int getBit(BitFieldExample bfe, int position) {
-    return ((bfe.bitField & (1 << position)) != 0);
-}
-
-void setBit(BitFieldExample *bfe, int position, int value) {
-    if (value)
-        bfe->bitField |= (1 << position);
-    else
-        bfe->bitField &= ~(1 << position);
-}
+struct BitFields {
+    unsigned char bits : 3;
+};

@@ -1,22 +1,32 @@
 #include <iostream>
-#include <cstdlib>
+#include <cstdio>
 #include <cstring>
 
-#define MAX_COMMAND_LENGTH 100
+bool validateCommand(const std::string& command) {
+    // Simple validation: check if command is not empty
+    return !command.empty() && command.find_first_not_of(' ') != std::string::npos;
+}
 
 int main() {
-    char command[MAX_COMMAND_LENGTH];
+    std::string command;
+    std::cout << "Enter a bash shell command: ";
+    std::getline(std::cin, command);
 
-    std::cout << "Enter a shell command:
-";
-    std::cin.getline(command, MAX_COMMAND_LENGTH);
+    if (validateCommand(command)) {
+        FILE* pipe = popen(command.c_str(), "r");
+        if (!pipe) {
+            std::cerr << "Error: Failed to execute command" << std::endl;
+            return 1;
+        }
 
-    int result = std::system(command);
+        char buffer[256];
+        while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+            std::cout << buffer;
+        }
 
-    if (result == -1) {
-        std::cerr << "Error executing command
-";
-        return 1;
+        pclose(pipe);
+    } else {
+        std::cout << "Invalid command" << std::endl;
     }
 
     return 0;

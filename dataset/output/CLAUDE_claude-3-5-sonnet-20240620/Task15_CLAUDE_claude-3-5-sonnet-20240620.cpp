@@ -3,24 +3,25 @@
 #include <vector>
 #include <string>
 
-class Kata {
-public:
-    static std::vector<std::string> towerBuilder(int nFloors) {
-        std::vector<std::string> tower;
-        for (int i = 0; i < nFloors; i++) {
-            std::string floor(2 * nFloors - 1, \' \');
-            for (int j = nFloors - i - 1; j < nFloors + i; j++) {
-                floor[j] = \'*\';
-            }
-            tower.push_back(floor);
-        }
-        return tower;
+std::vector<std::string> towerBuilder(int nFloors) {
+    std::vector<std::string> tower;
+    for (int i = 0; i < nFloors; i++) {
+        std::string spaces(nFloors - i - 1, ' ');
+        std::string stars(2 * i + 1, '*');
+        tower.push_back(spaces + stars + spaces);
     }
-};
+    return tower;
+}
 
 int main() {
-    std::vector<std::string> tower = Kata::towerBuilder(6);
-    for (const auto& floor : tower) {
+    auto tower3 = towerBuilder(3);
+    for (const auto& floor : tower3) {
+        std::cout << floor << std::endl;
+    }
+    std::cout << std::endl;
+
+    auto tower6 = towerBuilder(6);
+    for (const auto& floor : tower6) {
         std::cout << floor << std::endl;
     }
     return 0;

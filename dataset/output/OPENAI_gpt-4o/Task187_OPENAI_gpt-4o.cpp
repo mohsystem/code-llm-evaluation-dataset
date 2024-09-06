@@ -1,35 +1,60 @@
-#include <semaphore.h>
-#include <functional>
+#include <iostream>
+#include <thread>
 #include <mutex>
+#include <condition_variable>
+#include <functional>
 
 class H2O {
 private:
-    sem_t hSemaphore;
-    sem_t oSemaphore;
     std::mutex mtx;
-    int hCount = 0;
+    std::condition_variable cv;
+    int hydrogen_count{0};
 
 public:
-    H2O() {
-        sem_init(&hSemaphore, 0, 2);
-        sem_init(&oSemaphore, 0, 0);
-    }
-
     void hydrogen(std::function<void()> releaseHydrogen) {
-        sem_wait(&hSemaphore);
-        releaseHydrogen();
         std::unique_lock<std::mutex> lock(mtx);
-        hCount++;
-        if (hCount == 2) {
-            hCount = 0;
-            sem_post(&oSemaphore);
+        cv.wait(lock, [&] { return hydrogen_count < 2; });
+        releaseHydrogen();
+        hydrogen_count++;
+        if (hydrogen_count == 2) {
+            cv.notify_all();
         }
     }
 
     void oxygen(std::function<void()> releaseOxygen) {
-        sem_wait(&oSemaphore);
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait(lock, [&] { return hydrogen_count == 2; });
         releaseOxygen();
-        sem_post(&hSemaphore);
-        sem_post(&hSemaphore);
+        hydrogen_count = 0;
+        cv.notify_all();
     }
 };
+
+// Simulation
+void releaseHydrogen() {
+    std::cout << "H";
+}
+
+void releaseOxygen() {
+    std::cout << "O";
+}
+
+int main() {
+    H2O h2o;
+    std::string water = "HOH";
+    std::thread threads[water.length()];
+
+    for (size_t i = 0; i < water.length(); ++i) {
+        if (water[i] == 'H') {
+            threads[i] = std::thread(&H2O::hydrogen, &h2o, releaseHydrogen);
+        } else {
+            threads[i] = std::thread(&H2O::oxygen, &h2o, releaseOxygen);
+        }
+    }
+
+    for (auto& th : threads) {
+        th.join();
+    }
+
+    return 0;
+}

@@ -56,12 +56,12 @@ void bfs(int graph[MAX_VERTICES][MAX_VERTICES], int start, int vertices) {
     enqueue(&q, start);
 
     while (!isEmpty(&q)) {
-        int vertex = dequeue(&q);
+        int currentVertex = dequeue(&q);
 
         for (int i = 0; i < vertices; i++) {
-            if (graph[vertex][i] == 1 && !visited[i]) {
-                printf("%d ", i);
+            if (graph[currentVertex][i] == 1 && !visited[i]) {
                 visited[i] = true;
+                printf("%d ", i);
                 enqueue(&q, i);
             }
         }
@@ -69,17 +69,18 @@ void bfs(int graph[MAX_VERTICES][MAX_VERTICES], int start, int vertices) {
 }
 
 int main() {
-    int vertices = 4;
+    int vertices = 6;
     int graph[MAX_VERTICES][MAX_VERTICES] = {
-        {0, 1, 1, 0},
-        {0, 0, 1, 0},
-        {1, 0, 0, 1},
-        {0, 0, 0, 1}
+        {0, 1, 1, 0, 0, 0},
+        {1, 0, 0, 1, 1, 0},
+        {1, 0, 0, 0, 0, 1},
+        {0, 1, 0, 0, 0, 0},
+        {0, 1, 0, 0, 0, 1},
+        {0, 0, 1, 0, 1, 0}
     };
 
-    printf("BFS starting from vertex 2:\
-");
-    bfs(graph, 2, vertices);
+    printf("BFS starting from vertex 0:\\n");
+    bfs(graph, 0, vertices);
 
     return 0;
 }

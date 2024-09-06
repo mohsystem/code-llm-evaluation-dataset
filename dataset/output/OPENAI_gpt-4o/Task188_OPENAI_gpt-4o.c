@@ -3,62 +3,57 @@
 
 typedef struct {
     int n;
-    int foo_done;
-    pthread_mutex_t mutex;
+    pthread_mutex_t lock;
     pthread_cond_t cond;
+    bool fooTurn;
 } FooBar;
 
-void FooBar_init(FooBar* fb, int n) {
-    fb->n = n;
-    fb->foo_done = 0;
-    pthread_mutex_init(&fb->mutex, NULL);
-    pthread_cond_init(&fb->cond, NULL);
-}
-
 void* foo(void* arg) {
-    FooBar* fb = (FooBar*)arg;
-    for (int i = 0; i < fb->n; i++) {
-        pthread_mutex_lock(&fb->mutex);
-        printf("foo");
-        fb->foo_done = 1;
-        pthread_cond_signal(&fb->cond);
-        while (fb->foo_done) {
-            pthread_cond_wait(&fb->cond, &fb->mutex);
+    FooBar* fooBar = (FooBar*)arg;
+    for (int i = 0; i < fooBar->n; ++i) {
+        pthread_mutex_lock(&fooBar->lock);
+        while (!fooBar->fooTurn) {
+            pthread_cond_wait(&fooBar->cond, &fooBar->lock);
         }
-        pthread_mutex_unlock(&fb->mutex);
+        printf("foo");
+        fooBar->fooTurn = false;
+        pthread_cond_signal(&fooBar->cond);
+        pthread_mutex_unlock(&fooBar->lock);
     }
     return NULL;
 }
 
 void* bar(void* arg) {
-    FooBar* fb = (FooBar*)arg;
-    for (int i = 0; i < fb->n; i++) {
-        pthread_mutex_lock(&fb->mutex);
-        while (!fb->foo_done) {
-            pthread_cond_wait(&fb->cond, &fb->mutex);
+    FooBar* fooBar = (FooBar*)arg;
+    for (int i = 0; i < fooBar->n; ++i) {
+        pthread_mutex_lock(&fooBar->lock);
+        while (fooBar->fooTurn) {
+            pthread_cond_wait(&fooBar->cond, &fooBar->lock);
         }
         printf("bar");
-        fb->foo_done = 0;
-        pthread_cond_signal(&fb->cond);
-        pthread_mutex_unlock(&fb->mutex);
+        fooBar->fooTurn = true;
+        pthread_cond_signal(&fooBar->cond);
+        pthread_mutex_unlock(&fooBar->lock);
     }
     return NULL;
 }
 
 int main() {
-    int n = 2; // Change as needed
-    FooBar fb;
-    FooBar_init(&fb, n);
+    int n = 2;
+    FooBar fooBar;
+    fooBar.n = n;
+    pthread_mutex_init(&fooBar.lock, NULL);
+    pthread_cond_init(&fooBar.cond, NULL);
+    fooBar.fooTurn = true;
 
     pthread_t threadA, threadB;
-    pthread_create(&threadA, NULL, foo, &fb);
-    pthread_create(&threadB, NULL, bar, &fb);
-
+    pthread_create(&threadA, NULL, foo, &fooBar);
+    pthread_create(&threadB, NULL, bar, &fooBar);
     pthread_join(threadA, NULL);
     pthread_join(threadB, NULL);
 
-    pthread_mutex_destroy(&fb.mutex);
-    pthread_cond_destroy(&fb->cond);
-    
+    pthread_mutex_destroy(&fooBar.lock);
+    pthread_cond_destroy(&fooBar.cond);
+
     return 0;
 }

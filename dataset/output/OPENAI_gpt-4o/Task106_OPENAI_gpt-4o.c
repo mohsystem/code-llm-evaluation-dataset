@@ -1,67 +1,82 @@
+// C RSA Encryption and Decryption
 #include <stdio.h>
-#include <stdlib.h>
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
 #include <string.h>
-#include <gmp.h>
-
-void generate_keys(mpz_t n, mpz_t d, mpz_t e, int bits) {
-    mpz_t p, q, phi, temp;
-    mpz_inits(p, q, phi, temp, NULL);
-    gmp_randstate_t state;
-
-    gmp_randinit_default(state);
-    gmp_randseed_ui(state, time(NULL));
-    
-    mpz_urandomb(p, state, bits / 2);
-    mpz_nextprime(p, p);
-
-    mpz_urandomb(q, state, bits / 2);
-    mpz_nextprime(q, q);
-
-    mpz_mul(n, p, q);
-    
-    mpz_sub_ui(p, p, 1);
-    mpz_sub_ui(q, q, 1);
-    mpz_mul(phi, p, q);
-
-    mpz_set_ui(e, 65537);
-    mpz_invert(d, e, phi);
-
-    mpz_clears(p, q, phi, temp, NULL);
-    gmp_randclear(state);
-}
-
-void encrypt(mpz_t r, mpz_t m, mpz_t e, mpz_t n) {
-    mpz_powm(r, m, e, n);
-}
-
-void decrypt(mpz_t r, mpz_t c, mpz_t d, mpz_t n) {
-    mpz_powm(r, c, d, n);
-}
 
 int main() {
-    mpz_t n, d, e, plaintext, ciphertext, decrypted;
-    mpz_inits(n, d, e, plaintext, ciphertext, decrypted, NULL);
+    int bits = 2048;
+    unsigned long e = RSA_F4;
+    RSA *rsa = RSA_generate_key(bits, e, NULL, NULL);
 
-    generate_keys(n, d, e, 1024);
+    BIO *pri = BIO_new(BIO_s_mem());
+    BIO *pub = BIO_new(BIO_s_mem());
 
-    char message[] = "Hello RSA!";
-    mpz_import(plaintext, strlen(message), 1, 1, 0, 0, message);
+    PEM_write_bio_RSAPrivateKey(pri, rsa, NULL, NULL, 0, NULL, NULL);
+    PEM_write_bio_RSAPublicKey(pub, rsa);
 
-    gmp_printf("Plaintext: %Zd
-", plaintext);
+    size_t pri_len = BIO_pending(pri);
+    size_t pub_len = BIO_pending(pub);
 
-    encrypt(ciphertext, plaintext, e, n);
-    gmp_printf("Encrypted: %Zd
-", ciphertext);
+    char *pri_key = (char*)malloc(pri_len + 1);
+    char *pub_key = (char*)malloc(pub_len + 1);
 
-    decrypt(decrypted, ciphertext, d, n);
-    int count;
-    unsigned char* decrypted_str = mpz_export(NULL, &count, 1, 1, 0, 0, decrypted);
-    printf("Decrypted: %.*s
-", count, decrypted_str);
-    
-    mpz_clears(n, d, e, plaintext, ciphertext, decrypted, NULL);
-    free(decrypted_str);
+    BIO_read(pri, pri_key, pri_len);
+    BIO_read(pub, pub_key, pub_len);
+
+    pri_key[pri_len] = '\0';
+    pub_key[pub_len] = '\0';
+
+    printf("Public Key: \n%s\n", pub_key);
+    printf("Private Key: \n%s\n", pri_key);
+
+    char message[] = "This is a secret message";
+
+    RSA *rsa_public = RSA_new();
+    BIO *pubbio = BIO_new_mem_buf(pub_key, -1);
+    PEM_read_bio_RSAPublicKey(pubbio, &rsa_public, NULL, NULL);
+
+    char *encrypted = (char*)malloc(RSA_size(rsa_public));
+    int encrypted_length = RSA_public_encrypt(strlen(message), (unsigned char*)message, (unsigned char*)encrypted, rsa_public, RSA_PKCS1_OAEP_PADDING);
+
+    if(encrypted_length == -1) {
+        char err[130];
+        ERR_load_crypto_strings();
+        ERR_error_string(ERR_get_error(), err);
+        printf("Encryption Error: %s\n", err);
+    } else {
+        printf("Encrypted: %s\n", encrypted);
+    }
+
+    RSA *rsa_private = RSA_new();
+    BIO *pribio = BIO_new_mem_buf(pri_key, -1);
+    PEM_read_bio_RSAPrivateKey(pribio, &rsa_private, NULL, NULL);
+
+    char *decrypted = (char*)malloc(encrypted_length);
+    int decrypted_length = RSA_private_decrypt(encrypted_length, (unsigned char*)encrypted, (unsigned char*)decrypted, rsa_private, RSA_PKCS1_OAEP_PADDING);
+
+    if(decrypted_length == -1) {
+        char err[130];
+        ERR_load_crypto_strings();
+        ERR_error_string(ERR_get_error(), err);
+        printf("Decryption Error: %s\n", err);
+    } else {
+        decrypted[decrypted_length] = '\0';
+        printf("Decrypted: %s\n", decrypted);
+    }
+
+    RSA_free(rsa);
+    RSA_free(rsa_public);
+    RSA_free(rsa_private);
+    BIO_free_all(pri);
+    BIO_free_all(pub);
+    BIO_free_all(pubbio);
+    BIO_free_all(pribio);
+    free(pri_key);
+    free(pub_key);
+    free(encrypted);
+    free(decrypted);
 
     return 0;
 }

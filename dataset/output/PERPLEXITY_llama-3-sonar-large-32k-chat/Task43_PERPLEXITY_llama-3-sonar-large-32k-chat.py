@@ -1,28 +1,34 @@
-from flask import Flask, request, session
-
+# Python code using Flask framework
+from flask import Flask, session, request, redirect, url_for
 app = Flask(__name__)
-app.secret_key = 'secret_key_here'
+app.secret_key = 'super secret key'
 
-sessions = {}
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if username == 'admin' and password == 'password':
+            session['username'] = username
+            return redirect(url_for('home'))
+    return '''
+        <form action="" method="post">
+            <input type="text" name="username" placeholder="Username">
+            <input type="password" name="password" placeholder="Password">
+            <input type="submit" value="Login">
+        </form>
+    '''
 
-@app.route('/session', methods=['GET'])
-def manage_session():
-    action = request.args.get('action')
-    if action == 'create':
-        create_session()
-    elif action == 'terminate':
-        terminate_session(request.args.get('sessionId'))
-    return ''
+@app.route('/home')
+def home():
+    if 'username' in session:
+        return 'Welcome, ' + session['username']
+    return redirect(url_for('login'))
 
-def create_session():
-    session_id = session.sid
-    sessions[session_id] = session
-    return ''
-
-def terminate_session(session_id):
-    if session_id in sessions:
-        del sessions[session_id]
-    return ''
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)

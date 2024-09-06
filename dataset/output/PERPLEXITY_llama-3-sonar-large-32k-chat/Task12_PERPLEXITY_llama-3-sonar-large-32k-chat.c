@@ -1,24 +1,20 @@
 #include <stdio.h>
 #include <string.h>
 
-int score(char *word) {
-    int score = 0;
-    for (; *word; word++) {
-        score += *word - 'a' + 1;
-    }
-    return score;
-}
-
-char *high(const char *s) {
-    char *maxWord = strtok((char *)s, " ");
-    int maxScore = score(maxWord);
-    char *word;
-    while ((word = strtok(NULL, " ")) != NULL) {
-        int score = score(word);
+char* high(const char* s) {
+    static char maxWord[100];
+    int maxScore = 0;
+    char* token = strtok((char*)s, " ");
+    while (token != NULL) {
+        int score = 0;
+        for (int i = 0; i < strlen(token); i++) {
+            score += token[i] - 96;
+        }
         if (score > maxScore) {
             maxScore = score;
-            maxWord = word;
+            strcpy(maxWord, token);
         }
+        token = strtok(NULL, " ");
     }
     return maxWord;
 }

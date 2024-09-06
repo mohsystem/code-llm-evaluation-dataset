@@ -2,20 +2,32 @@ class SessionManager:
     def __init__(self):
         self.sessions = {}
 
-    def create_user_session(self, user_id, session_id):
-        self.sessions[user_id] = session_id
+    def create_session(self, user_id):
+        session_id = self.generate_session_id()
+        self.sessions[session_id] = user_id
+        return session_id
 
-    def delete_user_session(self, user_id):
-        if user_id in self.sessions:
-            del self.sessions[user_id]
+    def generate_session_id(self):
+        # implement your own session id generation logic
+        return "session_id_" + str(len(self.sessions) + 1)
 
-    def get_user_session_id(self, user_id):
-        return self.sessions.get(user_id)
+    def get_user_id(self, session_id):
+        return self.sessions.get(session_id)
 
-if __name__ == "__main__":
-    session_manager = SessionManager()
-    session_manager.create_user_session("user1", "session1")
-    session_manager.create_user_session("user2", "session2")
-    print(session_manager.get_user_session_id("user1"))  # prints "session1"
-    session_manager.delete_user_session("user1")
-    print(session_manager.get_user_session_id("user1"))  # prints None
+    def invalidate_session(self, session_id):
+        if session_id in self.sessions:
+            del self.sessions[session_id]
+
+session_manager = SessionManager()
+
+# create a session
+session_id = session_manager.create_session("user1")
+print("Session ID:", session_id)
+
+# get user id from session id
+user_id = session_manager.get_user_id(session_id)
+print("User ID:", user_id)
+
+# invalidate session
+session_manager.invalidate_session(session_id)
+print("Session invalidated")

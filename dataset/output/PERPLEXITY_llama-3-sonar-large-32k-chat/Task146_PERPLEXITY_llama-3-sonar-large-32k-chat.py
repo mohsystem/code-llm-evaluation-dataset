@@ -1,7 +1,8 @@
 def find_missing_number(nums):
     n = len(nums) + 1
-    total = n * (n + 1) // 2
-    return total - sum(nums)
+    expected_sum = n * (n + 1) // 2
+    actual_sum = sum(nums)
+    return expected_sum - actual_sum
 
-nums = list(map(int, input("Enter the array of unique integers: ").split()))
+nums = list(map(int, input("Enter the array of numbers: ").split()))
 print("The missing number is:", find_missing_number(nums))

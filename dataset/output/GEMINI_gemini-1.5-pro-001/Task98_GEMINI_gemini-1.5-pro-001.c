@@ -2,16 +2,17 @@
 #include <stdlib.h>
 
 int main() {
-    char input[100];
-    int number;
+    char userInput[100];
+    int integerValue;
 
-    printf("Enter a number: ");
-    fgets(input, sizeof(input), stdin);
+    printf("Enter an integer: ");
+    fgets(userInput, sizeof(userInput), stdin);
 
-    number = atoi(input);
-
-    printf("You entered: %d
-", number);
+    if (sscanf(userInput, "%d", &integerValue) == 1) {
+        printf("Successfully converted to integer: %d\n", integerValue);
+    } else {
+        printf("Invalid input. Please enter a valid integer.\n");
+    }
 
     return 0;
 }

@@ -1,14 +1,4 @@
-def main():
-    n = int(input("Enter number of strings to concatenate:
-"))
-    result = ""
-    
-    for i in range(n):
-        str = input(f"Enter string {i + 1}:
-")
-        result += str
-    
-    print(f"Concatenated string: {result}")
-
-if __name__ == "__main__":
-    main()
+input_str1 = input("Enter first string: ")
+input_str2 = input("Enter second string: ")
+result = input_str1 + input_str2
+print("Concatenated result:", result)

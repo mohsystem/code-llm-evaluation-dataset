@@ -2,61 +2,63 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <mysql/mysql.h>
+#include <sqlite3.h>
 
-#define MAX_QUERY_SIZE 256
+typedef struct {
+    int id;
+    char username[50];
+    char name[100];
+    char email[100];
+    char phone[20];
+} CustomerInfo;
 
-int main(int argc, char *argv[]) {
+CustomerInfo* getCustomerInfo(const char* username) {
+    sqlite3* db;
+    sqlite3_stmt* stmt;
+    CustomerInfo* customer = NULL;
+
+    if (sqlite3_open("customer_database.db", &db) == SQLITE_OK) {
+        const char* sql = "SELECT * FROM customer WHERE customerusername = ?";
+        if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+            sqlite3_bind_text(stmt, 1, username, -1, SQLITE_STATIC);
+
+            if (sqlite3_step(stmt) == SQLITE_ROW) {
+                customer = (CustomerInfo*)malloc(sizeof(CustomerInfo));
+                customer->id = sqlite3_column_int(stmt, 0);
+                strncpy(customer->username, (const char*)sqlite3_column_text(stmt, 1), sizeof(customer->username) - 1);
+                strncpy(customer->name, (const char*)sqlite3_column_text(stmt, 2), sizeof(customer->name) - 1);
+                strncpy(customer->email, (const char*)sqlite3_column_text(stmt, 3), sizeof(customer->email) - 1);
+                strncpy(customer->phone, (const char*)sqlite3_column_text(stmt, 4), sizeof(customer->phone) - 1);
+            }
+
+            sqlite3_finalize(stmt);
+        }
+        sqlite3_close(db);
+    }
+
+    return customer;
+}
+
+int main(int argc, char* argv[]) {
     if (argc != 2) {
-        printf("Please provide a customer username.\
-");
+        printf("Usage: %s <customerusername>\\n", argv[0]);
         return 1;
     }
 
-    MYSQL *conn;
-    MYSQL_RES *res;
-    MYSQL_ROW row;
-    char query[MAX_QUERY_SIZE];
-    const char *server = "localhost";
-    const char *user = "your_username";
-    const char *password = "your_password";
-    const char *database = "your_database";
+    const char* username = argv[1];
+    CustomerInfo* customerInfo = getCustomerInfo(username);
 
-    conn = mysql_init(NULL);
-
-    if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0)) {
-        fprintf(stderr, "%s\
-", mysql_error(conn));
-        return 1;
-    }
-
-    snprintf(query, MAX_QUERY_SIZE, "SELECT * FROM customer WHERE customerusername = \'%s\'", argv[1]);
-
-    if (mysql_query(conn, query)) {
-        fprintf(stderr, "%s\
-", mysql_error(conn));
-        mysql_close(conn);
-        return 1;
-    }
-
-    res = mysql_use_result(conn);
-
-    if ((row = mysql_fetch_row(res)) != NULL) {
-        printf("Customer ID: %s\
-", row[0]);
-        printf("Name: %s\
-", row[1]);
-        printf("Email: %s\
-", row[2]);
-        printf("Phone: %s\
-", row[3]);
+    if (customerInfo) {
+        printf("Customer Information:\\n");
+        printf("ID: %d\\n", customerInfo->id);
+        printf("Username: %s\\n", customerInfo->username);
+        printf("Name: %s\\n", customerInfo->name);
+        printf("Email: %s\\n", customerInfo->email);
+        printf("Phone: %s\\n", customerInfo->phone);
+        free(customerInfo);
     } else {
-        printf("Customer not found.\
-");
+        printf("Customer not found.\\n");
     }
-
-    mysql_free_result(res);
-    mysql_close(conn);
 
     return 0;
 }

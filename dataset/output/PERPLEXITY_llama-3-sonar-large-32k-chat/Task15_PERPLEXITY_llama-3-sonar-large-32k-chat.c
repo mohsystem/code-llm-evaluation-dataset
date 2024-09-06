@@ -1,24 +1,21 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
-int main() {
-    int floors = 6;
-    char tower[floors][floors*2 + 1];
-    for (int i = 0; i < floors; i++) {
-        for (int j = 0; j < floors - i - 1; j++) {
+char **towerBuilder(int nFloors) {
+    char **tower = (char **)malloc(nFloors * sizeof(char *));
+    for (int i = 0; i < nFloors; i++) {
+        tower[i] = (char *)malloc((4 * nFloors - 2 * i) * sizeof(char));
+        for (int j = 0; j < nFloors - i - 1; j++) {
             tower[i][j] = ' ';
         }
-        for (int j = 0; j < 2 * i + 1; j++) {
-            tower[i][floors - i - 1 + j] = '*';
+        for (int j = nFloors - i - 1; j < 2 * nFloors - i - 1; j++) {
+            tower[i][j] = '*';
         }
-        for (int j = 0; j < floors - i - 1; j++) {
-            tower[i][floors + i + j + 1] = ' ';
+        for (int j = 2 * nFloors - i - 1; j < 4 * nFloors - 2 * i; j++) {
+            tower[i][j] = ' ';
         }
-        tower[i][floors + i + 1] = '\0';
+        tower[i][4 * nFloors - 2 * i] = '\0';
     }
-    for (int i = 0; i < floors; i++) {
-        printf("%s
-", tower[i]);
-    }
-    return 0;
+    return tower;
 }

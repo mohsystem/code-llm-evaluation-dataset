@@ -2,18 +2,18 @@ class Solution {
 public:
     int shortestSubarray(vector<int>& nums, int k) {
         int n = nums.size();
-        vector<int> prefix(n + 1);
+        vector<int> prefixSum(n + 1, 0);
         for (int i = 0; i < n; i++) {
-            prefix[i + 1] = prefix[i] + nums[i];
+            prefixSum[i + 1] = prefixSum[i] + nums[i];
         }
         int res = n + 1;
         deque<int> queue;
         for (int i = 0; i <= n; i++) {
-            while (!queue.empty() && prefix[i] - prefix[queue.front()] >= k) {
+            while (!queue.empty() && prefixSum[i] - prefixSum[queue.front()] >= k) {
                 res = min(res, i - queue.front());
                 queue.pop_front();
             }
-            while (!queue.empty() && prefix[queue.back()] >= prefix[i]) {
+            while (!queue.empty() && prefixSum[i] <= prefixSum[queue.back()]) {
                 queue.pop_back();
             }
             queue.push_back(i);

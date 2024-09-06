@@ -1,29 +1,28 @@
+// C++ code using CGI and libcgicc
+#include <cgicc/Cgicc.h>
+#include <cgicc/HTTPHTMLHeader.h>
+#include <cgicc/HTMLClasses.h>
+#include <cgicc/CgiEnvironment.h>
 #include <iostream>
 #include <string>
 #include <uuid/uuid.h>
-#include <cgicc/Cgicc.h>
 
 int main() {
     Cgicc cgi;
-    std::string token = uuid_generate();
-    cgi.setCookie("csrf_token", token);
-    std::cout << "Content-type: text/html\r
-\r
-";
-    std::cout << "<form action='' method='post'>";
-    std::cout << "<input type='hidden' name='_csrf_token' value='" << token << "'>";
-    std::cout << "<input type='submit' value='Submit'>";
-    std::cout << "</form>";
+    CgiEnvironment env = cgi.getEnvironment();
 
-    if (cgi.getRequestMethod() == "POST") {
-        std::string postedToken = cgi["csrf_token"];
-        if (postedToken != token) {
-            std::cout << "Status: 403 Forbidden\r
-\r
-";
-            std::cout << "CSRF token missing or invalid";
+    if (env.getRequestMethod() == "GET") {
+        uuid_t uuid;
+        uuid_generate_random(uuid);
+        char uuid_str[37];
+        uuid_unparse(uuid, uuid_str);
+        cgi.out() << HTTPHTMLHeader() << html() << body() << form().set("action", "").set("method", "post") << input().set("type", "hidden").set("name", "_csrf_token").set("value", uuid_str) << input().set("type", "submit").set("value", "Submit") << form_() << body_() << html_();
+    } else if (env.getRequestMethod() == "POST") {
+        const Cgicc::FormIterator& it = cgi.getElements("csrf_token");
+        if (it != cgi.getElements().end() && it->getValue() == env.getCookieValue("_csrf_token")) {
+            cgi.out() << "Form submitted successfully";
         } else {
-            std::cout << "Form submitted successfully";
+            cgi.out() << HTTPHTMLHeader(403) << "CSRF token missing or invalid";
         }
     }
     return 0;

@@ -7,47 +7,51 @@ typedef struct Node {
 } Node;
 
 typedef struct Queue {
-    Node *front, *rear;
+    Node* front;
+    Node* rear;
 } Queue;
 
 Queue* createQueue() {
-    Queue* queue = (Queue*)malloc(sizeof(Queue));
-    queue->front = queue->rear = NULL;
-    return queue;
+    Queue* q = (Queue*)malloc(sizeof(Queue));
+    q->front = q->rear = NULL;
+    return q;
 }
 
-void enqueue(Queue* queue, int item) {
+void enqueue(Queue* q, int item) {
     Node* temp = (Node*)malloc(sizeof(Node));
     temp->data = item;
     temp->next = NULL;
 
-    if (queue->rear == NULL) {
-        queue->front = queue->rear = temp;
+    if (q->rear == NULL) {
+        q->front = q->rear = temp;
         return;
     }
 
-    queue->rear->next = temp;
-    queue->rear = temp;
+    q->rear->next = temp;
+    q->rear = temp;
 }
 
-int dequeue(Queue* queue) {
-    if (queue->front == NULL)
-        return -1;
+int dequeue(Queue* q) {
+    if (q->front == NULL) {
+        return -1; // or throw an exception
+    }
 
-    Node* temp = queue->front;
+    Node* temp = q->front;
     int item = temp->data;
-    queue->front = queue->front->next;
+    q->front = temp->next;
 
-    if (queue->front == NULL)
-        queue->rear = NULL;
+    if (q->front == NULL) {
+        q->rear = NULL;
+    }
 
     free(temp);
     return item;
 }
 
-int peek(Queue* queue) {
-    if (queue->front == NULL)
-        return -1;
+int peek(Queue* q) {
+    if (q->front == NULL) {
+        return -1; // or throw an exception
+    }
 
-    return queue->front->data;
+    return q->front->data;
 }

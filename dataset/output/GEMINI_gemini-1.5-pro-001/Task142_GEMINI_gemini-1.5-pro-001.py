@@ -3,7 +3,7 @@ def gcd(a, b):
     a, b = b, a % b
   return a
 
-if __name__ == "__main__":
-  num1 = int(input("Enter first number: "))
-  num2 = int(input("Enter second number: "))
-  print("GCD:", gcd(num1, num2))
+a = int(input("Enter first number: "))
+b = int(input("Enter second number: "))
+
+print("GCD is:", gcd(a, b))

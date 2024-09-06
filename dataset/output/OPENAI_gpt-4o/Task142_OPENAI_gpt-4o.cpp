@@ -1,18 +1,22 @@
 #include <iostream>
-using namespace std;
 
-int gcd(int a, int b) {
-    while (b != 0) {
-        int temp = b;
-        b = a % b;
-        a = temp;
-    }
-    return a;
+extern "C" {
+    int gcd(int a, int b);
 }
 
 int main() {
     int a, b;
-    cin >> a >> b;
-    cout << gcd(a, b) << endl;
+    std::cout << "Enter first number: ";
+    std::cin >> a;
+    std::cout << "Enter second number: ";
+    std::cin >> b;
+
+    std::cout << "Greatest Common Divisor: " << gcd(a, b) << std::endl;
     return 0;
+}
+
+extern "C" int gcd(int a, int b) {
+    if (b == 0)
+        return a;
+    return gcd(b, a % b);
 }

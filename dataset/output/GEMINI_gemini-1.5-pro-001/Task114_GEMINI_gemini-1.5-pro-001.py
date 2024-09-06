@@ -1,22 +1,31 @@
-input_string = input("Enter a string: ")
+def main():
+    # String declaration and initialization
+    str1 = "Hello"
+    str2 = "World"
 
-# Copy the string
-copied_string = input_string
+    # String concatenation
+    concatenated_string = str1 + " " + str2
+    print("Concatenated String:", concatenated_string)
 
-# Concatenate the string with itself
-concatenated_string = input_string + input_string
+    # String copying
+    copied_string = str1
+    print("Copied String:", copied_string)
 
-# Reverse the string
-reversed_string = input_string[::-1]
+    # String length
+    length = len(concatenated_string)
+    print("Length of Concatenated String:", length)
 
-# Convert the string to uppercase
-uppercase_string = input_string.upper()
+    # String manipulation - uppercase
+    uppercase_string = concatenated_string.upper()
+    print("Uppercase String:", uppercase_string)
 
-# Convert the string to lowercase
-lowercase_string = input_string.lower()
+    # String manipulation - lowercase
+    lowercase_string = concatenated_string.lower()
+    print("Lowercase String:", lowercase_string)
 
-print("Copied string:", copied_string)
-print("Concatenated string:", concatenated_string)
-print("Reversed string:", reversed_string)
-print("Uppercase string:", uppercase_string)
-print("Lowercase string:", lowercase_string)
+    # Substring extraction
+    substring = concatenated_string[0:5]
+    print("Substring:", substring)
+
+if __name__ == "__main__":
+    main()

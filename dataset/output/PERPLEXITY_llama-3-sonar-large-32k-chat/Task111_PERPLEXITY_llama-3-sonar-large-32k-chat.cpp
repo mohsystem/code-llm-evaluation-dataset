@@ -1,34 +1,36 @@
-#include <xmlrpc-c/xmlrpc.h>
+code here:
+// Note: XML-RPC is not natively supported in C++. This example uses the xmlrpc-c library.
+// You need to install xmlrpc-c and its development package to compile this code.
+
+#include <xmlrpc-c/config.h>
+#include <xmlrpc-c/util.h>
 #include <xmlrpc-c/server.h>
 #include <xmlrpc-c/registry.h>
 
-class MyHandler {
+class MyXmlRpcHandler : public xmlrpc_c::requestHandler {
 public:
-    int add(xmlrpc_env *env, xmlrpc_value *param, xmlrpc_value **result) {
-        int a, b;
-        xmlrpc_int2(xmlrpc_array_get_int(env, param, 0, &a));
-        xmlrpc_int2(xmlrpc_array_get_int(env, param, 1, &b));
-        xmlrpc_int2(xmlrpc_value_int(env, a + b, result));
-        return 1;
+    MyXmlRpcHandler(xmlrpc_c::registry* const registryP) :
+            xmlrpc_c::requestHandler(registryP) {}
+
+    void add(xmlrpc_c::paramList const& paramList, xmlrpc_c::value* const resultP) {
+        int const a = xmlrpc_c::value_int(paramList.getString(0));
+        int const b = xmlrpc_c::value_int(paramList.getString(1));
+        *resultP = xmlrpc_c::value_int(a + b);
     }
 
-    int echo(xmlrpc_env *env, xmlrpc_value *param, xmlrpc_value **result) {
-        xmlrpc_string *str;
-        xmlrpc_string_get_value(env, param, &str);
-        xmlrpc_string_new(env, str, result);
-        return 1;
+    void subtract(xmlrpc_c::paramList const& paramList, xmlrpc_c::value* const resultP) {
+        int const a = xmlrpc_c::value_int(paramList.getString(0));
+        int const b = xmlrpc_c::value_int(paramList.getString(1));
+        *resultP = xmlrpc_c::value_int(a - b);
     }
 };
 
 int main() {
-    xmlrpc_env env;
-    xmlrpc_env_init(&env);
-    xmlrpc_registry *registryP;
-    xmlrpc_registry_new(&registryP);
-    MyHandler handler;
-    xmlrpc_registry_add_method(&env, registryP, "add", "{ii:i}", (xmlrpc_method) &MyHandler::add, &handler);
-    xmlrpc_registry_add_method(&env, registryP, "echo", "{s:s}", (xmlrpc_method) &MyHandler::echo, &handler);
-    xmlrpc_server_abyss_setup(&env, registryP, 8080);
-    xmlrpc_env_clean(&env);
+    xmlrpc_c::registry myRegistry;
+    MyXmlRpcHandler myHandler(&myRegistry);
+    myRegistry.addMethod("add", &MyXmlRpcHandler::add);
+    myRegistry.addMethod("subtract", &MyXmlRpcHandler::subtract);
+    xmlrpc_c::serverAbyss myServer(&myRegistry, 8080);
+    myServer.run();
     return 0;
 }

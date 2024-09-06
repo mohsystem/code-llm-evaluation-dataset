@@ -24,7 +24,7 @@ void heapSort(int arr[], int n) {
     for (int i = n / 2 - 1; i >= 0; i--)
         heapify(arr, n, i);
 
-    for (int i = n - 1; i > 0; i--) {
+    for (int i = n - 1; i >= 0; i--) {
         int temp = arr[0];
         arr[0] = arr[i];
         arr[i] = temp;
@@ -37,8 +37,8 @@ int main() {
     int arr[] = {12, 11, 13, 5, 6, 7};
     int n = sizeof(arr) / sizeof(arr[0]);
     heapSort(arr, n);
-    printf("Sorted array is ");
-    for (int i = 0; i < n; i++)
+    printf("Sorted array is \n");
+    for (int i = 0; i < n; ++i)
         printf("%d ", arr[i]);
     return 0;
 }

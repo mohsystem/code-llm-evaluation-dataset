@@ -14,17 +14,15 @@ void generatePassword(char *password, int length) {
     for (int i = 0; i < length; i++) {
         password[i] = CHAR_SET[rand() % charSetLength];
     }
-    password[length] = \'\\0\';
+    password[length] = '\\0';
 }
 
 void resetPassword(const char *username) {
     char newPassword[PASSWORD_LENGTH + 1];
     generatePassword(newPassword, PASSWORD_LENGTH);
-    printf("Password for %s has been reset.\
-", username);
-    printf("New password: %s\
-", newPassword);
-    // In a real system, you would hash and save this password
+    printf("Password for %s has been reset.\\n", username);
+    printf("New password: %s\\n", newPassword);
+    // In a real system, you would hash and save this password securely
 }
 
 int main() {
@@ -32,8 +30,7 @@ int main() {
     char username[MAX_USERNAME_LENGTH];
     printf("Enter username to reset password: ");
     fgets(username, MAX_USERNAME_LENGTH, stdin);
-    username[strcspn(username, "\
-")] = 0; // Remove newline
+    username[strcspn(username, "\\n")] = 0; // Remove newline if present
     resetPassword(username);
     return 0;
 }

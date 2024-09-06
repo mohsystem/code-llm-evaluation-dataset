@@ -1,14 +1,14 @@
-# Python
-import getpass
+# Python code for password reset functionality
 
-def reset_password():
-    current_password = getpass.getpass("Enter your current password: ")
-    new_password = getpass.getpass("Enter your new password: ")
-    confirm_password = getpass.getpass("Confirm your new password: ")
-
-    if new_password == confirm_password:
-        print("Password reset successful.")
+def reset_password(current_password, new_password, confirm_password):
+    # For simplicity, let's assume the current password is 'oldpassword'
+    if current_password != 'oldpassword':
+        return "Current password is incorrect."
+    elif new_password != confirm_password:
+        return "New password and confirm password do not match."
     else:
-        print("Passwords do not match. Password reset failed.")
+        # In a real-world application, you would update the password here
+        return "Password reset successful."
 
-reset_password()
+# Test the function
+print(reset_password('oldpassword', 'newpassword', 'newpassword'))

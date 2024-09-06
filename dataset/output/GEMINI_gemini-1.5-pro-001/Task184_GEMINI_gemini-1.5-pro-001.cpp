@@ -3,27 +3,29 @@
 #include <random>
 #include <unordered_set>
 
+using namespace std;
+
 class Robot {
 private:
-    std::string name;
-    static std::unordered_set<std::string> usedNames;
-    static std::random_device rd;
-    static std::mt19937 generator;
+    string name;
+    static unordered_set<string> usedNames;
 
-    std::string generateUniqueName() {
-        std::uniform_int_distribution<> letterDist(0, 25);
-        std::uniform_int_distribution<> digitDist(0, 9);
-        std::string newName;
+    string generateUniqueName() {
+        random_device rd;
+        mt19937 generator(rd());
+        uniform_int_distribution<char> letterDistribution('A', 'Z');
+        uniform_int_distribution<char> digitDistribution('0', '9');
 
+        string newName;
         do {
             newName = "";
             for (int i = 0; i < 2; ++i) {
-                newName += 'A' + letterDist(generator);
+                newName += letterDistribution(generator);
             }
             for (int i = 0; i < 3; ++i) {
-                newName += '0' + digitDist(generator);
+                newName += digitDistribution(generator);
             }
-        } while (usedNames.count(newName));
+        } while (usedNames.find(newName) != usedNames.end());
 
         usedNames.insert(newName);
         return newName;
@@ -39,11 +41,9 @@ public:
         name = generateUniqueName();
     }
 
-    std::string getName() const {
+    string getName() const {
         return name;
     }
 };
 
-std::unordered_set<std::string> Robot::usedNames;
-std::random_device Robot::rd;
-std::mt19937 Robot::generator(Robot::rd());
+unordered_set<string> Robot::usedNames;

@@ -46,7 +46,7 @@ class LinkedList:
             current = current.next
         print("None")
 
-# Test the linked list
+# Example usage
 if __name__ == "__main__":
     ll = LinkedList()
     ll.insert(1)

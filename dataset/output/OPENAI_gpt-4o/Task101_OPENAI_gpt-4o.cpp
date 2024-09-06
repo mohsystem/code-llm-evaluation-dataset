@@ -1,18 +1,16 @@
-#include <iostream>
 #include <fstream>
-#include <cstdlib>
+#include <iostream>
+#include <sys/stat.h>
 
 int main() {
-    std::ofstream file("script.sh");
-    if (file.is_open()) {
-        file << "#!/bin/bash
-";
-        file << "echo Hello, World!";
-        file.close();
-        system("chmod +x script.sh");
-        std::cout << "script.sh created and made executable." << std::endl;
+    std::string filename = "script.sh";
+    std::ofstream scriptFile(filename);
+    if (scriptFile.is_open()) {
+        scriptFile << "#!/bin/bash\n\necho 'Hello, World!'";
+        scriptFile.close();
+        chmod(filename.c_str(), S_IRWXU);
     } else {
-        std::cerr << "Unable to open file." << std::endl;
+        std::cerr << "Unable to open file";
     }
     return 0;
 }

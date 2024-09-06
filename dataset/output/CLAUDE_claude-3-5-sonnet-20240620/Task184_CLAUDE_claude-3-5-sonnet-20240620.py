@@ -13,7 +13,7 @@ class Robot:
 
     def generate_name(self):
         while True:
-            name = \'\'.join(random.choices(string.ascii_uppercase, k=2) + 
+            name = ''.join(random.choices(string.ascii_uppercase, k=2) + 
                            random.choices(string.digits, k=3))
             if name not in self.used_names:
                 self.used_names.add(name)

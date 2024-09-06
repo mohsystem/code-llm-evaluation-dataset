@@ -1,93 +1,91 @@
 #include <iostream>
+#include <fstream>
 #include <string>
-#include <unordered_map>
+#include <vector>
 #include <openssl/sha.h>
 
 using namespace std;
 
-unordered_map<string, string> users;
-
-string hashPassword(const string& password) {
+string hash_password(const string& password) {
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
     SHA256_Update(&sha256, password.c_str(), password.size());
     SHA256_Final(hash, &sha256);
 
-    string hashedPassword;
-    hashedPassword.reserve(SHA256_DIGEST_LENGTH * 2);
-    for (unsigned char byte : hash) {
-        hashedPassword.append(1, "0123456789abcdef"[byte / 16]);
-        hashedPassword.append(1, "0123456789abcdef"[byte % 16]);
+    string hashed_password;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        hashed_password += to_string(static_cast<unsigned int>(hash[i]));
     }
-
-    return hashedPassword;
+    return hashed_password;
 }
 
-void registerUser() {
-    string username, password;
-
-    cout << "Enter username: ";
-    cin >> username;
-
-    if (users.find(username) != users.end()) {
-        cout << "Username already exists!" << endl;
-        return;
-    }
-
-    cout << "Enter password: ";
-    cin >> password;
-
-    string hashedPassword = hashPassword(password);
-    users[username] = hashedPassword;
-
-    cout << "User registered successfully!" << endl;
-}
-
-void loginUser() {
-    string username, password;
-
-    cout << "Enter username: ";
-    cin >> username;
-
-    if (users.find(username) == users.end()) {
-        cout << "Invalid username or password!" << endl;
-        return;
-    }
-
-    cout << "Enter password: ";
-    cin >> password;
-
-    string hashedPassword = hashPassword(password);
-
-    if (hashedPassword == users[username]) {
-        cout << "Login successful!" << endl;
+void create_user(const string& username, const string& password) {
+    ofstream file("users.txt", ios::app);
+    if (file.is_open()) {
+        file << username << ":" << hash_password(password) << endl;
+        file.close();
+        cout << "User '" << username << "' created successfully!" << endl;
     } else {
-        cout << "Invalid username or password!" << endl;
+        cerr << "Error opening file for writing." << endl;
     }
+}
+
+bool authenticate_user(const string& username, const string& password) {
+    ifstream file("users.txt");
+    string line;
+    if (file.is_open()) {
+        while (getline(file, line)) {
+            size_t pos = line.find(':');
+            if (pos != string::npos) {
+                string u = line.substr(0, pos);
+                string h = line.substr(pos + 1);
+                if (u == username && h == hash_password(password)) {
+                    cout << "Authentication successful. Welcome!" << endl;
+                    file.close();
+                    return true;
+                }
+            }
+        }
+        file.close();
+    } else {
+        cerr << "Error opening file for reading." << endl;
+    }
+    cout << "Authentication failed. Invalid username or password." << endl;
+    return false;
 }
 
 int main() {
     int choice;
+    string username, password;
+
     while (true) {
-        cout << "1. Register" << endl;
+        cout << "1. Create user" << endl;
         cout << "2. Login" << endl;
         cout << "3. Exit" << endl;
-        cout << "Enter your choice: ";
+        cout << "Choose an option: ";
         cin >> choice;
 
         switch (choice) {
             case 1:
-                registerUser();
+                cout << "Enter username: ";
+                cin >> username;
+                cout << "Enter password: ";
+                cin >> password;
+                create_user(username, password);
                 break;
             case 2:
-                loginUser();
+                cout << "Enter username: ";
+                cin >> username;
+                cout << "Enter password: ";
+                cin >> password;
+                authenticate_user(username, password);
                 break;
             case 3:
                 cout << "Exiting..." << endl;
                 return 0;
             default:
-                cout << "Invalid choice!" << endl;
+                cout << "Invalid choice." << endl;
         }
     }
 }

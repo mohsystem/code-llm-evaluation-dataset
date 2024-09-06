@@ -37,8 +37,8 @@ int main() {
     clock1.addMinutes(30);
     std::cout << clock1.hours << " " << clock1.minutes << std::endl;  // 11 0
 
-    clock1.subtractMinutes(90);
-    std::cout << clock1.hours << " " << clock1.minutes << std::endl;  // 9 30
+    clock1.subtractMinutes(60);
+    std::cout << clock1.hours << " " << clock1.minutes << std::endl;  // 10 0
 
     return 0;
 }

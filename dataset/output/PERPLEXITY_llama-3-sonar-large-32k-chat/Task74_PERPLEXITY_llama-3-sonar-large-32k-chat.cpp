@@ -1,13 +1,23 @@
 #include <libpq-fe.h>
 #include <iostream>
 
-int main() {
-    PGconn *conn = PQconnectdb("host=localhost port=5432 dbname=mydb user=username password=password");
+PGconn* createConnection() {
+    PGconn* conn = PQconnectdb(
+        "host=localhost port=5432 dbname=database_name user=username password=password"
+    );
     if (PQstatus(conn) == CONNECTION_OK) {
-        std::cout << "Connected to the database." << std::endl;
+        return conn;
     } else {
-        std::cout << "Connection to database failed: " << PQerrorMessage(conn) << std::endl;
+        std::cout << "Error connecting to database: " << PQerrorMessage(conn) << std::endl;
+        PQfinish(conn);
+        return nullptr;
     }
-    PQfinish(conn);
+}
+
+int main() {
+    PGconn* conn = createConnection();
+    if (conn != nullptr) {
+        PQfinish(conn);
+    }
     return 0;
 }

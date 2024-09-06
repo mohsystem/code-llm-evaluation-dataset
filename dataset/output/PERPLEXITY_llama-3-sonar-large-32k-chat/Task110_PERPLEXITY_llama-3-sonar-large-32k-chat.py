@@ -1,11 +1,14 @@
 import re
 
 def validate_url(url):
-    url_regex = re.compile(r"^((https?|ftp|file)://)?(-\w+\.){1,}(com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|edu|co\.uk|ac\.uk|gov\.uk|mil\.uk|nhs\.uk|police\.uk|mod\.uk|travel|local|me\.uk|ltd\.uk|plc\.uk|net\.uk|sch\.uk)(:\d+)?(/([\w\-\.\\\?\\,\\+&%*#=]*)?)?$")
-    if url_regex.match(url):
-        return True
-    else:
-        return False
+    pattern = re.compile(
+        r'^(?:http|ftp)s?://'  # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain...
+        r'localhost|'  # localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
+        r'(?::\d+)?'  # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+    return bool(pattern.match(url))
 
 url = input("Enter a URL: ")
 if validate_url(url):

@@ -1,22 +1,21 @@
 #include <iostream>
 #include <numeric>
-using namespace std;
+#include <vector>
 
-int findEqualIndex(int arr[], int length) {
-    int totalSum = accumulate(arr, arr + length, 0);
-    int leftSum = 0;
-
-    for (int i = 0; i < length; ++i) {
-        if (leftSum == totalSum - leftSum - arr[i])
+int findEvenIndex(const std::vector<int>& arr) {
+    for (size_t i = 0; i < arr.size(); i++) {
+        int leftSum = std::accumulate(arr.begin(), arr.begin() + i, 0);
+        int rightSum = std::accumulate(arr.begin() + i + 1, arr.end(), 0);
+        if (leftSum == rightSum) {
             return i;
-        leftSum += arr[i];
+        }
     }
     return -1;
 }
 
 int main() {
-    int arr[] = {20, 10, -80, 10, 10, 15, 35};
-    int length = sizeof(arr) / sizeof(arr[0]);
-    cout << findEqualIndex(arr, length) << endl;
+    std::cout << findEvenIndex({1, 2, 3, 4, 3, 2, 1}) << std::endl;  // Output should be 3
+    std::cout << findEvenIndex({1, 100, 50, -51, 1, 1}) << std::endl;  // Output should be 1
+    std::cout << findEvenIndex({20, 10, -80, 10, 10, 15, 35}) << std::endl;  // Output should be 0
     return 0;
 }

@@ -1,12 +1,9 @@
 #include <vector>
 #include <algorithm>
 
-std::vector<int> remove_smallest(const std::vector<int>& numbers) {
-    if (numbers.empty()) {
-        return {};
+std::vector<int> remove_smallest(std::vector<int> numbers) {
+    if (!numbers.empty()) {
+        numbers.erase(std::min_element(numbers.begin(), numbers.end()));
     }
-    auto smallest_it = std::min_element(numbers.begin(), numbers.end());
-    std::vector<int> result(numbers.begin(), smallest_it);
-    result.insert(result.end(), smallest_it + 1, numbers.end());
-    return result;
+    return numbers;
 }

@@ -1,23 +1,15 @@
+// C++
 #include <iostream>
-#include <cstring>
-
-#define BUFFER_SIZE 10
+#include <string>
 
 int main() {
-    char buffer[BUFFER_SIZE];
-    char input[BUFFER_SIZE];
-
+    const int bufferSize = 10;
+    std::string userInput;
     std::cout << "Enter a string: ";
-    std::cin.getline(input, BUFFER_SIZE);
-
-    if (std::strlen(input) > BUFFER_SIZE) {
-        std::cout << "Input is too long for the buffer.
-";
-    } else {
-        std::strcpy(buffer, input);
-        std::cout << "Input stored in buffer: " << buffer << "
-";
+    std::getline(std::cin, userInput);
+    if (userInput.length() > bufferSize) {
+        userInput = userInput.substr(0, bufferSize);
     }
-
+    std::cout << "Truncated input: " << userInput;
     return 0;
 }

@@ -45,6 +45,5 @@ int main() {
     std::cout << "Top element: " << stack.peek() << std::endl;
     std::cout << "Popped: " << stack.pop() << std::endl;
     std::cout << "Size: " << stack.size() << std::endl;
-    std::cout << "Is empty: " << (stack.isEmpty() ? "true" : "false") << std::endl;
     return 0;
 }

@@ -2,20 +2,20 @@
 #include <string.h>
 
 char* expandedForm(int num) {
-    static char str[100];
-    sprintf(str, "%d", num);
+    char numStr[20];
+    sprintf(numStr, "%d", num);
     char result[100] = "";
-    int len = strlen(str);
-    for (int i = 0; i < len; i++) {
-        if (str[i] != '0') {
-            strncat(result, &str[i], 1);
-            for (int j = i + 1; j < len; j++) {
-                strncat(result, "0", 1);
+    for (int i = 0; i < strlen(numStr); i++) {
+        if (numStr[i] != '0') {
+            char temp[20] = "";
+            temp[0] = numStr[i];
+            for (int j = 0; j < strlen(numStr) - i - 1; j++) {
+                strcat(temp, "0");
             }
-            if (i < len - 1) {
-                strncat(result, " + ", 3);
-            }
+            strcat(result, temp);
+            strcat(result, " + ");
         }
     }
-    return str;
+    result[strlen(result) - 3] = '\0';
+    return strdup(result);
 }

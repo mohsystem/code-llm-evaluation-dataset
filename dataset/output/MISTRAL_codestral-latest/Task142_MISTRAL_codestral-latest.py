@@ -1,8 +1,10 @@
+# Python
 def gcd(a, b):
     while(b):
         a, b = b, a % b
     return a
 
-a = int(input("Enter first number: "))
-b = int(input("Enter second number: "))
-print("The GCD of", a, "and", b, "is:", gcd(a, b))
+# Test the function
+num1 = int(input("Enter first number: "))
+num2 = int(input("Enter second number: "))
+print("The GCD is", gcd(num1, num2))

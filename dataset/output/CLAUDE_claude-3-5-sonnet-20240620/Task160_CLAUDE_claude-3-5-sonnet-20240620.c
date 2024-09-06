@@ -4,80 +4,66 @@
 #include <string.h>
 #include <curl/curl.h>
 
-struct string {
-    char *ptr;
-    size_t len;
+struct MemoryStruct {
+  char *memory;
+  size_t size;
 };
 
-void init_string(struct string *s) {
-    s->len = 0;
-    s->ptr = malloc(s->len+1);
-    if (s->ptr == NULL) {
-        fprintf(stderr, "malloc() failed\
-");
-        exit(EXIT_FAILURE);
-    }
-    s->ptr[0] = \'\\0\';
-}
+static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp) {
+  size_t realsize = size * nmemb;
+  struct MemoryStruct *mem = (struct MemoryStruct *)userp;
 
-size_t writefunc(void *ptr, size_t size, size_t nmemb, struct string *s)
-{
-    size_t new_len = s->len + size*nmemb;
-    s->ptr = realloc(s->ptr, new_len+1);
-    if (s->ptr == NULL) {
-        fprintf(stderr, "realloc() failed\
-");
-        exit(EXIT_FAILURE);
-    }
-    memcpy(s->ptr+s->len, ptr, size*nmemb);
-    s->ptr[new_len] = \'\\0\';
-    s->len = new_len;
-
-    return size*nmemb;
-}
-
-int main(void)
-{
-    CURL *curl;
-    CURLcode res;
-    char url[256];
-
-    printf("Enter a URL: ");
-    if (fgets(url, sizeof(url), stdin) == NULL) {
-        fprintf(stderr, "Error reading input\
-");
-        return 1;
-    }
-    url[strcspn(url, "\
-")] = 0;  // Remove newline if present
-
-    struct string s;
-    init_string(&s);
-
-    curl = curl_easy_init();
-    if(curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, url);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
-        res = curl_easy_perform(curl);
-
-        if(res != CURLE_OK) {
-            fprintf(stderr, "An error occurred: %s\
-", curl_easy_strerror(res));
-        } else {
-            long response_code;
-            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-            printf("Status code: %ld\
-", response_code);
-            printf("Response content:\
-%s\
-", s.ptr);
-        }
-
-        curl_easy_cleanup(curl);
-    }
-
-    free(s.ptr);
-
+  char *ptr = realloc(mem->memory, mem->size + realsize + 1);
+  if(!ptr) {
+    printf("not enough memory (realloc returned NULL)\\n");
     return 0;
+  }
+
+  mem->memory = ptr;
+  memcpy(&(mem->memory[mem->size]), contents, realsize);
+  mem->size += realsize;
+  mem->memory[mem->size] = 0;
+
+  return realsize;
+}
+
+int main(void) {
+  CURL *curl_handle;
+  CURLcode res;
+
+  struct MemoryStruct chunk;
+  chunk.memory = malloc(1);
+  chunk.size = 0;
+
+  char url[256];
+  printf("Enter a URL: ");
+  fgets(url, sizeof(url), stdin);
+  url[strcspn(url, "\\n")] = 0;  // Remove newline
+
+  curl_global_init(CURL_GLOBAL_ALL);
+  curl_handle = curl_easy_init();
+
+  if(curl_handle) {
+    curl_easy_setopt(curl_handle, CURLOPT_URL, url);
+    curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+    curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
+    curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+
+    res = curl_easy_perform(curl_handle);
+
+    if(res != CURLE_OK) {
+      fprintf(stderr, "An error occurred: %s\\n", curl_easy_strerror(res));
+    } else {
+      long response_code;
+      curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &response_code);
+      printf("Status code: %ld\\n", response_code);
+      printf("Response content:\\n%s\\n", chunk.memory);
+    }
+
+    curl_easy_cleanup(curl_handle);
+    free(chunk.memory);
+  }
+
+  curl_global_cleanup();
+  return 0;
 }

@@ -3,13 +3,19 @@ class Solution:
         n = len(nums)
         dp = [float('-inf')] * (n + 1)
         dp[0] = 0
-        from collections import deque
-        q = deque()
-        for i in range(1, n + 1):
-            while q and i - q[0] > k + 1:
-                q.popleft()
-            dp[i] = max(dp[i - 1], dp[q[0]] + nums[i - 1])
-            while q and dp[q[-1]] <= dp[i]:
-                q.pop()
-            q.append(i)
-        return dp[n]
+        deque = collections.deque()
+        
+        for i in range(n):
+            # Remove outdated elements from the deque
+            while deque and deque[0] < i - k:
+                deque.popleft()
+            
+            # Calculate dp[i] based on the maximum value in the deque
+            dp[i + 1] = max(dp[i + 1], nums[i], dp[deque[0]] + nums[i] if deque else nums[i])
+            
+            # Maintain the deque to store indices of potential maximum values
+            while deque and dp[deque[-1]] <= dp[i + 1]:
+                deque.pop()
+            deque.append(i + 1)
+        
+        return max(dp)

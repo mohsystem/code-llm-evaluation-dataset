@@ -1,22 +1,24 @@
 
 #include <iostream>
-#include <string>
-#include <algorithm>
+#include <cstring>
 
-const int BUFFER_SIZE = 20;
+const int BUFFER_SIZE = 100;
+
+void handleUserInput(char* buffer, int bufferSize) {
+    std::cout << "Enter a string (max " << bufferSize - 1 << " characters): ";
+    std::cin.getline(buffer, bufferSize);
+
+    if (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\\n');
+        std::cout << "Input too long. Truncated to " << bufferSize - 1 << " characters." << std::endl;
+    }
+
+    std::cout << "You entered: " << buffer << std::endl;
+}
 
 int main() {
     char buffer[BUFFER_SIZE];
-    std::string input;
-
-    std::cout << "Enter a string (max " << BUFFER_SIZE << " characters):" << std::endl;
-    std::getline(std::cin, input);
-
-    int length = std::min(static_cast<int>(input.length()), BUFFER_SIZE);
-    std::copy_n(input.begin(), length, buffer);
-
-    std::cout << "Buffer contents:" << std::endl;
-    std::cout << std::string(buffer, length) << std::endl;
-
+    handleUserInput(buffer, BUFFER_SIZE);
     return 0;
 }

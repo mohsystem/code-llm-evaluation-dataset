@@ -1,21 +1,32 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import sqlite3
 
 app = Flask(__name__)
 
-def store_data(data):
-    conn = sqlite3.connect('userdata.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS Users (data TEXT)''')
-    c.execute("INSERT INTO Users (data) VALUES (?)", (data,))
+def connect_db():
+    return sqlite3.connect('example.db')
+
+def init_db():
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS users
+                      (id INTEGER PRIMARY KEY, name TEXT, email TEXT)''')
     conn.commit()
     conn.close()
 
-@app.route('/store', methods=['POST'])
-def store():
-    data = request.data.decode('utf-8')
-    store_data(data)
-    return "Data stored successfully", 200
+init_db()
+
+@app.route('/add_user', methods=['POST'])
+def add_user():
+    data = request.get_json()
+    name = data['name']
+    email = data['email']
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO users (name, email) VALUES (?, ?)", (name, email))
+    conn.commit()
+    conn.close()
+    return jsonify({'message': 'User added successfully!'})
 
 if __name__ == '__main__':
-    app.run(port=8080)
+    app.run(debug=True)

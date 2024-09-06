@@ -1,18 +1,26 @@
-str1 = "Hello"
-str2 = "World"
+code here:
+s1 = "Hello"
+s2 = "World"
+print("Original Strings:")
+print("s1: ", s1)
+print("s2: ", s2)
 
 # Copying a string
-str3 = str1
-print("Copied string:", str3)
+s3 = s1
+print("\nCopied String:")
+print("s3: ", s3)
 
 # Concatenating strings
-str4 = str1 + " " + str2
-print("Concatenated string:", str4)
+s4 = s1 + " " + s2
+print("\nConcatenated String:")
+print("s4: ", s4)
 
 # Manipulating strings (upper case)
-str5 = str1.upper()
-print("Upper case string:", str5)
+s5 = s1.upper()
+print("\nUpper Case String:")
+print("s5: ", s5)
 
 # Manipulating strings (lower case)
-str6 = str2.lower()
-print("Lower case string:", str6)
+s6 = s2.lower()
+print("\nLower Case String:")
+print("s6: ", s6)

@@ -1,42 +1,38 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define HOST "www.example.com"
-#define PORT 443
 
 int main() {
     SSL_library_init();
-    SSL_load_error_strings();
     SSL_CTX *ctx = SSL_CTX_new(TLS_client_method());
     SSL *ssl = SSL_new(ctx);
 
-    BIO *bio = BIO_new_connect(HOST ":" PORT);
-    SSL_set_bio(ssl, bio, bio);
-
-    if (SSL_connect(ssl) <= 0) {
+    BIO *bio = BIO_new_connect("www.example.com:443");
+    if (BIO_do_connect(bio) <= 0) {
         ERR_print_errors_fp(stderr);
-    } else {
-        char request[] = "GET / HTTP/1.1\r
-"
-                         "Host: " HOST "\r
-"
-                         "Accept: */*\r
-"
-                         "\r
-";
-        SSL_write(ssl, request, strlen(request));
-
-        char buffer[1024];
-        int bytes;
-        while ((bytes = SSL_read(ssl, buffer, 1024)) > 0) {
-            fwrite(buffer, 1, bytes, stdout);
-        }
+        return 1;
     }
 
+    SSL_set_bio(ssl, bio, bio);
+    if (SSL_connect(ssl) <= 0) {
+        ERR_print_errors_fp(stderr);
+        return 1;
+    }
+
+    printf("SSL connection established\n");
+
+    const char *request = "Hello, world!";
+    SSL_write(ssl, request, strlen(request));
+
+    char buffer[1024];
+    int bytes = SSL_read(ssl, buffer, 1024);
+    if (bytes > 0) {
+        printf("Received: %s\n", buffer);
+    }
+
+    SSL_shutdown(ssl);
     SSL_free(ssl);
+    BIO_free_all(bio);
     SSL_CTX_free(ctx);
     return 0;
 }

@@ -1,51 +1,35 @@
 #include <iostream>
-#include <vector>
+#include <queue>
 #include <string>
 
 class Queue {
 private:
-    std::vector<std::string> queue;
-    int front, rear, size, capacity;
+    std::queue<std::string> queue;
 
 public:
-    Queue(int capacity) {
-        this->capacity = capacity;
-        this->queue.resize(capacity);
-        this->front = this->rear = this->size = 0;
-    }
-
-    void enqueue(std::string item) {
-        if (size == capacity) {
-            std::cout << "Queue is full" << std::endl;
-            return;
-        }
-        queue[rear] = item;
-        rear = (rear + 1) % capacity;
-        size++;
+    void enqueue(const std::string& item) {
+        queue.push(item);
     }
 
     std::string dequeue() {
-        if (size == 0) {
-            std::cout << "Queue is empty" << std::endl;
+        if (queue.empty()) {
             return "";
         }
-        std::string item = queue[front];
-        front = (front + 1) % capacity;
-        size--;
+        std::string item = queue.front();
+        queue.pop();
         return item;
     }
 
     std::string peek() {
-        if (size == 0) {
-            std::cout << "Queue is empty" << std::endl;
+        if (queue.empty()) {
             return "";
         }
-        return queue[front];
+        return queue.front();
     }
 };
 
 int main() {
-    Queue q(5);
+    Queue q;
     q.enqueue("Apple");
     q.enqueue("Banana");
     q.enqueue("Cherry");

@@ -1,40 +1,34 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
+#include <stdlib.h>
 
-#define MAX_LENGTH 1000
-
-int calculateScore(const char* word) {
-    int score = 0;
-    for (int i = 0; word[i] != \'\\0\'; i++) {
-        score += tolower(word[i]) - \'a\' + 1;
-    }
-    return score;
-}
-
-int main() {
-    char input[MAX_LENGTH];
-    fgets(input, sizeof(input), stdin);
-    input[strcspn(input, "\
-")] = \'\\0\';
-
-    char* token;
-    char highestScoringWord[MAX_LENGTH] = "";
-    int highestScore = 0;
-
-    token = strtok(input, " ");
+char* high(const char* s) {
+    char* copy = strdup(s);
+    char* token = strtok(copy, " ");
+    int maxScore = 0;
+    char* maxWord = NULL;
+    
     while (token != NULL) {
-        int score = calculateScore(token);
-        if (score > highestScore) {
-            highestScore = score;
-            strcpy(highestScoringWord, token);
+        int score = 0;
+        for (int i = 0; token[i]; i++) {
+            score += token[i] - 'a' + 1;
+        }
+        if (score > maxScore) {
+            maxScore = score;
+            maxWord = token;
         }
         token = strtok(NULL, " ");
     }
+    
+    char* result = strdup(maxWord);
+    free(copy);
+    return result;
+}
 
-    printf("%s\
-", highestScoringWord);
-
+int main() {
+    printf("%s\\n", high("man i need a taxi up to ubud")); // Output: taxi
+    printf("%s\\n", high("what time are we climbing up the volcano")); // Output: volcano
+    printf("%s\\n", high("take me to semynak")); // Output: semynak
     return 0;
 }

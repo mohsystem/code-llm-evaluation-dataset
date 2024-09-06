@@ -1,19 +1,17 @@
-def convert_binary_array_to_int(binary_array):
-    result = 0
-    for bit in binary_array:
-        result = result * 2 + bit
-    return result
+def binary_array_to_int(arr):
+    return int("".join(map(str, arr)), 2)
 
-test_cases = [
-    [0, 0, 0, 1],
-    [0, 0, 1, 0],
-    [0, 1, 0, 1],
-    [1, 0, 0, 1],
-    [0, 0, 1, 0],
-    [0, 1, 1, 0],
-    [1, 1, 1, 1],
-    [1, 0, 1, 1]
-]
+if __name__ == "__main__":
+    test_cases = [
+        [0, 0, 0, 1],
+        [0, 0, 1, 0],
+        [0, 1, 0, 1],
+        [1, 0, 0, 1],
+        [0, 0, 1, 0],
+        [0, 1, 1, 0],
+        [1, 1, 1, 1],
+        [1, 0, 1, 1]
+    ]
 
-for test_case in test_cases:
-    print(convert_binary_array_to_int(test_case))
+    for arr in test_cases:
+        print(f'Testing: {arr} ==> {binary_array_to_int(arr)}')

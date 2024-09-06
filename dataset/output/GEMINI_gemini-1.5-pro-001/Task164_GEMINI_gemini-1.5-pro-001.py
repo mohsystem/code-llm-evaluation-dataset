@@ -1,2 +1,4 @@
 def lastNameLensort(names):
-  return sorted(names, key=lambda x: (len(x.split()[1]), x.split()[1]))
+    names.sort(key=lambda x: x.split()[-1])
+    names.sort(key=lambda x: len(x.split()[-1]))
+    return names

@@ -1,31 +1,40 @@
+// C++ code:
+
 #include <iostream>
 #include <fstream>
 #include <string>
 
-int main() {
-    std::string inputPassword;
+bool comparePasswords(const std::string& filePath, const std::string& userPassword) {
+    std::ifstream file(filePath);
     std::string storedPassword;
 
-    std::cout << "Enter password: ";
-    std::getline(std::cin, inputPassword);
+    if (file.is_open()) {
+        std::getline(file, storedPassword);
+        file.close();
 
-    std::ifstream file("password.txt");
-    if (!file.is_open()) {
-        std::cout << "An error occurred while reading the file.
-";
-        return 1;
-    }
-
-    std::getline(file, storedPassword);
-
-    if (inputPassword == storedPassword) {
-        std::cout << "Password is correct.
-";
+        if (userPassword == storedPassword) {
+            return true;
+        } else {
+            return false;
+        }
     } else {
-        std::cout << "Password is incorrect.
-";
+        std::cerr << "Error reading the file." << std::endl;
+        return false;
+    }
+}
+
+int main() {
+    std::string filePath = "password.txt";
+    std::string userPassword;
+
+    std::cout << "Enter your password: ";
+    std::getline(std::cin, userPassword);
+
+    if (comparePasswords(filePath, userPassword)) {
+        std::cout << "Password is correct." << std::endl;
+    } else {
+        std::cout << "Password is incorrect." << std::endl;
     }
 
-    file.close();
     return 0;
 }

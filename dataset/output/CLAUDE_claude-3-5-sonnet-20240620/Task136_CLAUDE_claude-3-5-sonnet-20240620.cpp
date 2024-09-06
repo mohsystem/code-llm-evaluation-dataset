@@ -16,7 +16,7 @@ std::string sha256(const std::string& str) {
     SHA256_Final(hash, &sha256);
     std::stringstream ss;
     for(int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        ss << std::hex << std::setw(2) << std::setfill(\'0\') << (int)hash[i];
+        ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
     }
     return ss.str();
 }
@@ -38,43 +38,40 @@ bool login(const std::string& username, const std::string& password) {
 }
 
 int main() {
-    std::string choice, username, password;
+    std::string username, password;
+    int choice;
+
     while (true) {
-        std::cout << "1. Register\
-2. Login\
-3. Exit\
-Choose an option: ";
+        std::cout << "1. Register\\n2. Login\\n3. Exit\\nChoose an option: ";
         std::cin >> choice;
-        if (choice == "1") {
+        std::cin.ignore(); // Clear newline from buffer
+
+        if (choice == 1) {
             std::cout << "Enter username: ";
-            std::cin >> username;
+            std::getline(std::cin, username);
             std::cout << "Enter password: ";
-            std::cin >> password;
+            std::getline(std::cin, password);
             if (register_user(username, password)) {
-                std::cout << "Registration successful\
-";
+                std::cout << "Registration successful\\n";
             } else {
-                std::cout << "Username already exists\
-";
+                std::cout << "Username already exists\\n";
             }
-        } else if (choice == "2") {
+        } else if (choice == 2) {
             std::cout << "Enter username: ";
-            std::cin >> username;
+            std::getline(std::cin, username);
             std::cout << "Enter password: ";
-            std::cin >> password;
+            std::getline(std::cin, password);
             if (login(username, password)) {
-                std::cout << "Login successful\
-";
+                std::cout << "Login successful\\n";
             } else {
-                std::cout << "Invalid credentials\
-";
+                std::cout << "Invalid credentials\\n";
             }
-        } else if (choice == "3") {
+        } else if (choice == 3) {
             break;
         } else {
-            std::cout << "Invalid choice\
-";
+            std::cout << "Invalid choice\\n";
         }
     }
+
     return 0;
 }

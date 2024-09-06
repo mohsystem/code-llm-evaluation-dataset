@@ -5,12 +5,18 @@
 int main() {
     FILE *logFile = fopen("security.log", "a");
 
+    if (logFile == NULL) {
+        printf("Error opening file!\n");
+        return 1;
+    }
+
     while (1) {
+        // Simulate a security event
         time_t now = time(0);
-        char* dt = ctime(&now);
-        fprintf(logFile, "Security event detected at %s", dt);
+        char* timeStr = ctime(&now);
+        fprintf(logFile, "Security event detected at %s\n", timeStr);
         fflush(logFile);
-        sleep(5);
+        sleep(1);
     }
 
     fclose(logFile);

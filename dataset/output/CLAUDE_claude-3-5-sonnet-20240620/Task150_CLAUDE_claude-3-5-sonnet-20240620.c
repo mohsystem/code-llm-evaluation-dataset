@@ -65,8 +65,7 @@ void display(Node* head) {
         printf("%d -> ", current->data);
         current = current->next;
     }
-    printf("NULL\
-");
+    printf("NULL\\n");
 }
 
 int main() {
@@ -75,11 +74,9 @@ int main() {
     insert(&head, 2);
     insert(&head, 3);
     display(head);
-    printf("Search 2: %s\
-", search(head, 2) ? "true" : "false");
+    printf("Search 2: %s\\n", search(head, 2) ? "true" : "false");
     delete(&head, 2);
     display(head);
-    printf("Search 2: %s\
-", search(head, 2) ? "true" : "false");
+    printf("Search 2: %s\\n", search(head, 2) ? "true" : "false");
     return 0;
 }

@@ -1,19 +1,11 @@
 
-#include <stdio.h>
-
-int calculateYears(double principal, double interest, double tax, double desired) {
+int calculate_years(double principal, double interest, double tax, double desired) {
     int years = 0;
     while (principal < desired) {
-        double interestEarned = principal * interest;
-        double taxPaid = interestEarned * tax;
-        principal += interestEarned - taxPaid;
+        double interest_earned = principal * interest;
+        double tax_paid = interest_earned * tax;
+        principal += interest_earned - tax_paid;
         years++;
     }
     return years;
-}
-
-int main() {
-    printf("%d\
-", calculateYears(1000, 0.05, 0.18, 1100));
-    return 0;
 }

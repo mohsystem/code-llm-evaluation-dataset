@@ -1,38 +1,21 @@
-#include <microhttpd.h>
+// C does not have built-in support for CORS, so you would need to manually set the headers.
+// This example uses libonion, a lightweight HTTP server library.
 
-static int answer_to_connection (void *cls, struct MHD_Connection *connection,
-                                const char *url, const char *method,
-                                const char *version, const char *upload_data,
-                                size_t *upload_data_size, void **con_cls)
-{
-    struct MHD_Response *response;
-    int ret;
+#include <onion/onion.h>
+#include <onion/log.h>
+#include <onion/request.h>
+#include <onion/response.h>
 
-    response = MHD_create_response_from_buffer (strlen ("Hello, cross-origin-world!"), (void *) "Hello, cross-origin-world!", MHD_RESPMEM_PERSISTENT);
-    if (!response)
-        return MHD_NO;
-
-    MHD_add_response_header (response, "Access-Control-Allow-Origin", "*");
-    MHD_add_response_header (response, "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    MHD_add_response_header (response, "Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-    ret = MHD_queue_response (connection, MHD_HTTP_OK, response);
-    MHD_destroy_response (response);
-
-    return ret;
+void handle_request(void *_, onion_request *req, onion_response *res) {
+    onion_response_set_header(res, "Access-Control-Allow-Origin", "http://example.com");
+    onion_response_write0(res, "API response");
 }
 
-int main (int argc, char *argv[])
-{
-    struct MHD_Daemon *daemon;
-
-    daemon = MHD_start_daemon (MHD_USE_SELECT_INTERNALLY, 8080, NULL, NULL,
-                               &answer_to_connection, NULL, MHD_OPTION_END);
-    if (NULL == daemon)
-        return 1;
-
-    (void) getchar ();
-
-    MHD_stop_daemon (daemon);
+int main() {
+    onion *o = onion_new(O_THRPOOL);
+    onion_url *url = onion_root_url(o);
+    onion_url_add(url, "", handle_request);
+    onion_listen(o, "0.0.0.0", 8080);
+    onion_free(o);
     return 0;
 }

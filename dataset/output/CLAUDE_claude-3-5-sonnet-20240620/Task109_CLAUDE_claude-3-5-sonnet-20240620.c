@@ -1,57 +1,68 @@
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <regex.h>
 #include <string.h>
 
 #define MAX_INPUT 100
 
-int validate_input(const char* input, const char* regex_pattern) {
+int validate_regex(const char* pattern, const char* input) {
     regex_t regex;
     int reti;
-    
-    reti = regcomp(&regex, regex_pattern, REG_EXTENDED);
+    char msgbuf[100];
+
+    reti = regcomp(&regex, pattern, REG_EXTENDED);
     if (reti) {
-        fprintf(stderr, "Could not compile regex\
-");
-        exit(1);
+        fprintf(stderr, "Could not compile regex\\n");
+        return 0;
     }
-    
+
     reti = regexec(&regex, input, 0, NULL, 0);
-    regfree(&regex);
-    
-    return reti == 0;
+    if (!reti) {
+        regfree(&regex);
+        return 1;
+    } else if (reti == REG_NOMATCH) {
+        regfree(&regex);
+        return 0;
+    } else {
+        regerror(reti, &regex, msgbuf, sizeof(msgbuf));
+        fprintf(stderr, "Regex match failed: %s\\n", msgbuf);
+        regfree(&regex);
+        return 0;
+    }
 }
 
 int main() {
-    char email[MAX_INPUT];
-    char phone[MAX_INPUT];
-    
-    printf("Enter an email address: ");
-    fgets(email, sizeof(email), stdin);
-    email[strcspn(email, "\
-")] = 0;
-    
-    if (validate_input(email, "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-        printf("Valid email address\
-");
+    char input[MAX_INPUT];
+
+    // Email validation
+    printf("Enter your email: ");
+    fgets(input, MAX_INPUT, stdin);
+    input[strcspn(input, "\\n")] = 0;
+    if (validate_regex("^[[:alnum:]\\\\.-]+@[[:alnum:]\\\\.-]+\\\\.[[:alpha:]]+$", input)) {
+        printf("Valid email\\n");
     } else {
-        printf("Invalid email address\
-");
+        printf("Invalid email\\n");
     }
-    
-    printf("Enter a phone number (XXX-XXX-XXXX): ");
-    fgets(phone, sizeof(phone), stdin);
-    phone[strcspn(phone, "\
-")] = 0;
-    
-    if (validate_input(phone, "^[0-9]{3}-[0-9]{3}-[0-9]{4}$")) {
-        printf("Valid phone number\
-");
+
+    // Phone number validation (US format)
+    printf("Enter your phone number: ");
+    fgets(input, MAX_INPUT, stdin);
+    input[strcspn(input, "\\n")] = 0;
+    if (validate_regex("^\\\\(?([0-9]{3})\\\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", input)) {
+        printf("Valid phone number\\n");
     } else {
-        printf("Invalid phone number\
-");
+        printf("Invalid phone number\\n");
     }
-    
+
+    // Password validation (at least 8 characters, 1 uppercase, 1 lowercase, 1 digit)
+    printf("Enter your password: ");
+    fgets(input, MAX_INPUT, stdin);
+    input[strcspn(input, "\\n")] = 0;
+    if (validate_regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]{8,}$", input)) {
+        printf("Valid password\\n");
+    } else {
+        printf("Invalid password\\n");
+    }
+
     return 0;
 }

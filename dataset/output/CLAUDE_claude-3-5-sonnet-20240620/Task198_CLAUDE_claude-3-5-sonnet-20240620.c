@@ -17,21 +17,24 @@ int rand10() {
 }
 
 int main() {
-    srand(time(NULL));
-    int n;
+    int n, i;
     printf("Enter the number of times to call rand10(): ");
     scanf("%d", &n);
+
+    srand(time(NULL));
+
     int* result = (int*)malloc(n * sizeof(int));
-    for (int i = 0; i < n; i++) {
+    for (i = 0; i < n; i++) {
         result[i] = rand10();
     }
+
     printf("[");
-    for (int i = 0; i < n; i++) {
+    for (i = 0; i < n; i++) {
         printf("%d", result[i]);
         if (i < n - 1) printf(",");
     }
-    printf("]\
-");
+    printf("]\\n");
+
     free(result);
     return 0;
 }

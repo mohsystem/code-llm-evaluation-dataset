@@ -5,168 +5,115 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <pthread.h>
 
-#define PORT 5000
-#define MAX_USERS 100
-#define MAX_USERNAME 50
-#define MAX_PASSWORD 50
+#define MAX_CLIENTS 10
+#define BUFFER_SIZE 1024
 
 typedef struct {
-    char username[MAX_USERNAME];
-    char password[MAX_PASSWORD];
-} User;
+    char username[50];
+    char password[50];
+} Credentials;
 
-User users[MAX_USERS];
-int user_count = 0;
+typedef struct {
+    char status[10];
+    char message[100];
+} Response;
 
-void load_users() {
+void *handle_client(void *arg);
+Response authenticate(Credentials creds);
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("Usage: %s <s|c>\\n", argv[0]);
+        return 1;
+    }
+
+    if (strcmp(argv[1], "s") == 0) {
+        // Server code
+        int server_sock, client_sock;
+        struct sockaddr_in server_addr, client_addr;
+        socklen_t addr_size;
+        pthread_t thread_id;
+
+        server_sock = socket(AF_INET, SOCK_STREAM, 0);
+        server_addr.sin_family = AF_INET;
+        server_addr.sin_port = htons(5000);
+        server_addr.sin_addr.s_addr = INADDR_ANY;
+
+        bind(server_sock, (struct sockaddr*)&server_addr, sizeof(server_addr));
+        listen(server_sock, 5);
+        printf("Server listening on port 5000\\n");
+
+        while (1) {
+            addr_size = sizeof(client_addr);
+            client_sock = accept(server_sock, (struct sockaddr*)&client_addr, &addr_size);
+            pthread_create(&thread_id, NULL, handle_client, (void*)&client_sock);
+        }
+    } else if (strcmp(argv[1], "c") == 0) {
+        // Client code
+        int sock;
+        struct sockaddr_in addr;
+        Credentials creds;
+        Response response;
+
+        sock = socket(AF_INET, SOCK_STREAM, 0);
+        addr.sin_family = AF_INET;
+        addr.sin_port = htons(5000);
+        addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+        connect(sock, (struct sockaddr*)&addr, sizeof(addr));
+
+        printf("Enter username: ");
+        scanf("%s", creds.username);
+        printf("Enter password: ");
+        scanf("%s", creds.password);
+
+        send(sock, &creds, sizeof(creds), 0);
+        recv(sock, &response, sizeof(response), 0);
+
+        printf("%s\\n", response.message);
+
+        close(sock);
+    } else {
+        printf("Invalid option. Use 's' for server or 'c' for client.\\n");
+    }
+
+    return 0;
+}
+
+void *handle_client(void *arg) {
+    int client_sock = *(int*)arg;
+    Credentials creds;
+    Response response;
+
+    recv(client_sock, &creds, sizeof(creds), 0);
+    response = authenticate(creds);
+    send(client_sock, &response, sizeof(response), 0);
+
+    close(client_sock);
+    return NULL;
+}
+
+Response authenticate(Credentials creds) {
+    Response response;
     FILE *file = fopen("users.txt", "r");
     if (file == NULL) {
-        perror("Error opening users file");
-        exit(1);
+        strcpy(response.status, "failure");
+        strcpy(response.message, "Error opening users file");
+        return response;
     }
 
-    char line[MAX_USERNAME + MAX_PASSWORD + 2];
-    while (fgets(line, sizeof(line), file) && user_count < MAX_USERS) {
-        char *username = strtok(line, ":");
-        char *password = strtok(NULL, "\
-");
-        
-        if (username && password) {
-            strncpy(users[user_count].username, username, MAX_USERNAME);
-            strncpy(users[user_count].password, password, MAX_PASSWORD);
-            user_count++;
+    char line[100];
+    while (fgets(line, sizeof(line), file)) {
+        char username[50], password[50];
+        sscanf(line, "%[^:]:%s", username, password);
+        if (strcmp(username, creds.username) == 0 && strcmp(password, creds.password) == 0) {
+            strcpy(response.status, "success");
+            strcpy(response.message, "Login successful");
+            fclose(file);
+            return response;
         }
     }
 
-    fclose(file);
-}
-
-int authenticate(const char *username, const char *password) {
-    for (int i = 0; i < user_count; i++) {
-        if (strcmp(users[i].username, username) == 0 && strcmp(users[i].password, password) == 0) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
-void handle_client(int client_socket) {
-    char buffer[1024] = {0};
-    read(client_socket, buffer, 1024);
-
-    char *token = strtok(buffer, "|");
-    if (strcmp(token, "LOGIN") == 0) {
-        char *username = strtok(NULL, "|");
-        char *password = strtok(NULL, "|");
-
-        if (authenticate(username, password)) {
-            send(client_socket, "LOGIN_SUCCESS", strlen("LOGIN_SUCCESS"), 0);
-        } else {
-            send(client_socket, "LOGIN_FAILED", strlen("LOGIN_FAILED"), 0);
-        }
-    }
-
-    close(client_socket);
-}
-
-int main() {
-    load_users();
-
-    int server_fd, new_socket;
-    struct sockaddr_in address;
-    int addrlen = sizeof(address);
-
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        perror("socket failed");
-        exit(EXIT_FAILURE);
-    }
-
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
-
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
-        perror("bind failed");
-        exit(EXIT_FAILURE);
-    }
-
-    if (listen(server_fd, 3) < 0) {
-        perror("listen");
-        exit(EXIT_FAILURE);
-    }
-
-    printf("Server started on port %d\
-", PORT);
-
-    while (1) {
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
-            perror("accept");
-            exit(EXIT_FAILURE);
-        }
-
-        handle_client(new_socket);
-    }
-
-    return 0;
-}
-
-// Client code
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-
-#define PORT 5000
-
-int main() {
-    int sock = 0;
-    struct sockaddr_in serv_addr;
-    char buffer[1024] = {0};
-    char username[50], password[50];
-
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        printf("\
- Socket creation error \
-");
-        return -1;
-    }
-
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(PORT);
-
-    if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0) {
-        printf("\
-Invalid address/ Address not supported \
-");
-        return -1;
-    }
-
-    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-        printf("\
-Connection Failed \
-");
-        return -1;
-    }
-
-    printf("Enter username: ");
-    fgets(username, sizeof(username), stdin);
-    username[strcspn(username, "\
-")] = 0;
-
-    printf("Enter password: ");
-    fgets(password, sizeof(password), stdin);
-    password[strcspn(password, "\
-")] = 0;
-
-    sprintf(buffer, "LOGIN|%s|%s", username, password);
-    send(sock, buffer, strlen(buffer), 0);
-    
-    memset(buffer, 0, sizeof(buffer));
-    read(sock, buffer, 1024);
-    printf("Server response: %s\
-", buffer);
-
-    return 0;
-}
+    strcpy(response', type='text')

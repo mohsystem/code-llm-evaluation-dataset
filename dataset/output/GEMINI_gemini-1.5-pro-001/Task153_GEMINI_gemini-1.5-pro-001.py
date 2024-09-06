@@ -1,27 +1,27 @@
 from collections import defaultdict
 
-def bfs(graph, start_node):
-  visited = set()
-  queue = [start_node]
-  visited.add(start_node)
+def breadth_first_search(graph, start_node):
+    visited = set()
+    queue = [start_node]
+    visited.add(start_node)
 
-  while queue:
-    node = queue.pop(0)
-    print(node, end=" ")
+    while queue:
+        node = queue.pop(0)
+        print(node, end=" ")
 
-    for neighbor in graph[node]:
-      if neighbor not in visited:
-        visited.add(neighbor)
-        queue.append(neighbor)
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
 
-if __name__ == '__main__':
-  graph = {
+# Example usage:
+graph = {
     'A': ['B', 'C'],
-    'B': ['A', 'D', 'E'],
-    'C': ['A', 'F'],
-    'D': ['B'],
-    'E': ['B', 'F'],
-    'F': ['C', 'E']
-  }
-  start_node = 'A'
-  bfs(graph, start_node)
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': ['F'],
+    'F': []
+}
+start_node = 'A'
+breadth_first_search(graph, start_node)

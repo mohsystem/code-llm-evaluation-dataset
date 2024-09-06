@@ -1,8 +1,9 @@
 
-def is_narcissistic(number):
-    num_str = str(number)
-    length = len(num_str)
-    return sum(int(digit) ** length for digit in num_str) == number
+def narcissistic(num):
+    digits = [int(d) for d in str(num)]
+    power = len(digits)
+    return sum(d ** power for d in digits) == num
 
-print(is_narcissistic(153))  # True
-print(is_narcissistic(1652)) # False
+# Test cases
+print(narcissistic(153))  # True
+print(narcissistic(1652))  # False

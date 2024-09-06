@@ -1,11 +1,11 @@
-#include <stdio.h>
-#include <math.h>
+#include<stdio.h>
+#define _USE_MATH_DEFINES
+#include<math.h>
 int main() {
-    double radius;
+    double radius, area;
     printf("Enter the radius of the circle: ");
     scanf("%lf", &radius);
-    double area = M_PI * pow(radius, 2);
-    printf("The area of the circle is: %f
-", area);
+    area = M_PI * (radius * radius);
+    printf("The area of the circle is: %f\n", area);
     return 0;
 }

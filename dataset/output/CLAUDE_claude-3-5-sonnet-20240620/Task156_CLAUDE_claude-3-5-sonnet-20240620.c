@@ -17,27 +17,24 @@ struct TreeNode* createNode(int val) {
 }
 
 void preorderTraversal(struct TreeNode* root) {
-    if (root) {
-        printf("%d ", root->val);
-        preorderTraversal(root->left);
-        preorderTraversal(root->right);
-    }
+    if (root == NULL) return;
+    printf("%d ", root->val);
+    preorderTraversal(root->left);
+    preorderTraversal(root->right);
 }
 
 void inorderTraversal(struct TreeNode* root) {
-    if (root) {
-        inorderTraversal(root->left);
-        printf("%d ", root->val);
-        inorderTraversal(root->right);
-    }
+    if (root == NULL) return;
+    inorderTraversal(root->left);
+    printf("%d ", root->val);
+    inorderTraversal(root->right);
 }
 
 void postorderTraversal(struct TreeNode* root) {
-    if (root) {
-        postorderTraversal(root->left);
-        postorderTraversal(root->right);
-        printf("%d ", root->val);
-    }
+    if (root == NULL) return;
+    postorderTraversal(root->left);
+    postorderTraversal(root->right);
+    printf("%d ", root->val);
 }
 
 int main() {
@@ -47,16 +44,11 @@ int main() {
     root->left->left = createNode(4);
     root->left->right = createNode(5);
 
-    printf("Preorder traversal:\
-");
+    printf("Preorder traversal:\\n");
     preorderTraversal(root);
-    printf("\
-Inorder traversal:\
-");
+    printf("\\nInorder traversal:\\n");
     inorderTraversal(root);
-    printf("\
-Postorder traversal:\
-");
+    printf("\\nPostorder traversal:\\n");
     postorderTraversal(root);
 
     return 0;

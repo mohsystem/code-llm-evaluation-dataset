@@ -3,13 +3,8 @@ code here:
 #include <vector>
 #include <list>
 
-using namespace std;
-
 class Graph {
 public:
-    int numNodes;
-    vector<list<int>> adjList;
-
     Graph(int numNodes) : numNodes(numNodes), adjList(numNodes) {}
 
     void addEdge(int u, int v) {
@@ -17,20 +12,23 @@ public:
     }
 
     void dfs(int startNode) {
-        vector<bool> visited(numNodes, false);
+        std::vector<bool> visited(numNodes, false);
         dfsHelper(startNode, visited);
     }
 
-    void dfsHelper(int node, vector<bool>& visited) {
+    void dfsHelper(int node, std::vector<bool>& visited) {
         visited[node] = true;
-        cout << node << " ";
-
+        std::cout << node << " ";
         for (int neighbor : adjList[node]) {
             if (!visited[neighbor]) {
                 dfsHelper(neighbor, visited);
             }
         }
     }
+
+private:
+    int numNodes;
+    std::vector<std::list<int>> adjList;
 };
 
 int main() {
@@ -38,9 +36,7 @@ int main() {
     g.addEdge(0, 1);
     g.addEdge(0, 2);
     g.addEdge(1, 3);
-    g.addEdge(1, 4);
-
-    cout << "Depth-first search starting from node 0:" << endl;
-    g.dfs(0);
+    g.addEdge(2, 4);
+    g.dfs(0);  // Output: 0 1 3 2 4
     return 0;
 }

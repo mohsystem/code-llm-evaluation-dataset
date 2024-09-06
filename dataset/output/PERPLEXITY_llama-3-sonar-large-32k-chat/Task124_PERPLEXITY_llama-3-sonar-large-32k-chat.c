@@ -17,8 +17,7 @@ char* getData(SensitiveData* sd) {
 
 int main() {
     SensitiveData* data = createSensitiveData("1234-5678-9012-3456");
-    printf("%s
-", getData(data));
+    printf("%s\n", getData(data));
     free(data);
     return 0;
 }

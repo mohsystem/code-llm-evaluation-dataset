@@ -6,7 +6,7 @@ public:
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j <= n; j++) {
                 string s = text.substr(i, j - i);
-                if (isPalindrome(s) && s.length() % 2 == 0) {
+                if (isPalindrome(s)) {
                     res.insert(s);
                 }
             }

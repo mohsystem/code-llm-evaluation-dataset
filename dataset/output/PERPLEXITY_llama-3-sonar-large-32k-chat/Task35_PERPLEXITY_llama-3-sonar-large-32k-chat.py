@@ -1,8 +1,5 @@
-def people_on_bus(stops):
-    people = 0
-    for stop in stops:
-        people += stop[0] - stop[1]
-    return people
-
-stops = [[10, 0], [3, 5], [5, 8]]
-print(people_on_bus(stops))
+def number_of_people_still_on_bus(lst):
+    people_on_bus = 0
+    for get_on, get_off in lst:
+        people_on_bus += get_on - get_off
+    return people_on_bus

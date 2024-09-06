@@ -4,11 +4,13 @@ class Node:
         self.left = None
         self.right = None
 
+
 def preorder_traversal(root):
     if root:
         print(root.data, end=" ")
         preorder_traversal(root.left)
         preorder_traversal(root.right)
+
 
 def inorder_traversal(root):
     if root:
@@ -16,11 +18,13 @@ def inorder_traversal(root):
         print(root.data, end=" ")
         inorder_traversal(root.right)
 
+
 def postorder_traversal(root):
     if root:
         postorder_traversal(root.left)
         postorder_traversal(root.right)
         print(root.data, end=" ")
+
 
 # Example usage:
 root = Node(1)

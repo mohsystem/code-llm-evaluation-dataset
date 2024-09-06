@@ -1,39 +1,42 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main() {
-    char sourcePath[] = "source.txt";
-    char destinationPath[] = "/tmp/destination.txt";
-
-    FILE *sourceFile = fopen(sourcePath, "r");
-    if (sourceFile == NULL) {
-        perror("The source file does not exist.");
-        return 1;
+void copy_file(const char *source_path, const char *dest_path) {
+    FILE *source = fopen(source_path, "rb");
+    if (source == NULL) {
+        perror("Error: Cannot open source file");
+        exit(EXIT_FAILURE);
     }
 
-    FILE *destinationFile = fopen(destinationPath, "w");
-    if (destinationFile == NULL) {
-        perror("An error occurred while opening the destination file.");
-        fclose(sourceFile);
-        return 1;
+    FILE *dest = fopen(dest_path, "wb");
+    if (dest == NULL) {
+        perror("Error: Cannot open destination file");
+        fclose(source);
+        exit(EXIT_FAILURE);
     }
 
     char buffer[1024];
     size_t bytes;
-    while ((bytes = fread(buffer, 1, sizeof(buffer), sourceFile)) > 0) {
-        if (fwrite(buffer, 1, bytes, destinationFile) != bytes) {
-            perror("An error occurred while writing to the destination file.");
-            fclose(sourceFile);
-            fclose(destinationFile);
-            return 1;
-        }
+    while ((bytes = fread(buffer, 1, sizeof(buffer), source)) > 0) {
+        fwrite(buffer, 1, bytes, dest);
     }
 
-    fclose(sourceFile);
-    fclose(destinationFile);
+    fclose(source);
+    fclose(dest);
+}
 
-    printf("File copied successfully in C!
-");
+int main() {
+    const char *source_path = "/path/to/source/file.txt";
+    const char *dest_path = "/path/to/dest/tmp_file.txt";
+
+    try {
+        copy_file(source_path, dest_path);
+        printf("File copied successfully.\n");
+    } catch (const std::exception &e) {
+        fprintf(stderr, "%s\n", e.what());
+    } catch (...) {
+        fprintf(stderr, "An unexpected error occurred.\n");
+    }
 
     return 0;
 }

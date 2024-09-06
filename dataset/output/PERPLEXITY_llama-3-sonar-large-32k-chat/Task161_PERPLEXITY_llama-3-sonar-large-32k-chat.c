@@ -1,39 +1,41 @@
 #include <stdio.h>
 
-int knapsack(int W, int wt[], int val[], int n) {
-    int K[n + 1][W + 1];
-    
+int knapsack(int capacity, int* weights, int* values, int n) {
+    int dp[n + 1][capacity + 1];
     for (int i = 0; i <= n; i++) {
-        for (int w = 0; w <= W; w++) {
-            if (i == 0 || w == 0)
-                K[i][w] = 0;
-            else if (wt[i-1] <= w)
-                K[i][w] = (val[i-1] + K[i-1][w-wt[i-1]] > K[i-1][w]) ? val[i-1] + K[i-1][w-wt[i-1]] : K[i-1][w];
-            else
-                K[i][w] = K[i-1][w];
+        for (int w = 0; w <= capacity; w++) {
+            if (i == 0 || w == 0) {
+                dp[i][w] = 0;
+            } else if (weights[i - 1] <= w) {
+                dp[i][w] = (values[i - 1] + dp[i - 1][w - weights[i - 1]] > dp[i - 1][w]) ? values[i - 1] + dp[i - 1][w - weights[i - 1]] : dp[i - 1][w];
+            } else {
+                dp[i][w] = dp[i - 1][w];
+            }
         }
     }
- 
-    return K[n][W];
+
+    return dp[n][capacity];
 }
 
 int main() {
-    int W, n;
+    int capacity;
     printf("Enter the capacity of the knapsack: ");
-    scanf("%d", &W);
+    scanf("%d", &capacity);
+    int n;
     printf("Enter the number of items: ");
     scanf("%d", &n);
-    int val[n], wt[n];
-    printf("Enter the values of the items: ");
+    int* weights = (int*)malloc(n * sizeof(int));
+    int* values = (int*)malloc(n * sizeof(int));
     for (int i = 0; i < n; i++) {
-        scanf("%d", &val[i]);
+        printf("Enter the weight of item %d: ", i + 1);
+        scanf("%d", &weights[i]);
+        printf("Enter the value of item %d: ", i + 1);
+        scanf("%d", &values[i]);
     }
-    printf("Enter the weights of the items: ");
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &wt[i]);
-    }
-    
-    printf("Maximum value that can be put into the knapsack: %d
-", knapsack(W, wt, val, n));
+
+    int maxValue = knapsack(capacity, weights, values, n);
+    printf("Maximum value that can be put into the knapsack: %d\n", maxValue);
+    free(weights);
+    free(values);
     return 0;
 }

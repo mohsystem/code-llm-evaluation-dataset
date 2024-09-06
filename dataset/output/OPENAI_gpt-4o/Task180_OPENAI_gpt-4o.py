@@ -1,39 +1,41 @@
 class TreeNode:
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, val):
+        self.val = val
         self.children = []
 
-def build_tree(edges):
-    nodes = {}
-    for parent, child in edges:
-        if parent not in nodes:
-            nodes[parent] = TreeNode(parent)
-        if child not in nodes:
-            nodes[child] = TreeNode(child)
-        nodes[parent].children.append(nodes[child])
-    return nodes
+def reorient_tree(node, root=None):
+    if root is None:
+        root = TreeNode(node.val)
+    for child in node.children:
+        child_node = TreeNode(child.val)
+        root.children.append(child_node)
+        reorient_tree(child, child_node)
+    return root
 
-def reorient_tree(node, parent=None):
-    if parent:
-        node.children.remove(parent)
-        node.children.append(parent)
-    for child in list(node.children):
-        reorient_tree(child, node)
-    return node
+def print_tree(node, level=0):
+    print(" " * (level * 2) + str(node.val))
+    for child in node.children:
+        print_tree(child, level + 1)
 
-# Example usage:
-edges = [(0, 1), (0, 2), (0, 3), (1, 4), (1, 5), (2, 6), (2, 7), (3, 8), (3, 9)]
-nodes = build_tree(edges)
-new_root = reorient_tree(nodes[6])
+# Example tree
+n0 = TreeNode(0)
+n1 = TreeNode(1)
+n2 = TreeNode(2)
+n3 = TreeNode(3)
+n4 = TreeNode(4)
+n5 = TreeNode(5)
+n6 = TreeNode(6)
+n7 = TreeNode(7)
+n8 = TreeNode(8)
+n9 = TreeNode(9)
 
-from collections import deque
+n0.children = [n1, n2, n3]
+n1.children = [n4, n5]
+n2.children = [n6, n7]
+n3.children = [n8, n9]
 
-def print_tree(root):
-    q = deque([(root, 0)])
-    while q:
-        node, level = q.pop()
-        print("  " * level + str(node.value))
-        for child in node.children:
-            q.appendleft((child, level + 1))
+# Reorient tree
+new_root = reorient_tree(n6)
 
+# Print reoriented tree
 print_tree(new_root)

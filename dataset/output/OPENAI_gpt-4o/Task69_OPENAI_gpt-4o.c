@@ -2,16 +2,18 @@
 #include <stdlib.h>
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        printf("Please provide the file path as an argument.
-");
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
         return 1;
     }
-    if (remove(argv[1]) == 0) {
-        printf("File deleted successfully.
-");
+
+    const char *file_path = argv[1];
+
+    if (remove(file_path) == 0) {
+        printf("%s deleted successfully.\n", file_path);
     } else {
-        perror("Error deleting the file");
+        perror("Error");
     }
+
     return 0;
 }

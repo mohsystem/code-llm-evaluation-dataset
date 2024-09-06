@@ -1,7 +1,17 @@
-def encrypt(str):
-    return ''.join(chr(ord(c) + 3) for c in str)
+def encrypt(text, shift):
+    result = ""
 
-str = "Hello, World!"
-print("Original:", str)
-encrypted = encrypt(str)
-print("Encrypted:", encrypted)
+    for char in text:
+        if char.isalpha():
+            ascii_offset = 65 if char.isupper() else 97
+            result += chr((ord(char) - ascii_offset + shift) % 26 + ascii_offset)
+        else:
+            result += char
+
+    return result
+
+text = "Hello, World!"
+shift = 3
+print("Text : " + text)
+print("Shift : " + str(shift))
+print("Cipher: " + encrypt(text, shift))

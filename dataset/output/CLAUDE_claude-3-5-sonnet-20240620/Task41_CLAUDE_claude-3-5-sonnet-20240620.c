@@ -1,31 +1,30 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 
-#define MAX_LENGTH 1000
+#define MAX_LENGTH 100
 
-void processString(char *str) {
-    for (int i = 0; str[i]; i++) {
-        str[i] = toupper((unsigned char)str[i]);
-    }
+void processInput(const char* input) {
+    // Process the input (example: print it back)
+    printf("Processed input: %s\\n", input);
 }
 
 int main() {
-    char input[MAX_LENGTH];
-    printf("Enter a string: ");
-    if (fgets(input, sizeof(input), stdin) != NULL) {
-        size_t len = strlen(input);
-        if (len > 0 && input[len-1] == \'\
-\') {
-            input[len-1] = \'\\0\';
+    char userInput[MAX_LENGTH + 1]; // +1 for null terminator
+    printf("Enter a string (max 100 characters): ");
+    
+    // Read input safely
+    if (fgets(userInput, sizeof(userInput), stdin) != NULL) {
+        // Remove newline if present
+        size_t len = strlen(userInput);
+        if (len > 0 && userInput[len-1] == '\\n') {
+            userInput[len-1] = '\\0';
         }
-        processString(input);
-        printf("Processed string: %s\
-", input);
+        
+        processInput(userInput);
     } else {
-        printf("Error reading input.\
-");
+        printf("Error reading input.\\n");
     }
+    
     return 0;
 }

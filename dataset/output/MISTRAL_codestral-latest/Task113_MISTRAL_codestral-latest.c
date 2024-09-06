@@ -1,25 +1,24 @@
+// C
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 
-#define MAX_SIZE 1000
+#define MAX_LENGTH 100
 
 int main() {
-    char input[MAX_SIZE];
-    char result[MAX_SIZE] = "";
+    char concatenatedString[MAX_LENGTH] = "";
+    char userInput[MAX_LENGTH];
 
-    printf("Enter strings to concatenate (enter 'end' to stop):
-");
-    fgets(input, MAX_SIZE, stdin);
-
-    while (strcmp(input, "end
-") != 0) {
-        strcat(result, input);
-        fgets(input, MAX_SIZE, stdin);
+    while (1) {
+        printf("Enter a string (or press enter to finish): ");
+        fgets(userInput, MAX_LENGTH, stdin);
+        userInput[strcspn(userInput, "\n")] = 0; // Remove trailing newline
+        if (strlen(userInput) == 0) {
+            break;
+        }
+        strcat(concatenatedString, userInput);
     }
 
-    printf("Concatenated string: %s
-", result);
+    printf("Concatenated string: %s\n", concatenatedString);
 
     return 0;
 }

@@ -5,7 +5,7 @@ bool xorGame(int* nums, int numsSize) {
     int count = 0;
     for (int i = 0; i < numsSize; i++) {
         xor_all ^= nums[i];
-        if (nums[i] % 2 == 0) {
+        if ((nums[i] & 1) == 0) {
             count++;
         }
     }

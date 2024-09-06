@@ -1,6 +1,6 @@
 #include <string>
 
-bool solution(const std::string &str, const std::string &ending) {
-    if (ending.size() > str.size()) return false;
-    return str.substr(str.size() - ending.size()) == ending;
+bool solution(std::string mainString, std::string ending) {
+    return mainString.size() >= ending.size() &&
+           mainString.compare(mainString.size() - ending.size(), ending.size(), ending) == 0;
 }

@@ -1,36 +1,65 @@
+// C++ Remote Object Manipulation Server (example)
 #include <iostream>
-#include <string>
-#include <unordered_map>
-#include <SFML/Network.hpp>
+#include <xmlrpc-c/base.hpp>
+#include <xmlrpc-c/registry.hpp>
+#include <xmlrpc-c/server_abyss.hpp>
 
-int main() {
-    std::unordered_map<std::string, std::string> objects;
-
-    sf::TcpListener listener;
-    if (listener.listen(7896) != sf::Socket::Done)
-        return EXIT_FAILURE;
-
-    while (true) {
-        sf::TcpSocket client;
-        if (listener.accept(client) != sf::Socket::Done)
-            return EXIT_FAILURE;
-
-        char action[10], key[256], value[256];
-        std::size_t received;
-
-        client.receive(action, sizeof(action), received);
-        client.receive(key, sizeof(key), received);
-        client.receive(value, sizeof(value), received);
-        
-        if (std::string(action) == "put") {
-            objects[std::string(key)] = std::string(value);
-            client.send("Success", 7);
-        } else if (std::string(action) == "get") {
-            client.send(objects[std::string(key)].c_str(), objects[std::string(key)].size());
-        }
-
-        client.disconnect();
+class RemoteObject {
+public:
+    RemoteObject() : value(0) {}
+    
+    void setValue(int v) {
+        value = v;
+    }
+    
+    int getValue() const {
+        return value;
     }
 
+private:
+    int value;
+};
+
+class setValueMethod : public xmlrpc_c::method {
+public:
+    setValueMethod(RemoteObject* obj) : remoteObject(obj) {}
+
+    void execute(const xmlrpc_c::paramList& paramList, xmlrpc_c::value* retval) {
+        int value = paramList.getInt(0);
+        remoteObject->setValue(value);
+        *retval = xmlrpc_c::value_string("Value set to " + std::to_string(value));
+    }
+
+private:
+    RemoteObject* remoteObject;
+};
+
+class getValueMethod : public xmlrpc_c::method {
+public:
+    getValueMethod(RemoteObject* obj) : remoteObject(obj) {}
+
+    void execute(const xmlrpc_c::paramList& paramList, xmlrpc_c::value* retval) {
+        int value = remoteObject->getValue();
+        *retval = xmlrpc_c::value_int(value);
+    }
+
+private:
+    RemoteObject* remoteObject;
+};
+
+int main() {
+    RemoteObject obj;
+    xmlrpc_c::registry myRegistry;
+
+    xmlrpc_c::methodPtr const setValueP(new setValueMethod(&obj));
+    xmlrpc_c::methodPtr const getValueP(new getValueMethod(&obj));
+    
+    myRegistry.addMethod("set_value", setValueP);
+    myRegistry.addMethod("get_value", getValueP);
+
+    xmlrpc_c::serverAbyss myServer(xmlrpc_c::serverAbyss::constrOpt().registryP(&myRegistry).portNumber(8000));
+    std::cout << "Server is running..." << std::endl;
+    myServer.run();
+    
     return 0;
 }

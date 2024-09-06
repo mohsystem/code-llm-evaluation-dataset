@@ -1,64 +1,69 @@
-// C part
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
-#define MAX_NODES 100
+struct Node {
+    int vertex;
+    struct Node* next;
+};
 
-typedef struct {
-    char node;
-    char neighbours[MAX_NODES];
-    int neighbour_count;
-} GraphNode;
-
-GraphNode graph[MAX_NODES];
-int graph_size = 0;
-char visited[MAX_NODES];
-int visited_count = 0;
-
-void add_edge(char u, char v) {
-    int i;
-    for (i = 0; i < graph_size; i++) {
-        if (graph[i].node == u) {
-            graph[i].neighbours[graph[i].neighbour_count++] = v;
-            return;
-        }
-    }
-    graph[graph_size].node = u;
-    graph[graph_size].neighbour_count = 1;
-    graph[graph_size].neighbours[0] = v;
-    graph_size++;
+struct Node* createNode(int v) {
+    struct Node* newNode = malloc(sizeof(struct Node));
+    newNode->vertex = v;
+    newNode->next = NULL;
+    return newNode;
 }
 
-void depth_first_search(char node) {
-    int i, j;
-    
-    for (i = 0; i < visited_count; i++) {
-        if (visited[i] == node) return;
+struct Graph {
+    int numVertices;
+    struct Node** adjLists;
+    int* visited;
+};
+
+struct Graph* createGraph(int vertices) {
+    struct Graph* graph = malloc(sizeof(struct Graph));
+    graph->numVertices = vertices;
+    graph->adjLists = malloc(vertices * sizeof(struct Node*));
+    graph->visited = malloc(vertices * sizeof(int));
+
+    int i;
+    for (i = 0; i < vertices; i++) {
+        graph->adjLists[i] = NULL;
+        graph->visited[i] = 0;
     }
-    
-    printf("%c
-", node);
-    visited[visited_count++] = node;
-    
-    for (i = 0; i < graph_size; i++) {
-        if (graph[i].node == node) {
-            for (j = 0; j < graph[i].neighbour_count; j++) {
-                depth_first_search(graph[i].neighbours[j]);
-            }
-            return;
+    return graph;
+}
+
+void addEdge(struct Graph* graph, int src, int dest) {
+    struct Node* newNode = createNode(dest);
+    newNode->next = graph->adjLists[src];
+    graph->adjLists[src] = newNode;
+}
+
+void DFS(struct Graph* graph, int vertex) {
+    struct Node* adjList = graph->adjLists[vertex];
+    struct Node* temp = adjList;
+    graph->visited[vertex] = 1;
+    printf("%d ", vertex);
+
+    while (temp != NULL) {
+        int connectedVertex = temp->vertex;
+
+        if (graph->visited[connectedVertex] == 0) {
+            DFS(graph, connectedVertex);
         }
+        temp = temp->next;
     }
 }
 
 int main() {
-    add_edge('A', 'B');
-    add_edge('A', 'C');
-    add_edge('B', 'D');
-    add_edge('B', 'E');
-    add_edge('C', 'F');
-    
-    depth_first_search('A');
-    
+    struct Graph* graph = createGraph(4);
+    addEdge(graph, 0, 1);
+    addEdge(graph, 0, 2);
+    addEdge(graph, 1, 2);
+    addEdge(graph, 2, 0);
+    addEdge(graph, 2, 3);
+    addEdge(graph, 3, 3);
+    printf("Depth First Traversal starting from vertex 2:\n");
+    DFS(graph, 2);
     return 0;
 }

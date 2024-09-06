@@ -1,5 +1,5 @@
-def solution(string, ending):
-    return string.endswith(ending)
+def solution(str, ending):
+    return str.endswith(ending)
 
-print(solution("abc", "bc"))  # True
-print(solution("abc", "d"))   # False
+print(solution('abc', 'bc'))  # returns true
+print(solution('abc', 'd'))    # returns false

@@ -2,28 +2,54 @@
 #include <stdlib.h>
 #include <string.h>
 
-void processCSV(const char* filename) {
-    FILE* file = fopen(filename, "r");
-    if (!file) {
+void readCSV(const char *filePath) {
+    FILE *file = fopen(filePath, "r");
+    char line[1024];
+
+    if (file == NULL) {
         perror("File opening failed");
         return;
     }
-    
-    char line[1024];
-    while (fgets(line, sizeof(line), file)) {
-        char* token = strtok(line, ",");
+
+    while (fgets(line, 1024, file)) {
+        char *token = strtok(line, ",");
         while (token) {
             printf("%s ", token);
             token = strtok(NULL, ",");
         }
-        printf("
-");
+        printf("\n");
+    }
+
+    fclose(file);
+}
+
+void writeCSV(const char *filePath, const char *data[][3], int rows) {
+    FILE *file = fopen(filePath, "w");
+
+    if (file == NULL) {
+        perror("File opening failed");
+        return;
+    }
+
+    for (int i = 0; i < rows; i++) {
+        fprintf(file, "%s,%s,%s\n", data[i][0], data[i][1], data[i][2]);
     }
 
     fclose(file);
 }
 
 int main() {
-    processCSV("data.csv");
+    const char *data[][3] = {
+        {"Name", "Age", "City"},
+        {"Alice", "30", "New York"},
+        {"Bob", "25", "Los Angeles"},
+        {"Charlie", "35", "Chicago"}
+    };
+
+    const char *filePath = "example.csv";
+
+    writeCSV(filePath, data, 4);
+    readCSV(filePath);
+
     return 0;
 }

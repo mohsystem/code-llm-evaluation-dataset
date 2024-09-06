@@ -5,5 +5,12 @@ bool xorGame(int* nums, int numsSize) {
     for (int i = 0; i < numsSize; i++) {
         xor ^= nums[i];
     }
-    return numsSize % 2 == 1 && xor != 0;
+
+    if (xor == 0) {
+        return false;
+    } else if (numsSize % 2 == 0) {
+        return false;
+    } else {
+        return true;
+    }
 }

@@ -7,7 +7,7 @@ class Robot:
 
     def generate_name(self):
         while True:
-            name = ''.join(random.choice(string.ascii_uppercase) for _ in range(2)) + str(random.randint(100, 999))
+            name = ''.join(random.choice(string.ascii_uppercase) for _ in range(2)) + str(random.randint(0, 999)).zfill(3)
             if not hasattr(self, 'used_names') or name not in self.used_names:
                 if not hasattr(self, 'used_names'):
                     self.used_names = set()
@@ -16,8 +16,3 @@ class Robot:
 
     def reset(self):
         self.name = self.generate_name()
-
-robot = Robot()
-print(robot.name)
-robot.reset()
-print(robot.name)

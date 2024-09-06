@@ -1,30 +1,48 @@
 #include <stdio.h>
 
 int main() {
-    int num, num2;
-    printf("Enter a number: ");
-    if (scanf("%d", &num) != 1) {
-        printf("Invalid input. Please enter a valid number.
-");
-        return 1;
+    double num1, num2;
+    char operation;
+    
+    printf("Enter first number: ");
+    while (scanf("%lf", &num1) != 1) {
+        printf("Error: Invalid input!\n");
+        printf("Enter first number: ");
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
     }
-    printf("You entered: %d
-", num);
-    printf("Enter another number: ");
-    if (scanf("%d", &num2) != 1) {
-        printf("Invalid input. Please enter a valid number.
-");
-        return 1;
+    
+    printf("Enter second number: ");
+    while (scanf("%lf", &num2) != 1) {
+        printf("Error: Invalid input!\n");
+        printf("Enter second number: ");
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
     }
-    printf("You entered: %d
-", num2);
-    if (num2 == 0) {
-        printf("Cannot divide by zero.
-");
-        return 1;
+    
+    printf("Enter operation (+, -, *, /): ");
+    while (scanf(" %c", &operation) != 1) {
+        printf("Error: Invalid input!\n");
+        printf("Enter operation (+, -, *, /): ");
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
     }
-    int result = num / num2;
-    printf("Result: %d
-", result);
+    
+    if (operation == '+') {
+        printf("Result: %f\n", num1 + num2);
+    } else if (operation == '-') {
+        printf("Result: %f\n", num1 - num2);
+    } else if (operation == '*') {
+        printf("Result: %f\n", num1 * num2);
+    } else if (operation == '/') {
+        if (num2 != 0) {
+            printf("Result: %f\n", num1 / num2);
+        } else {
+            printf("Error: Division by zero!\n");
+        }
+    } else {
+        printf("Error: Invalid operation!\n");
+    }
+    
     return 0;
 }

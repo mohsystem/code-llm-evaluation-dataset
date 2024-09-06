@@ -1,42 +1,39 @@
+# Python code for merging k sorted linked lists
 class ListNode:
     def __init__(self, val=0, next=None):
         self.val = val
         self.next = next
-
+    
 def mergeKLists(lists):
-    from queue import PriorityQueue
-    pq = PriorityQueue()
+    import heapq
+    heap = []
     for l in lists:
-        if l:
-            pq.put((l.val, l))
-    head = point = ListNode(0)
-    while not pq.empty():
-        val, node = pq.get()
-        point.next = ListNode(val)
-        point = point.next
-        node = node.next
-        if node:
-            pq.put((node.val, node))
-    return head.next
+        while l:
+            heapq.heappush(heap, l.val)
+            l = l.next
+    
+    dummy = ListNode()
+    curr = dummy
+    while heap:
+        curr.next = ListNode(heapq.heappop(heap))
+        curr = curr.next
+    
+    return dummy.next
 
-# Helper functions to convert between ListNode and Python lists for easier testing:
-def to_list(node):
-    result = []
+def printList(node):
     while node:
-        result.append(node.val)
+        print(node.val, end=' ')
         node = node.next
-    return result
+    print()
 
-def to_nodes(lst):
-    if not lst:
-        return None
-    head = ListNode(lst[0])
-    current = head
-    for i in range(1, len(lst)):
-        current.next = ListNode(lst[i])
-        current = current.next
-    return head
+# Example usage
+lists = []
+node1 = ListNode(1, ListNode(4, ListNode(5)))
+node2 = ListNode(1, ListNode(3, ListNode(4)))
+node3 = ListNode(2, ListNode(6))
+lists.append(node1)
+lists.append(node2)
+lists.append(node3)
 
-lists = [[to_nodes([1,4,5]), to_nodes([1,3,4]), to_nodes([2,6])]]
 merged = mergeKLists(lists)
-print(to_list(merged))
+printList(merged)

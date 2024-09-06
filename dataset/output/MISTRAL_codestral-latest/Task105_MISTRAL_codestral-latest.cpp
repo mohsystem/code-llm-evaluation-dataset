@@ -3,23 +3,43 @@
 #include <openssl/err.h>
 
 int main() {
-    const SSL_METHOD *method;
-    SSL_CTX *ctx;
-    SSL *ssl;
-    BIO *bio;
+    // Define the remote server and port
+    const char* server = "www.example.com";
+    const char* port = "443";
 
+    // Initialize OpenSSL
     SSL_library_init();
     OpenSSL_add_all_algorithms();
     SSL_load_error_strings();
-    method = TLS_client_method();
-    ctx = SSL_CTX_new(method);
-    bio = BIO_new_ssl_connect(ctx);
-    BIO_set_conn_hostname(bio, "www.example.com:443");
-    BIO_do_connect(bio);
-    ssl = BIO_get_ssl(bio);
 
-    // Use bio to communicate with the server
+    // Create a SSL context
+    const SSL_METHOD* method = TLS_client_method();
+    SSL_CTX* ctx = SSL_CTX_new(method);
 
+    // Create a TCP socket
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
+    // Connect to the server
+    struct addrinfo hints, *servinfo, *p;
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    getaddrinfo(server, port, &hints, &servinfo);
+    connect(sockfd, servinfo->ai_addr, servinfo->ai_addrlen);
+
+    // Create a SSL object
+    SSL* ssl = SSL_new(ctx);
+    SSL_set_fd(ssl, sockfd);
+
+    // Perform the SSL handshake
+    SSL_connect(ssl);
+
+    // Now you can use the SSL object to communicate with the server securely
+
+    // Clean up
+    SSL_free(ssl);
+    close(sockfd);
     SSL_CTX_free(ctx);
+    EVP_cleanup();
     return 0;
 }

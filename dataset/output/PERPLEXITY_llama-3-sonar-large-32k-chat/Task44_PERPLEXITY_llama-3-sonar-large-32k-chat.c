@@ -1,47 +1,41 @@
 #include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+char* getUserInput(const char* prompt) {
+    char inputStr[256];
+    while (true) {
+        printf("%s", prompt);
+        if (fgets(inputStr, 256, stdin) != NULL) {
+            inputStr[strcspn(inputStr, "\n")] = 0; // remove the newline character
+            return strdup(inputStr);
+        } else {
+            printf("Invalid input. Please try again.\n");
+        }
+    }
+}
+
+void validateInput(const char* inputStr) {
+    for (int i = 0; inputStr[i] != '\0'; i++) {
+        if (!isalpha(inputStr[i])) {
+            fprintf(stderr, "Input should only contain alphabets\n");
+            exit(1);
+        }
+    }
+}
 
 int main() {
-    int num1, num2;
-
-    while (1) {
-        printf("Enter first number: ");
-        if (scanf("%d", &num1) == 1) {
-            break;
-        } else {
-            printf("Invalid input. Please enter a valid number.
-");
-            int c;
-            while ((c = getchar()) != '
-' && c != EOF);
-        }
+    char* inputStr = getUserInput("Enter a string: ");
+    validateInput(inputStr);
+    printf("Input is valid\n");
+    for (int i = 0; inputStr[i] != '\0'; i++) {
+        inputStr[i] = toupper(inputStr[i]);
     }
-
-    while (1) {
-        printf("Enter second number: ");
-        if (scanf("%d", &num2) == 1) {
-            break;
-        } else {
-            printf("Invalid input. Please enter a valid number.
-");
-            int c;
-            while ((c = getchar()) != '
-' && c != EOF);
-        }
+    printf("Upper case: %s\n", inputStr);
+    for (int i = 0; inputStr[i] != '\0'; i++) {
+        inputStr[i] = tolower(inputStr[i]);
     }
-
-    printf("Sum: %d
-", num1 + num2);
-    printf("Difference: %d
-", num1 - num2);
-    printf("Product: %d
-", num1 * num2);
-    if (num2 != 0) {
-        printf("Quotient: %d
-", num1 / num2);
-    } else {
-        printf("Cannot divide by zero.
-");
-    }
-
+    printf("Lower case: %s\n", inputStr);
+    free(inputStr);
     return 0;
 }

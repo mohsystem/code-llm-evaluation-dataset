@@ -1,27 +1,25 @@
 import random
+import time
 
-def main():
-    username = "user"
-    password = "password"
-    
-    input_username = input("Enter username:
-")
-    input_password = input("Enter password:
-")
+def generate_otp():
+    return random.randint(100000, 999999)
 
-    if input_username == username and input_password == password:
-        # Generate OTP
-        otp = random.randint(0, 999999)
-        print(f"Generated OTP: {otp:06d}")
-        input_otp = int(input("Enter OTP:
-"))
+def verify_otp(user_otp, actual_otp):
+    return user_otp == actual_otp
 
-        if input_otp == otp:
-            print("Login Successful")
-        else:
-            print("Invalid OTP")
+# Example usage
+username = input("Enter username: ")
+password = input("Enter password: ")
+
+# Simulate verifying username and password
+user_auth = (username == "user" and password == "pass")
+if user_auth:
+    otp = generate_otp()
+    print(f"Your OTP is: {otp}")
+    user_otp = int(input("Enter the OTP you received: "))
+    if verify_otp(user_otp, otp):
+        print("Login successful!")
     else:
-        print("Invalid username or password")
-
-if __name__ == "__main__":
-    main()
+        print("Invalid OTP!")
+else:
+    print("Invalid username or password!")

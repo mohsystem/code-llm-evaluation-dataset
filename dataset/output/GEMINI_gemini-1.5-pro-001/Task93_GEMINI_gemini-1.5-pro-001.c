@@ -2,65 +2,67 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_LINES 1000
-#define MAX_LINE_LENGTH 100
+#define MAX_LINE_LENGTH 256
 
-// Structure to represent a key-value pair
-struct KeyValuePair {
+// Structure to store key-value pairs
+typedef struct {
     char key[MAX_LINE_LENGTH];
     char value[MAX_LINE_LENGTH];
-};
+} KeyValuePair;
 
-// Function to compare key-value pairs based on keys
-int comparePairs(const void *a, const void *b) {
-    return strcmp(((struct KeyValuePair *)a)->key, ((struct KeyValuePair *)b)->key);
+// Comparison function for qsort() to sort by key
+int compare_key_value_pairs(const void* a, const void* b) {
+    KeyValuePair* pair_a = (KeyValuePair*)a;
+    KeyValuePair* pair_b = (KeyValuePair*)b;
+    return strcmp(pair_a->key, pair_b->key);
 }
 
 int main() {
-    // Replace "input.txt" with the actual input file name
-    char inputFileName[] = "input.txt";
-
-    // Open the input file for reading
-    FILE *inputFile = fopen(inputFileName, "r");
-    if (inputFile == NULL) {
+    FILE* file = fopen("input.txt", "r");
+    if (file == NULL) {
         perror("Error opening file");
         return 1;
     }
 
-    // Array to store key-value pairs
-    struct KeyValuePair pairs[MAX_LINES];
-    int numPairs = 0;
-
-    // Read key-value pairs from the file
+    KeyValuePair* records = NULL;
+    int num_records = 0;
     char line[MAX_LINE_LENGTH];
-    while (fgets(line, sizeof(line), inputFile) != NULL) {
+
+    // Read records from file
+    while (fgets(line, sizeof(line), file) != NULL) {
         // Remove trailing newline character
-        line[strcspn(line, "
-")] = 0;
+        line[strcspn(line, "\n")] = 0;
 
-        // Tokenize the line into key and value
-        char *key = strtok(line, " ");
-        char *value = strtok(NULL, " ");
+        // Allocate memory for new record
+        records = (KeyValuePair*)realloc(records, (num_records + 1) * sizeof(KeyValuePair));
+        if (records == NULL) {
+            perror("Memory allocation failed");
+            fclose(file);
+            return 1;
+        }
 
-        // Store the key-value pair in the array
-        if (key != NULL && value != NULL) {
-            strcpy(pairs[numPairs].key, key);
-            strcpy(pairs[numPairs].value, value);
-            numPairs++;
+        // Parse key and value
+        char* delimiter = strchr(line, '=');
+        if (delimiter != NULL) {
+            *delimiter = '\0';
+            strcpy(records[num_records].key, line);
+            strcpy(records[num_records].value, delimiter + 1);
+            num_records++;
         }
     }
 
-    // Close the input file
-    fclose(inputFile);
+    fclose(file);
 
-    // Sort the key-value pairs based on keys
-    qsort(pairs, numPairs, sizeof(struct KeyValuePair), comparePairs);
+    // Sort records by key
+    qsort(records, num_records, sizeof(KeyValuePair), compare_key_value_pairs);
 
-    // Print the sorted key-value pairs
-    for (int i = 0; i < numPairs; i++) {
-        printf("%s %s
-", pairs[i].key, pairs[i].value);
+    // Print sorted records
+    for (int i = 0; i < num_records; i++) {
+        printf("%s=%s\n", records[i].key, records[i].value);
     }
+
+    // Free allocated memory
+    free(records);
 
     return 0;
 }

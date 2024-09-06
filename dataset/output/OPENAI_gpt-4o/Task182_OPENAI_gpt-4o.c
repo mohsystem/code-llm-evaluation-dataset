@@ -2,34 +2,31 @@
 #include <string.h>
 #include <ctype.h>
 
-void cleanPhoneNumber(const char *phone, char *out) {
+void cleanNumber(char* input, char* output) {
     int j = 0;
-    for (int i = 0; phone[i] != '\0'; ++i) {
-        if (isdigit(phone[i])) {
-            out[j++] = phone[i];
+    for (int i = 0; i < strlen(input); i++) {
+        if (isdigit(input[i])) {
+            output[j] = input[i];
+            j++;
         }
     }
-    out[j] = '\0';
+    output[j] = '\0';
 
-    if (out[0] == '1' && strlen(out) == 11) {
-        memmove(out, out + 1, strlen(out));
+    if (output[0] == '1' && strlen(output) == 11) {
+        for (int i = 1; i < 11; i++) {
+            output[i-1] = output[i];
+        }
+        output[10] = '\0';
     }
 }
 
 int main() {
-    char phone_numbers[4][20] = {
-        "+1 (613)-995-0253",
-        "613-995-0253",
-        "1 613 995 0253",
-        "613.995.0253"
-    };
-
-    char cleaned_number[15];
-
-    for (int i = 0; i < 4; ++i) {
-        cleanPhoneNumber(phone_numbers[i], cleaned_number);
-        printf("%s
-", cleaned_number);
+    char* numbers[] = {"+1 (613)-995-0253", "613-995-0253", "1 613 995 0253", "613.995.0253"};
+    char cleanedNumbers[4][11];
+    
+    for (int i = 0; i < 4; i++) {
+        cleanNumber(numbers[i], cleanedNumbers[i]);
+        printf("%s\n", cleanedNumbers[i]);
     }
 
     return 0;

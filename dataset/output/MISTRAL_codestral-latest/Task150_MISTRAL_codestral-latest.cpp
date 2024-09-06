@@ -1,12 +1,15 @@
+// C++ code
 #include <iostream>
-using namespace std;
 
 struct Node {
     int data;
     Node* next;
+
+    Node(int data) : data(data), next(nullptr) {}
 };
 
 class SinglyLinkedList {
+private:
     Node* head;
 
 public:
@@ -14,13 +17,13 @@ public:
 
     void insert(int data) {
         if (head == nullptr) {
-            head = new Node{data, nullptr};
+            head = new Node(data);
         } else {
-            Node* cur = head;
-            while (cur->next != nullptr) {
-                cur = cur->next;
+            Node* current = head;
+            while (current->next != nullptr) {
+                current = current->next;
             }
-            cur->next = new Node{data, nullptr};
+            current->next = new Node(data);
         }
     }
 
@@ -34,25 +37,25 @@ public:
             delete temp;
             return;
         }
-        Node* cur = head;
-        while (cur->next != nullptr) {
-            if (cur->next->data == data) {
-                Node* temp = cur->next;
-                cur->next = cur->next->next;
+        Node* current = head;
+        while (current->next != nullptr) {
+            if (current->next->data == data) {
+                Node* temp = current->next;
+                current->next = current->next->next;
                 delete temp;
                 return;
             }
-            cur = cur->next;
+            current = current->next;
         }
     }
 
     bool search(int data) {
-        Node* cur = head;
-        while (cur != nullptr) {
-            if (cur->data == data) {
+        Node* current = head;
+        while (current != nullptr) {
+            if (current->data == data) {
                 return true;
             }
-            cur = cur->next;
+            current = current->next;
         }
         return false;
     }

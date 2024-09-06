@@ -1,29 +1,27 @@
 #include <stdio.h>
 
 int multiplyDigits(int num) {
-    int product = 1;
+    int result = 1;
     while (num > 0) {
-        product *= num % 10;
+        result *= num % 10;
         num /= 10;
     }
-    return product;
+    return result;
 }
 
 int persistence(int num) {
     int count = 0;
     while (num >= 10) {
         num = multiplyDigits(num);
-        count++;
+        count += 1;
     }
     return count;
 }
 
 int main() {
-    printf("%d
-", persistence(39)); // should return 3
-    printf("%d
-", persistence(999)); // should return 4
-    printf("%d
-", persistence(4)); // should return 0
+    printf("%d\n", persistence(39));  // 3
+    printf("%d\n", persistence(999)); // 4
+    printf("%d\n", persistence(4));   // 0
+
     return 0;
 }

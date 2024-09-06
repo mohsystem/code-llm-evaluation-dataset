@@ -3,38 +3,66 @@
 
 using namespace std;
 
+int getIntegerInput(const string& prompt) {
+    while (true) {
+        int input;
+        cout << prompt;
+        if (cin >> input) {
+            return input;
+        } else {
+            cout << "Invalid input. Please enter an integer." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+}
+
+double performOperation(int choice, int num1, int num2) {
+    switch (choice) {
+        case 1:
+            return num1 + num2;
+        case 2:
+            return num1 - num2;
+        case 3:
+            return num1 * num2;
+        case 4:
+            if (num2 == 0) {
+                throw runtime_error("Cannot divide by zero.");
+            }
+            return static_cast<double>(num1) / num2;
+        default:
+            throw invalid_argument("Invalid choice.");
+    }
+}
+
 int main() {
-    int num1, num2;
+    while (true) {
+        cout << "\nMenu:" << endl;
+        cout << "1. Addition" << endl;
+        cout << "2. Subtraction" << endl;
+        cout << "3. Multiplication" << endl;
+        cout << "4. Division" << endl;
+        cout << "5. Exit" << endl;
 
-    cout << "Enter first number: ";
-    while (!(cin >> num1)) {
-        cout << "Invalid input. Please enter numbers only: ";
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '
-');
-    }
+        try {
+            int choice = getIntegerInput("Enter your choice (1-5): ");
 
-    cout << "Enter second number: ";
-    while (!(cin >> num2)) {
-        cout << "Invalid input. Please enter numbers only: ";
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '
-');
-    }
+            if (choice == 5) {
+                break;
+            }
 
-    int sum = num1 + num2;
-    int difference = num1 - num2;
-    int product = num1 * num2;
+            if (choice >= 1 && choice <= 4) {
+                int num1 = getIntegerInput("Enter the first number: ");
+                int num2 = getIntegerInput("Enter the second number: ");
 
-    cout << "Sum: " << sum << endl;
-    cout << "Difference: " << difference << endl;
-    cout << "Product: " << product << endl;
-
-    if (num2 == 0) {
-        cout << "Cannot divide by zero." << endl;
-    } else {
-        double quotient = (double)num1 / num2;
-        cout << "Quotient: " << quotient << endl;
+                double result = performOperation(choice, num1, num2);
+                cout << "Result: " << result << endl;
+            } else {
+                cout << "Invalid choice. Please enter a number between 1 and 5." << endl;
+            }
+        } catch (const exception& e) {
+            cout << "Error: " << e.what() << endl;
+        }
     }
 
     return 0;

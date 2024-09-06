@@ -9,21 +9,24 @@ struct Node {
 };
 
 void preorder_traversal(Node* node) {
-    if (node == nullptr) return;
+    if (node == nullptr)
+        return;
     cout << node->data << " ";
     preorder_traversal(node->left);
     preorder_traversal(node->right);
 }
 
 void inorder_traversal(Node* node) {
-    if (node == nullptr) return;
+    if (node == nullptr)
+        return;
     inorder_traversal(node->left);
     cout << node->data << " ";
     inorder_traversal(node->right);
 }
 
 void postorder_traversal(Node* node) {
-    if (node == nullptr) return;
+    if (node == nullptr)
+        return;
     postorder_traversal(node->left);
     postorder_traversal(node->right);
     cout << node->data << " ";
@@ -38,11 +41,9 @@ int main() {
 
     cout << "Preorder traversal: ";
     preorder_traversal(root);
-    cout << "
-Inorder traversal: ";
+    cout << "\nInorder traversal: ";
     inorder_traversal(root);
-    cout << "
-Postorder traversal: ";
+    cout << "\nPostorder traversal: ";
     postorder_traversal(root);
     return 0;
 }

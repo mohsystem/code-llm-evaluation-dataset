@@ -1,10 +1,5 @@
-def peopleOnBus(busStops):
-    peopleOnBus = 0
-    for i in range(len(busStops)):
-        peopleOnBus += busStops[i][0] - busStops[i][1]
-    return peopleOnBus
-
-
-if __name__ == "__main__":
-    busStops = [[10, 0], [3, 5], [5, 8]]
-    print(peopleOnBus(busStops))
+def number(bus_stops):
+    people_on_bus = 0
+    for stop in bus_stops:
+        people_on_bus += stop[0] - stop[1]
+    return people_on_bus

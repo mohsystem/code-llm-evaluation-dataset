@@ -1,15 +1,17 @@
 class Solution {
 public:
     vector<int> countSmaller(vector<int>& nums) {
-        vector<pair<int, int>> enumVec;
-        for (int i = 0; i < nums.size(); i++) {
-            enumVec.push_back({nums[i], i});
+        int n = nums.size();
+        vector<pair<int, int>> vec(n);
+        for (int i = 0; i < n; i++) {
+            vec[i] = {nums[i], i};
         }
-        sort(enumVec.begin(), enumVec.end(), greater<pair<int, int>>());
-        vector<int> counts(nums.size(), 0);
-        for (int i = 0; i < nums.size(); i++) {
-            counts[enumVec[i].second] = i;
+        sort(vec.begin(), vec.end());
+        vector<int> res(n);
+        for (int i = 0; i < n; i++) {
+            auto it = lower_bound(vec.begin(), vec.end(), make_pair(nums[i], -1));
+            res[vec[i].second] = it - vec.begin();
         }
-        return counts;
+        return res;
     }
 };

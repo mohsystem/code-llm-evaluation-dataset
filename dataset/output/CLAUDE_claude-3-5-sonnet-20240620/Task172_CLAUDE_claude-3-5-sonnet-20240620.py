@@ -10,3 +10,8 @@ class Solution:
                     result.add(text[i:i+2*length])
         
         return len(result)
+
+# Example usage
+solution = Solution()
+print(solution.distinctEchoSubstrings("abcabcabc"))  # Output: 3
+print(solution.distinctEchoSubstrings("leetcodeleetcode"))  # Output: 2

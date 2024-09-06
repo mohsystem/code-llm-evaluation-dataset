@@ -1,25 +1,30 @@
-// C++
-#include <pistache/endpoint.h>
-#include <pistache/http.h>
+// C++ (using CPP-HTTPLIB)
+#include <httplib.h>
 #include <sqlite3.h>
+#include <nlohmann/json.hpp>
 
-class UserHandler : public Pistache::Http::Handler {
-public:
-    HTTP_PROTOTYPE(UserHandler)
+int main() {
+    httplib::Server svr;
 
-    void onRequest(const Pistache::Http::Request& req, Pistache::Http::ResponseWriter response) {
-        // Code to handle POST request and store data in SQLite database
-    }
-};
+    svr.Post("/user", [](const httplib::Request &req, httplib::Response &res) {
+        auto json = nlohmann::json::parse(req.body);
+        sqlite3 *db;
+        int rc = sqlite3_open("test.db", &db);
+        if (rc) {
+            res.status = 500;
+            return;
+        }
+        char *zErrMsg = 0;
+        std::string sql = "INSERT INTO users(name, email) VALUES('" + json["name"].get<std::string>() + "', '" + json["email"].get<std::string>() + "');";
+        rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &zErrMsg);
+        if (rc != SQLITE_OK) {
+            res.status = 500;
+        } else {
+            res.status = 200;
+            res.set_content("User added successfully", "text/plain");
+        }
+        sqlite3_close(db);
+    });
 
-int main(int argc, char *argv[]) {
-    Pistache::Port port(8080);
-    Pistache::Address addr(Pistache::Ipv4::any(), port);
-    auto opts = Pistache::Http::Endpoint::options().threads(1).flags(Pistache::Tcp::Options::ReuseAddr);
-    Pistache::Http::Endpoint server(addr);
-    server.init(opts);
-    server.setHandler(Pistache::Http::make_handler<UserHandler>());
-    server.serve();
-    server.shutdown();
-    return 0;
+    svr.listen("localhost", 8080);
 }

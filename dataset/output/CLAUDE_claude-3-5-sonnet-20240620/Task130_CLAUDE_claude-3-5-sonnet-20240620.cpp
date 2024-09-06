@@ -6,14 +6,17 @@ int main()
     crow::SimpleApp app;
 
     CROW_ROUTE(app, "/api/data")
-    ([](const crow::request& req, crow::response& res) {
+    ([](const crow::request& req) {
+        crow::json::wvalue response;
+        response["message"] = "This is CORS-enabled data";
+
+        crow::response res(response);
         res.add_header("Access-Control-Allow-Origin", "*");
         res.add_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         res.add_header("Access-Control-Allow-Headers", "Content-Type");
-        res.write("This is CORS-enabled data");
-        res.end();
+        return res;
     });
 
-    app.port(5000).run();
+    app.port(8080).run();
     return 0;
 }

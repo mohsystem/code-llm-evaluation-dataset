@@ -6,33 +6,30 @@
 
 using namespace std;
 
-int calculateScore(const string& word) {
-    int score = 0;
-    for (char c : word) {
-        score += tolower(c) - \'a\' + 1;
+string high(const string &s) {
+    istringstream iss(s);
+    vector<string> words{istream_iterator<string>{iss}, istream_iterator<string>{}};
+    
+    int maxScore = 0;
+    string maxWord;
+    
+    for (const auto &word : words) {
+        int score = 0;
+        for (char c : word) {
+            score += c - 'a' + 1;
+        }
+        if (score > maxScore) {
+            maxScore = score;
+            maxWord = word;
+        }
     }
-    return score;
+    
+    return maxWord;
 }
 
 int main() {
-    string input;
-    getline(cin, input);
-
-    istringstream iss(input);
-    vector<string> words{istream_iterator<string>{iss}, istream_iterator<string>{}};
-
-    string highestScoringWord = "";
-    int highestScore = 0;
-
-    for (const string& word : words) {
-        int score = calculateScore(word);
-        if (score > highestScore) {
-            highestScore = score;
-            highestScoringWord = word;
-        }
-    }
-
-    cout << highestScoringWord << endl;
-
+    cout << high("man i need a taxi up to ubud") << endl; // Output: taxi
+    cout << high("what time are we climbing up the volcano") << endl; // Output: volcano
+    cout << high("take me to semynak") << endl; // Output: semynak
     return 0;
 }

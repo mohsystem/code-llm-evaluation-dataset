@@ -3,38 +3,30 @@ import requests
 from bs4 import BeautifulSoup
 import sqlite3
 
-# URL to scrape
-url = "https://example.com"
+# Function to scrape data from website
+def scrape_website(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    # Example: scraping all paragraph texts
+    data = [p.text for p in soup.find_all('p')]
+    return data
 
-# Send a GET request to the URL
-response = requests.get(url)
+# Function to store data in SQLite database
+def store_in_database(data):
+    conn = sqlite3.connect('scraped_data.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS scraped_text\n                 (id INTEGER PRIMARY KEY, content TEXT)''')
+    for item in data:
+        c.execute("INSERT INTO scraped_text (content) VALUES (?)", (item,))
+    conn.commit()
+    conn.close()
 
-# Parse the HTML content
-soup = BeautifulSoup(response.content, \'html.parser\')
+# Main function
+def main():
+    url = "https://example.com"  # Replace with the website you want to scrape
+    scraped_data = scrape_website(url)
+    store_in_database(scraped_data)
+    print("Data scraped and stored successfully.")
 
-# Connect to SQLite database (or create it if it doesn\'t exist)
-conn = sqlite3.connect(\'scraped_data.db\')
-cursor = conn.cursor()
-
-# Create table if it doesn\'t exist
-cursor.execute(\'\'\'
-    CREATE TABLE IF NOT EXISTS scraped_data
-    (id INTEGER PRIMARY KEY AUTOINCREMENT,
-     title TEXT,
-     content TEXT)
-\'\'\')
-
-# Find all paragraph elements
-paragraphs = soup.find_all(\'p\')
-
-# Insert data into the database
-for p in paragraphs:
-    title = p.find(\'strong\').text if p.find(\'strong\') else \'\'
-    content = p.text
-    cursor.execute(\'INSERT INTO scraped_data (title, content) VALUES (?, ?)\', (title, content))
-
-# Commit changes and close the connection
-conn.commit()
-conn.close()
-
-print("Data scraped and stored successfully.")
+if __name__ == "__main__":
+    main()

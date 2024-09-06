@@ -29,16 +29,16 @@ int main() {
             if (num2 != 0) {
                 result = num1 / num2;
             } else {
-                std::cout << "Error: Division by zero";
+                std::cout << "Error: Division by zero" << std::endl;
                 return 0;
             }
             break;
         default:
-            std::cout << "Error: Invalid operator";
+            std::cout << "Error: Invalid operator" << std::endl;
             return 0;
     }
 
-    std::cout << "Result: " << result;
+    std::cout << "Result: " << result << std::endl;
 
     return 0;
 }

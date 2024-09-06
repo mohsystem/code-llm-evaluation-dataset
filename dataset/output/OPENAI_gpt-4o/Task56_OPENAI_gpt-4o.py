@@ -1,7 +1,8 @@
-import uuid
+import secrets
+import time
 
-def generate_token():
-    return str(uuid.uuid4())
+token = secrets.token_hex(16)
+print(f"Python Generated Token: {token}")
+print("Waiting 5 seconds for next part...")
 
-if __name__ == "__main__":
-    print("Python Token:", generate_token())
+time.sleep(5)

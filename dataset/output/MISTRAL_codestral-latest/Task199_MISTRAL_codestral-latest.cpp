@@ -11,7 +11,7 @@ public:
     }
 
     bool operator==(const Clock& other) const {
-        return this->minutes == other.minutes;
+        return minutes == other.minutes;
     }
 
     Clock operator+(int minutes) const {
@@ -25,7 +25,8 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Clock& clock) {
         int hours = clock.minutes / 60;
         int minutes = clock.minutes % 60;
-        os << std::setfill('0') << std::setw(2) << hours << ":" << std::setw(2) << minutes;
+        os << std::setfill('0') << std::setw(2) << hours << ':'
+           << std::setfill('0') << std::setw(2) << minutes;
         return os;
     }
 };

@@ -2,28 +2,32 @@
 #include <iostream>
 #include <string>
 
-std::string encrypt(std::string text, int shift) {
-    for (char &c : text) {
-        if (std::isalpha(c)) {
-            char base = std::isupper(c) ? \'A\' : \'a\';
-            c = (c - base + shift) % 26 + base;
+using namespace std;
+
+string encrypt(string text, int shift) {
+    string result = "";
+    for (char& c : text) {
+        if (isalpha(c)) {
+            char asciiOffset = isupper(c) ? 65 : 97;
+            result += char((c - asciiOffset + shift) % 26 + asciiOffset);
+        } else {
+            result += c;
         }
     }
-    return text;
+    return result;
 }
 
 int main() {
-    std::string text;
+    string text;
     int shift;
-
-    std::cout << "Enter a string to encrypt: ";
-    std::getline(std::cin, text);
-
-    std::cout << "Enter the shift value: ";
-    std::cin >> shift;
-
-    std::string encrypted = encrypt(text, shift);
-    std::cout << "Encrypted string: " << encrypted << std::endl;
-
+    
+    cout << "Enter text to encrypt: ";
+    getline(cin, text);
+    cout << "Enter shift value: ";
+    cin >> shift;
+    
+    string encryptedText = encrypt(text, shift);
+    cout << "Encrypted text: " << encryptedText << endl;
+    
     return 0;
 }

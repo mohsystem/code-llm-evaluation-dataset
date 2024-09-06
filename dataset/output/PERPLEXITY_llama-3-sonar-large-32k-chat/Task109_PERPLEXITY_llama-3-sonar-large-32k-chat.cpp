@@ -1,16 +1,15 @@
 #include <iostream>
 #include <regex>
-#include <string>
 
 int main() {
-    std::string email;
-    std::cout << "Enter your email:";
-    std::getline(std::cin, email);
-    std::regex regex("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$");
-    if (std::regex_match(email, regex)) {
-        std::cout << "Email is valid" << std::endl;
+    std::regex pattern("^[a-zA-Z0-9_]{3,16}$");
+    std::string user_input;
+    std::cout << "Enter a username: ";
+    std::cin >> user_input;
+    if (std::regex_match(user_input, pattern)) {
+        std::cout << "Valid username" << std::endl;
     } else {
-        std::cout << "Email is not valid" << std::endl;
+        std::cout << "Invalid username" << std::endl;
     }
     return 0;
 }

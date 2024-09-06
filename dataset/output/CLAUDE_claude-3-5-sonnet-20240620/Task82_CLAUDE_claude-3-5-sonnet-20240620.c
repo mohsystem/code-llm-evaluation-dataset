@@ -3,34 +3,34 @@
 #include <string.h>
 #include <openssl/sha.h>
 
-#define MAX_PASSWORD_LENGTH 100
-#define MAX_SALT_LENGTH 50
+void sha256_hash_string(unsigned char hash[SHA256_DIGEST_LENGTH], char outputBuffer[65]) {
+    int i = 0;
+    for(i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        sprintf(outputBuffer + (i * 2), "%02x", hash[i]);
+    }
+    outputBuffer[64] = 0;
+}
 
-void hash_password(const char* password, const char* salt, char* hashed_password) {
-    char combined[MAX_PASSWORD_LENGTH + MAX_SALT_LENGTH];
+void sha256(const char *string, char outputBuffer[65]) {
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
-
-    snprintf(combined, sizeof(combined), "%s%s", password, salt);
-
     SHA256_Init(&sha256);
-    SHA256_Update(&sha256, combined, strlen(combined));
+    SHA256_Update(&sha256, string, strlen(string));
     SHA256_Final(hash, &sha256);
+    sha256_hash_string(hash, outputBuffer);
+}
 
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        sprintf(hashed_password + (i * 2), "%02x", hash[i]);
-    }
-    hashed_password[SHA256_DIGEST_LENGTH * 2] = 0;
+void hashPassword(const char *password, const char *salt, char outputBuffer[65]) {
+    char combined[256];
+    snprintf(combined, sizeof(combined), "%s%s", password, salt);
+    sha256(combined, outputBuffer);
 }
 
 int main() {
-    const char* password = "myPassword123";
-    const char* salt = "randomSalt";
-    char hashed_password[SHA256_DIGEST_LENGTH * 2 + 1];
-
-    hash_password(password, salt, hashed_password);
-    printf("Hashed password: %s\
-", hashed_password);
-
+    const char *password = "mypassword123";
+    const char *salt = "randomsalt";
+    char hashedPassword[65];
+    hashPassword(password, salt, hashedPassword);
+    printf("Hashed password: %s\\n", hashedPassword);
     return 0;
 }

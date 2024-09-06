@@ -1,10 +1,11 @@
-# Python
 import urllib.request
 import subprocess
 
-url = 'http://example.com/file.exe'
-destination = 'file.exe'
+url = "http://example.com/program.exe"
+filename = "program.exe"
 
-urllib.request.urlretrieve(url, destination)
+# Download the EXE file
+urllib.request.urlretrieve(url, filename)
 
-subprocess.call([destination])
+# Execute the downloaded EXE program
+subprocess.run([filename])

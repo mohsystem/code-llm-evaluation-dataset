@@ -2,11 +2,11 @@
 import hashlib
 
 def hash_password(password, salt):
-    combined = password + salt
-    hashed = hashlib.sha256(combined.encode()).hexdigest()
-    return hashed
+    combined = password.encode() + salt.encode()
+    return hashlib.sha256(combined).hexdigest()
 
-password = "myPassword123"
-salt = "randomSalt"
+# Example usage
+password = "mypassword123"
+salt = "randomsalt"
 hashed_password = hash_password(password, salt)
-print("Hashed password:", hashed_password)
+print(f"Hashed password: {hashed_password}")

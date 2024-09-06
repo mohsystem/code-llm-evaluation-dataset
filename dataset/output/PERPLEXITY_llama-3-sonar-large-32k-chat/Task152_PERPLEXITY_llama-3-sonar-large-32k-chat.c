@@ -1,93 +1,103 @@
+// C does not support classes or templates, so we have to use structures and functions
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 
-typedef struct Node {
+#define SIZE 11
+
+typedef struct {
     int key;
     char* value;
-    struct Node* next;
-} Node;
+} HashEntry;
 
-typedef struct HashTable {
-    int size;
-    Node** table;
-} HashTable;
+HashEntry* table[SIZE];
 
-int hash(int key, int size) {
-    return key % size;
+int hashFunction(int key) {
+    return key % SIZE;
 }
 
-void insert(HashTable* ht, int key, char* value) {
-    int index = hash(key, ht->size);
-    Node* node = ht->table[index];
-    while (node != NULL) {
-        if (node->key == key) {
-            node->value = value;
-            return;
-        }
-        if (node->next == NULL) {
-            node->next = (Node*)malloc(sizeof(Node));
-            node->next->key = key;
-            node->next->value = value;
-            node->next->next = NULL;
-            return;
-        }
-        node = node->next;
-    }
-    ht->table[index] = (Node*)malloc(sizeof(Node));
-    ht->table[index]->key = key;
-    ht->table[index]->value = value;
-    ht->table[index]->next = NULL;
+int rehash(int oldHash) {
+    return (oldHash + 1) % SIZE;
 }
 
-void delete(HashTable* ht, int key) {
-    int index = hash(key, ht->size);
-    Node* node = ht->table[index];
-    Node* prev = NULL;
-    while (node != NULL) {
-        if (node->key == key) {
-            if (prev == NULL) {
-                ht->table[index] = node->next;
-            } else {
-                prev->next = node->next;
+void put(int key, char* value) {
+    int hashValue = hashFunction(key);
+
+    if (table[hashValue] == NULL) {
+        table[hashValue] = (HashEntry*)malloc(sizeof(HashEntry));
+        table[hashValue]->key = key;
+        table[hashValue]->value = (char*)malloc(strlen(value) + 1);
+        strcpy(table[hashValue]->value, value);
+    } else {
+        if (table[hashValue]->key == key) {
+            free(table[hashValue]->value);
+            table[hashValue]->value = (char*)malloc(strlen(value) + 1);
+            strcpy(table[hashValue]->value, value); // replace
+        } else {
+            int nextSlot = rehash(hashValue);
+            while (table[nextSlot] != NULL && table[nextSlot]->key != key) {
+                nextSlot = rehash(nextSlot);
             }
-            free(node);
-            return;
+
+            if (table[nextSlot] == NULL) {
+                table[nextSlot] = (HashEntry*)malloc(sizeof(HashEntry));
+                table[nextSlot]->key = key;
+                table[nextSlot]->value = (char*)malloc(strlen(value) + 1);
+                strcpy(table[nextSlot]->value, value);
+            } else {
+                free(table[nextSlot]->value);
+                table[nextSlot]->value = (char*)malloc(strlen(value) + 1);
+                strcpy(table[nextSlot]->value, value); // replace
+            }
         }
-        prev = node;
-        node = node->next;
     }
 }
 
-char* search(HashTable* ht, int key) {
-    int index = hash(key, ht->size);
-    Node* node = ht->table[index];
-    while (node != NULL) {
-        if (node->key == key) {
-            return node->value;
+char* get(int key) {
+    int startSlot = hashFunction(key);
+
+    char* value = NULL;
+    int position = startSlot;
+    while (table[position] != NULL) {
+        if (table[position]->key == key) {
+            value = table[position]->value;
+            break;
+        } else {
+            position = rehash(position);
+            if (position == startSlot) {
+                break;
+            }
         }
-        node = node->next;
     }
-    return NULL;
+    return value;
 }
 
 int main() {
-    HashTable ht;
-    ht.size = 10;
-    ht.table = (Node**)malloc(ht.size * sizeof(Node*));
-    for (int i = 0; i < ht.size; i++) {
-        ht.table[i] = NULL;
+    for (int i = 0; i < SIZE; i++) {
+        table[i] = NULL;
     }
-    insert(&ht, 1, "one");
-    insert(&ht, 11, "eleven");
-    insert(&ht, 21, "twenty one");
-    printf("%s
-", search(&ht, 1));  // Output: one
-    printf("%s
-", search(&ht, 11));  // Output: eleven
-    printf("%s
-", search(&ht, 21));  // Output: twenty one
-    delete(&ht, 11);
-    printf("%s
-", search(&ht, 11));  // Output: (null)
+
+    put(54, "cat");
+    put(26, "dog");
+    put(93, "lion");
+    put(17, "tiger");
+    put(77, "bird");
+    put(31, "cow");
+    put(44, "goat");
+    put(55, "pig");
+    put(20, "chicken");
+
+    for (int i = 0; i < SIZE; i++) {
+        if (table[i] != NULL) {
+            printf("%d: %s\n", table[i]->key, table[i]->value);
+        }
+    }
+
+    printf("%s\n", get(20));
+
+    printf("%s\n", get(17));
+    put(20, "duck");
+    printf("%s\n", get(20));
+    printf("%s\n", get(99));
+
     return 0;
 }

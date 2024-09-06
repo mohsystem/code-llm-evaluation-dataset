@@ -2,27 +2,36 @@
 #include <thread>
 #include <mutex>
 
-int currentCounter = 0;
-int maxCounter = 10;
-std::mutex lock;
+class Counter {
+private:
+    int maxCounter;
+    int currentCounter;
+    std::mutex lock;
 
-void accessResource(int threadId) {
-    if (currentCounter <= maxCounter) {
-        lock.lock();
-        currentCounter++;
-        std::cout << "Thread " << threadId << " is accessing the currentCounter at the moment. Current counter value: " << currentCounter << std::endl;
-        lock.unlock();
+public:
+    Counter(int maxCounter) : maxCounter(maxCounter), currentCounter(0) {}
+
+    void accessResource(int threadId) {
+        std::lock_guard<std::mutex> guard(lock);
+        if (currentCounter <= maxCounter) {
+            currentCounter++;
+            std::cout << "Thread " << threadId << " is accessing the currentCounter at the moment." << std::endl;
+        }
     }
-}
+};
 
 int main() {
-    std::thread threads[20];
+    int maxCounter = 10;
+    Counter counter(maxCounter);
 
-    for (int i = 0; i < 20; i++) {
-        threads[i] = std::thread(accessResource, i + 1);
+    // Create and start multiple threads
+    std::thread threads[15];
+    for (int i = 0; i < 15; i++) {
+        threads[i] = std::thread(&Counter::accessResource, &counter, i);
     }
 
-    for (int i = 0; i < 20; i++) {
+    // Wait for all threads to finish
+    for (int i = 0; i < 15; i++) {
         threads[i].join();
     }
 

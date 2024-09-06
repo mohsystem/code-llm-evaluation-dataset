@@ -1,35 +1,39 @@
+// C code for finding length of the longest valid parentheses substring
+
 #include <stdio.h>
 #include <string.h>
 
 int longestValidParentheses(char* s) {
-    int stack[30000], top = -1;
-    stack[++top] = -1;
-    int maxLength = 0;
+    int stack[30000];
+    int stackIndex = 0;
+    stack[stackIndex++] = -1;
+    int max_length = 0;
 
-    for (int i = 0; s[i] != '\0'; i++) {
+    for (int i = 0; i < strlen(s); i++) {
         if (s[i] == '(') {
-            stack[++top] = i;
+            stack[stackIndex++] = i;
         } else {
-            top--;
-            if (top == -1) {
-                stack[++top] = i;
+            stackIndex--;
+            if (stackIndex == 0) {
+                stack[stackIndex++] = i;
             } else {
-                int length = i - stack[top];
-                if (length > maxLength) {
-                    maxLength = length;
+                int current_length = i - stack[stackIndex - 1];
+                if (current_length > max_length) {
+                    max_length = current_length;
                 }
             }
         }
     }
-    return maxLength;
+
+    return max_length;
 }
 
 int main() {
-    printf("%d
-", longestValidParentheses("(()"));
-    printf("%d
-", longestValidParentheses(")()())"));
-    printf("%d
-", longestValidParentheses(""));
+    char s[] = "(()";  // Example 1
+    printf("%d\n", longestValidParentheses(s));  // Output: 2
+    char s2[] = ")()())";  // Example 2
+    printf("%d\n", longestValidParentheses(s2));  // Output: 4
+    char s3[] = "";  // Example 3
+    printf("%d\n", longestValidParentheses(s3));  // Output: 0
     return 0;
 }

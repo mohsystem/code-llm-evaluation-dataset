@@ -1,57 +1,56 @@
 #include <iostream>
+#include <unordered_set>
 #include <string>
-#include <set>
-#include <ctime>
-#include <cstdlib>
-#include <iomanip>
-#include <sstream>
+#include <random>
 
 class Robot {
-private:
-    std::string name;
-    static std::set<std::string> usedNames;
-
-    std::string generateRandomName() {
-        std::string letters;
-        for (int i = 0; i < 2; ++i) {
-            letters += ('A' + std::rand() % 26);
-        }
-        int numbers = std::rand() % 1000;
-        std::ostringstream oss;
-        oss << letters << std::setw(3) << std::setfill('0') << numbers;
-        return oss.str();
-    }
-
-    std::string generateUniqueName() {
+    private:
+        static std::unordered_set<std::string> usedNames;
+        static std::mt19937 gen;
         std::string name;
-        do {
-            name = generateRandomName();
-        } while (usedNames.find(name) != usedNames.end());
-        usedNames.insert(name);
-        return name;
-    }
 
-public:
-    Robot() {
-        std::srand(std::time(0));
-        reset();
-    }
+        std::string generateRandomName() {
+            std::string result(5, '0');
+            std::uniform_int_distribution<> letterDist(0, 25);
+            std::uniform_int_distribution<> digitDist(0, 9);
+            result[0] = 'A' + letterDist(gen);
+            result[1] = 'A' + letterDist(gen);
+            result[2] = '0' + digitDist(gen);
+            result[3] = '0' + digitDist(gen);
+            result[4] = '0' + digitDist(gen);
+            return result;
+        }
 
-    void reset() {
-        name = generateUniqueName();
-    }
+        std::string generateName() {
+            std::string newName;
+            do {
+                newName = generateRandomName();
+            } while (usedNames.find(newName) != usedNames.end());
+            usedNames.insert(newName);
+            return newName;
+        }
 
-    std::string getName() const {
-        return name;
-    }
+    public:
+        Robot() {
+            name = generateName();
+        }
+
+        void reset() {
+            name = generateName();
+        }
+
+        std::string getName() {
+            return name;
+        }
 };
 
-std::set<std::string> Robot::usedNames;
+std::unordered_set<std::string> Robot::usedNames;
+std::mt19937 Robot::gen(std::random_device{}());
 
 int main() {
-    Robot r1;
-    std::cout << r1.getName() << std::endl;
-    r1.reset();
-    std::cout << r1.getName() << std::endl;
+    Robot robot;
+    std::cout << robot.getName() << std::endl;
+    robot.reset();
+    std::cout << robot.getName() << std::endl;
     return 0;
 }

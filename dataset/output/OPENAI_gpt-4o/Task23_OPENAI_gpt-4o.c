@@ -1,25 +1,17 @@
 #include <stdio.h>
+#include <math.h>
 
-long findNb(long long m) {
-    long n = 0;
-    long long volume = 0;
-    
-    while (volume < m) {
+long findNb(long m) {
+    long n = 0, totalVolume = 0;
+    while (totalVolume < m) {
         n++;
-        volume += (long long)n * n * n;
+        totalVolume += pow(n, 3);
     }
-    
-    if (volume == m) {
-        return n;
-    } else {
-        return -1;
-    }
+    return totalVolume == m ? n : -1;
 }
 
 int main() {
-    printf("%ld
-", findNb(1071225)); // 45
-    printf("%ld
-", findNb(91716553919377LL)); // -1
+    printf("%ld\n", findNb(1071225));  // 45
+    printf("%ld\n", findNb(91716553919377));  // -1
     return 0;
 }

@@ -1,36 +1,33 @@
 
 import mysql.connector
-from mysql.connector import Error
 
-try:
-    connection = mysql.connector.connect(
-        host=\'localhost\',
-        database=\'your_database\',
-        user=\'your_username\',
-        password=\'your_password\'
-    )
+def get_user_info(username):
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="your_username",
+            password="your_password",
+            database="your_database"
+        )
 
-    if connection.is_connected():
-        username = input("Enter username: ")
-
-        cursor = connection.cursor(prepared=True)
+        cursor = connection.cursor()
         query = "SELECT * FROM users WHERE username = %s"
         cursor.execute(query, (username,))
+        user = cursor.fetchone()
 
-        result = cursor.fetchone()
-
-        if result:
-            print(f"User ID: {result[0]}")
-            print(f"Username: {result[1]}")
-            print(f"Email: {result[2]}")
+        if user:
+            print(f"User found: {user}")
         else:
-            print("User not found.")
+            print("User not found")
 
-        cursor.close()
+    except mysql.connector.Error as error:
+        print(f"Error: {error}")
 
-except Error as e:
-    print(f"Error: {e}")
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
 
-finally:
-    if connection.is_connected():
-        connection.close()
+if __name__ == "__main__":
+    username = input("Enter username: ")
+    get_user_info(username)

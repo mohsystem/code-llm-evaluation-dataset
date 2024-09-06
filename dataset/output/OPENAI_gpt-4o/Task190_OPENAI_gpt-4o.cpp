@@ -1,40 +1,31 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <vector>
-#include <string>
+
 using namespace std;
 
-void transposeFile(const string& filePath) {
-    ifstream file(filePath);
+int main() {
+    ifstream file("file.txt");
     vector<vector<string>> lines;
-    string line;
-    
+    string line, word;
+
     while (getline(file, line)) {
+        istringstream stream(line);
         vector<string> row;
-        string word;
-        for (char c : line) {
-            if (c == ' ') {
-                row.push_back(word);
-                word.clear();
-            } else {
-                word += c;
-            }
+        while (stream >> word) {
+            row.push_back(word);
         }
-        row.push_back(word);
         lines.push_back(row);
     }
     file.close();
 
-    int columns = lines[0].size();
-    for (int i = 0; i < columns; i++) {
-        for (const auto& row : lines) {
-            cout << row[i] << ' ';
+    for (size_t i = 0; i < lines[0].size(); i++) {
+        for (size_t j = 0; j < lines.size(); j++) {
+            cout << lines[j][i];
+            if (j < lines.size() - 1) cout << " ";
         }
         cout << endl;
     }
-}
-
-int main() {
-    transposeFile("file.txt");
     return 0;
 }

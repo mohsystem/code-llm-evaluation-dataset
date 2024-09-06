@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
@@ -7,188 +6,159 @@
 
 using namespace std;
 
-const int KEY_SIZE = 256; // 256 bits = 32 bytes
-const int IV_SIZE = 128;  // 128 bits = 16 bytes
-const string KEY_FILE = "secret.key";
-const string IV_FILE = "iv.data";
-
-// Function to generate a random key and IV
-void generateKeyAndIV() {
-    unsigned char key[KEY_SIZE / 8];
-    unsigned char iv[IV_SIZE / 8];
-
-    // Generate random key and IV
-    if (!RAND_bytes(key, sizeof(key)) || !RAND_bytes(iv, sizeof(iv))) {
-        cerr << "Error generating key/IV: " << ERR_error_string(ERR_get_error(), NULL) << endl;
-        return;
-    }
-
-    // Write key and IV to files
-    ofstream keyFile(KEY_FILE, ios::binary);
-    ofstream ivFile(IV_FILE, ios::binary);
-    if (!keyFile.is_open() || !ivFile.is_open()) {
-        cerr << "Error opening key/IV file" << endl;
-        return;
-    }
-    keyFile.write((char*)key, sizeof(key));
-    ivFile.write((char*)iv, sizeof(iv));
-    keyFile.close();
-    ivFile.close();
-    cout << "Key and IV generated and saved to files." << endl;
+// Function to handle OpenSSL errors
+void handleErrors(const char* operation) {
+    cerr << "ERROR: " << operation << " failed" << endl;
+    ERR_print_errors_fp(stderr);
+    exit(1);
 }
 
-// Function to load key and IV from files
-bool loadKeyAndIV(unsigned char* key, unsigned char* iv) {
-    ifstream keyFile(KEY_FILE, ios::binary);
-    ifstream ivFile(IV_FILE, ios::binary);
-    if (!keyFile.is_open() || !ivFile.is_open()) {
-        cerr << "Error opening key/IV file." << endl;
-        return false;
+// Function to generate a random cryptographic key
+string generateKey(int keySize) {
+    unsigned char key[keySize];
+    if (RAND_bytes(key, keySize) != 1) {
+        handleErrors("RAND_bytes");
     }
-    keyFile.read((char*)key, KEY_SIZE / 8);
-    ivFile.read((char*)iv, IV_SIZE / 8);
-    keyFile.close();
-    ivFile.close();
-    return true;
+
+    // Convert the key to a hexadecimal string
+    string keyString;
+    for (int i = 0; i < keySize; ++i) {
+        keyString += (key[i] < 0x10 ? "0" : "") + string(1, key[i]);
+    }
+    return keyString;
 }
 
-// Function to encrypt a message
-string encryptMessage(const string& plaintext, const unsigned char* key, const unsigned char* iv) {
+// Function to encrypt a message using AES-256-CBC
+string encryptMessage(const string& message, const string& key) {
+    // Create a cipher context
     EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
-    if (!ctx) {
-        cerr << "Error creating cipher context." << endl;
-        return "";
+    if (ctx == nullptr) {
+        handleErrors("EVP_CIPHER_CTX_new");
     }
 
-    // Initialize encryption context
-    if (EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv) != 1) {
-        cerr << "Error initializing encryption context." << endl;
-        EVP_CIPHER_CTX_free(ctx);
-        return "";
+    // Set up the cipher
+    if (EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), nullptr,
+                          reinterpret_cast<const unsigned char*>(key.c_str()), nullptr) != 1) {
+        handleErrors("EVP_EncryptInit_ex");
     }
 
-    // Encrypt the plaintext
-    int len = plaintext.length();
-    int ciphertext_len = 0;
-    unsigned char ciphertext[len + EVP_MAX_BLOCK_LENGTH];
-
-    if (EVP_EncryptUpdate(ctx, ciphertext, &len, (const unsigned char*)plaintext.c_str(), len) != 1) {
-        cerr << "Error encrypting message." << endl;
-        EVP_CIPHER_CTX_free(ctx);
-        return "";
+    // Encrypt the message
+    int ciphertextLen = message.size() + EVP_CIPHER_block_size(EVP_aes_256_cbc());
+    unsigned char ciphertext[ciphertextLen];
+    int len;
+    if (EVP_EncryptUpdate(ctx, ciphertext, &len,
+                          reinterpret_cast<const unsigned char*>(message.c_str()), message.size()) != 1) {
+        handleErrors("EVP_EncryptUpdate");
     }
-    ciphertext_len += len;
-
-    if (EVP_EncryptFinal_ex(ctx, ciphertext + len, &len) != 1) {
-        cerr << "Error finalizing encryption." << endl;
-        EVP_CIPHER_CTX_free(ctx);
-        return "";
+    int finalLen;
+    if (EVP_EncryptFinal_ex(ctx, ciphertext + len, &finalLen) != 1) {
+        handleErrors("EVP_EncryptFinal_ex");
     }
-    ciphertext_len += len;
+    ciphertextLen = len + finalLen;
 
+    // Clean up the cipher context
     EVP_CIPHER_CTX_free(ctx);
 
-    // Return the ciphertext as a base64 encoded string
-    BIO* bio = BIO_new(BIO_s_mem());
-    BIO_write(bio, ciphertext, ciphertext_len);
-    BIO_flush(bio);
-    BUF_MEM* bufferPtr;
-    BIO_get_mem_ptr(bio, &bufferPtr);
-    string ciphertext_str(bufferPtr->data, bufferPtr->length - 1); // Exclude null terminator
-    BIO_free_all(bio);
-
-    return ciphertext_str;
+    // Convert the ciphertext to a hexadecimal string
+    string ciphertextString;
+    for (int i = 0; i < ciphertextLen; ++i) {
+        ciphertextString += (ciphertext[i] < 0x10 ? "0" : "") + string(1, ciphertext[i]);
+    }
+    return ciphertextString;
 }
 
-// Function to decrypt a message
-string decryptMessage(const string& ciphertext, const unsigned char* key, const unsigned char* iv) {
+// Function to decrypt a message using AES-256-CBC
+string decryptMessage(const string& ciphertext, const string& key) {
+    // Create a cipher context
     EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
-    if (!ctx) {
-        cerr << "Error creating cipher context." << endl;
-        return "";
+    if (ctx == nullptr) {
+        handleErrors("EVP_CIPHER_CTX_new");
     }
 
-    // Initialize decryption context
-    if (EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv) != 1) {
-        cerr << "Error initializing decryption context." << endl;
-        EVP_CIPHER_CTX_free(ctx);
-        return "";
+    // Set up the cipher
+    if (EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), nullptr,
+                          reinterpret_cast<const unsigned char*>(key.c_str()), nullptr) != 1) {
+        handleErrors("EVP_DecryptInit_ex");
     }
 
-    // Decrypt the ciphertext
-    int len = ciphertext.length();
-    int plaintext_len = 0;
-    unsigned char plaintext[len + EVP_MAX_BLOCK_LENGTH];
-
-    if (EVP_DecryptUpdate(ctx, plaintext, &len, (const unsigned char*)ciphertext.c_str(), len) != 1) {
-        cerr << "Error decrypting message." << endl;
-        EVP_CIPHER_CTX_free(ctx);
-        return "";
+    // Decrypt the message
+    int plaintextLen = ciphertext.size() / 2; // Hexadecimal string to binary
+    unsigned char plaintext[plaintextLen];
+    int len;
+    if (EVP_DecryptUpdate(ctx, plaintext, &len,
+                          reinterpret_cast<const unsigned char*>(ciphertext.c_str()), ciphertext.size() / 2) != 1) {
+        handleErrors("EVP_DecryptUpdate");
     }
-    plaintext_len += len;
-
-    if (EVP_DecryptFinal_ex(ctx, plaintext + len, &len) != 1) {
-        cerr << "Error finalizing decryption." << endl;
-        EVP_CIPHER_CTX_free(ctx);
-        return "";
+    int finalLen;
+    if (EVP_DecryptFinal_ex(ctx, plaintext + len, &finalLen) != 1) {
+        handleErrors("EVP_DecryptFinal_ex");
     }
-    plaintext_len += len;
+    plaintextLen = len + finalLen;
 
+    // Clean up the cipher context
     EVP_CIPHER_CTX_free(ctx);
 
-    // Return the plaintext as a string
-    return string((char*)plaintext, plaintext_len);
+    // Convert the plaintext to a string
+    string message(reinterpret_cast<char*>(plaintext), plaintextLen);
+    return message;
 }
 
 int main() {
-    int choice;
-    unsigned char key[KEY_SIZE / 8];
-    unsigned char iv[IV_SIZE / 8];
+    // Initialize OpenSSL
+    OpenSSL_add_all_algorithms();
+    ERR_load_crypto_strings();
 
     while (true) {
-        cout << "
-Choose an option:" << endl;
+        cout << "\nCryptographic Key Manager:" << endl;
         cout << "1. Generate a new key" << endl;
         cout << "2. Encrypt a message" << endl;
         cout << "3. Decrypt a message" << endl;
         cout << "4. Exit" << endl;
+
         cout << "Enter your choice: ";
+        int choice;
         cin >> choice;
 
         switch (choice) {
-            case 1:
-                generateKeyAndIV();
+            case 1: {
+                // Generate a 32-byte (256-bit) key
+                string key = generateKey(32);
+                cout << "Generated Key: " << key << endl;
                 break;
+            }
             case 2: {
-                if (!loadKeyAndIV(key, iv)) {
-                    break;
-                }
-                cin.ignore(); // Consume newline
+                cin.ignore(); // Consume newline character
                 cout << "Enter the message to encrypt: ";
-                string plaintext;
-                getline(cin, plaintext);
-                string ciphertext = encryptMessage(plaintext, key, iv);
-                cout << "Ciphertext (Base64): " << ciphertext << endl;
+                string message;
+                getline(cin, message);
+
+                cout << "Enter the key: ";
+                string key;
+                getline(cin, key);
+
+                string ciphertext = encryptMessage(message, key);
+                cout << "Encrypted message: " << ciphertext << endl;
                 break;
             }
             case 3: {
-                if (!loadKeyAndIV(key, iv)) {
-                    break;
-                }
-                cin.ignore(); // Consume newline
-                cout << "Enter the ciphertext (Base64) to decrypt: ";
+                cin.ignore(); // Consume newline character
+                cout << "Enter the message to decrypt: ";
                 string ciphertext;
                 getline(cin, ciphertext);
-                string plaintext = decryptMessage(ciphertext, key, iv);
-                cout << "Plaintext: " << plaintext << endl;
+
+                cout << "Enter the key: ";
+                string key;
+                getline(cin, key);
+
+                string plaintext = decryptMessage(ciphertext, key);
+                cout << "Decrypted message: " << plaintext << endl;
                 break;
             }
             case 4:
                 cout << "Exiting..." << endl;
                 return 0;
             default:
-                cout << "Invalid choice!" << endl;
+                cout << "Invalid choice. Please try again." << endl;
         }
     }
-    return 0;
 }

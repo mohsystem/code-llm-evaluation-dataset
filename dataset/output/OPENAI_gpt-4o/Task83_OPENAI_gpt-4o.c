@@ -1,53 +1,50 @@
-#include <openssl/evp.h>
-#include <openssl/rand.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <openssl/aes.h>
+#include <openssl/rand.h>
+#include <openssl/evp.h>
 
-void base64_encode(const unsigned char *buffer, size_t length, char **b64text) {
-    BIO *bio, *b64;
-    BUF_MEM *bufferPtr;
-
-    b64 = BIO_new(BIO_f_base64());
-    bio = BIO_new(BIO_s_mem());
-    bio = BIO_push(b64, bio);
-    BIO_write(bio, buffer, length);
-    BIO_flush(bio);
-    BIO_get_mem_ptr(bio, &bufferPtr);
-    BIO_set_close(bio, BIO_NOCLOSE);
-
-    *b64text = (char *)malloc(bufferPtr->length);
-    memcpy(*b64text, bufferPtr->data, bufferPtr->length - 1);
-    (*b64text)[bufferPtr->length - 1] = 0;
-
-    BIO_free_all(bio);
+void handleErrors(void) {
+    ERR_print_errors_fp(stderr);
+    abort();
 }
 
-int main() {
+void encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
+             unsigned char *iv, unsigned char *ciphertext) {
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    unsigned char key[32], iv[16], data[16], outbuf[32];
-    int outlen;
+    
+    EVP_EncryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key, iv);
 
+    int len;
+    if (1 != EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, plaintext_len))
+        handleErrors();
+    int ciphertext_len = len;
+
+    if (1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) 
+        handleErrors();
+    ciphertext_len += len;
+
+    EVP_CIPHER_CTX_free(ctx);
+}
+
+int main(void) {
+    unsigned char key[16];
     RAND_bytes(key, sizeof(key));
-    RAND_bytes(data, sizeof(data));
+
+    unsigned char iv[AES_BLOCK_SIZE];
     RAND_bytes(iv, sizeof(iv));
 
-    EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv);
-    EVP_EncryptUpdate(ctx, outbuf, &outlen, data, sizeof(data));
-    int tmplen;
-    EVP_EncryptFinal_ex(ctx, outbuf + outlen, &tmplen);
-    outlen += tmplen;
+    unsigned char *plaintext = (unsigned char *)"exampleplaintext";
+    unsigned char ciphertext[128];
 
-    char *iv_base64, *enc_base64;
-    base64_encode(iv, sizeof(iv), &iv_base64);
-    base64_encode(outbuf, outlen, &enc_base64);
+    encrypt(plaintext, strlen((char *)plaintext), key, iv, ciphertext);
 
-    printf("%s%s
-", iv_base64, enc_base64);
-    
-    EVP_CIPHER_CTX_free(ctx);
-    free(iv_base64);
-    free(enc_base64);
+    printf("Encrypted Byte Array: ");
+    for (int i = 0; i < sizeof(iv) + strlen((char *)ciphertext); i++) {
+        printf("%x ", ciphertext[i]);
+    }
+    printf("\n");
 
     return 0;
 }

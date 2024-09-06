@@ -1,17 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-char** number(const char* const* lines, size_t length, size_t* newLength) {
-    char** numberedLines = malloc(length * sizeof(char*));
-    for (size_t i = 0; i < length; i++) {
+char** number(const char* const* lines, size_t size) {
+    char** numberedLines = malloc(size * sizeof(char*));
+    for (size_t i = 0; i < size; i++) {
         char buffer[12];
         sprintf(buffer, "%zu: ", i + 1);
-        size_t bufferLength = strlen(buffer);
-        size_t lineLength = strlen(lines[i]);
-        numberedLines[i] = malloc((bufferLength + lineLength + 1) * sizeof(char));
+        size_t len = strlen(buffer) + strlen(lines[i]) + 1;
+        numberedLines[i] = malloc(len * sizeof(char));
         strcpy(numberedLines[i], buffer);
-        strcpy(numberedLines[i] + bufferLength, lines[i]);
+        strcat(numberedLines[i], lines[i]);
     }
-    *newLength = length;
     return numberedLines;
 }

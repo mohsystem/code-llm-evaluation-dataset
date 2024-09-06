@@ -1,17 +1,16 @@
 #include <iostream>
 #include <cmath>
-
-using namespace std;
+#include <iomanip>
 
 double cubeDiagonal(double volume) {
-    double sideLength = cbrt(volume);
-    double diagonal = sideLength * sqrt(3);
-    return round(diagonal * 100.0) / 100.0;
+    double side_length = cbrt(volume);
+    double diagonal_length = side_length * sqrt(3);
+    return round(diagonal_length * 100.0) / 100.0;
 }
 
 int main() {
-    cout << cubeDiagonal(8) << endl;         // ➞ 3.46
-    cout << cubeDiagonal(343) << endl;       // ➞ 12.12
-    cout << cubeDiagonal(1157.625) << endl;  // ➞ 18.19
+    std::cout << std::fixed << std::setprecision(2) << cubeDiagonal(8) << std::endl;
+    std::cout << std::fixed << std::setprecision(2) << cubeDiagonal(343) << std::endl;
+    std::cout << std::fixed << std::setprecision(2) << cubeDiagonal(1157.625) << std::endl;
     return 0;
 }

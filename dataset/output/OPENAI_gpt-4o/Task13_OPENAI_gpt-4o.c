@@ -1,23 +1,23 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-bool isValid(char walk[], int length) {
+bool isValidWalk(char walk[], int length) {
     if (length != 10) return false;
     int x = 0, y = 0;
     for (int i = 0; i < length; i++) {
         switch (walk[i]) {
-            case 'n': y++; break;
-            case 's': y--; break;
-            case 'e': x++; break;
-            case 'w': x--; break;
+            case 'n': y += 1; break;
+            case 's': y -= 1; break;
+            case 'e': x += 1; break;
+            case 'w': x -= 1; break;
         }
     }
     return x == 0 && y == 0;
 }
 
 int main() {
-    char walk[10] = {'n', 's', 'n', 's', 'n', 's', 'n', 's', 'n', 's'};
-    printf("%s
-", isValid(walk, 10) ? "true" : "false"); // should return true
+    char walk[] = {'n', 's', 'n', 's', 'n', 's', 'n', 's', 'n', 's'};
+    int length = sizeof(walk) / sizeof(walk[0]);
+    printf("%s\n", isValidWalk(walk, length) ? "true" : "false"); // Output: true
     return 0;
 }

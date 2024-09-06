@@ -11,7 +11,7 @@
 
 struct User {
     char username[MAX_USERNAME_LENGTH];
-    unsigned char hashed_password[SHA256_DIGEST_LENGTH];
+    unsigned char password_hash[SHA256_DIGEST_LENGTH];
 };
 
 struct User users[MAX_USERS];
@@ -34,7 +34,7 @@ bool register_user(const char *username, const char *password) {
         }
     }
     strcpy(users[user_count].username, username);
-    sha256(password, users[user_count].hashed_password);
+    sha256(password, users[user_count].password_hash);
     user_count++;
     return true;
 }
@@ -42,63 +42,54 @@ bool register_user(const char *username, const char *password) {
 bool login(const char *username, const char *password) {
     for (int i = 0; i < user_count; i++) {
         if (strcmp(users[i].username, username) == 0) {
-            unsigned char hashed_password[SHA256_DIGEST_LENGTH];
-            sha256(password, hashed_password);
-            return memcmp(users[i].hashed_password, hashed_password, SHA256_DIGEST_LENGTH) == 0;
+            unsigned char input_hash[SHA256_DIGEST_LENGTH];
+            sha256(password, input_hash);
+            return memcmp(users[i].password_hash, input_hash, SHA256_DIGEST_LENGTH) == 0;
         }
     }
     return false;
 }
 
 int main() {
-    char choice[2], username[MAX_USERNAME_LENGTH], password[MAX_PASSWORD_LENGTH];
-    while (1) {
-        printf("1. Register\
-2. Login\
-3. Exit\
-Choose an option: ");
-        fgets(choice, sizeof(choice), stdin);
-        choice[strcspn(choice, "\
-")] = 0;
+    char username[MAX_USERNAME_LENGTH];
+    char password[MAX_PASSWORD_LENGTH];
+    int choice;
 
-        if (strcmp(choice, "1") == 0) {
+    while (1) {
+        printf("1. Register\\n2. Login\\n3. Exit\\nChoose an option: ");
+        scanf("%d", &choice);
+        getchar(); // Clear newline from buffer
+
+        if (choice == 1) {
             printf("Enter username: ");
-            fgets(username, sizeof(username), stdin);
-            username[strcspn(username, "\
-")] = 0;
+            fgets(username, MAX_USERNAME_LENGTH, stdin);
+            username[strcspn(username, "\\n")] = 0; // Remove newline
             printf("Enter password: ");
-            fgets(password, sizeof(password), stdin);
-            password[strcspn(password, "\
-")] = 0;
+            fgets(password, MAX_PASSWORD_LENGTH, stdin);
+            password[strcspn(password, "\\n")] = 0; // Remove newline
             if (register_user(username, password)) {
-                printf("Registration successful\
-");
+                printf("Registration successful\\n");
             } else {
-                printf("Registration failed\
-");
+                printf("Registration failed\\n");
             }
-        } else if (strcmp(choice, "2") == 0) {
+        } else if (choice == 2) {
             printf("Enter username: ");
-            fgets(username, sizeof(username), stdin);
-            username[strcspn(username, "\
-")] = 0;
+            fgets(username, MAX_USERNAME_LENGTH, stdin);
+            username[strcspn(username, "\\n")] = 0; // Remove newline
             printf("Enter password: ");
-            fgets(password, sizeof(password), stdin);
-            password[strcspn(password, "\
-")] = 0;
+            fgets(password, MAX_PASSWORD_LENGTH, stdin);
+            password[strcspn(password, "\\n")] = 0; // Remove newline
             if (login(username, password)) {
-                printf("Login successful\
-");
+                printf("Login successful\\n");
             } else {
-                printf("Invalid credentials\
-");
+                printf("Invalid credentials\\n");
             }
-        } else if (strcmp(choice, "3") == 0) {
+        } else if (choice == 3) {
             break;
         } else {
-            printf("Invalid choice\
-");
+            printf("Invalid choice\\n");
         }
     }
+
     return 0;
 }

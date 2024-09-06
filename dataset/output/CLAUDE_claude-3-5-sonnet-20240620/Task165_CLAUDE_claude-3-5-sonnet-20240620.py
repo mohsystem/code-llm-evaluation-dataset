@@ -1,6 +1,6 @@
 
 def checkFlush(table, hand):
-    suits = {\'S\': 0, \'H\': 0, \'D\': 0, \'C\': 0}
+    suits = {'S': 0, 'H': 0, 'D': 0, 'C': 0}
     for card in table + hand:
         suits[card[-1]] += 1
     return max(suits.values()) >= 5

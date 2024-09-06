@@ -2,7 +2,7 @@ def reversePairs(nums):
     def mergeSort(nums, start, end):
         if start >= end:
             return 0
-        mid = (start + end) // 2
+        mid = start + (end - start) // 2
         count = mergeSort(nums, start, mid) + mergeSort(nums, mid + 1, end)
         j = mid + 1
         for i in range(start, mid + 1):

@@ -1,56 +1,72 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <openssl/md5.h>
 #include <openssl/sha.h>
 
 using namespace std;
 
-bool check_certificate_hash(const string& certificate_path, const string& expected_hash) {
-  ifstream certificate_file(certificate_path, ios::binary);
-  if (!certificate_file.is_open()) {
-    cerr << "Error: Could not open certificate file: " << certificate_path << endl;
-    return false;
-  }
+string calculateCertificateHash(const string& filename, const string& hash_algorithm) {
+    unsigned char hash[SHA256_DIGEST_LENGTH]; // Or MD5_DIGEST_LENGTH if needed
+    const int bufferSize = 32768;
+    unsigned char buffer[bufferSize];
+    ifstream file(filename, ios::in | ios::binary);
 
-  unsigned char buffer[4096];
-  SHA256_CTX sha256_ctx;
-  SHA256_Init(&sha256_ctx);
+    if (!file) {
+        cerr << "Error opening file: " << filename << endl;
+        return "";
+    }
 
-  while (!certificate_file.eof()) {
-    certificate_file.read((char*)buffer, sizeof(buffer));
-    size_t bytes_read = certificate_file.gcount();
-    SHA256_Update(&sha256_ctx, buffer, bytes_read);
-  }
+    // Select the hashing algorithm
+    const EVP_MD* (*hash_function)(void) = nullptr;
+    if (hash_algorithm == "sha256") {
+        hash_function = EVP_sha256;
+    } else if (hash_algorithm == "md5") {
+        hash_function = EVP_md5;
+    } else {
+        cerr << "Unsupported hash algorithm: " << hash_algorithm << endl;
+        return "";
+    }
 
-  unsigned char calculated_hash[SHA256_DIGEST_LENGTH];
-  SHA256_Final(calculated_hash, &sha256_ctx);
+    EVP_MD_CTX* hashContext = EVP_MD_CTX_new();
+    EVP_DigestInit_ex(hashContext, hash_function(), nullptr);
 
-  certificate_file.close();
+    while (file) {
+        file.read((char*)buffer, bufferSize);
+        EVP_DigestUpdate(hashContext, buffer, file.gcount());
+    }
 
-  string calculated_hash_str;
-  calculated_hash_str.reserve(SHA256_DIGEST_LENGTH * 2);
-  for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
-    calculated_hash_str += string_format("%02x", calculated_hash[i]);
-  }
+    EVP_DigestFinal_ex(hashContext, hash, nullptr);
+    EVP_MD_CTX_free(hashContext);
 
-  return calculated_hash_str == expected_hash;
+    // Convert the hash to a hexadecimal string
+    stringstream ss;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) { // Or MD5_DIGEST_LENGTH if needed
+        ss << hex << setw(2) << setfill('0') << (int)hash[i];
+    }
+    return ss.str();
+}
+
+bool verifyCertificateHash(const string& filename, const string& expected_hash, const string& hash_algorithm) {
+    string calculated_hash = calculateCertificateHash(filename, hash_algorithm);
+    return calculated_hash == expected_hash;
 }
 
 int main() {
-  string certificate_file;
-  string expected_hash;
+    string filename, expected_hash, hash_algorithm;
 
-  cout << "Enter the path to the SSL certificate file: ";
-  cin >> certificate_file;
+    cout << "Enter the path to the SSL certificate: ";
+    cin >> filename;
+    cout << "Enter the expected hash value: ";
+    cin >> expected_hash;
+    cout << "Enter the hash algorithm used (e.g., sha256, md5): ";
+    cin >> hash_algorithm;
 
-  cout << "Enter the expected SHA-256 hash: ";
-  cin >> expected_hash;
+    if (verifyCertificateHash(filename, expected_hash, hash_algorithm)) {
+        cout << "Certificate hash matches!" << endl;
+    } else {
+        cout << "Certificate hash does not match." << endl;
+    }
 
-  if (check_certificate_hash(certificate_file, expected_hash)) {
-    cout << "Certificate hash matches!" << endl;
-  } else {
-    cout << "Certificate hash does not match." << endl;
-  }
-
-  return 0;
+    return 0;
 }

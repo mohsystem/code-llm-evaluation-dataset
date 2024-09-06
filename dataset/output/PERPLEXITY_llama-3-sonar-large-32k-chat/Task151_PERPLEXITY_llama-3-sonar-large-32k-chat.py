@@ -48,6 +48,7 @@ def searchNode(root, key):
         return searchNode(root.right, key)
     return searchNode(root.left, key)
 
+# Test the code
 root = None
 root = insert(root, 50)
 root = insert(root, 30)
@@ -58,12 +59,12 @@ root = insert(root, 60)
 root = insert(root, 80)
 
 print("Inorder traversal of the given tree")
-print("50 30 20 40 70 60 80")
+inorder(root)
 
 print("Delete 20")
 root = deleteNode(root, 20)
 print("Inorder traversal of the modified tree")
-print("50 30 40 70 60 80")
+inorder(root)
 
 print("Search for 40")
 res = searchNode(root, 40)
@@ -71,3 +72,9 @@ if res:
     print("Found")
 else:
     print("Not Found")
+
+def inorder(root):
+    if root:
+        inorder(root.left)
+        print(root.val, end=" ")
+        inorder(root.right)

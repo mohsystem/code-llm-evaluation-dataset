@@ -1,50 +1,63 @@
+#include <iostream>
 #include <mutex>
 
 class BankAccount {
 private:
     double balance;
-    std::mutex mtx;
+    std::mutex mutex;
     bool isOpen;
 
 public:
     BankAccount(double initialBalance = 0) : balance(initialBalance), isOpen(true) {}
 
     void open() {
-        if (isOpen) {
-            throw std::runtime_error("Account already open");
+        std::lock_guard<std::mutex> lock(mutex);
+        if (!isOpen) {
+            isOpen = true;
+        } else {
+            throw std::runtime_error("Account is already open.");
         }
-        isOpen = true;
     }
 
     void close() {
-        if (!isOpen) {
-            throw std::runtime_error("Account already closed");
+        std::lock_guard<std::mutex> lock(mutex);
+        if (isOpen) {
+            isOpen = false;
+        } else {
+            throw std::runtime_error("Account is already closed.");
         }
-        isOpen = false;
     }
 
     void deposit(double amount) {
+        std::lock_guard<std::mutex> lock(mutex);
         if (!isOpen) {
-            throw std::runtime_error("Account closed");
+            throw std::runtime_error("Cannot deposit to a closed account.");
         }
         if (amount <= 0) {
-            throw std::invalid_argument("Deposit amount must be positive");
+            throw std::invalid_argument("Deposit amount must be positive.");
         }
-        std::lock_guard<std::mutex> lock(mtx);
         balance += amount;
     }
 
     void withdraw(double amount) {
+        std::lock_guard<std::mutex> lock(mutex);
         if (!isOpen) {
-            throw std::runtime_error("Account closed");
+            throw std::runtime_error("Cannot withdraw from a closed account.");
         }
         if (amount <= 0) {
-            throw std::invalid_argument("Withdrawal amount must be positive");
+            throw std::invalid_argument("Withdrawal amount must be positive.");
         }
-        std::lock_guard<std::mutex> lock(mtx);
         if (balance < amount) {
-            throw std::runtime_error("Insufficient funds");
+            throw std::runtime_error("Insufficient funds.");
         }
         balance -= amount;
+    }
+
+    double getBalance() {
+        std::lock_guard<std::mutex> lock(mutex);
+        if (!isOpen) {
+            throw std::runtime_error("Cannot get balance of a closed account.");
+        }
+        return balance;
     }
 };

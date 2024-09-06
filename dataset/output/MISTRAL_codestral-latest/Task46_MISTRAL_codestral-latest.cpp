@@ -1,40 +1,39 @@
-#include <mysql.h>
+// C++ code using SQLite C++ library
 #include <iostream>
-#include <string>
+#include <sqlite3.h>
 
-int main() {
-    MYSQL *conn;
-    MYSQL_RES *res;
-    MYSQL_ROW row;
+static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
+    for(int i=0; i<argc; i++) {
+        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+    }
+    printf("\n");
+    return 0;
+}
 
-    std::string name, email, password;
+int main(int argc, char* argv[]) {
+    sqlite3 *db;
+    char *zErrMsg = 0;
+    int rc;
 
-    std::cout << "Enter name: ";
-    std::cin >> name;
+    rc = sqlite3_open("user_database.db", &db);
 
-    std::cout << "Enter email: ";
-    std::cin >> email;
-
-    std::cout << "Enter password: ";
-    std::cin >> password;
-
-    std::string query = "INSERT INTO users (name, email, password) VALUES ('" + name + "', '" + email + "', '" + password + "')";
-
-    conn = mysql_init(NULL);
-
-    if (!mysql_real_connect(conn, "localhost", "username", "password", "mydb", 0, NULL, 0)) {
-        std::cerr << mysql_error(conn) << std::endl;
-        mysql_close(conn);
-        exit(1);
+    if(rc) {
+        fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+        return(0);
+    } else {
+        fprintf(stdout, "Opened database successfully\n");
     }
 
-    if (mysql_query(conn, query.c_str())) {
-        std::cerr << mysql_error(conn) << std::endl;
-        mysql_close(conn);
-        exit(1);
+    char *sql = "INSERT INTO users(name, email, password) VALUES('John Doe', 'johndoe@example.com', 'password123');";
+
+    rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+
+    if(rc != SQLITE_OK) {
+        fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    } else {
+        fprintf(stdout, "Records created successfully\n");
     }
-
-    mysql_close(conn);
-
+    sqlite3_close(db);
     return 0;
 }

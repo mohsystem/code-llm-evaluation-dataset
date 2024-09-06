@@ -1,12 +1,14 @@
 #include <iostream>
-#include <string>
 #include <set>
+#include <string>
 #include <algorithm>
 
-std::string longest(const std::string& s1, const std::string& s2) {
-    std::string combined = s1 + s2;
-    std::set<char> unique(combined.begin(), combined.end());
-    std::string result(unique.begin(), unique.end());
+std::string longest(const std::string& a, const std::string& b) {
+    std::set<char> set;
+    for (char c : a) set.insert(c);
+    for (char c : b) set.insert(c);
+    std::string result;
+    for (char c : set) result += c;
     std::sort(result.begin(), result.end());
     return result;
 }

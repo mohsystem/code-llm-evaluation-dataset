@@ -4,70 +4,56 @@
 #include <string.h>
 #include <time.h>
 
-#define MAX_USERS 10
-#define MAX_LENGTH 20
+#define OTP_LENGTH 6
 
-struct User {
-    char username[MAX_LENGTH];
-    char password[MAX_LENGTH];
-};
-
-struct User users[MAX_USERS];
-int user_count = 0;
-
-char otp[7];
-
-void generate_otp() {
+char* generateOTP() {
+    static char otp[OTP_LENGTH + 1];
+    const char digits[] = "0123456789";
+    
     srand(time(NULL));
-    sprintf(otp, "%06d", rand() % 1000000);
+    for (int i = 0; i < OTP_LENGTH; i++) {
+        otp[i] = digits[rand() % 10];
+    }
+    otp[OTP_LENGTH] = '\\0';
+    
+    return otp;
+}
+
+void sendOTP(const char* otp) {
+    printf("OTP sent: %s\\n", otp);
+}
+
+int verifyOTP(const char* userOTP, const char* generatedOTP) {
+    return strcmp(userOTP, generatedOTP) == 0;
+}
+
+void login() {
+    char username[50], password[50];
+    
+    printf("Enter username: ");
+    scanf("%s", username);
+    printf("Enter password: ");
+    scanf("%s", password);
+    
+    if (strcmp(username, "user") == 0 && strcmp(password, "password") == 0) {
+        char* otp = generateOTP();
+        sendOTP(otp);
+        
+        char userOTP[OTP_LENGTH + 1];
+        printf("Enter OTP: ");
+        scanf("%s", userOTP);
+        
+        if (verifyOTP(userOTP, otp)) {
+            printf("Login successful!\\n");
+        } else {
+            printf("Invalid OTP. Login failed.\\n");
+        }
+    } else {
+        printf("Invalid username or password.\\n");
+    }
 }
 
 int main() {
-    char username[MAX_LENGTH], password[MAX_LENGTH], entered_otp[7];
-
-    // Register a user
-    printf("Register - Enter username: ");
-    scanf("%s", username);
-    printf("Enter password: ");
-    scanf("%s", password);
-
-    strcpy(users[user_count].username, username);
-    strcpy(users[user_count].password, password);
-    user_count++;
-
-    // Login
-    printf("Login - Enter username: ");
-    scanf("%s", username);
-    printf("Enter password: ");
-    scanf("%s", password);
-
-    int found = 0;
-    for (int i = 0; i < user_count; i++) {
-        if (strcmp(users[i].username, username) == 0 && strcmp(users[i].password, password) == 0) {
-            found = 1;
-            break;
-        }
-    }
-
-    if (found) {
-        generate_otp();
-        printf("OTP sent: %s\
-", otp);
-
-        printf("Enter OTP: ");
-        scanf("%s", entered_otp);
-
-        if (strcmp(otp, entered_otp) == 0) {
-            printf("Login successful!\
-");
-        } else {
-            printf("Invalid OTP. Login failed.\
-");
-        }
-    } else {
-        printf("Invalid username or password.\
-");
-    }
-
+    login();
     return 0;
 }

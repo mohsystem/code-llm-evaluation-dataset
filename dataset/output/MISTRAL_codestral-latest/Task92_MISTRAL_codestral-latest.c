@@ -1,36 +1,42 @@
 #include <stdio.h>
 #include <pthread.h>
 
-int currentCounter = 0;
-int maxCounter = 10;
-pthread_mutex_t lock;
+typedef struct {
+    int max_counter;
+    int current_counter;
+    pthread_mutex_t lock;
+} Counter;
 
-void *accessResource(void *threadId) {
-    int id = *(int *)threadId;
-    if (currentCounter <= maxCounter) {
-        pthread_mutex_lock(&lock);
-        currentCounter++;
-        printf("Thread %d is accessing the currentCounter at the moment. Current counter value: %d
-", id, currentCounter);
-        pthread_mutex_unlock(&lock);
+void* access_resource(void* arg) {
+    Counter* counter = (Counter*)arg;
+    int thread_id = (int)pthread_self();
+
+    pthread_mutex_lock(&counter->lock);
+    if (counter->current_counter <= counter->max_counter) {
+        counter->current_counter++;
+        printf("Thread %d is accessing the currentCounter at the moment.\n", thread_id);
     }
-    pthread_exit(NULL);
+    pthread_mutex_unlock(&counter->lock);
+
+    return NULL;
 }
 
 int main() {
-    pthread_t threads[20];
-    pthread_mutex_init(&lock, NULL);
-    int threadIds[20];
+    int max_counter = 10;
+    Counter counter = {max_counter, 0, PTHREAD_MUTEX_INITIALIZER};
 
-    for (int i = 0; i < 20; i++) {
-        threadIds[i] = i + 1;
-        pthread_create(&threads[i], NULL, accessResource, &threadIds[i]);
+    // Create and start multiple threads
+    pthread_t threads[15];
+    for (int i = 0; i < 15; i++) {
+        pthread_create(&threads[i], NULL, access_resource, &counter);
     }
 
-    for (int i = 0; i < 20; i++) {
+    // Wait for all threads to finish
+    for (int i = 0; i < 15; i++) {
         pthread_join(threads[i], NULL);
     }
 
-    pthread_mutex_destroy(&lock);
+    pthread_mutex_destroy(&counter.lock);
+
     return 0;
 }

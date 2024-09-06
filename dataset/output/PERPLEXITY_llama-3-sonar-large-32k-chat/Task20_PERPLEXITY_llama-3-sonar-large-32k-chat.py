@@ -1,18 +1,5 @@
-def digitPowerSum(n, p):
-    sum = 0
-    temp = n
-    i = 0
-    while temp > 0:
-        digit = temp % 10
-        sum += pow(digit, p + i)
-        temp //= 10
-        i += 1
-    if sum % n == 0:
-        return sum // n
-    else:
-        return -1
-
-print(digitPowerSum(89, 1))
-print(digitPowerSum(92, 1))
-print(digitPowerSum(695, 2))
-print(digitPowerSum(46288, 3))
+def dig_pow(n, p):
+    digits = [int(x) for x in str(n)]
+    sum_of_powers = sum([x ** (p + i) for i, x in enumerate(digits)])
+    k = sum_of_powers // n
+    return k if k * n == sum_of_powers else -1

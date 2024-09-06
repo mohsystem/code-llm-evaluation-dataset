@@ -3,22 +3,28 @@
 #include <mutex>
 
 std::mutex lock;
-int currentCounter = 0;
 int maxCounter = 5;
+int currentCounter = 0;
 
 void accessResource(int threadId) {
     while (currentCounter <= maxCounter) {
         std::lock_guard<std::mutex> guard(lock);
-        currentCounter++;
-        std::cout << "Thread " << threadId << " is accessing the currentCounter: " << currentCounter << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(100)); // simulate some work
+        if (currentCounter <= maxCounter) {
+            currentCounter++;
+            std::cout << "Thread " << threadId << " is accessing the currentCounter at " << currentCounter << std::endl;
+        } else {
+            break;
+        }
     }
 }
 
 int main() {
-    std::thread thread1(accessResource, 1);
-    std::thread thread2(accessResource, 2);
-    thread1.join();
-    thread2.join();
+    std::thread threads[5];
+    for (int i = 0; i < 5; i++) {
+        threads[i] = std::thread(accessResource, i);
+    }
+    for (auto& t : threads) {
+        t.join();
+    }
     return 0;
 }

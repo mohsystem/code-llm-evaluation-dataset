@@ -2,15 +2,15 @@
 #include <thread>
 #include <mutex>
 
-const int maxCounter = 10;
+int maxCounter = 10;
 int currentCounter = 0;
-std::mutex mtx;
+std::mutex counterMutex;
 
-void check_and_increment(int threadID) {
+void worker(int thread_id) {
     while (true) {
-        std::unique_lock<std::mutex> lock(mtx);
+        std::lock_guard<std::mutex> lock(counterMutex);
         if (currentCounter <= maxCounter) {
-            std::cout << "Thread-" << threadID << " accessing currentCounter: " << currentCounter << std::endl;
+            std::cout << "Thread " << thread_id << " accessing currentCounter: " << currentCounter << std::endl;
             currentCounter++;
         } else {
             break;
@@ -19,13 +19,15 @@ void check_and_increment(int threadID) {
 }
 
 int main() {
-    const int threadCount = 5;
-    std::thread threads[threadCount];
-    for (int i = 0; i < threadCount; i++) {
-        threads[i] = std::thread(check_and_increment, i + 1);
+    std::thread threads[5];
+    
+    for (int i = 0; i < 5; ++i) {
+        threads[i] = std::thread(worker, i);
     }
-    for (int i = 0; i < threadCount; i++) {
+    
+    for (int i = 0; i < 5; ++i) {
         threads[i].join();
     }
+    
     return 0;
 }

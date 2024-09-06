@@ -1,25 +1,24 @@
 #include <iostream>
+#include <vector>
+using namespace std;
 
-int findOdd(int seq[], int n) {
-    int result = 0;
-    for (int i = 0; i < n; i++) {
+int findOdd(vector<int> arr) {
+    for (int num : arr) {
         int count = 0;
-        for (int j = 0; j < n; j++) {
-            if (seq[i] == seq[j]) {
+        for (int i : arr) {
+            if (i == num) {
                 count++;
             }
         }
         if (count % 2 != 0) {
-            result = seq[i];
+            return num;
         }
     }
-    return result;
+    return -1;
 }
 
 int main() {
-    int seq[] = {1,2,2,3,3,3,4,3,3,3,2,2,1};
-    int n = sizeof(seq) / sizeof(seq[0]);
-    int result = findOdd(seq, n);
-    std::cout << result << std::endl;
+    vector<int> arr = {1,2,2,3,3,3,4,3,3,3,2,2,1};
+    cout << findOdd(arr) << endl;
     return 0;
 }

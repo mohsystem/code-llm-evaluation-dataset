@@ -3,46 +3,56 @@
 #include <string.h>
 #include <time.h>
 
-struct Robot {
-    char name[6];
-};
+#define NAME_LENGTH 5
 
-void generate_random_name(char *name) {
-    name[0] = 'A' + rand() % 26;
-    name[1] = 'A' + rand() % 26;
-    sprintf(name + 2, "%03d", rand() % 1000);
-    name[5] = '\0';
+typedef struct Robot {
+    char name[NAME_LENGTH + 1];
+} Robot;
+
+char usedNames[1000][NAME_LENGTH + 1];
+int usedCount = 0;
+
+void generateRandomName(char* name) {
+    const char letters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const char digits[] = "0123456789";
+
+    for(int i = 0; i < 2; i++) {
+        name[i] = letters[rand() % 26];
+    }
+    for(int i = 2; i < 5; i++) {
+        name[i] = digits[rand() % 10];
+    }
+    name[NAME_LENGTH] = '\0';
 }
 
-int is_unique(const char *name, char used_names[][6], int used_count) {
-    for (int i = 0; i < used_count; ++i) {
-        if (strcmp(name, used_names[i]) == 0)
+int isNameUnique(const char* name) {
+    for(int i = 0; i < usedCount; i++) {
+        if(strcmp(usedNames[i], name) == 0) {
             return 0;
+        }
     }
     return 1;
 }
 
-void reset_robot(struct Robot *robot, char used_names[][6], int *used_count) {
+void setName(Robot* robot) {
     do {
-        generate_random_name(robot->name);
-    } while (!is_unique(robot->name, used_names, *used_count));
-    strcpy(used_names[*used_count], robot->name);
-    (*used_count)++;
+        generateRandomName(robot->name);
+    } while(!isNameUnique(robot->name));
+    strcpy(usedNames[usedCount++], robot->name);
+}
+
+void reset(Robot* robot) {
+    setName(robot);
 }
 
 int main() {
-    srand(time(0));
-    char used_names[1000][6];
-    int used_count = 0;
+    srand(time(NULL));
 
-    struct Robot robot;
-    reset_robot(&robot, used_names, &used_count);
-
-    printf("%s
-", robot.name);
-    reset_robot(&robot, used_names, &used_count);
-    printf("%s
-", robot.name);
+    Robot robot;
+    setName(&robot);
+    printf("%s\n", robot.name);
+    reset(&robot);
+    printf("%s\n", robot.name);
 
     return 0;
 }

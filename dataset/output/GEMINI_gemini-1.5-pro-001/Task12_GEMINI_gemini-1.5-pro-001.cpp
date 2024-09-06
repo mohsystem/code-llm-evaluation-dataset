@@ -1,37 +1,33 @@
-#include <iostream>
-#include <sstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
-int wordScore(const string& word);
+string highestScoringWord(const string& str) {
+    vector<string> words;
+    string currentWord;
+    for (char c : str) {
+        if (c == ' ') {
+            words.push_back(currentWord);
+            currentWord = "";
+        } else {
+            currentWord += c;
+        }
+    }
+    words.push_back(currentWord);
 
-int main() {
-    string sentence;
-    getline(cin, sentence);
-    
-    istringstream iss(sentence);
     string highestWord;
     int highestScore = 0;
-
-    string word;
-    while (iss >> word) {
-        int score = wordScore(word);
+    for (const string& word : words) {
+        int score = 0;
+        for (char c : word) {
+            score += tolower(c) - 'a' + 1;
+        }
         if (score > highestScore) {
             highestScore = score;
             highestWord = word;
         }
     }
 
-    cout << highestWord << endl;
-
-    return 0;
-}
-
-int wordScore(const string& word) {
-    int score = 0;
-    for (char c : word) {
-        score += tolower(c) - 'a' + 1;
-    }
-    return score;
+    return highestWord;
 }

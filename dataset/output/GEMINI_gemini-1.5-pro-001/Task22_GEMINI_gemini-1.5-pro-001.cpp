@@ -1,40 +1,18 @@
-#include <iostream>
 #include <vector>
+#include <string>
 #include <algorithm>
 
-using namespace std;
-
-vector<int> filter_list(const vector<string>& list) {
-  vector<int> result;
-  for (const auto& element : list) {
-    if (all_of(element.begin(), element.end(), ::isdigit)) {
-      result.push_back(stoi(element));
+std::vector<int> filter_list(const std::vector<std::string>& arr) {
+  std::vector<int> result;
+  for (const auto& item : arr) {
+    try {
+      int num = std::stoi(item);
+      result.push_back(num);
+    } catch (const std::invalid_argument& e) {
+      // Ignore items that cannot be converted to integers
+    } catch (const std::out_of_range& e) {
+      // Ignore items that cause integer overflow
     }
   }
   return result;
-}
-
-int main() {
-  vector<string> list1 = {"1", "2", "a", "b"};
-  vector<int> filtered1 = filter_list(list1);
-  for (int i : filtered1) {
-    cout << i << " ";
-  }
-  cout << endl;
-
-  vector<string> list2 = {"1", "a", "b", "0", "15"};
-  vector<int> filtered2 = filter_list(list2);
-  for (int i : filtered2) {
-    cout << i << " ";
-  }
-  cout << endl;
-
-  vector<string> list3 = {"1", "2", "a", "b", "aasf", "1", "123", "123"};
-  vector<int> filtered3 = filter_list(list3);
-  for (int i : filtered3) {
-    cout << i << " ";
-  }
-  cout << endl;
-
-  return 0;
 }

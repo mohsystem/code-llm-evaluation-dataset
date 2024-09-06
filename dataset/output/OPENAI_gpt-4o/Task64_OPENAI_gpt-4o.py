@@ -1,17 +1,16 @@
-import json
 import sys
-import urllib.request
+import requests
+import json
 
-def fetch_json_from_url(url):
-    with urllib.request.urlopen(url) as response:
-        data = response.read().decode()
-        return json.loads(data)
+if len(sys.argv) != 2:
+    print("Usage: python script.py <URL>")
+    sys.exit(1)
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <URL>")
-        sys.exit(1)
+url = sys.argv[1]
+response = requests.get(url)
 
-    url = sys.argv[1]
-    json_obj = fetch_json_from_url(url)
-    print(json.dumps(json_obj, indent=2))
+try:
+    data = response.json()
+    print(json.dumps(data, indent=4))
+except json.JSONDecodeError:
+    print("Failed to parse JSON from the response.")

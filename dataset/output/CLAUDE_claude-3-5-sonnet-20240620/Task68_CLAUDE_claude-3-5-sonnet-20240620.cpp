@@ -1,79 +1,90 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include <ldap.h>
 
-#define MAX_LENGTH 256
+std::pair<std::string, std::string> extractDcAndUsername(const std::string& inputString) {
+    size_t atPos = inputString.find('@');
+    std::string username = inputString.substr(0, atPos);
+    std::string domain = inputString.substr(atPos + 1);
 
-int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        std::cout << "Usage: " << argv[0] << " <domain> <username>" << std::endl;
-        return 1;
-    }
-
-    std::string domain = argv[1];
-    std::string username = argv[2];
-
-    LDAP *ld;
-    int rc;
-    std::string ldap_uri = "ldap://localhost:389";
-    std::string base_dn = "dc=" + domain;
+    std::string dc;
     size_t pos = 0;
-    while ((pos = base_dn.find(".", pos)) != std::string::npos) {
-        base_dn.replace(pos, 1, ",dc=");
-        pos += 4;
+    std::string token;
+    while ((pos = domain.find('.')) != std::string::npos) {
+        token = domain.substr(0, pos);
+        dc += "dc=" + token + ",";
+        domain.erase(0, pos + 1);
     }
+    dc += "dc=" + domain;
 
-    std::string search_filter = "(uid=" + username + ")";
+    return {username, dc};
+}
 
-    rc = ldap_initialize(&ld, ldap_uri.c_str());
+void searchLDAP(const std::string& username, const std::string& dc) {
+    LDAP* ld;
+    int rc = ldap_initialize(&ld, "ldap://localhost:389");
     if (rc != LDAP_SUCCESS) {
-        std::cerr << "ldap_initialize failed: " << ldap_err2string(rc) << std::endl;
-        return 1;
+        std::cerr << "LDAP init failed: " << ldap_err2string(rc) << std::endl;
+        return;
     }
 
-    rc = ldap_simple_bind_s(ld, NULL, NULL);
+    rc = ldap_set_option(ld, LDAP_OPT_PROTOCOL_VERSION, &(const int){LDAP_VERSION3});
+    if (rc != LDAP_OPT_SUCCESS) {
+        std::cerr << "ldap_set_option failed!" << std::endl;
+        ldap_unbind_ext_s(ld, nullptr, nullptr);
+        return;
+    }
+
+    std::string filter = "(sAMAccountName=" + username + ")";
+    char* attrs[] = {const_cast<char*>("*"), nullptr};
+
+    LDAPMessage* res;
+    rc = ldap_search_ext_s(ld, dc.c_str(), LDAP_SCOPE_SUBTREE, filter.c_str(), attrs, 0, nullptr, nullptr, nullptr, 0, &res);
+
     if (rc != LDAP_SUCCESS) {
-        std::cerr << "ldap_simple_bind_s failed: " << ldap_err2string(rc) << std::endl;
-        ldap_unbind_ext_s(ld, NULL, NULL);
-        return 1;
-    }
-
-    LDAPMessage *result;
-    char *attrs[] = {"*", NULL};
-    rc = ldap_search_ext_s(ld, base_dn.c_str(), LDAP_SCOPE_SUBTREE, search_filter.c_str(), attrs, 0, NULL, NULL, NULL, 0, &result);
-    if (rc != LDAP_SUCCESS) {
-        std::cerr << "ldap_search_ext_s failed: " << ldap_err2string(rc) << std::endl;
-        ldap_unbind_ext_s(ld, NULL, NULL);
-        return 1;
-    }
-
-    int num_entries = ldap_count_entries(ld, result);
-    if (num_entries == 0) {
-        std::cout << "User not found" << std::endl;
+        std::cerr << "LDAP search error: " << ldap_err2string(rc) << std::endl;
     } else {
-        LDAPMessage *entry = ldap_first_entry(ld, result);
-        BerElement *ber;
-        char *attribute;
-        char **values;
-
-        std::cout << "User information:" << std::endl;
-        for (attribute = ldap_first_attribute(ld, entry, &ber);
-             attribute != NULL;
-             attribute = ldap_next_attribute(ld, entry, ber)) {
-            values = ldap_get_values(ld, entry, attribute);
-            if (values != NULL) {
-                std::cout << attribute << ": " << values[0] << std::endl;
-                ldap_value_free(values);
+        LDAPMessage* entry = ldap_first_entry(ld, res);
+        if (entry != nullptr) {
+            std::cout << "User Information:" << std::endl;
+            BerElement* ber;
+            char* attribute;
+            for (attribute = ldap_first_attribute(ld, entry, &ber);
+                 attribute != nullptr;
+                 attribute = ldap_next_attribute(ld, entry, ber)) {
+                berval** vals = ldap_get_values_len(ld, entry, attribute);
+                if (vals != nullptr) {
+                    for (int i = 0; vals[i] != nullptr; i++) {
+                        std::cout << attribute << ": " << vals[i]->bv_val << std::endl;
+                    }
+                    ldap_value_free_len(vals);
+                }
+                ldap_memfree(attribute);
             }
-            ldap_memfree(attribute);
+            if (ber != nullptr) {
+                ber_free(ber, 0);
+            }
+        } else {
+            std::cout << "User not found." << std::endl;
         }
-        if (ber != NULL) {
-            ber_free(ber, 0);
-        }
+        ldap_msgfree(res);
     }
 
-    ldap_msgfree(result);
-    ldap_unbind_ext_s(ld, NULL, NULL);
+    ldap_unbind_ext_s(ld, nullptr, nullptr);
+}
+
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <username@domain.com>" << std::endl;
+        return 1;
+    }
+
+    std::string inputString = argv[1];
+    auto [username, dc] = extractDcAndUsername(inputString);
+
+    searchLDAP(username, dc);
+
     return 0;
 }

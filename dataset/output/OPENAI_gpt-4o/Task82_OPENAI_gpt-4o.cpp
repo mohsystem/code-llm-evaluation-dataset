@@ -1,25 +1,22 @@
 #include <iostream>
-#include <openssl/sha.h>
-#include <iomanip>
 #include <sstream>
+#include <iomanip>
+#include <openssl/sha.h>
 
-std::string sha256(const std::string &str) {
+std::string compute_hash(const std::string& password, const std::string& salt) {
+    std::string combined = password + salt;
     unsigned char hash[SHA256_DIGEST_LENGTH];
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-    SHA256_Update(&sha256, str.c_str(), str.size());
-    SHA256_Final(hash, &sha256);
+    SHA256(reinterpret_cast<const unsigned char*>(combined.c_str()), combined.size(), hash);
     std::stringstream ss;
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
         ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(hash[i]);
     }
     return ss.str();
 }
 
 int main() {
-    std::string password = "password";
-    std::string salt = "12345";
-    std::string combined = password + salt;
-    std::cout << sha256(combined) << std::endl;
+    const std::string password = "example_password";
+    const std::string salt = "random_salt";
+    std::cout << "C++ Hash: " << compute_hash(password, salt) << std::endl;
     return 0;
 }

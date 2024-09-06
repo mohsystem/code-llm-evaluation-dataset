@@ -15,7 +15,6 @@ int main() {
     scanf("%d", &a);
     printf("Enter second number: ");
     scanf("%d", &b);
-    printf("GCD of %d and %d is %d
-", a, b, gcd(a, b));
+    printf("GCD of %d and %d is %d\n", a, b, gcd(a, b));
     return 0;
 }

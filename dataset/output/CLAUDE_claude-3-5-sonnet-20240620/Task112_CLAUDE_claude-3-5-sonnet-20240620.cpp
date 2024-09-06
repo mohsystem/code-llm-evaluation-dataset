@@ -3,43 +3,50 @@
 #include <bsoncxx/json.hpp>
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
-#include <bsoncxx/builder/stream/document.hpp>
 
 int main() {
+    // Initialize the MongoDB C++ driver
     mongocxx::instance inst{};
     mongocxx::client conn{mongocxx::uri{"mongodb://localhost:27017"}};
 
-    auto db = conn["testdb"];
-    auto collection = db["users"];
+    auto db = conn["mydatabase"];
+    auto collection = db["mycollection"];
 
     // Create
-    auto builder = bsoncxx::builder::stream::document{};
-    bsoncxx::document::value doc_value = builder
-        << "name" << "John Doe"
-        << "age" << 30
-        << "city" << "New York"
-        << bsoncxx::builder::stream::finalize;
-    collection.insert_one(doc_value.view());
-    std::cout << "Document inserted" << std::endl;
+    auto doc = bsoncxx::builder::stream::document{} << "name" << "John" << "age" << 30 << bsoncxx::builder::stream::finalize;
+    auto result = collection.insert_one(doc.view());
+    std::cout << "Inserted document with ID: " << result->inserted_id().get_oid().value.to_string() << std::endl;
 
     // Read
-    auto cursor = collection.find(bsoncxx::builder::stream::document{} << "name" << "John Doe" << bsoncxx::builder::stream::finalize);
+    std::cout << "All documents:" << std::endl;
+    auto cursor = collection.find({});
     for (auto&& doc : cursor) {
-        std::cout << "Found document: " << bsoncxx::to_json(doc) << std::endl;
+        std::cout << bsoncxx::to_json(doc) << std::endl;
     }
 
     // Update
-    collection.update_one(
-        bsoncxx::builder::stream::document{} << "name" << "John Doe" << bsoncxx::builder::stream::finalize,
-        bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document
-            << "age" << 31
-        << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize
-    );
+    auto filter = bsoncxx::builder::stream::document{} << "name" << "John" << bsoncxx::builder::stream::finalize;
+    auto update = bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "age" << 31 << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize;
+    collection.update_one(filter.view(), update.view());
     std::cout << "Document updated" << std::endl;
 
+    // Read again to see the update
+    std::cout << "After update:" << std::endl;
+    cursor = collection.find({});
+    for (auto&& doc : cursor) {
+        std::cout << bsoncxx::to_json(doc) << std::endl;
+    }
+
     // Delete
-    collection.delete_one(bsoncxx::builder::stream::document{} << "name" << "John Doe" << bsoncxx::builder::stream::finalize);
+    collection.delete_one(filter.view());
     std::cout << "Document deleted" << std::endl;
+
+    // Read again to confirm deletion
+    std::cout << "After deletion:" << std::endl;
+    cursor = collection.find({});
+    for (auto&& doc : cursor) {
+        std::cout << bsoncxx::to_json(doc) << std::endl;
+    }
 
     return 0;
 }

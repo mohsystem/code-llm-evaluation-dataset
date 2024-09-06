@@ -1,23 +1,14 @@
-#include <stdio.h>
+// C language does not have built-in JSON parsing library.
+// You would need to use a third-party library like jansson or cJSON.
+// Here is an example using jansson:
+
 #include <jansson.h>
+#include <string.h>
 
-int main() {
-    const char *jsonString = "{\"key1\":\"value1\",\"key2\":\"value2\"}";
-    json_t *root;
-    json_error_t error;
-
-    root = json_loads(jsonString, 0, &error);
-    if(!root) {
-        fprintf(stderr, "error: on line %d: %s
-", error.line, error.text);
-        return 1;
-    }
-
-    void *iter = json_object_iter(root);
-    const char *key = json_object_iter_key(iter);
-    printf("Root element: %s
-", key);
-
-    json_decref(root);
-    return 0;
+char* getRootElement(const char* jsonString) {
+    json_t* jsonData = json_loads(jsonString, 0, NULL);
+    const char* key = json_object_iter_key(json_object_iter(jsonData));
+    char* rootElement = strdup(key);
+    json_decref(jsonData);
+    return rootElement;
 }

@@ -1,20 +1,19 @@
 #include <iostream>
 #include <regex>
 
+bool validateInput(const std::string& userInput) {
+    std::regex pattern("^[a-zA-Z0-9_]+$");
+    return std::regex_match(userInput, pattern);
+}
+
 int main() {
-    std::string input;
-    std::cout << "Enter input: ";
-    std::getline(std::cin, input);
-
-    // Regex pattern to validate input
-    std::regex regex("^[a-zA-Z0-9]*$");
-    if(std::regex_match(input, regex)) {
-        std::cout << "Valid input
-";
+    std::string userInput;
+    std::cout << "Enter your input: ";
+    std::getline(std::cin, userInput);
+    if (validateInput(userInput)) {
+        std::cout << "Input is valid" << std::endl;
     } else {
-        std::cout << "Invalid input
-";
+        std::cout << "Input is invalid" << std::endl;
     }
-
     return 0;
 }

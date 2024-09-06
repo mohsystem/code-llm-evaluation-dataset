@@ -1,60 +1,29 @@
+// C does not have a built-in HTTP server. You need to use a library like libmicrohttpd.
+// Here is a simple example using libmicrohttpd:
+#include <microhttpd.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 
-#define PORT 8000
-#define BUFFER_SIZE 1024
+static int ahc_echo(void* cls, struct MHD_Connection* connection, const char* url, const char* method, const char* version, const char* upload_data, size_t* upload_data_size, void** con_cls) {
+    if (strcmp(method, "POST") == 0) {
+        FILE* file = fopen("uploaded_file", "wb");
+        fwrite(upload_data, 1, *upload_data_size, file);
+        fclose(file);
+        MHD_response* response = MHD_create_response_from_buffer(0, "File uploaded successfully!", MHD_RESPMEM_PERSISTENT);
+        return MHD_queue_response(connection, MHD_HTTP_OK, response);
+    } else {
+        MHD_response* response = MHD_create_response_from_buffer(0, "Invalid request", MHD_RESPMEM_PERSISTENT);
+        return MHD_queue_response(connection, MHD_HTTP_BAD_REQUEST, response);
+    }
+}
 
 int main() {
-    int server_fd, new_socket;
-    struct sockaddr_in address;
-    int addrlen = sizeof(address);
-    char buffer[BUFFER_SIZE] = {0};
-    FILE *fp;
-
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        perror("socket failed");
-        exit(EXIT_FAILURE);
+    struct MHD_Daemon* daemon;
+    daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY, 8000, NULL, NULL, &ahc_echo, NULL, MHD_OPTION_END);
+    if (daemon == NULL) {
+        return 1;
     }
-
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
-
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
-        perror("bind failed");
-        exit(EXIT_FAILURE);
-    }
-
-    if (listen(server_fd, 3) < 0) {
-        perror("listen");
-        exit(EXIT_FAILURE);
-    }
-
-    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
-        perror("accept");
-        exit(EXIT_FAILURE);
-    }
-
-    fp = fopen("uploaded_file", "wb");
-    if (fp == NULL) {
-        perror("fopen");
-        exit(EXIT_FAILURE);
-    }
-
-    while (read(new_socket, buffer, BUFFER_SIZE) > 0) {
-        fwrite(buffer, sizeof(char), BUFFER_SIZE, fp);
-    }
-
-    fclose(fp);
-    close(new_socket);
-    close(server_fd);
-
-    printf("File uploaded successfully!
-");
-
+    getchar();
+    MHD_stop_daemon(daemon);
     return 0;
 }

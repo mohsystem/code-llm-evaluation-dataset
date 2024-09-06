@@ -1,20 +1,22 @@
-#include <iostream>
-#include <map>
-#include <list>
-#include <set>
-#include <algorithm>
+// C++
 
-void dfs(std::map<char, std::list<char>> graph, char node, std::set<char>& visited) {
+#include <iostream>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+
+void dfs(std::unordered_map<char, std::vector<char>>& graph, char node, std::unordered_set<char>& visited) {
     if (visited.find(node) == visited.end()) {
         visited.insert(node);
-        for (char n : graph[node]) {
-            dfs(graph, n, visited);
+        std::cout << node << " ";
+        for (char neighbour : graph[node]) {
+            dfs(graph, neighbour, visited);
         }
     }
 }
 
 int main() {
-    std::map<char, std::list<char>> graph = {
+    std::unordered_map<char, std::vector<char>> graph = {
         {'A', {'B', 'C'}},
         {'B', {'A', 'D', 'E'}},
         {'C', {'A', 'F'}},
@@ -23,11 +25,8 @@ int main() {
         {'F', {'C', 'E'}}
     };
 
-    std::set<char> visited;
+    std::unordered_set<char> visited;
     dfs(graph, 'A', visited);
-    for (char node : visited) {
-        std::cout << node << " ";
-    }
-    std::cout << std::endl;
+
     return 0;
 }

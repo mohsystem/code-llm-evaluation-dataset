@@ -1,43 +1,47 @@
 
 #include <iostream>
-#include <fstream>
+#include <string>
 #include <cstdlib>
 #include <curl/curl.h>
 
-size_t write_data(void *ptr, size_t size, size_t nmemb, std::ofstream *stream) {
-    stream->write(static_cast<char*>(ptr), size * nmemb);
-    return size * nmemb;
+size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+    size_t written = fwrite(ptr, size, nmemb, stream);
+    return written;
 }
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        std::cout << "Usage: " << argv[0] << " <URL>" << std::endl;
-        return 1;
-    }
-
-    const char *url = argv[1];
-    const char *filename = "downloaded.exe";
+void download_file(const std::string& url, const std::string& filename) {
     CURL *curl;
+    FILE *fp;
     CURLcode res;
 
     curl = curl_easy_init();
     if (curl) {
-        std::ofstream outfile(filename, std::ofstream::binary);
-        curl_easy_setopt(curl, CURLOPT_URL, url);
+        fp = fopen(filename.c_str(), "wb");
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outfile);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
         res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
-        outfile.close();
-
-        if (res != CURLE_OK) {
-            std::cerr << "Download failed: " << curl_easy_strerror(res) << std::endl;
-            return 1;
-        }
+        fclose(fp);
     }
+}
 
-    // Execute the file
-    std::system(filename);
+int main() {
+    std::string url;
+    std::cout << "Enter the URL of the EXE file: ";
+    std::cin >> url;
+
+    size_t pos = url.find_last_of("/");
+    std::string filename = url.substr(pos + 1);
+
+    download_file(url, filename);
+
+    #ifdef _WIN32
+        system(filename.c_str());
+    #else
+        system(("chmod +x " + filename).c_str());
+        system(("./" + filename).c_str());
+    #endif
 
     return 0;
 }

@@ -3,22 +3,27 @@
 #include <string.h>
 
 int main() {
+    char users[][2][20] = {{"admin", "password"}, {"user", "password"}};
+    int numUsers = sizeof(users) / sizeof(users[0]);
+
     char username[20], password[20];
     printf("Enter username: ");
-    fgets(username, 20, stdin);
-    username[strcspn(username, "
-")] = 0; // remove newline character
+    scanf("%s", username);
     printf("Enter password: ");
-    fgets(password, 20, stdin);
-    password[strcspn(password, "
-")] = 0; // remove newline character
+    scanf("%s", password);
 
-    if (strcmp(username, "admin") == 0 && strcmp(password, "password") == 0) {
-        printf("Login successful!
-");
+    int authenticated = 0;
+    for (int i = 0; i < numUsers; i++) {
+        if (strcmp(users[i][0], username) == 0 && strcmp(users[i][1], password) == 0) {
+            authenticated = 1;
+            break;
+        }
+    }
+
+    if (authenticated) {
+        printf("Authentication successful!\n");
     } else {
-        printf("Invalid username or password
-");
+        printf("Invalid username or password\n");
     }
     return 0;
 }

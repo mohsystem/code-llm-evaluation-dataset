@@ -1,70 +1,66 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 typedef struct {
+    int userId;
     char username[256];
-    int loggedIn;
-} UserSession;
+} Session;
 
-void login(UserSession* session) {
-    session->loggedIn = 1;
-    printf("%s has logged in.
-", session->username);
+typedef struct {
+    Session* sessions;
+    int size;
+} SessionManager;
+
+SessionManager* createSessionManager() {
+    SessionManager* manager = (SessionManager*)malloc(sizeof(SessionManager));
+    manager->sessions = (Session*)malloc(sizeof(Session) * 10);
+    manager->size = 0;
+    return manager;
 }
 
-void logout(UserSession* session) {
-    session->loggedIn = 0;
-    printf("%s has logged out.
-", session->username);
+void createSession(SessionManager* manager, int userId, const char* username) {
+    if (manager->size < 10) {
+        manager->sessions[manager->size].userId = userId;
+        strcpy(manager->sessions[manager->size].username, username);
+        manager->size++;
+        printf("Session created for user %s with ID %d\n", username, userId);
+    } else {
+        printf("Session manager is full\n");
+    }
+}
+
+const char* getUsername(SessionManager* manager, int userId) {
+    for (int i = 0; i < manager->size; i++) {
+        if (manager->sessions[i].userId == userId) {
+            return manager->sessions[i].username;
+        }
+    }
+    return NULL;
+}
+
+void deleteSession(SessionManager* manager, int userId) {
+    for (int i = 0; i < manager->size; i++) {
+        if (manager->sessions[i].userId == userId) {
+            for (int j = i; j < manager->size - 1; j++) {
+                manager->sessions[j] = manager->sessions[j + 1];
+            }
+            manager->size--;
+            printf("Session deleted for user ID %d\n", userId);
+            return;
+        }
+    }
+    printf("No session found for user ID %d\n", userId);
 }
 
 int main() {
-    UserSession sessions[256];
-    int numSessions = 0;
-    while (true) {
-        printf("1. Create session
-");
-        printf("2. Login
-");
-        printf("3. Logout
-");
-        printf("4. Exit
-");
-        int choice;
-        printf("Choose an option: ");
-        scanf("%d", &choice);
-        if (choice == 1) {
-            printf("Enter username: ");
-            scanf("%255s", sessions[numSessions].username);
-            numSessions++;
-            printf("Session created for %s.
-", sessions[numSessions-1].username);
-        } else if (choice == 2) {
-            printf("Enter username: ");
-            char username[256];
-            scanf("%255s", username);
-            for (int i = 0; i < numSessions; i++) {
-                if (strcmp(sessions[i].username, username) == 0) {
-                    login(&sessions[i]);
-                    break;
-                }
-            }
-        } else if (choice == 3) {
-            printf("Enter username: ");
-            char username[256];
-            scanf("%255s", username);
-            for (int i = 0; i < numSessions; i++) {
-                if (strcmp(sessions[i].username, username) == 0) {
-                    logout(&sessions[i]);
-                    break;
-                }
-            }
-        } else if (choice == 4) {
-            break;
-        } else {
-            printf("Invalid option. Please try again.
-");
-        }
+    SessionManager* manager = createSessionManager();
+    createSession(manager, 1, "John");
+    createSession(manager, 2, "Alice");
+    const char* username = getUsername(manager, 1);
+    if (username) {
+        printf("Username: %s\n", username);  // Output: John
     }
+    deleteSession(manager, 2);
     return 0;
 }

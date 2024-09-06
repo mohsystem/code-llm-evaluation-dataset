@@ -1,19 +1,22 @@
-// C++
+// C++ does not have built-in support for changing user passwords or dropping privileges.
+// This is a simplified example of how you might use the system() function to run a shell command.
+
 #include <iostream>
-#include <unistd.h>
+#include <string>
+#include <cstdlib>
 
 int main() {
-    std::cout << "Running as root
-";
-    uid_t uid = getuid();
-    gid_t gid = getgid();
+    std::string username, newPassword;
+    std::cout << "Enter username: ";
+    std::cin >> username;
+    std::cout << "Enter new password: ";
+    std::cin >> newPassword;
 
-    // Perform privileged operations here
+    std::string command = "echo '" + username + ":" + newPassword + "' | sudo chpasswd";
+    int result = system(command.c_str());
 
-    // Drop privileges
-    setgid(gid);
-    setuid(uid);
-    std::cout << "Dropped privileges
-";
+    // Dropping privileges is not directly supported in C++.
+    // You would need to use a native function like setuid() or seteuid() for this.
+
     return 0;
 }

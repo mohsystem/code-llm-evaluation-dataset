@@ -64,17 +64,9 @@ void dijkstra(Node nodes[], int node_count, Edge edges[], int edge_count, char s
         }
     }
 
-    printf("Shortest paths from %s\
-", start);
+    printf("Shortest distances from %s:\\n", start);
     for (int i = 0; i < node_count; i++) {
-        printf("To %s: ", nodes[i].name);
-        if (distances[i] == INT_MAX) {
-            printf("Infinity\
-");
-        } else {
-            printf("%d\
-", distances[i]);
-        }
+        printf("%s: %d\\n", nodes[i].name, distances[i]);
     }
 }
 

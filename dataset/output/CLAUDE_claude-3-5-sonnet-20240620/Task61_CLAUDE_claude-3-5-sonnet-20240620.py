@@ -1,12 +1,10 @@
 
 import xml.etree.ElementTree as ET
 
-def parse_xml_string(xml_string):
+def get_root_element(xml_string):
     root = ET.fromstring(xml_string)
-    return root
+    return root.tag
 
-if __name__ == "__main__":
-    xml_string = "<root><child1>Value1</child1><child2>Value2</child2></root>"
-    root_element = parse_xml_string(xml_string)
-    if root_element is not None:
-        print(f"Root element: {root_element.tag}")
+# Example usage
+xml_str = '<root><child1>Content</child1><child2 attr="value"/></root>'
+print(get_root_element(xml_str))
