@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "chatgpt",
+      "source": "-",
       "tags": ["File handling", "Resource management"],
       "comments": "File handling can introduce vulnerabilities if not done properly. Make sure to validate file names and handle exceptions to avoid crashes or leaks."
     }

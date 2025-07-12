@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["Input validation", "Security"],
       "comments": "Proper input validation can prevent many types of attacks, including injection and buffer overflows. Always validate inputs before processing."
     }

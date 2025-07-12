@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["CSRF", "Web security"],
       "comments": "CSRF attacks trick the user's browser into submitting unauthorized requests. Using tokens to validate requests can mitigate this risk."
     }

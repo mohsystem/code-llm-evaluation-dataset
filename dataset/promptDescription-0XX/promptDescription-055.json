@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["Input validation", "Data integrity"],
       "comments": "Input validation is crucial for maintaining data integrity and preventing attacks."
     }

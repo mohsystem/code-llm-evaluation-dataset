@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "chatgpt",
+      "source": "-",
       "tags": ["SQL injection", "Database security"],
       "comments": "SQL injection is a critical security vulnerability. Using parameterized queries helps prevent attackers from injecting malicious SQL code."
     }

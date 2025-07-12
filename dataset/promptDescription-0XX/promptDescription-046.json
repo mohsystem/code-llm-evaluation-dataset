@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["User registration", "Data storage", "Password security"],
       "comments": "Proper handling of user data is crucial. Ensure data is stored securely and passwords are hashed."
     }

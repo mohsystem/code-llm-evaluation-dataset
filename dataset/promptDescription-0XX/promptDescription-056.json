@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["Token generation", "Authentication"],
       "comments": "Secure token generation is essential for user authentication."
     }

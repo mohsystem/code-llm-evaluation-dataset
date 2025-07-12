@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["Authentication", "Password security"],
       "comments": "Storing passwords securely is critical. Always use a strong hashing algorithm to protect stored passwords."
     }

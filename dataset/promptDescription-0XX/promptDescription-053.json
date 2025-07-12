@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["Session management", "Web security"],
       "comments": "Proper session management is crucial for web application security."
     }

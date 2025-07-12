@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["API", "Data handling", "Input validation"],
       "comments": "Creating API endpoints involves ensuring that user data is properly validated and stored securely."
     }

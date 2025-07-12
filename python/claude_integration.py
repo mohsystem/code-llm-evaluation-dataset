@@ -13,7 +13,8 @@ class ClaudeIntegration:
         message = self.client.messages.create(
             model=self.model,
             max_tokens=4096,
-            temperature=0,
+            top_p=0.90,
+            temperature=0.9,
             system=prompt_system,
             messages=[
                 {

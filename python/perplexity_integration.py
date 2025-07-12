@@ -13,6 +13,9 @@ class PerplexityIntegration:
         # https://deepmind.google/technologies/gemini/pro/
         # https://www.perplexity.ai/settings/api
         completion = self.client.chat.completions.create(
+            max_tokens=4096,
+            top_p=0.90,
+            temperature=0.9,
             model=selected_model,
             messages=[
                 {"role": "user", "content": prompt}

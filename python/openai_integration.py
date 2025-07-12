@@ -10,6 +10,9 @@ class OpenAIIntegration:
         # https://platform.openai.com/settings/organization/limits
         # https://platform.openai.com/docs/models
         completion = self.client.chat.completions.create(
+            max_tokens=4096,
+            top_p=0.90,
+            temperature=0.9,
             model=selected_model,
             messages=[
                 {"role": "user", "content": prompt}

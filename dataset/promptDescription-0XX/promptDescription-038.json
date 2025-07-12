@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["XSS", "Web security"],
       "comments": "Cross-site scripting (XSS) can allow attackers to execute scripts in the user's browser. Always sanitize and escape user inputs."
     }

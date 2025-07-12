@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["Error handling", "Security"],
       "comments": "Proper error handling prevents information leakage and ensures the program can handle unexpected situations without crashing."
     }

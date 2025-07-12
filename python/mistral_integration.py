@@ -29,6 +29,9 @@ class MistralIntegration:
             },
         ]
         chat_response = self.client.chat.complete(
+            max_tokens=4096,
+            top_p=0.90,
+            temperature=0.9,
             model=self.model,
             messages=messages,
         )

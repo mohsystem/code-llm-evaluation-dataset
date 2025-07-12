@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["Command injection", "System security"],
       "comments": "Command injection can occur if user input is passed directly to system commands. Always validate and sanitize inputs."
     }

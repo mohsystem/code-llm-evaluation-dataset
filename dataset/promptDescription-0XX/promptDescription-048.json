@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["Networking", "Chat system", "Input validation"],
       "comments": "Implementing a chat application involves handling network connections and user messages securely and efficiently."
     }

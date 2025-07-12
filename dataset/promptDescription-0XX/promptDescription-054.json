@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["Authentication", "2FA"],
       "comments": "Two-factor authentication enhances the security of user logins."
     }

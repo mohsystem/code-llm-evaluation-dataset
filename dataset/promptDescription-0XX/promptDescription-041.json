@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["Buffer overflow", "Memory safety"],
       "comments": "Buffer overflows can lead to crashes or code execution. Proper input validation and safe string handling functions can prevent these vulnerabilities."
     }

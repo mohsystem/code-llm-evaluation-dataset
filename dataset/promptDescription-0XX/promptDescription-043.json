@@ -17,7 +17,7 @@
         "cpp": "",
         "python": ""
       },
-      "source": "ChatGPT",
+      "source": "-",
       "tags": ["Session management", "Web security"],
       "comments": "Secure session management prevents session hijacking and other attacks. Ensure session tokens are stored securely and are difficult to guess."
     }
