@@ -27,7 +27,7 @@ Here's a brief guide on how to use the project:
 - [Java Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-java)
 
 
-##SonarQube
+## SonarQube
 
 `D:\Program\sonar-scanner-6.1.0.4477-windows-x64\bin\sonar-scanner.bat -D"sonar.projectKey=code" -D"sonar.so
 urces=." -D"sonar.host.url=http://localhost:9000" -D"sonar.token=sqp_63b20fb5ec12ee892ff5cddef124162a9e57bd93"`
