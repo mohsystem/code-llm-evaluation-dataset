@@ -19,6 +19,13 @@ Here's a brief guide on how to use the project:
 ##Fix java class name using [fix_public_class_name_for_java.py](python%2Ffix_public_class_name_for_java.py)
 
 
+## Generated Code and Unit Tests repositories:
+
+- [C Language Generated Code and Unit Tests](https://github.com/mohsystem/llm_generated_code_c)
+- [Python Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-python)
+- [C/C++ Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-c-cpp)
+- [Java Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-java)
+
 
 ##SonarQube
 
