@@ -1,14 +1,13 @@
 ## Introduction
-Dataset for evaluating LLMs generated code.
+Dataset for evaluating LLMs generated code, developed for "Security and Quality in LLM-Generated Code: A Multi-Language, Multi-Model Analysis" research paper.
 
 ## Getting Started
 To get started with the project, follow these steps:
 
 1. Clone the repository: `git clone https://github.com/mohkharma/code-llm-evaluation-dataset.git`
-2. Review the prompt description files existing in the repository [directory](dataset/).
+2. Review the prompt description files existing in the repository [directory](dataset/promptDescription-XXX).
 3. Review the prompt description schema to understand the dataset instance attributes [directory](dataset/promptDescriptionSchema.json).
-2. Install dependencies:
-3. Run the project: 
+
 
 ## Usage
 Here's a brief guide on how to use the project:
@@ -19,7 +18,7 @@ Here's a brief guide on how to use the project:
 ##Fix java class name using [fix_public_class_name_for_java.py](python%2Ffix_public_class_name_for_java.py)
 
 
-## Generated Code and Unit Tests repositories:
+## Generated Code and Unit Tests Repositories:
 
 - [C Language Generated Code and Unit Tests](https://github.com/mohsystem/llm_generated_code_c)
 - [Python Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-python)
@@ -27,7 +26,7 @@ Here's a brief guide on how to use the project:
 - [Java Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-java)
 
 
-## SonarQube
+## SonarQube Scanning
 
 `D:\Program\sonar-scanner-6.1.0.4477-windows-x64\bin\sonar-scanner.bat -D"sonar.projectKey=<projectKey>" -D"sonar.so
 urces=." -D"sonar.host.url=http://localhost:9000" -D"sonar.token=<token>"`
@@ -35,10 +34,10 @@ urces=." -D"sonar.host.url=http://localhost:9000" -D"sonar.token=<token>"`
 https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/languages/c-family/running-the-analysis/
 https://docs.sonarsource.com/sonarqube/10.6/analyzing-source-code/scanners/sonarscanner/
 
-#fix elasticsearch issue
+#Fix elasticsearch issue
 https://stackoverflow.com/questions/42111566/elasticsearch-in-windows-docker-image-vm-max-map-count
 
 
 ## DS semantic evaluation
 
-https://docs.google.com/spreadsheets/d/1eDbnJScw-nh3bsQY7bPI866ivga90wqKy9jnfTI4e3Y/edit?usp=sharing
+https://docs.google.com/spreadsheets/d/1ZgDLF5GZX362IVPcpj9DYC4Ru7816g6du6dLa3hKCXY/edit?usp=sharing
