@@ -28,15 +28,18 @@ Here's a brief guide on how to use the project:
 
 ## SonarQube Scanning
 
-`D:\Program\sonar-scanner-6.1.0.4477-windows-x64\bin\sonar-scanner.bat -D"sonar.projectKey=<projectKey>" -D"sonar.so
+`sonar-scanner.bat -D"sonar.projectKey=<projectKey>" -D"sonar.so
 urces=." -D"sonar.host.url=http://localhost:9000" -D"sonar.token=<token>"`
 
-https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/languages/c-family/running-the-analysis/
+# Download sonar-scanner:
 https://docs.sonarsource.com/sonarqube/10.6/analyzing-source-code/scanners/sonarscanner/
 
-#Fix elasticsearch issue
+
+# Fix elasticsearch issue
 https://stackoverflow.com/questions/42111566/elasticsearch-in-windows-docker-image-vm-max-map-count
 
+# Running the CFamily analysis
+https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/languages/c-family/running-the-analysis/
 
 ## DS semantic evaluation
 
