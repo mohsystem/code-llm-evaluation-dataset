@@ -22,7 +22,7 @@ Here's a brief guide on how to use the project:
 
 - [C Language Generated Code and Unit Tests](https://github.com/mohsystem/llm_generated_code_c)
 - [Python Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-python)
-- [C/C++ Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-c-cpp)
+- [C++ Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-c-cpp)
 - [Java Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-java)
 
 
