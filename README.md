@@ -5,7 +5,7 @@ Dataset for evaluating LLMs generated code, developed for "Security and Quality 
 To get started with the project, follow these steps:
 
 1. Clone the repository: `git clone https://github.com/mohkharma/code-llm-evaluation-dataset.git`
-2. Review the prompt description files existing in the repository [directory](dataset/promptDescription-XXX).
+2. Review the prompt description files existing in the repository - dataset/promptDescription-XXX.
 3. Review the prompt description schema to understand the dataset instance attributes [directory](dataset/promptDescriptionSchema.json).
 
 
