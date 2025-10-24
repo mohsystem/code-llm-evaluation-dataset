@@ -4,7 +4,7 @@ from openai import OpenAI
 
 class PerplexityIntegration:
     def __init__(self):
-        api_key = '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'
+        api_key = 'pplx-CEXvFFVLm6LtretgfcbjhINXylmQ-Lljkl'
         self.client = OpenAI(api_key=api_key, base_url="https://api.perplexity.ai")
 
     def get_completion_content(self, prompt, selected_model):
