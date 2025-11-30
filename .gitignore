@@ -40,3 +40,9 @@ build/
 .DS_Store
 /.idea/
 /python/venv/
+/venv/
+
+
+
+__pycache__/
+*.pyc
