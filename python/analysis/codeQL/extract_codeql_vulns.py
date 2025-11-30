@@ -12,7 +12,6 @@ GITHUB_API_BASE = "https://api.github.com"
 owner = "mohsystem"
 repo = "llm-generated-code-c-cpp"    # llm-generated-code-java   llm-generated-code-python     llm_generated_code_c  llm-generated-code-c-cpp ==>cpp
 excel_path = f"./codeql_report_{repo}.xlsx"
-# token = "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"
 
 def get_github_token() -> str:
     return token
