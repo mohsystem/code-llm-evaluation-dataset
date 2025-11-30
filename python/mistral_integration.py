@@ -13,7 +13,7 @@ class MistralIntegration:
         # https://docs.mistral.ai/getting-started/clients/
         # https://console.mistral.ai/billing/
 
-        self.api_key = "iWYGhriZX49bCPAeJdogLvYtDVgiBWwA"
+        self.api_key = "CEXvFFVLm6LtretgfcbjhINXylmQ-Lljkl"
         self.model = model_name
         # self.client = MistralClient(api_key=self.api_key)
         self.client = Mistral(api_key=self.api_key)

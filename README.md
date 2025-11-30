@@ -5,24 +5,27 @@ Dataset for evaluating LLMs generated code, developed for "Security and Quality 
 To get started with the project, follow these steps:
 
 1. Clone the repository: `git clone https://github.com/mohkharma/code-llm-evaluation-dataset.git`
-2. Review the prompt description files existing in the repository [directory](dataset/promptDescription-XXX).
+2. Review the prompt description files existing in the repository - dataset/promptDescription-XXX.
 3. Review the prompt description schema to understand the dataset instance attributes [directory](dataset/promptDescriptionSchema.json).
 
 
 ## Usage
 Here's a brief guide on how to use the project:
 
-##Start generation of responses from the AI models using [main.py](python%2Fmain.py)
-##Check for generation completeness using [dir_with_file_count.py](python%2Fdir_with_file_count.py) and [extract-missing-files.py](python%2Fextract-missing-files.py)
-##Reprocess the missing using [reprocess_ai_response.py](python%2Freprocess_ai_response.py)
-##Fix java class name using [fix_public_class_name_for_java.py](python%2Ffix_public_class_name_for_java.py)
+* Start generation of responses from the AI models using [main.py](python%2Fmain.py)
+
+* Check for generation completeness using [dir_with_file_count.py](python%2Fdir_with_file_count.py) and [extract-missing-files.py](python%2Fextract-missing-files.py)
+  
+* Reprocess the missing using [reprocess_ai_response.py](python%2Freprocess_ai_response.py)
+  
+* Fix java class name using [fix_public_class_name_for_java.py](python%2Ffix_public_class_name_for_java.py)
 
 
 ## Generated Code and Unit Tests Repositories:
 
 - [C Language Generated Code and Unit Tests](https://github.com/mohsystem/llm_generated_code_c)
 - [Python Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-python)
-- [C/C++ Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-c-cpp)
+- [C++ Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-c-cpp)
 - [Java Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-java)
 
 
