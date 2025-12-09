@@ -47,10 +47,10 @@ urces=." -D"sonar.host.url=http://localhost:9000" -D"sonar.token=<token>"`
 https://docs.sonarsource.com/sonarqube/10.6/analyzing-source-code/scanners/sonarscanner/
 
 ## SonarQube Repositories:
-- [C Language Generated Code and Unit Tests](https://sonarcloud.io/project/overview?id=mohkharma_llm-generated-code-c)
-- [Python Generated Code and Unit Tests](https://sonarcloud.io/project/overview?id=mohkharma_llm-generated-code-python)
-- [C++ Generated Code and Unit Tests](https://sonarcloud.io/project/overview?id=mohkharma_llm-generated-code-cpp)
-- [Java Generated Code and Unit Tests](https://sonarcloud.io/project/overview?id=mohkharma_llm-generated-code-java)
+- [C Language Report](https://sonarcloud.io/project/overview?id=mohkharma_llm-generated-code-c)
+- [Python Report](https://sonarcloud.io/project/overview?id=mohkharma_llm-generated-code-python)
+- [C++ Generated Report](https://sonarcloud.io/project/overview?id=mohkharma_llm-generated-code-cpp)
+- [Java Report](https://sonarcloud.io/project/overview?id=mohkharma_llm-generated-code-java)
 - CodeQL reports exist on the same GitHube Repositories above.
 
 # Fix elasticsearch issue
