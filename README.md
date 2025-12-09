@@ -30,7 +30,7 @@ Here's a brief guide on how to use the project:
 * Fix java class name using [fix_public_class_name_for_java.py](python%2Ffix_public_class_name_for_java.py)
 
 
-## Generated Code and Unit Tests Repositories:
+## Generated Code and Unit Tests GitHube Repositories:
 
 - [C Language Generated Code and Unit Tests](https://github.com/mohsystem/llm_generated_code_c)
 - [Python Generated Code and Unit Tests](https://github.com/mohsystem/llm-generated-code-python)
@@ -46,6 +46,12 @@ urces=." -D"sonar.host.url=http://localhost:9000" -D"sonar.token=<token>"`
 # Download sonar-scanner:
 https://docs.sonarsource.com/sonarqube/10.6/analyzing-source-code/scanners/sonarscanner/
 
+## SonarQube Repositories:
+- [C Language Generated Code and Unit Tests](https://sonarcloud.io/project/overview?id=mohkharma_llm-generated-code-c)
+- [Python Generated Code and Unit Tests](https://sonarcloud.io/project/overview?id=mohkharma_llm-generated-code-python)
+- [C++ Generated Code and Unit Tests](https://sonarcloud.io/project/overview?id=mohkharma_llm-generated-code-cpp)
+- [Java Generated Code and Unit Tests](https://sonarcloud.io/project/overview?id=mohkharma_llm-generated-code-java)
+- CodeQL reports exist on the same GitHube Repositories above.
 
 # Fix elasticsearch issue
 https://stackoverflow.com/questions/42111566/elasticsearch-in-windows-docker-image-vm-max-map-count
