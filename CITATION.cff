@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite the associated research paper."
+title: "Security and Quality in LLM-Generated Code: A Multi-Language, Multi-Model Analysis"
+authors:
+  - family-names: Kharma
+    given-names: Mohammed F.
+  - family-names: Choi
+    given-names: Soohyeon
+  - family-names: Alkhanafseh
+    given-names: Mohammad
+  - family-names: Mohaisen
+    given-names: David
+doi: 10.1109/TDSC.2026.3672745
+url: "https://doi.org/10.1109/TDSC.2026.3672745"
+
+preferred-citation:
+  type: article
+  title: "Security and Quality in LLM-Generated Code: A Multi-Language, Multi-Model Analysis"
+  authors:
+    - family-names: Kharma
+      given-names: Mohammed F.
+    - family-names: Choi
+      given-names: Soohyeon
+    - family-names: Alkhanafseh
+      given-names: Mohammad
+    - family-names: Mohaisen
+      given-names: David
+  journal: "IEEE Transactions on Dependable and Secure Computing"
+  year: 2026
+  issue: "01"
+  pages: "1-15"
+  issn: "1941-0018"
+  doi: 10.1109/TDSC.2026.3672745
+  url: "https://doi.org/10.1109/TDSC.2026.3672745"
